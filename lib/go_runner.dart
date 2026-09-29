@@ -1,58 +1,144 @@
-import 'dart:async';
+import 'dart:convert';
+import 'dart:io';
 
 import 'package:path/path.dart' as p;
 import 'package:qfli_studio_core/services/studio_profile.dart';
 
-/// Go 版 App 的运行后端。
-///
-/// 目标形态是**应用内 Go 子集解释器（纯 Dart）**。
-/// 之所以是解释而不是编译：鸿蒙的普通应用被 SELinux 挡在 `exec` 之外，既调不动
-/// 设备上的编译器，也拉不起打包进 HAP 的可执行文件（HNP 那条路要求应用具备
-/// 生产力应用资格）。但沙箱从来不限制应用解释自己的数据，所以「自带解释器、
-/// 在当前进程里跑自己的源码」是普通应用唯一走得通的路。
-///
-/// C 版的 `qfli_c_runtime` 已经把这条路走通并交付（词法 → 预处理 → 语法 →
-/// 解释，约 7000 行纯 Dart），本版是同一个模式的接入点。
-///
-/// 解释器落地之前，[run] 明确返回「还不能运行」，而不是给一个看起来像结果的
-/// 东西——那比报错更糟。
-///
-/// **接入方式**：把 [_notReady] 换成真实解释器的调用（返回一个带
-/// stdout/stderr/exitCode 的 [ProgramRunResult]）。档位、入口识别、终端输出、
-/// 退出码这些接线都不用动。
-class GoProgramRunner implements ProgramRunner {
-  const GoProgramRunner();
+enum GoToolAction { run, build, test, format, vet, modTidy }
 
-  /// 本后端接管的源码后缀。
-  static const Set<String> _sourceExtensions = {'.go'};
+/// Runs the official Go toolchain for a project on desktop platforms.
+class GoToolchain {
+  const GoToolchain({this.executable = 'go', this.processesSupported});
+
+  final String executable;
+  final bool? processesSupported;
+
+  Future<ProgramRunResult> execute({
+    required GoToolAction action,
+    required String projectPath,
+    required String entryFile,
+  }) async {
+    if (!(processesSupported ??
+        (Platform.isWindows || Platform.isLinux || Platform.isMacOS))) {
+      return _unavailable('当前平台无法启动本地 Go 工具链。');
+    }
+
+    final entryDirectory = p.dirname(p.absolute(entryFile));
+    final projectDirectory = p.absolute(projectPath);
+    final moduleDirectory = _findModule(entryDirectory, projectDirectory);
+    final workingDirectory = switch (action) {
+      GoToolAction.run || GoToolAction.build => entryDirectory,
+      _ => moduleDirectory ?? projectDirectory,
+    };
+    final args = switch (action) {
+      GoToolAction.run => ['run', '.'],
+      GoToolAction.build => ['build', '-o', _binaryPath(projectDirectory), '.'],
+      GoToolAction.test => ['test', './...'],
+      GoToolAction.format => ['fmt', './...'],
+      GoToolAction.vet => ['vet', './...'],
+      GoToolAction.modTidy => ['mod', 'tidy'],
+    };
+
+    if (action == GoToolAction.modTidy && moduleDirectory == null) {
+      return _unavailable('项目没有 go.mod，无法执行 go mod tidy。');
+    }
+    if (action == GoToolAction.build) {
+      await Directory(
+        p.join(projectDirectory, 'build'),
+      ).create(recursive: true);
+    }
+
+    try {
+      final process = await Process.start(
+        executable,
+        args,
+        workingDirectory: workingDirectory,
+        environment: moduleDirectory == null ? {'GO111MODULE': 'off'} : null,
+      );
+      return ProgramRunResult(
+        title: 'go ${args.join(' ')}',
+        stdout: process.stdout
+            .transform(utf8.decoder)
+            .transform(const LineSplitter()),
+        stderr: process.stderr
+            .transform(utf8.decoder)
+            .transform(const LineSplitter()),
+        exitCode: process.exitCode,
+        cancel: () => _cancel(process),
+      );
+    } on ProcessException catch (error) {
+      return _unavailable(
+        '无法启动 Go 工具链：${error.message}。请安装 Go SDK 并确认 go 在 PATH 中。',
+      );
+    }
+  }
+
+  static String _binaryPath(String projectDirectory) {
+    final name = p.basename(projectDirectory);
+    return p.join(
+      projectDirectory,
+      'build',
+      Platform.isWindows ? '$name.exe' : name,
+    );
+  }
+
+  static String? _findModule(String entryDirectory, String projectDirectory) {
+    var directory = entryDirectory;
+    while (p.isWithin(projectDirectory, directory) ||
+        p.equals(projectDirectory, directory)) {
+      if (File(p.join(directory, 'go.mod')).existsSync()) return directory;
+      if (p.equals(directory, projectDirectory)) break;
+      directory = p.dirname(directory);
+    }
+    return null;
+  }
+
+  static ProgramRunResult _unavailable(String message) => ProgramRunResult(
+    title: 'Go 工具链',
+    stdout: const Stream<String>.empty(),
+    stderr: Stream<String>.value(message),
+    exitCode: Future<int>.value(kProgramNotRunExitCode),
+  );
+
+  static Future<void> _cancel(Process process) async {
+    if (Platform.isWindows) {
+      try {
+        final result = await Process.run('taskkill', [
+          '/PID',
+          '${process.pid}',
+          '/T',
+          '/F',
+        ]);
+        if (result.exitCode == 0) {
+          await process.exitCode;
+          return;
+        }
+      } on ProcessException {
+        // Fall through to the direct process handle.
+      }
+    }
+    process.kill();
+    await process.exitCode;
+  }
+}
+
+class GoProgramRunner implements ProgramRunner {
+  const GoProgramRunner({this.toolchain = const GoToolchain()});
+
+  final GoToolchain toolchain;
 
   @override
   Future<ProgramRunResult?> run({
     required String projectPath,
     required String entryFile,
-  }) async {
-    // 不是本语言的文件交回内核（返回 null），内核会走自己的分流逻辑。
-    if (!_sourceExtensions.contains(p.extension(entryFile).toLowerCase())) {
-      return null;
+  }) {
+    if (p.extension(entryFile).toLowerCase() != '.go') {
+      return Future<ProgramRunResult?>.value(null);
     }
-    return _notReady(p.basename(entryFile));
-  }
-
-  /// 解释器还没接上时的占位结果。
-  ProgramRunResult _notReady(String fileName) {
-    final controller = StreamController<String>();
-    scheduleMicrotask(() {
-      controller
-        ..add('Go 版的运行后端还在开发中（应用内纯 Dart 解释器）。')
-        ..add('现在已经可用的：编辑器、语法高亮、项目模板、Go 入门教程。')
-        ..add('内置 Go 解释器完成后即可在本 App 内运行这段代码。')
-        ..close();
-    });
-    return ProgramRunResult(
-      title: '运行 $fileName（Go 解释器开发中）',
-      stdout: controller.stream,
-      stderr: const Stream<String>.empty(),
-      exitCode: Future<int>.value(kProgramNotRunExitCode),
+    return toolchain.execute(
+      action: GoToolAction.run,
+      projectPath: projectPath,
+      entryFile: entryFile,
     );
   }
 }

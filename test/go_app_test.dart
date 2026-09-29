@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
+import 'package:qfli_go/go_runner.dart';
 import 'package:qfli_go/main.dart' show goProfile;
 import 'package:qfli_studio_core/services/project_templates.dart';
 import 'package:qfli_studio_core/services/runner_service.dart';
@@ -36,20 +37,31 @@ void main() {
 
   group('档位收窄', () {
     test('新建项目只放行「空项目」和 Go', () {
-      expect(
-        goProfile.filterTemplates(ProjectTemplate.values),
-        [ProjectTemplate.empty, ProjectTemplate.go],
-      );
+      expect(goProfile.filterTemplates(ProjectTemplate.values), [
+        ProjectTemplate.empty,
+        ProjectTemplate.go,
+      ]);
     });
 
     test('默认模板是 Go 而不是空项目', () {
-      expect(goProfile.defaultTemplate,
-          ProjectTemplate.go);
+      expect(goProfile.defaultTemplate, ProjectTemplate.go);
     });
 
     test('语言筛选芯片只剩 Go', () {
       // 首页传给档位的候选本来就不含「空项目」——它不是一门语言。
-      const all = ['Rust', 'Go', 'SQL', 'JSON', 'Markdown', 'C++', 'Lua', 'Web', 'Python', 'Java', 'Dart'];
+      const all = [
+        'Rust',
+        'Go',
+        'SQL',
+        'JSON',
+        'Markdown',
+        'C++',
+        'Lua',
+        'Web',
+        'Python',
+        'Java',
+        'Dart',
+      ];
       expect(goProfile.filterLanguages(all), ['Go']);
     });
 
@@ -91,15 +103,18 @@ void main() {
   });
 
   group('运行后端', () {
-    test('本语言文件被接管，并说明解释器还在开发中', () async {
+    test('本语言文件由 Go 工具链接管', () async {
       write('main.go', '// 示例');
-      final result = await goProfile.runner!.run(
-        projectPath: project.path,
-        entryFile: p.join(project.path, 'main.go'),
-      );
+      final result =
+          await const GoProgramRunner(
+            toolchain: GoToolchain(executable: '__missing_go_sdk__'),
+          ).run(
+            projectPath: project.path,
+            entryFile: p.join(project.path, 'main.go'),
+          );
       expect(result, isNotNull, reason: '运行后端没有接管本语言文件');
-      expect(result!.title, contains('Go 解释器开发中'));
-      expect(await result.stdout.toList(), isNotEmpty);
+      expect(result!.title, 'Go 工具链');
+      expect(await result.stderr.join(), contains('无法启动 Go 工具链'));
       expect(await result.exitCode, kProgramNotRunExitCode);
     });
 
@@ -114,7 +129,7 @@ void main() {
   });
 
   group('运行按钮分流', () {
-    test('点运行拿到结果，而不是掉进「移动端跑不了」的兜底提示', () async {
+    test('点运行由 Go 后端处理，不走通用兜底', () async {
       write('main.go', '// 示例');
       final result = await RunnerService.runProject(
         projectPath: project.path,
@@ -122,7 +137,7 @@ void main() {
       );
       expect(result, isNotNull);
       expect(result!.hint, isNull, reason: '后端接管了就不该走兜底提示');
-      expect(result.title, contains('Go 解释器开发中'));
+      expect(result.title, isNot(contains('开发中')));
     });
   });
 }
