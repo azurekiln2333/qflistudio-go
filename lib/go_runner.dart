@@ -4,6 +4,10 @@ import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:qfli_studio_core/services/studio_profile.dart';
 
+import 'native_go_bridge_stub.dart'
+    if (dart.library.ffi) 'native_go_bridge_ffi.dart'
+    as native;
+
 enum GoToolAction { run, build, test, format, vet, modTidy }
 
 /// Runs the official Go toolchain for a project on desktop platforms.
@@ -134,6 +138,9 @@ class GoProgramRunner implements ProgramRunner {
   }) {
     if (p.extension(entryFile).toLowerCase() != '.go') {
       return Future<ProgramRunResult?>.value(null);
+    }
+    if (Platform.isAndroid || Platform.operatingSystem == 'ohos') {
+      return native.runNativeGo(projectPath: projectPath, entryFile: entryFile);
     }
     return toolchain.execute(
       action: GoToolAction.run,

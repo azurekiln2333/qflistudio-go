@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:flutter/material.dart';
 
@@ -18,7 +19,7 @@ const String _appTitle = StudioProductCatalog.goShift;
 /// Go 版档位：同一套内核 UI，收窄成只服务 Go。
 ///
 /// 单独提出来是为了让测试能直接断言档位，而不必为了一个常量去跑 `main()`。
-const StudioProfile goProfile = StudioProfile(
+final StudioProfile goProfile = StudioProfile(
   id: 'go',
   appTitle: _appTitle,
   templates: [ProjectTemplate.empty, ProjectTemplate.go],
@@ -27,7 +28,9 @@ const StudioProfile goProfile = StudioProfile(
   productKey: StudioProductCatalog.goShiftKey,
   showHomeTabs: false,
   runtimeKind: 'embedded-go-runtime',
-  runtimeStatus: 'unavailable',
+  runtimeStatus: Platform.operatingSystem == 'ohos'
+      ? 'available'
+      : 'unavailable',
   supportedFileExtensions: ['.go'],
   // main.go 排在默认入口表前面，保证本版一定先命中它。
   entryFileNames: ['main.go', 'src/main.go'],
