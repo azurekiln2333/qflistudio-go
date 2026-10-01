@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:qfli_studio_core/services/studio_profile.dart';
 
+import 'go_platform.dart';
 import 'native_go_bridge_stub.dart'
     if (dart.library.ffi) 'native_go_bridge_ffi.dart'
     as native;
@@ -23,7 +25,9 @@ class GoToolchain {
     required String entryFile,
   }) async {
     if (!(processesSupported ??
-        (Platform.isWindows || Platform.isLinux || Platform.isMacOS))) {
+        (!kIsWeb &&
+            goRuntimeBackendFor(Platform.operatingSystem) ==
+                GoRuntimeBackend.officialSdk))) {
       return _unavailable('当前平台无法启动本地 Go 工具链。');
     }
 
@@ -139,7 +143,9 @@ class GoProgramRunner implements ProgramRunner {
     if (p.extension(entryFile).toLowerCase() != '.go') {
       return Future<ProgramRunResult?>.value(null);
     }
-    if (Platform.isAndroid || Platform.operatingSystem == 'ohos') {
+    if (!kIsWeb &&
+        goRuntimeBackendFor(Platform.operatingSystem) ==
+            GoRuntimeBackend.embeddedInterpreter) {
       return native.runNativeGo(projectPath: projectPath, entryFile: entryFile);
     }
     return toolchain.execute(

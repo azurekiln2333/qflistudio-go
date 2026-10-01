@@ -1,0 +1,3 @@
+// Keep the C ABI visible to DynamicLibrary.process() in release builds.
+QFLI_GO_RUNTIME_ARCHIVE = $(DERIVED_FILE_DIR)/qfli_go_runtime/libqfli_go_runtime.a
+OTHER_LDFLAGS = $(inherited) "$(QFLI_GO_RUNTIME_ARCHIVE)" -lresolv -Wl,-u,_QfliGoRun -Wl,-u,_QfliGoCancel -Wl,-u,_QfliGoFree -Wl,-export_dynamic

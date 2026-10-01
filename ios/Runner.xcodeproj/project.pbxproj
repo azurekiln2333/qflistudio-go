@@ -149,6 +149,7 @@
 			buildConfigurationList = 97C147051CF9000F007C117D /* Build configuration list for PBXNativeTarget "Runner" */;
 			buildPhases = (
 				9740EEB61CF901F6004384FC /* Run Script */,
+				A50A6C442DA4000100000001 /* Build Go Runtime */,
 				97C146EA1CF9000F007C117D /* Sources */,
 				97C146EB1CF9000F007C117D /* Frameworks */,
 				97C146EC1CF9000F007C117D /* Resources */,
@@ -255,6 +256,23 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
+		};
+		A50A6C442DA4000100000001 /* Build Go Runtime */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = ();
+			inputPaths = (
+				"$(SRCROOT)/../tool/build_ios_go_runtime.sh",
+			);
+			name = "Build Go Runtime";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/qfli_go_runtime/libqfli_go_runtime.a",
+				"$(DERIVED_FILE_DIR)/qfli_go_runtime/libqfli_go_runtime.h",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "/bin/bash \"$SRCROOT/../tool/build_ios_go_runtime.sh\"";
 		};
 /* End PBXShellScriptBuildPhase section */
 

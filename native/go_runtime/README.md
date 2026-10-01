@@ -49,7 +49,43 @@ Device verification is in `integration_test/go_native_test.dart`: multi-file
 execution, panic recovery, and cancellation. The OpenHarmony C smoke loader is
 under `testdata/smoke/` so it is not linked into the shared runtime itself.
 
-Verified on an OpenHarmony x86_64 target with the pinned OHOS compiler: all three
-Flutter FFI integration tests pass. Android APK packaging covers all three ABIs;
-Android device execution and OpenHarmony arm64 execution require separate device
-verification.
+## iOS Archive
+
+The Runner target invokes `tool/build_ios_go_runtime.sh` before linking. The
+script uses the active Xcode SDK, deployment target, and architectures to build
+this module with `GOOS=ios`, `CGO_ENABLED=1`, `-mod=vendor`, and
+`-buildmode=c-archive`. It supports arm64 devices and arm64/x86_64 simulators.
+Multi-architecture simulator output is combined with `lipo`; generated archives,
+headers, and Go caches remain under Xcode's `DERIVED_FILE_DIR`.
+
+Install an official Go SDK on the build Mac. The script checks the standard
+installer and Homebrew locations; a custom installation can be selected with
+the Xcode build setting `QFLI_GO_EXECUTABLE=/absolute/path/to/go`.
+
+`ios/Flutter/NativeGoRuntime.xcconfig` links the archive and retains the public
+`QfliGoRun`, `QfliGoCancel`, and `QfliGoFree` symbols. Debug and Release include
+this configuration; Profile uses Release. Dart resolves these functions with
+`DynamicLibrary.process()`. Android and OpenHarmony keep their shared-library
+loader and existing signatures.
+
+Apple compilation and device execution require a Mac with Xcode. They were
+skipped on this Windows host; only source/configuration and shell syntax were
+reviewed. Run `integration_test/go_native_test.dart` on an iOS device or simulator
+when that environment is available.
+
+## Platform Evidence
+
+| Target | Verified behavior | Limits |
+| --- | --- | --- |
+| Windows amd64, Go 1.27.1 | Actual app toolchain tests cover run/build/test/fmt/vet/tidy, invalid code, missing SDK, and cancellation with output pipes closing; all eight native source tests and vet pass | Native source tests use CGO_ENABLED=0 because no host C compiler is available; Windows Flutter GUI packaging was not performed |
+| Android x86_64, emulator-5560 | All three Flutter FFI integration cases pass: multi-file execution, main/worker panic and os.Exit handling, and infinite-loop cancellation | arm64/armv7 device execution is untested; the APK contains all three ABIs and every native LOAD segment has 16 KB alignment |
+| Linux amd64, WSL qfli-java-build, Go 1.27.1 | Actual SDK command checks cover the six desktop actions, compiled output, invalid source, and module execution; all eight native source tests and vet pass with CGO_ENABLED=1 | These are backend/source checks; no Linux Flutter SDK or GUI execution was used |
+| OpenHarmony x86_64 | Earlier device evidence records all three FFI cases passing with the pinned OHOS Go port | Not rerun in this session; arm64 device execution needs separate verification |
+| iOS | Runner routing, process-symbol loading, archive build and link integration implemented; shell syntax passes | No Xcode build or Apple device execution on this host |
+| macOS | Existing official SDK backend retained; platform routing covered by Dart tests | No macOS host available for command or GUI execution |
+
+Desktop execution requires an installed Go SDK visible to the application.
+`goRuntimeBackendFor` in `lib/go_platform.dart` is shared by the runner, profile,
+and native integration eligibility. Desktop metadata is `official-go-sdk` /
+`requires-sdk`; mobile metadata is `embedded-go-runtime` / `available`.
+Unsupported targets use `unavailable`.

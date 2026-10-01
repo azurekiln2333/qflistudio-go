@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:ffi';
+import 'dart:io';
 import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
@@ -14,6 +15,10 @@ typedef _CancelNative = Void Function(Uint64);
 typedef _CancelDart = void Function(int);
 
 int _nextRunId = 0;
+
+DynamicLibrary _openRuntime() => Platform.isIOS
+    ? DynamicLibrary.process()
+    : DynamicLibrary.open('libqfli_go_runtime.so');
 
 Future<ProgramRunResult> runNativeGo({
   required String projectPath,
@@ -55,7 +60,7 @@ Future<ProgramRunResult> runNativeGo({
 }
 
 String _invoke(int id, String projectPath, String entryFile) {
-  final library = DynamicLibrary.open('libqfli_go_runtime.so');
+  final library = _openRuntime();
   final run = library.lookupFunction<_RunNative, _RunDart>('QfliGoRun');
   final release = library.lookupFunction<_FreeNative, _FreeDart>('QfliGoFree');
   final project = projectPath.toNativeUtf8();
@@ -78,7 +83,7 @@ String _invoke(int id, String projectPath, String entryFile) {
 
 void _cancel(int id) {
   try {
-    final library = DynamicLibrary.open('libqfli_go_runtime.so');
+    final library = _openRuntime();
     library.lookupFunction<_CancelNative, _CancelDart>('QfliGoCancel')(id);
   } catch (_) {
     // The run future reports the load failure through stderr.

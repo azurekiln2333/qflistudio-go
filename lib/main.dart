@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 import 'package:qfli_studio_core/app.dart';
@@ -11,6 +12,7 @@ import 'package:qfli_studio_core/store/auth_store.dart';
 import 'package:qfli_studio_core/store/project_store.dart';
 import 'package:qfli_studio_core/store/settings_store.dart';
 
+import 'go_platform.dart';
 import 'go_runner.dart';
 
 /// 本 App 的产品名。窗口标题、任务切换器和应用内顶栏都读它。
@@ -27,10 +29,12 @@ final StudioProfile goProfile = StudioProfile(
   runner: GoProgramRunner(),
   productKey: StudioProductCatalog.goShiftKey,
   showHomeTabs: false,
-  runtimeKind: 'embedded-go-runtime',
-  runtimeStatus: Platform.operatingSystem == 'ohos'
-      ? 'available'
-      : 'unavailable',
+  runtimeKind: goRuntimeBackendFor(
+    kIsWeb ? 'web' : Platform.operatingSystem,
+  ).kind,
+  runtimeStatus: goRuntimeBackendFor(
+    kIsWeb ? 'web' : Platform.operatingSystem,
+  ).status,
   supportedFileExtensions: ['.go'],
   // main.go 排在默认入口表前面，保证本版一定先命中它。
   entryFileNames: ['main.go', 'src/main.go'],

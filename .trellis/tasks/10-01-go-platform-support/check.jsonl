@@ -1,0 +1,5 @@
+{"file":".trellis/spec/backend/native-go-runtime.md","reason":"C ABI, vendored interpreter contracts, and required execution checks"}
+{"file":".trellis/spec/guides/cross-layer-thinking-guide.md","reason":"Dart-to-native build/link and capability propagation"}
+{"file":".trellis/spec/guides/code-reuse-thinking-guide.md","reason":"Keep platform selection consistent across runner, profile, and test gating"}
+{"file":".trellis/tasks/10-01-go-platform-support/research/apple-review.md","reason":"Reviewed Apple archive build/link contract and explicit execution limit"}
+{"file":".trellis/tasks/10-01-go-platform-support/research/validation.md","reason":"Final acceptance audit, actual platform check results and untested boundaries"}

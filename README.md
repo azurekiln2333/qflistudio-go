@@ -12,9 +12,20 @@ Run `flutter pub get` here, then `flutter run` for the target device. The shared
 
 ## Go Runtime
 
-Desktop execution uses the official Go SDK from `PATH`. Android and OpenHarmony
-use a bundled Yaegi interpreter through Flutter FFI. Mobile execution does not
-provide the official SDK's build, test, vet, or module-management commands.
+| Platform | Execution backend | Prerequisite |
+| --- | --- | --- |
+| Android / OpenHarmony | Bundled Yaegi interpreter through C ABI and Flutter FFI | Native libraries are included |
+| iOS | The same interpreter, built as a static archive and loaded from the app process | Xcode and a Go SDK on the build Mac |
+| Windows / Linux / macOS | Official Go SDK | `go` available on the application's `PATH` |
+| Web / other targets | Unavailable | Native execution is not supplied |
+
+The interpreter is implemented in Go and exposed through C ABI. Mobile execution
+supports interpreted Go programs; desktop execution provides the official SDK's
+run, build, test, fmt, vet, and module-management commands.
+
+Windows SDK execution and cancellation, Android x86_64 FFI execution, and Linux
+SDK/native-source behavior have been verified. Linux Flutter GUI and Apple
+build/device execution have not been tested on this Windows host.
 
 See [the native runtime notes](native/go_runtime/README.md) for dependency
-patches, library builds, and device integration tests.
+patches, library builds, platform evidence, and device integration tests.

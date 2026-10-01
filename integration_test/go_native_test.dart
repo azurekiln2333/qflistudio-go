@@ -3,13 +3,15 @@ import 'dart:io';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
 import 'package:path/path.dart' as p;
+import 'package:qfli_go/go_platform.dart';
 import 'package:qfli_go/go_runner.dart';
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   final unsupported =
-      !(Platform.isAndroid || Platform.operatingSystem == 'ohos');
+      goRuntimeBackendFor(Platform.operatingSystem) !=
+      GoRuntimeBackend.embeddedInterpreter;
 
   testWidgets('bundled Go interpreter runs a multi-file program', (_) async {
     final project = await Directory.systemTemp.createTemp('qfli_go_native_');

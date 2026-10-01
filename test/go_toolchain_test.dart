@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -127,6 +128,52 @@ func TestMessage(t *testing.T) {
       final moduleRun = await execute(GoToolAction.run);
       expect(moduleRun.$1, 0, reason: moduleRun.$3);
       expect(moduleRun.$2, 'ready');
+    },
+    skip: !available,
+  );
+
+  test(
+    'cancellation stops the SDK program and closes its output pipes',
+    () async {
+      File(entry).writeAsStringSync('''package main
+import (
+  "fmt"
+  "time"
+)
+func main() {
+  fmt.Println("running")
+  time.Sleep(30 * time.Second)
+  fmt.Println("finished")
+}
+''');
+      final result = await GoToolchain(executable: sdk).execute(
+        action: GoToolAction.run,
+        projectPath: project.path,
+        entryFile: entry,
+      );
+      final started = Completer<void>();
+      final outputClosed = Completer<void>();
+      final output = <String>[];
+      final subscription = result.stdout.listen((line) {
+        output.add(line);
+        if (line == 'running' && !started.isCompleted) started.complete();
+      }, onDone: outputClosed.complete);
+      final errorsClosed = result.stderr.drain<void>();
+      var cancelled = false;
+      try {
+        await started.future.timeout(const Duration(seconds: 15));
+        await result.cancel!().timeout(const Duration(seconds: 5));
+        cancelled = true;
+        expect(await result.exitCode, isNot(0));
+        await Future.wait([
+          outputClosed.future,
+          errorsClosed,
+        ]).timeout(const Duration(seconds: 5));
+        expect(output, ['running']);
+      } finally {
+        if (!cancelled) await result.cancel!();
+        await subscription.cancel();
+      }
     },
     skip: !available,
   );
