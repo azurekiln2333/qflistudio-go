@@ -9,7 +9,7 @@
 7. [x] Rebuild all three Android and both OHOS runtime libraries with existing local SDKs. Inspect binary ABI/alignment and exercise native integration on available connected targets. Record unavailable platforms explicitly.
 8. [x] Run the full Go app Flutter suite with official SDK checks enabled, review the exact changed files independently and fix findings.
 9. [x] Update executable entry/terminal contracts, inspect narrow git scope and record final validation evidence.
-10. [ ] Finalize under the authorized 10-15 release-integrity-audit parent: native work committed as 4ace2f4, Dart/delegate commit and current platform validation follow; archive/journal after the parent verification gates. The earlier one-shot confirmation wait is superseded by the user's explicit implementation/commit instruction.
+10. [x] Finalize under the authorized 10-15 release-integrity-audit parent: native work committed as 4ace2f4, Dart/delegate as df2f46d, canonical formatting as 7502c08. Current full suite111/111, five native libraries and fresh Android/OHOS unsigned packages verified. Android API37/x86_64/16KB emulator integration5/5 and normal release restoration passed. Current OHOS signed install/FFI remains externally blocked; Android arm64 device execution is unverified. Parent research/release-validation.md is authoritative; archive/journal follow reviewed evidence commits. Earlier confirmation waits and historical device counts do not describe the current release state.
 
 ## Commands and resource limits
 

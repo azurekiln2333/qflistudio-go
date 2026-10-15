@@ -70,6 +70,8 @@ Flutter fork regenerates platform plugin registrations for the correct mode.
 | Five bundled native runtime rebuilds | Android 3 ABIs + OHOS 2 ABIs, exit 0 |
 | Final APK/HAP ELF packaging verifier | PASS, exit 0 |
 | Android `zipalign -c -P 16 4` | Exit 0 |
+| Android API37/x86_64/16 KB emulator, real bundled FFI + sandbox delegate integration | **5 cases passed**, driver exit 0 |
+| Normal release APK install/cold launch + five product pages + standalone terminal | PASS; product restored after integration target |
 
 Counts above overlap and are not summed into an invented total. Full 120-topic
 race/fuzz/Apple/Windows-native-UI device coverage is not claimed. The Windows host
@@ -77,8 +79,9 @@ ran actual official Go SDK compiler/process tests; iOS/Xcode was not available.
 
 The integration-test harness also now installs/restores the real Go profile and
 uses a marker file rather than buffered stdout to synchronize interruption.
-Targeted analysis passed after those corrections. Device execution remains a
-separate gate below.
+Targeted analysis passed after those corrections. The five Android emulator
+cases below executed that corrected harness; the extra reported teardown count
+is not counted as a sixth product test.
 
 ## Fresh final packages
 
@@ -109,16 +112,72 @@ not a result of this round.
 
 ## Device status
 
+- Android temporary read-only Pixel_10, `emulator-5580`, API37/x86_64,
+  `getconf PAGE_SIZE=16384`, `sys.boot_completed=1`: **five actual integration
+  cases passed**, `flutter drive` exit 0. The real bundled interpreter exercised
+  selected multi-file programs, main/worker panics and os.Exit, cancellation,
+  sandbox-delegate file/directory runs, helper diagnostics, unsupported-command
+  refusal and marker-synchronized terminal interruption. Command:
+
+  ```powershell
+  $env:ADB_SERVER_SOCKET='tcp:localhost:5039'
+  $env:ANDROID_ADB_SERVER_PORT='5039'
+  $env:ADB_MDNS_AUTO_CONNECT='0'
+  flutter drive --no-pub --use-application-binary .artifacts/release-integrity/packages/qfli-go-integration-debug.apk --target integration_test/go_native_test.dart --driver .artifacts/release-integrity/integration_driver.dart --no-keep-app-running -d emulator-5580
+  ```
+
+  Afterwards the retained normal release APK was installed with `adb -P 5039
+  -s emulator-5580 install -r`, and `am start -W -n
+  com.azurekiln.qfli.goshift/.MainActivity` returned `Status: ok`, `COLD`.
+  Package inspection confirmed version 1.0.0 and x86_64. Home, Tools, Tutorials,
+  Examples and Profile were captured and visually inspected; loaded examples
+  display 120, Tools/Profile expose local functions without account/Git/cloud
+  entry points. The standalone terminal opened and actual `go version` produced
+  the honest mobile `go run`-only explanation and **exit code 127**. The normal
+  product was returned to Home and force-stopped before handing over the
+  emulator. No Go crash appears in the retained crash buffer; its only process
+  is the image's repeatedly failing UWB system service.
+
+  Raw evidence: `android-device-tests.log`, `android-release-smoke.log`,
+  `android-release-{home,tools,tutorials,examples,profile}.png/.xml`,
+  `android-release-pages.png`, `android-release-terminal-command.png/.xml` and
+  `android-release-crash.log` under `.artifacts/release-integrity/`.
+  The original Home XML is named `android-release-ui.xml`.
+  The instance uses a separate private ADB server on 5039; the shared server
+  on 5037 and original AVD data were not reset. Global coordination seq48
+  explicitly hands emulator 5580 and its eventual cleanup to Rust after Go's
+  checks; Rust explicitly accepted that ownership/cleanup in seq49. No later
+  Go device operations are performed after that handoff.
 - Android OPD2413, Android 16/API36/arm64, direct endpoint
-  `192.168.68.236:35991`: five-case integration APK prebuilt. Queued behind the
-  existing Web/Python/SQL/Rust exclusive device windows; no Go installation or
-  UI action is performed before handoff. This entry will be updated with the
-  actual device outcome and product restoration evidence.
+  `192.168.68.236:35991`: **not executed this round**. Shared physical-device
+  ownership was respected; the emulator evidence above does not establish
+  arm64 real-device success. The packaged arm64 library passed build/ELF checks.
 - OHOS `192.168.68.207:46551`, OpenHarmony 7/API26/arm64: current signed Flutter
   install/test blocked by absent matching Go keystore/profile. Cross-compiled
   native test transfer succeeded but execution was denied (remote exit 126),
   then the exact remote temporary file was removed. No current OHOS device test
   success is claimed, and existing production data was left intact.
+
+## Closure and external release gates
+
+The integrity audit and its code/content deliveries are complete against
+AC1-AC6, including AC5's requirement to fix or record every discovered blocker.
+This is not a store-ready declaration. Remaining external release gates are:
+
+- Android production signing: the existing release configuration uses a debug
+  key. No replacement store key was generated or substituted.
+- Go-specific OHOS private key/certificate/profile: currently configured files
+  are absent and other products' available credentials do not match. Fresh
+  signed HAP/install/Flutter-FFI device execution remain blocked.
+- This round's Android arm64 real-device coverage remains unverified. Apple
+  builds/runs, all-topic race/fuzz and native desktop Flutter GUI coverage are
+  also not claimed.
+
+Source commits: `775c207` (OHOS startup), `96df3ad` (curriculum), `4ace2f4`
+(native/entry/build constraints), `df2f46d` (both terminals), `2b2fef6` (offline
+and import regressions), and `7502c08` (canonical formatting). Shared-core
+commits are listed above. Final review found no unresolved in-scope source
+defect; remaining conditions are recorded rather than converted into passes.
 
 ## Logs and preserved work
 

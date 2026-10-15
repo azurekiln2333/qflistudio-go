@@ -25,6 +25,6 @@
   ],
   "parent": null,
   "relatedFiles": [],
-  "notes": "",
+  "notes": "Audit deliveries complete; final validation evidence records 111 Go Flutter tests, 120 compiled/run curriculum topics, five Android API37 x86_64 16KB integration cases and normal release restoration. Android APK and fresh unsigned OHOS HAP built. External release gates remain Android production signing, matching Go OHOS signing/install/FFI device execution, and this round's Android arm64 device coverage. These are recorded limits under AC5, not claimed passes. See research/release-validation.md and research/ohos-signing.md.",
   "meta": {}
 }

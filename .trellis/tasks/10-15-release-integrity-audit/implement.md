@@ -16,10 +16,16 @@
 - [x] Run native go test -mod=vendor ./... and go vet -mod=vendor ./....
 - [x] Rebuild modified native runtime libraries for all bundled ABIs if necessary.
 - [x] Build Android APK and OHOS HAP; inspect native library packaging and alignment.
-- [ ] Run device integration tests on explicit adb/hdc targets where possible;
+- [x] Run device integration tests on explicit adb/hdc targets where possible;
   restore the normal product build after integration-test packages.
-- [ ] Complete final review, record artifacts/blockers, commit remaining reviewed
+- [x] Complete final review, record artifacts/blockers, commit remaining reviewed
   work and close linked Trellis tasks only when their acceptance criteria pass.
+
+Closure evidence: research/release-validation.md records five passing Android
+API37/x86_64/16KB emulator cases and normal release restoration. Android arm64
+real-device execution, Android production signing and current signed OHOS
+install/FFI execution are explicitly unverified or blocked; those release gates
+are not checked off as successful by completing this audit under PRD AC5.
 
 Build/device operations are serialized by main because other language workspaces
 may use the same toolchains/devices. Logs go under .artifacts/release-integrity;
