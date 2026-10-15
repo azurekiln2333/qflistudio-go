@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/native-go-runtime.md", "reason": "Native runtime and platform verification"}
+{"file": ".trellis/spec/frontend/content-code-import.md", "reason": "Shared content and import regressions"}

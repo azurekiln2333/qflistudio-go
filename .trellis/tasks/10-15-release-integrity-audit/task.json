@@ -1,0 +1,30 @@
+{
+  "id": "release-integrity-audit",
+  "name": "release-integrity-audit",
+  "title": "qfli_go release integrity audit",
+  "description": "Coordinate three existing Go-workspace Pi agents to verify terminals and toolchain, replace Go placeholder content, hide network entry points, and validate Android/OHOS release builds with scoped Conventional Commits.",
+  "status": "in_progress",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P1",
+  "creator": "lichengyu",
+  "assignee": "lichengyu",
+  "createdAt": "2026-10-15",
+  "completedAt": null,
+  "branch": "fix/go-release-integrity",
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "10-09-terminal-flow-pi",
+    "10-12-go-curriculum-pi",
+    "10-01-content-code-import"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}
