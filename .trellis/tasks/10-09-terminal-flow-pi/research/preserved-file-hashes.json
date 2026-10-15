@@ -1,0 +1,42 @@
+[
+  {
+    "Path": "lib/main.dart",
+    "Hash": "21DC687ECD8C8EE10C1A7C41EE8F092072FAAD0CC85D8E2088EA9CB0E2B215E2"
+  },
+  {
+    "Path": "ohos/build-profile.json5",
+    "Hash": "A2A7EADE5872BF388869BC648B4CD02D27EE6E2106A7653F625D87C9F5E3A02D"
+  },
+  {
+    "Path": "ohos/entry/src/main/ets/entryability/EntryAbility.ets",
+    "Hash": "13274CD2F171C9C88A6DF9404F621D47A28A66CC693F4BF18C89E413BBD9D68E"
+  },
+  {
+    "Path": "ohos/entry/src/main/ets/pages/Index.ets",
+    "Hash": "A1D1D0F5340688964FE46EB5D34614303B7709EFAF951EF385574E868C0EE8CD"
+  },
+  {
+    "Path": "ohos/entry/src/main/resources/base/profile/main_pages.json",
+    "Hash": "1D58665EC85629699EFB8F4E42129EBF888BF0EFB7343BA75366450CDA2F9B6F"
+  },
+  {
+    "Path": "ohos/entry/src/main/ets/pages/AgreementReader.ets",
+    "Hash": "31854C142F653B02C2C67143D746DDFCE9EE5ECC5060017EF48F70D88CE4B049"
+  },
+  {
+    "Path": "test/content_code_import_test.dart",
+    "Hash": "FB98862757F04ECE1247A95022E2353D545B0EAF84F739BE3D8B6E29826B0B74"
+  },
+  {
+    "Path": "test/native_startup_test.dart",
+    "Hash": "97080B02376A9E674245044F047A01BE0F4DDE142928993AB7A4FD0AAD9CE2E8"
+  },
+  {
+    "Path": ".gitattributes",
+    "Hash": "21A54DC664E1322746B269EC548277B864FA7790ADA789933B6FE9DF2A88B8F2"
+  },
+  {
+    "Path": "AGENTS.md",
+    "Hash": "6CACFE99748B435D0660C2463C697BC323D53798AECF3492283CA8EAC1B29682"
+  }
+]

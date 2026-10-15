@@ -1,0 +1,22 @@
+[
+  {
+    "Path": "D:\\MyNewProjects\\qfli_go\\android\\app\\src\\main\\jniLibs\\arm64-v8a\\libqfli_go_runtime.so",
+    "Hash": "0217617B6C9AFBA060795C4DE3FE2143CFF1C6DB5C9F1B8E776D5C1DCE846C2B"
+  },
+  {
+    "Path": "D:\\MyNewProjects\\qfli_go\\android\\app\\src\\main\\jniLibs\\armeabi-v7a\\libqfli_go_runtime.so",
+    "Hash": "8D300EADFC18C934D3EDA7B6905F121C4FD879A7B8246D27AFCD1EF56CF11C1B"
+  },
+  {
+    "Path": "D:\\MyNewProjects\\qfli_go\\android\\app\\src\\main\\jniLibs\\x86_64\\libqfli_go_runtime.so",
+    "Hash": "2F4A5CF0185F1BB71B8DDEAEECE6EB3EFE81D20A42D9E54FFF1FDFFCABB899D3"
+  },
+  {
+    "Path": "D:\\MyNewProjects\\qfli_go\\ohos\\entry\\libs\\arm64-v8a\\libqfli_go_runtime.so",
+    "Hash": "E1717B9966D4AEA30E1DD0EC7DBAACE6A25172A99C7AFF510C9970B03F96163E"
+  },
+  {
+    "Path": "D:\\MyNewProjects\\qfli_go\\ohos\\entry\\libs\\x86_64\\libqfli_go_runtime.so",
+    "Hash": "E0F879E594C433CE97701BA636AA9FAFBED72D91906C25659CBB13874D1E630A"
+  }
+]

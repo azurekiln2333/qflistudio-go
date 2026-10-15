@@ -76,5 +76,9 @@ does not mean the plugin is packaged in the release app.
 No durable product/Gradle/script change is required for this failure. Keep the
 test dependency as a dev dependency; keep the generated registrant ignored and
 uncommitted. Main owns the serialized metadata regeneration and actual build.
-The source inspection determines the repair path; release build success is
-pending that command's execution and is not claimed here.
+Coordinator validation: `flutter build apk --release --pub` subsequently exited
+0 and produced the current release APK. Package inspection verified all three
+runtime ABIs byte-for-byte against the rebuilt libraries, including 16 KB ELF
+LOAD alignment; `zipalign -c -P 16 4` also exited 0. A final product-entry rebuild
+is recorded separately in the release validation report so integration-test
+artifacts cannot be confused with the product APK.

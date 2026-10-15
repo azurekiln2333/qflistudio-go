@@ -1,0 +1,22 @@
+[
+  {
+    "Path": "android/app/src/main/jniLibs/arm64-v8a/libqfli_go_runtime.h",
+    "Hash": "A9F874A1D2D494C9097E2365362343341C546BC0E4668BE720EFDCF01543C017"
+  },
+  {
+    "Path": "android/app/src/main/jniLibs/armeabi-v7a/libqfli_go_runtime.h",
+    "Hash": "5633D0FA39F36F3438C8D5673BE9E7C06B4203513B8EC8E89B751D2D03F71B61"
+  },
+  {
+    "Path": "android/app/src/main/jniLibs/x86_64/libqfli_go_runtime.h",
+    "Hash": "A9F874A1D2D494C9097E2365362343341C546BC0E4668BE720EFDCF01543C017"
+  },
+  {
+    "Path": "ohos/entry/libs/arm64-v8a/libqfli_go_runtime.h",
+    "Hash": "A9F874A1D2D494C9097E2365362343341C546BC0E4668BE720EFDCF01543C017"
+  },
+  {
+    "Path": "ohos/entry/libs/x86_64/libqfli_go_runtime.h",
+    "Hash": "A9F874A1D2D494C9097E2365362343341C546BC0E4668BE720EFDCF01543C017"
+  }
+]
