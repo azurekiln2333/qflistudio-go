@@ -185,3 +185,39 @@ Completed scoped Go terminal/runtime, offline-policy and 120-topic curriculum au
 
 - Before store submission supply Android production signing and matching Go OHOS key/certificate/profile, then run current signed OHOS and Android arm64 physical-device gates. Do not substitute historical results.
 - Rust accepted temporary emulator5580/privateADB5039 ownership and cleanup via global channel seq49; no further Go device actions.
+
+
+## Session 6: Safe Android handoff to Dart and isolated Go test build
+<!-- trellis-session: v=2 fp=228489b7edaa1095 -->
+
+**Date**: 2026-10-15
+**Task**: Safe Android handoff to Dart and isolated Go test build
+**Branch**: `fix/go-release-integrity`
+
+### Summary
+
+Accepted Rust physical handoff, preserved installed Go app after signature mismatch, explicitly handed OPD2413 to Dart; isolated ARM64 test APK ready and queued.
+
+### Main Changes
+
+- Authoritative global channel Go release61/63 accepted by Dart64; Python coordinator confirmed no earlier reservation. Go has no device commands in flight.
+- Temporary applicationId override restored byte-for-byte; isolated integration APK hash d39c8ff9ace5679ec967e43a8fce0698cce8a0154f19a7f7ca2a8a0f9d661887; native ARM64 member matches prior verified runtime.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `e367769` | docs(android): record safe device handoff and isolated test build |
+
+### Testing
+
+- [OK] Physical preflight ARM64/API36/4096-byte pages; production-ID adb install-r failed UPDATE_INCOMPATIBLE with data preserved; not counted as passing integration.
+- [OK] Host isolated integration APK build exit0; package/Activity badging and native member hashes verified; no source change.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Wait for Dart coordinator explicit release before isolated Go ARM64 tests using manual install-r plus Flutter drive use-existing-app; do not uninstall or clear production data.
