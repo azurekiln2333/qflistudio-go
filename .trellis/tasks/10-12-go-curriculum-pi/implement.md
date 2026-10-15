@@ -1,5 +1,18 @@
 # Implementation plan — Go curriculum (120 tutorials + 120 examples)
 
+## Completed integration — 2026-10-15
+
+The earlier planning/approval preconditions below are historical and superseded
+by the user's explicit implementation and commit authorization under parent
+`10-15-release-integrity-audit`. All twelve ordered steps are complete.
+Go sources/tooling/tests are committed in `96df3ad`; shared aggregate integration
+is committed in core `8731df8`, preserving all 1520 non-Go entries per file byte
+for byte. Real compilation/assertions passed 120/120; assembly/dedup/semantic
+review passed; actual loaded Go curriculum tests passed 8/8. Four selected real
+race gates passed; full 120-topic race execution is not claimed. All topics
+remain honestly desktop-labelled until mobile topic verification occurs.
+See the parent `research/pi-curriculum.md` and tool README for current evidence.
+
 ## Preconditions
 
 - User approves the planning summary. C1 (shared write) is a permission boundary
