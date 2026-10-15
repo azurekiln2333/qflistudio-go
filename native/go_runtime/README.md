@@ -8,6 +8,16 @@ The mobile runtime vendors Yaegi at the version pinned in `go.mod`. The vendored
 - Transfer results through a channel so cancellation does not race with result
   assignment, and stop interpreted execution when the main task returns.
 
+The vendored `interp/build.go` also carries a build-constraint fix:
+
+- `buildOk` evaluates both the modern `//go:build` expression (via
+  `go/build/constraint`) and the legacy `// +build` lines, keeping the original
+  OR-of-options / AND-of-tags semantics and the `go1.x` release-tag comparison.
+  Upstream Yaegi only recognized `// +build`, so a mobile `go run` of a file
+  gated by `//go:build <disabled-tag>` wrongly executed it. The `//go:build`
+  expression takes precedence when both syntaxes are present, and an unparsable
+  expression is surfaced as a diagnostic instead of being silently ignored.
+
 The runtime's output buffers are synchronized because interpreted goroutines
 can write while a run is completing or being cancelled.
 

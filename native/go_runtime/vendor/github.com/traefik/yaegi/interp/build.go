@@ -1,8 +1,10 @@
 package interp
 
 import (
+	"errors"
 	"go/ast"
 	"go/build"
+	"go/build/constraint"
 	"go/parser"
 	"path"
 	"strconv"
@@ -18,32 +20,100 @@ func (interp *Interpreter) buildOk(ctx *build.Context, name, src string) (bool, 
 	if err != nil {
 		return false, err
 	}
-	for _, g := range f.Comments {
-		// in file, evaluate the AND of multiple line build constraints
-		for _, line := range strings.Split(strings.TrimSpace(g.Text()), "\n") {
-			if !buildLineOk(ctx, line) {
-				return false, nil
-			}
-		}
+	ok, err := buildConstraintsOk(ctx, f.Comments)
+	if err != nil {
+		return false, err
+	}
+	if !ok {
+		return false, nil
 	}
 	setYaegiTags(ctx, f.Comments)
 	return true, nil
 }
 
-// buildLineOk returns true if line is not a build constraint or
-// if build constraint is satisfied.
-func buildLineOk(ctx *build.Context, line string) (ok bool) {
-	if len(line) < 7 || line[:7] != "+build " {
-		return true
-	}
-	// In line, evaluate the OR of space-separated options
-	options := strings.Split(strings.TrimSpace(line[6:]), " ")
-	for _, o := range options {
-		if ok = buildOptionOk(ctx, o); ok {
-			break
+// buildConstraintsOk evaluates the build constraints declared by the package's
+// leading comment groups.
+//
+// Both constraint syntaxes are honored: the modern `//go:build` expression
+// (Go 1.17+) and the legacy `// +build` lines. When a file carries a
+// `//go:build` line it takes precedence, matching the go command, which treats
+// the two as equivalent and reads the expression form. Legacy files keep the
+// original semantics: the AND of multiple `// +build` lines, each the OR of
+// space-separated options, each option the AND of comma-separated tags.
+//
+// The comments are read from the raw `ast.Comment` text (which retains the
+// `//` marker) because constraint.Parse expects a full source line;
+// CommentGroup.Text strips the marker and would hide `//go:build`.
+//
+// An unparsable expression is returned as an error so a selected source surfaces
+// a real diagnostic instead of being silently included or excluded.
+func buildConstraintsOk(ctx *build.Context, comments []*ast.CommentGroup) (bool, error) {
+	var plusBuild []string
+	var goBuild string
+	for _, g := range comments {
+		for _, c := range g.List {
+			// Directive text inside a block comment is documentation, even if
+			// one of its lines starts with //go:build.
+			if !strings.HasPrefix(c.Text, "//") {
+				continue
+			}
+			switch {
+			case constraint.IsGoBuild(c.Text):
+				if goBuild != "" {
+					return false, errors.New("multiple //go:build comments")
+				}
+				goBuild = c.Text
+			case constraint.IsPlusBuild(c.Text):
+				plusBuild = append(plusBuild, c.Text)
+			}
 		}
 	}
-	return ok
+
+	tagOk := func(tag string) bool { return buildTagOk(ctx, tag) }
+
+	// A single `//go:build` expression wins over legacy `// +build` lines.
+	if goBuild != "" {
+		expr, err := constraint.Parse(goBuild)
+		if err != nil {
+			return false, err
+		}
+		return expr.Eval(tagOk), nil
+	}
+
+	// Legacy `// +build` lines: AND across lines, OR across space options,
+	// AND across comma-separated tags.
+	for _, line := range plusBuild {
+		if !buildPlusLineOk(ctx, line) {
+			return false, nil
+		}
+	}
+	return true, nil
+}
+
+// buildPlusLineOk returns true if a legacy `// +build` line is satisfied.
+//
+// Kept separate from the expression parser so the original option/tag semantics
+// (including the `go1.x` release-tag comparison) are preserved exactly.
+func buildPlusLineOk(ctx *build.Context, line string) bool {
+	if !constraint.IsPlusBuild(line) {
+		return true
+	}
+	// Drop the leading comment marker and the `+build` keyword.
+	body := strings.TrimSpace(line)
+	body = strings.TrimSpace(strings.TrimPrefix(body, "//"))
+	body = strings.TrimSpace(strings.TrimPrefix(body, "+build"))
+	// In line, evaluate the OR of space-separated options.
+	options := strings.Fields(body)
+	if len(options) == 0 {
+		// A bare `// +build` with no options excludes the file, matching go/build.
+		return false
+	}
+	for _, o := range options {
+		if buildOptionOk(ctx, o) {
+			return true
+		}
+	}
+	return false
 }
 
 // buildOptionOk return true if all comma separated tags match, false otherwise.
