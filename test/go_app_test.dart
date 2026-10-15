@@ -8,6 +8,15 @@ import 'package:qfli_studio_core/services/project_templates.dart';
 import 'package:qfli_studio_core/services/runner_service.dart';
 import 'package:qfli_studio_core/services/studio_profile.dart';
 
+final String _sdk = Platform.environment['QFLI_GO_TEST_EXECUTABLE'] ?? 'go';
+final bool _sdkAvailable = () {
+  try {
+    return Process.runSync(_sdk, ['version']).exitCode == 0;
+  } on ProcessException {
+    return false;
+  }
+}();
+
 /// Go 版 App 的接线测试。
 ///
 /// 覆盖的正是「一个语言一个 App」的全部接缝：内核怎么知道该显示哪个模板、
@@ -104,7 +113,7 @@ void main() {
 
   group('运行后端', () {
     test('本语言文件由 Go 工具链接管', () async {
-      write('main.go', '// 示例');
+      write('main.go', 'package main\nfunc main() {}\n');
       final result =
           await const GoProgramRunner(
             toolchain: GoToolchain(executable: '__missing_go_sdk__'),
@@ -118,6 +127,21 @@ void main() {
       expect(await result.exitCode, kProgramNotRunExitCode);
     });
 
+    test('无 main 的文件由编译器拒绝而不是回退到其它入口', () async {
+      write('main.go', 'package main\nfunc helper() {}\n');
+      // The no-main rejection is a real compile failure, so it needs the SDK.
+      final result =
+          await GoProgramRunner(toolchain: GoToolchain(executable: _sdk)).run(
+            projectPath: project.path,
+            entryFile: p.join(project.path, 'main.go'),
+          );
+      expect(result, isNotNull);
+      expect(result!.title, 'go run main.go');
+      expect(await result.stderr.join(), contains('main'));
+      expect(await result.stdout.join(), isEmpty);
+      expect(await result.exitCode, isNot(0));
+    }, skip: !_sdkAvailable);
+
     test('别的语言文件交回内核', () async {
       write('main.py', 'x');
       final result = await goProfile.runner!.run(
@@ -130,7 +154,7 @@ void main() {
 
   group('运行按钮分流', () {
     test('点运行由 Go 后端处理，不走通用兜底', () async {
-      write('main.go', '// 示例');
+      write('main.go', 'package main\nfunc main() {}\n');
       final result = await RunnerService.runProject(
         projectPath: project.path,
         entryFile: p.join(project.path, 'main.go'),

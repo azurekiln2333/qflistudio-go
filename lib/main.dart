@@ -15,6 +15,7 @@ import 'package:qfli_studio_core/store/settings_store.dart';
 
 import 'go_platform.dart';
 import 'go_runner.dart';
+import 'go_terminal_delegate.dart';
 
 /// 本 App 的产品名。窗口标题、任务切换器和应用内顶栏都读它。
 const String _appTitle = StudioProductCatalog.goShift;
@@ -39,6 +40,9 @@ final StudioProfile goProfile = StudioProfile(
   supportedFileExtensions: ['.go'],
   // main.go 排在默认入口表前面，保证本版一定先命中它。
   entryFileNames: ['main.go', 'src/main.go'],
+  // 终端命令挂钩：让内置终端能跑 go run/build/test/fmt/vet/mod 等命令，
+  // 复用运行按钮同一条工具链（桌面真实 SDK，移动端只承诺解释器支持的能力）。
+  terminalCommandDelegate: goTerminalCommandDelegate,
 );
 
 Future<void> main() async {

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'dart:isolate';
 
 import 'package:ffi/ffi.dart';
+import 'package:path/path.dart' as p;
 import 'package:qfli_studio_core/services/studio_profile.dart';
 
 typedef _RunNative =
@@ -45,7 +46,7 @@ Future<ProgramRunResult> runNativeGo({
       .whenComplete(() => finished = true);
 
   return ProgramRunResult(
-    title: '运行 Go',
+    title: 'go run ${p.basename(entryFile)}',
     stdout: response.asStream().expand(
       (result) => const LineSplitter().convert(result.stdout),
     ),
