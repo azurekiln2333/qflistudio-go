@@ -149,9 +149,14 @@ not a result of this round.
   checks; Rust explicitly accepted that ownership/cleanup in seq49. No later
   Go device operations are performed after that handoff.
 - Android OPD2413, Android 16/API36/arm64, direct endpoint
-  `192.168.68.236:35991`: **not executed this round**. Shared physical-device
-  ownership was respected; the emulator evidence above does not establish
-  arm64 real-device success. The packaged arm64 library passed build/ELF checks.
+  `192.168.68.236:35991`: **integration not executed yet**. A later explicitly
+  handed-off window allowed a safe install attempt, but `adb install -r`
+  refused the production-ID test APK because the existing Go package uses a
+  different signing identity. Production app/data were preserved, and the
+  window was explicitly released to Dart. An isolated package is built and
+  queued after Dart's release; see `android-arm64-followup.md`. The emulator
+  evidence does not establish arm64 real-device success. The packaged arm64
+  library passed build/ELF checks.
 - OHOS `192.168.68.207:46551`, OpenHarmony 7/API26/arm64: current signed Flutter
   install/test blocked by absent matching Go keystore/profile. Cross-compiled
   native test transfer succeeded but execution was denied (remote exit 126),
@@ -165,7 +170,9 @@ AC1-AC6, including AC5's requirement to fix or record every discovered blocker.
 This is not a store-ready declaration. Remaining external release gates are:
 
 - Android production signing: the existing release configuration uses a debug
-  key. No replacement store key was generated or substituted.
+  key. The currently installed physical Go app also has a different signing
+  identity, so this build cannot replace it while preserving data. No
+  replacement store key was generated or substituted.
 - Go-specific OHOS private key/certificate/profile: currently configured files
   are absent and other products' available credentials do not match. Fresh
   signed HAP/install/Flutter-FFI device execution remain blocked.
