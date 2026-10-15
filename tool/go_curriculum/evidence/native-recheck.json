@@ -1,0 +1,38 @@
+[
+  {
+    "topic": "T047",
+    "stdout": "normal total: 100\n",
+    "stderr": "src/qfli-project/main.go:60:14: panic: qfli-project.main(...)\nreflect.Set: value of type interp.valueInterface is not assignable to type struct {}\n",
+    "exit": 1
+  },
+  {
+    "topic": "T052",
+    "stdout": "Is ErrPermission: true\n",
+    "stderr": "src/qfli-project/main.go:32:9: panic: qfli-project.main(...)\nerrors: *target must be interface or implement error\n",
+    "exit": 1
+  },
+  {
+    "topic": "T053",
+    "stdout": "text: query \"SELECT 1\" failed: timeout\nIs ErrTimeout: false\n",
+    "stderr": "src/qfli-project/main.go:32:9: panic: qfli-project.main(...)\nerrors: *target must be interface or implement error\n",
+    "exit": 1
+  },
+  {
+    "topic": "T088",
+    "stdout": "alpha.txt  file size=1\nbeta.txt   file size=2\nsub        dir\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T096",
+    "stdout": "Inventory for warehouse-a:\n- bolt x100 (in stock)\n- nut x0 (out of stock)\nTotal lines: 2\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T116",
+    "stdout": "level=INFO msg=\"server starting\" addr=127.0.0.1:8080 pid=1\nlevel=WARN msg=\"slow query\" component=db ms=120\n{\"level\":\"ERROR\",\"msg\":\"failed to connect\",\"host\":\"db1\"}\nlevel=INFO msg=\"shutdown complete\"\n",
+    "stderr": "",
+    "exit": 0
+  }
+]

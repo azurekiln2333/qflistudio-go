@@ -1,0 +1,70 @@
+{
+  "id": "T020",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "base [1 99 3 4 5]\nview [99 3]\nappended [99 3 100]\nbase after append [1 99 3 100 5]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-020",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "切片二：截取、append 与共享底层数组",
+    "summary": "理解截取得到的切片与源共享底层数组，以及 append 可能写回共享数组的陷阱。",
+    "concepts": [
+      "切片",
+      "截取",
+      "共享底层数组",
+      "append"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能预测截取与 append 对共享底层数组的影响，并说明何时需要复制。",
+    "prerequisites": [
+      "T019 切片与容量"
+    ],
+    "pitfalls": [
+      "认为截取是拷贝：base[1:3] 与原切片共享底层数组，通过任一方修改都会互相可见。",
+      "忽视 append 的写回：当截取切片容量足够时，append 直接写入共享数组，可能覆盖源切片中未预期的元素。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在 append 前用 full slice expression base[1:3:3] 限制容量，观察 base 是否还被改动。",
+        "hint": "三索引切片把容量限制为 3-1=2，append 必须重新分配。",
+        "answer": "限制容量后 append 触发扩容、写入新数组，base 不再被覆盖。"
+      }
+    ],
+    "explain": "切片截取 base[low:high] 产生的新切片与原切片共享同一底层数组，只改变起点与长度。因此通过 view 修改元素会反映到 base，样例里 view[0]=99 让 base[1] 也变成 99。\n\n更隐蔽的是 append：view 的容量延伸到 base 末尾，当 append 未超出容量时会直接写入共享数组，覆盖 base 中紧随其后的元素。样例中 append(view, 100) 因容量足够而把 100 写到 base 的位置 3，于是 base 变成 [1 99 3 100 5]。要避免这种别名影响，可用三索引切片限制容量或显式复制。\n\n本样例演示截取共享、通过视图修改以及 append 写回。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tbase := []int{1, 2, 3, 4, 5}\n\tview := base[1:3] // 与 base 共享底层数组\n\tview[0] = 99\n\tfmt.Println(\"base\", base)\n\tfmt.Println(\"view\", view)\n\n\tappended := append(view, 100) // 容量足够时写回共享数组\n\tfmt.Println(\"appended\", appended)\n\tfmt.Println(\"base after append\", base)\n}\n",
+    "output": "base [1 99 3 4 5]\nview [99 3]\nappended [99 3 100]\nbase after append [1 99 3 100 5]"
+  },
+  "example": {
+    "id": "go-example-020",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "截取与 append 的共享陷阱",
+    "summary": "演示截取共享底层数组以及 append 写回源切片。",
+    "concepts": [
+      "切片",
+      "截取",
+      "共享底层数组",
+      "append"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tbase := []int{1, 2, 3, 4, 5}\n\tview := base[1:3] // 与 base 共享底层数组\n\tview[0] = 99\n\tfmt.Println(\"base\", base)\n\tfmt.Println(\"view\", view)\n\n\tappended := append(view, 100) // 容量足够时写回共享数组\n\tfmt.Println(\"appended\", appended)\n\tfmt.Println(\"base after append\", base)\n}\n",
+    "expectedOutput": "base [1 99 3 4 5]\nview [99 3]\nappended [99 3 100]\nbase after append [1 99 3 100 5]",
+    "templateType": "go"
+  }
+}

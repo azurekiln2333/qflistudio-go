@@ -1,0 +1,71 @@
+{
+  "id": "T100",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "go.mod",
+    "server_test.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-100",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "net/http 服务端：Handler 与路由",
+    "summary": "用 http.ServeMux 注册路由，并用 httptest.NewRecorder 直接测试 Handler。",
+    "concepts": [
+      "http.ServeMux",
+      "HandlerFunc",
+      "httptest",
+      "路由"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 ServeMux 注册路由并用 httptest 检查响应，无需真正监听端口。",
+    "prerequisites": [
+      "T099 net/http 客户端：GET 与响应处理"
+    ],
+    "pitfalls": [
+      "把 Mux 直接写在 main 里：难以测试；应抽成 NewMux() 返回路由便于复用。",
+      "在 Handler 里 panic 不处理：会中断服务，需恢复中间件兜底（见 T103）。"
+    ],
+    "exercises": [
+      {
+        "prompt": "新增 /echo 路由回显查询参数 name。",
+        "hint": "r.URL.Query().Get(\"name\")。",
+        "answer": "mux.HandleFunc(\"/echo\", func(w,r){ io.WriteString(w, r.URL.Query().Get(\"name\")) })。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、server_test.go。运行命令：go test ./...。http.ServeMux 把路径前缀映射到 Handler。http.HandlerFunc 让普通函数满足 Handler 接口。示例把路由抽成 NewMux() 返回 *ServeMux，测试时用 httptest.NewRequest 构造请求、httptest.NewRecorder 捕获响应，直接调用 mux.ServeHTTP——完全离线、不占端口、结果确定。断言路径 /hello 与 /bye 的状态码与响应体。test-package 工程例子，go test 运行，desktop only（移动端 net 未实测）。",
+    "code": "// T100 net/http 服务端：Handler 与路由。\n//\n// http.ServeMux 把路径映射到 Handler。用 httptest.NewRecorder 可以在不\n// 真正监听端口的情况下直接调用 Handler 并检查响应，因此测试离线且确定。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpserver/\n//   ├── go.mod         // module httpserver\\n\\ngo 1.27\n//   └── server_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage httpserver\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// NewMux 构造路由表，便于测试直接复用。\nfunc NewMux() *http.ServeMux {\n\tmux := http.NewServeMux()\n\tmux.HandleFunc(\"/hello\", func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = io.WriteString(w, \"hello\")\n\t})\n\tmux.HandleFunc(\"/bye\", func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = io.WriteString(w, \"bye\")\n\t})\n\treturn mux\n}\n\nfunc TestRoutes(t *testing.T) {\n\tmux := NewMux()\n\tcases := []struct {\n\t\tpath string\n\t\twant string\n\t}{\n\t\t{\"/hello\", \"hello\"},\n\t\t{\"/bye\", \"bye\"},\n\t}\n\tfor _, c := range cases {\n\t\treq := httptest.NewRequest(http.MethodGet, c.path, nil)\n\t\trec := httptest.NewRecorder()\n\t\tmux.ServeHTTP(rec, req)\n\t\tif rec.Code != http.StatusOK {\n\t\t\tt.Fatalf(\"%s status = %d\", c.path, rec.Code)\n\t\t}\n\t\tif got := rec.Body.String(); got != c.want {\n\t\t\tt.Fatalf(\"%s body = %q, want %q\", c.path, got, c.want)\n\t\t}\n\t}\n}\n",
+    "output": "ok  \tqfli.example/t100\t0.003s"
+  },
+  "example": {
+    "id": "go-example-100",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "net/http 服务端：Handler 与路由（示例）",
+    "summary": "对应主题 T100 的可运行示例。",
+    "concepts": [
+      "http.ServeMux",
+      "HandlerFunc",
+      "httptest",
+      "路由"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T100 net/http 服务端：Handler 与路由。\n//\n// http.ServeMux 把路径映射到 Handler。用 httptest.NewRecorder 可以在不\n// 真正监听端口的情况下直接调用 Handler 并检查响应，因此测试离线且确定。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpserver/\n//   ├── go.mod         // module httpserver\\n\\ngo 1.27\n//   └── server_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage httpserver\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// NewMux 构造路由表，便于测试直接复用。\nfunc NewMux() *http.ServeMux {\n\tmux := http.NewServeMux()\n\tmux.HandleFunc(\"/hello\", func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = io.WriteString(w, \"hello\")\n\t})\n\tmux.HandleFunc(\"/bye\", func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = io.WriteString(w, \"bye\")\n\t})\n\treturn mux\n}\n\nfunc TestRoutes(t *testing.T) {\n\tmux := NewMux()\n\tcases := []struct {\n\t\tpath string\n\t\twant string\n\t}{\n\t\t{\"/hello\", \"hello\"},\n\t\t{\"/bye\", \"bye\"},\n\t}\n\tfor _, c := range cases {\n\t\treq := httptest.NewRequest(http.MethodGet, c.path, nil)\n\t\trec := httptest.NewRecorder()\n\t\tmux.ServeHTTP(rec, req)\n\t\tif rec.Code != http.StatusOK {\n\t\t\tt.Fatalf(\"%s status = %d\", c.path, rec.Code)\n\t\t}\n\t\tif got := rec.Body.String(); got != c.want {\n\t\t\tt.Fatalf(\"%s body = %q, want %q\", c.path, got, c.want)\n\t\t}\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

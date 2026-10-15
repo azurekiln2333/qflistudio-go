@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "goTutorialCount": 120,
+  "goExampleCount": 120,
+  "slices": [
+    "go-tutorials.json",
+    "go-examples.json"
+  ],
+  "targets": {
+    "tutorials.json": "go-tutorials.json",
+    "examples.json": "go-examples.json"
+  }
+}

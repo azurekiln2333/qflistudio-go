@@ -1,0 +1,69 @@
+{
+  "id": "T027",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "0 1 1 2 3 5 8\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-027",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "递归与记忆化",
+    "summary": "用递归表达分治，并用缓存把指数复杂度降到线性。",
+    "concepts": [
+      "递归",
+      "记忆化",
+      "map 缓存"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能写出递归函数，并用 map 缓存消除重复子问题。",
+    "prerequisites": [
+      "T022 映射",
+      "T025 高阶函数"
+    ],
+    "pitfalls": [
+      "无终止条件的递归会栈溢出：递归必须有能收敛到基准情形（n<2）的分支。",
+      "缓存键或命中逻辑写错：若忘记先查缓存直接递归，就会退化为指数复杂度。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把缓存改成局部 map 并在每次调用内重建，观察是否仍能加速并解释。",
+        "hint": "局部缓存只在单次顶层调用内复用。",
+        "answer": "局部缓存仍能在一条递归树内复用子结果，但跨顶层调用不复用；要跨调用复用需函数级或包级缓存。"
+      }
+    ],
+    "explain": "递归把问题拆成同类子问题，斐波那契是经典例子：fib(n)=fib(n-1)+fib(n-2)，基准情形 n<2 直接返回 n。朴素递归会重复计算同一子问题，复杂度指数级。\n\n记忆化用一个 map 缓存已算出的结果：进入函数先查缓存，命中即返回；否则算出后写入。样例用包级 memo，使结果在多次顶层调用间也复用。代价是缓存会占用内存且需注意并发安全（本样例单协程执行）。\n\n本样例打印 fib(0..6)。",
+    "code": "package main\n\nimport \"fmt\"\n\nvar memo = map[int]int{}\n\nfunc fib(n int) int {\n\tif n < 2 {\n\t\treturn n\n\t}\n\tif v, ok := memo[n]; ok {\n\t\treturn v\n\t}\n\tv := fib(n-1) + fib(n-2)\n\tmemo[n] = v\n\treturn v\n}\n\nfunc main() {\n\tfor i := 0; i < 7; i++ {\n\t\tfmt.Print(fib(i), \" \")\n\t}\n\tfmt.Println()\n}\n",
+    "output": "0 1 1 2 3 5 8"
+  },
+  "example": {
+    "id": "go-example-027",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "记忆化斐波那契",
+    "summary": "用缓存计算并打印前若干项斐波那契数。",
+    "concepts": [
+      "递归",
+      "记忆化",
+      "map 缓存"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc fib(n int) int {\n\tif n < 2 {\n\t\treturn n\n\t}\n\treturn fib(n-1) + fib(n-2)\n}\n\nfunc main() {\n\tfmt.Printf(\"fib(10)=%d\\n\", fib(10))\n}\n",
+    "expectedOutput": "fib(10)=55",
+    "templateType": "go"
+  }
+}

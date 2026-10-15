@@ -1,0 +1,70 @@
+{
+  "id": "T019",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "start len=0 cap=2\nafter 1: len=1 cap=2\nafter 2: len=2 cap=2\nafter 3: len=3 cap=4\nafter 4: len=4 cap=4\nafter 5: len=5 cap=8\nvalues [1 2 3 4 5]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-019",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "切片一：创建、长度与容量",
+    "summary": "用 make 与字面量创建切片，观察 append 过程中 len 与 cap 的变化。",
+    "concepts": [
+      "切片",
+      "len",
+      "cap",
+      "append"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能解释切片的长度与容量差异，并预测 append 触发扩容的时机。",
+    "prerequisites": [
+      "T018 数组"
+    ],
+    "pitfalls": [
+      "认为 len 与 cap 总是相等：len 是当前元素数，cap 是从切片起点到底层数组末尾的可用数，扩容前二者常不同。",
+      "依赖具体的增长因子：扩容策略是运行时实现细节，不应在代码中假设 cap 每次翻倍。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把初始容量从 2 改成 3，重新预测 len/cap 变化点。",
+        "hint": "容量决定第几次 append 触发重新分配。",
+        "answer": "初始 cap=3 时前三次 append 不扩容，第 4 次才扩容，变化点整体后移。"
+      }
+    ],
+    "explain": "切片是对底层数组的视图，由指针、长度、容量三部分组成。make([]int, 0, 2) 创建一个长度 0、容量 2 的切片；append 在长度未超容量时直接写入底层数组，超出时会分配更大的数组并拷贝。样例打印每一步的 len 与 cap，可以清楚看到容量在不等于长度时仍有余量、以及扩容发生在超出容量的那一刻。\n\n扩容的具体增长因子属于运行时实现细节，不同版本可能不同，因此程序不应依赖某个固定的翻倍规律。为已知规模的数据预分配容量（make 的第三个参数）是减少拷贝的常见优化。\n\n本样例从 cap=2 起步，逐次 append 并打印 len/cap。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := make([]int, 0, 2)\n\tfmt.Printf(\"start len=%d cap=%d\\n\", len(s), cap(s))\n\tfor i := 1; i <= 5; i++ {\n\t\ts = append(s, i)\n\t\tfmt.Printf(\"after %d: len=%d cap=%d\\n\", i, len(s), cap(s))\n\t}\n\tfmt.Println(\"values\", s)\n}\n",
+    "output": "start len=0 cap=2\nafter 1: len=1 cap=2\nafter 2: len=2 cap=2\nafter 3: len=3 cap=4\nafter 4: len=4 cap=4\nafter 5: len=5 cap=8\nvalues [1 2 3 4 5]"
+  },
+  "example": {
+    "id": "go-example-019",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "append 与容量增长",
+    "summary": "从固定容量起步 append，观察 len/cap 何时变化。",
+    "concepts": [
+      "切片",
+      "len",
+      "cap",
+      "append"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := make([]int, 0, 2)\n\tfmt.Printf(\"start len=%d cap=%d\\n\", len(s), cap(s))\n\tfor i := 1; i <= 5; i++ {\n\t\ts = append(s, i)\n\t\tfmt.Printf(\"after %d: len=%d cap=%d\\n\", i, len(s), cap(s))\n\t}\n\tfmt.Println(\"values\", s)\n}\n",
+    "expectedOutput": "start len=0 cap=2\nafter 1: len=1 cap=2\nafter 2: len=2 cap=2\nafter 3: len=3 cap=4\nafter 4: len=4 cap=4\nafter 5: len=5 cap=8\nvalues [1 2 3 4 5]",
+    "templateType": "go"
+  }
+}

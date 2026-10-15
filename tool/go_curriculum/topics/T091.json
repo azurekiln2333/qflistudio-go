@@ -1,0 +1,70 @@
+{
+  "id": "T091",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "event 1: type=start code=1\nevent 2: type=tick code=2\nevent 3: type=stop code=3\ndecoded events: 3\nstrict decode rejected unknown field: true"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-091",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "JSON 三：流式 Decoder/Encoder 与 unknown 字段",
+    "summary": "用 json.Decoder 连续解码多个 JSON 对象，并用严格模式拒绝未知字段。",
+    "concepts": [
+      "json.Decoder",
+      "流式解码",
+      "DisallowUnknownFields",
+      "NDJSON"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 Decoder 处理多值 JSON 流，并用 DisallowUnknownFields 做严格校验。",
+    "prerequisites": [
+      "T089 JSON 一：Marshal/Unmarshal 基础"
+    ],
+    "pitfalls": [
+      "对 JSON 流用 Unmarshal：它只解第一个值，剩余被忽略。",
+      "严格模式在 schema 演进时会误报：新增字段需同步更新结构体。"
+    ],
+    "exercises": [
+      {
+        "prompt": "用 Encoder 把多个 Event 依次写入 bytes.Buffer，再用 Decoder 读回。",
+        "hint": "json.NewEncoder(w).Encode(e) 每次写一个 JSON 值。",
+        "answer": "循环 Encode 到 buffer，再 NewDecoder 循环 Decode 直到 EOF。"
+      }
+    ],
+    "explain": "json.Decoder 从 Reader 连续解码，适合 NDJSON（每行一个 JSON）或流式响应；Decoder.More() 判断是否还有值。示例从一段含三个对象的流中逐个解码，其中第二个带未知字段 extra，默认会被忽略，因此成功。随后用 DisallowUnknownFields 打开严格模式，同样的未知字段会报错。这组对照说明：默认宽松便于兼容演进，严格模式便于及早发现拼写错误或契约违背。",
+    "code": "// T091 JSON 三：流式 Decoder/Encoder 与未知字段。\n//\n// json.Decoder 可以连续解码一个流中的多个 JSON 值（如 NDJSON），\n// 比 Unmarshal 更适合逐步读取；Decoder.DisallowUnknownFields 会让\n// 未知字段报错，便于严格校验。\n// 本示例演示：连续解码多个对象、忽略未知字段（默认行为）。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Event 是流中的一个事件对象。\ntype Event struct {\n\tType string `json:\"type\"`\n\tCode int    `json:\"code\"`\n}\n\nfunc main() {\n\t// 一个\"流\"里包含三个 JSON 对象，其中第二个还有未知字段 extra。\n\tstream := `{\"type\":\"start\",\"code\":1}\n{\"type\":\"tick\",\"code\":2,\"extra\":\"ignored\"}\n{\"type\":\"stop\",\"code\":3}`\n\n\tdec := json.NewDecoder(strings.NewReader(stream))\n\tcount := 0\n\tfor dec.More() {\n\t\tvar e Event\n\t\t// 默认忽略未知字段，因此第二行能成功解码。\n\t\tif err := dec.Decode(&e); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tcount++\n\t\tfmt.Printf(\"event %d: type=%s code=%d\\n\", count, e.Type, e.Code)\n\t}\n\tfmt.Println(\"decoded events:\", count)\n\n\t// 严格模式：未知字段会报错。\n\tstrict := json.NewDecoder(strings.NewReader(`{\"type\":\"x\",\"code\":9,\"bogus\":true}`))\n\tstrict.DisallowUnknownFields()\n\tvar e Event\n\terr := strict.Decode(&e)\n\tfmt.Println(\"strict decode rejected unknown field:\", err != nil)\n}\n",
+    "output": "event 1: type=start code=1\nevent 2: type=tick code=2\nevent 3: type=stop code=3\ndecoded events: 3\nstrict decode rejected unknown field: true"
+  },
+  "example": {
+    "id": "go-example-091",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "JSON 三：流式 Decoder/Encoder 与 unknown 字段（示例）",
+    "summary": "对应主题 T091 的可运行示例。",
+    "concepts": [
+      "json.Decoder",
+      "流式解码",
+      "DisallowUnknownFields",
+      "NDJSON"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T091 JSON 三：流式 Decoder/Encoder 与未知字段。\n//\n// json.Decoder 可以连续解码一个流中的多个 JSON 值（如 NDJSON），\n// 比 Unmarshal 更适合逐步读取；Decoder.DisallowUnknownFields 会让\n// 未知字段报错，便于严格校验。\n// 本示例演示：连续解码多个对象、忽略未知字段（默认行为）。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Event 是流中的一个事件对象。\ntype Event struct {\n\tType string `json:\"type\"`\n\tCode int    `json:\"code\"`\n}\n\nfunc main() {\n\t// 一个\"流\"里包含三个 JSON 对象，其中第二个还有未知字段 extra。\n\tstream := `{\"type\":\"start\",\"code\":1}\n{\"type\":\"tick\",\"code\":2,\"extra\":\"ignored\"}\n{\"type\":\"stop\",\"code\":3}`\n\n\tdec := json.NewDecoder(strings.NewReader(stream))\n\tcount := 0\n\tfor dec.More() {\n\t\tvar e Event\n\t\t// 默认忽略未知字段，因此第二行能成功解码。\n\t\tif err := dec.Decode(&e); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tcount++\n\t\tfmt.Printf(\"event %d: type=%s code=%d\\n\", count, e.Type, e.Code)\n\t}\n\tfmt.Println(\"decoded events:\", count)\n\n\t// 严格模式：未知字段会报错。\n\tstrict := json.NewDecoder(strings.NewReader(`{\"type\":\"x\",\"code\":9,\"bogus\":true}`))\n\tstrict.DisallowUnknownFields()\n\tvar e Event\n\terr := strict.Decode(&e)\n\tfmt.Println(\"strict decode rejected unknown field:\", err != nil)\n}\n",
+    "expectedOutput": "event 1: type=start code=1\nevent 2: type=tick code=2\nevent 3: type=stop code=3\ndecoded events: 3\nstrict decode rejected unknown field: true",
+    "templateType": "go"
+  }
+}

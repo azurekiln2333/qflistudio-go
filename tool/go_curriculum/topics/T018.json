@@ -1,0 +1,68 @@
+{
+  "id": "T018",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "a [1 2 3]\nb [99 2 3]\nlen 3\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-018",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "数组：定长与值语义",
+    "summary": "理解数组长度是类型的一部分，赋值与传参都会整体拷贝。",
+    "concepts": [
+      "数组",
+      "值语义",
+      "定长"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能说明数组与切片的区别，并演示赋值数组产生独立副本。",
+    "prerequisites": [
+      "T003 变量与零值"
+    ],
+    "pitfalls": [
+      "把数组当引用传递：Go 数组是值语义，函数收到的是拷贝，修改参数不影响原数组；需要共享要用切片或指针。",
+      "忽略长度是类型的一部分：[3]int 与 [4]int 是不同类型，不能相互赋值。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把数组长度从 3 改成 4，观察哪些地方需要同步修改，并解释原因。",
+        "hint": "长度是类型的一部分，字面量与声明都要一致。",
+        "answer": "声明与字面量都必须改为 [4]int，否则类型不匹配编译失败。"
+      }
+    ],
+    "explain": "数组是定长且值语义的：长度写在类型里（[3]int），赋值或传参时整个数组被拷贝。因此 b := a 之后修改 b 不会影响 a，样例正演示了这一点。\n\n因为长度是类型的一部分，[3]int 与 [4]int 不能互相赋值。多数场景使用切片更合适，数组更适合长度固定、需要值语义的小数据。\n\n本样例构造 [3]int 并拷贝后修改，对比两个数组的内容。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ta := [3]int{1, 2, 3}\n\tb := a // 数组是值语义：整体拷贝\n\tb[0] = 99\n\tfmt.Println(\"a\", a)\n\tfmt.Println(\"b\", b)\n\tfmt.Println(\"len\", len(a))\n}\n",
+    "output": "a [1 2 3]\nb [99 2 3]\nlen 3"
+  },
+  "example": {
+    "id": "go-example-018",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "数组拷贝",
+    "summary": "演示数组赋值产生独立副本，修改副本不影响原数组。",
+    "concepts": [
+      "数组",
+      "值语义",
+      "定长"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ta := [3]int{1, 2, 3}\n\tb := a // 数组是值语义：整体拷贝\n\tb[0] = 99\n\tfmt.Println(\"a\", a)\n\tfmt.Println(\"b\", b)\n\tfmt.Println(\"len\", len(a))\n}\n",
+    "expectedOutput": "a [1 2 3]\nb [99 2 3]\nlen 3",
+    "templateType": "go"
+  }
+}

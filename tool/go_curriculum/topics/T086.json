@@ -1,0 +1,70 @@
+{
+  "id": "T086",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "read back:\nline one\nline two\nsize matches: true"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-086",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "文件读写：os.Open/Create 与缓冲",
+    "summary": "在临时目录安全创建、写入、关闭、读回文件，并校验字节数。",
+    "concepts": [
+      "os.Create",
+      "os.ReadFile",
+      "Close",
+      "临时目录"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能正确打开/写入/关闭并读回文件，说明写后 Close 的必要性。",
+    "prerequisites": [
+      "T085 io.Reader / io.Writer 抽象"
+    ],
+    "pitfalls": [
+      "写后不 Close：数据可能未落盘，且句柄泄漏。",
+      "在仓库工作目录写文件：污染工作区；应用 os.MkdirTemp 并 defer RemoveAll。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把内容按行追加到文件而非覆盖，并读回验证行数。",
+        "hint": "用 os.OpenFile 带 os.O_APPEND。",
+        "answer": "os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o644)。"
+      }
+    ],
+    "explain": "文件读写是 IO 的常见场景。示例先用 os.MkdirTemp 建立隔离的临时目录并 defer RemoveAll，避免污染工作目录；再用 os.Create 写入内容，随后 Close——Close 不仅释放句柄，也保证缓冲数据落盘。读回用 os.ReadFile 一次性读入，并用 os.Stat 校验字节数，作为确定性断言。这些习惯（隔离目录、及时关闭、校验结果）是可重复、可测试文件操作的基础。移动端文件系统能力未实测，标 Yaegi*（待实测），默认 desktop。",
+    "code": "// T086 文件读写：os.Open/Create 与缓冲。\n//\n// 本示例在系统临时目录里创建文件，写入内容后读回，最后清理。\n// 使用 os.CreateTemp 得到唯一路径，避免污染工作目录；\n// 关键习惯：写后 Close 才能保证数据落盘，读前也用 defer Close。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n)\n\nfunc main() {\n\tdir, err := os.MkdirTemp(\"\", \"qfli-t086-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\t// defer 保证函数退出时清理整个临时目录。\n\tdefer os.RemoveAll(dir)\n\n\tpath := filepath.Join(dir, \"notes.txt\")\n\n\t// 写入：os.Create 会截断或新建文件。\n\tf, err := os.Create(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tcontent := \"line one\\nline two\\n\"\n\tif _, err := f.WriteString(content); err != nil {\n\t\tf.Close()\n\t\tpanic(err)\n\t}\n\t// Close 必须在再次打开前调用，否则缓冲/句柄状态不一致。\n\tif err := f.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\n\t// 读取：os.ReadFile 一次性读入。\n\tdata, err := os.ReadFile(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"read back:\")\n\tfmt.Print(string(data))\n\n\t// 校验字节数，作为确定性断言。\n\tinfo, _ := os.Stat(path)\n\tfmt.Println(\"size matches:\", int(info.Size()) == len(content))\n}\n",
+    "output": "read back:\nline one\nline two\nsize matches: true"
+  },
+  "example": {
+    "id": "go-example-086",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "文件读写：os.Open/Create 与缓冲（示例）",
+    "summary": "对应主题 T086 的可运行示例。",
+    "concepts": [
+      "os.Create",
+      "os.ReadFile",
+      "Close",
+      "临时目录"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T086 文件读写：os.Open/Create 与缓冲。\n//\n// 本示例在系统临时目录里创建文件，写入内容后读回，最后清理。\n// 使用 os.CreateTemp 得到唯一路径，避免污染工作目录；\n// 关键习惯：写后 Close 才能保证数据落盘，读前也用 defer Close。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n)\n\nfunc main() {\n\tdir, err := os.MkdirTemp(\"\", \"qfli-t086-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\t// defer 保证函数退出时清理整个临时目录。\n\tdefer os.RemoveAll(dir)\n\n\tpath := filepath.Join(dir, \"notes.txt\")\n\n\t// 写入：os.Create 会截断或新建文件。\n\tf, err := os.Create(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tcontent := \"line one\\nline two\\n\"\n\tif _, err := f.WriteString(content); err != nil {\n\t\tf.Close()\n\t\tpanic(err)\n\t}\n\t// Close 必须在再次打开前调用，否则缓冲/句柄状态不一致。\n\tif err := f.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\n\t// 读取：os.ReadFile 一次性读入。\n\tdata, err := os.ReadFile(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"read back:\")\n\tfmt.Print(string(data))\n\n\t// 校验字节数，作为确定性断言。\n\tinfo, _ := os.Stat(path)\n\tfmt.Println(\"size matches:\", int(info.Size()) == len(content))\n}\n",
+    "expectedOutput": "read back:\nline one\nline two\nsize matches: true",
+    "templateType": "go"
+  }
+}

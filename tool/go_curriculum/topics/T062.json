@@ -1,0 +1,73 @@
+{
+  "id": "T062",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string](\"pear\", \"apple\") = apple\nMax[float64](2.5, 1.5) = 2.5"
+  },
+  "sampleFiles": [
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-062",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "泛型一：类型参数与约束",
+    "summary": "用类型参数与 cmp.Ordered 约束编写一份可服务多种类型的 Min/Max。",
+    "concepts": [
+      "泛型",
+      "类型参数",
+      "约束",
+      "cmp.Ordered"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能声明带类型参数的函数并为其指定约束，说明泛型在编译期如何实例化。",
+    "prerequisites": [
+      "T023 函数签名、多返回值与命名返回",
+      "T041 接口基础与鸭子类型"
+    ],
+    "pitfalls": [
+      "把任何类型都塞进 any：失去 < 比较能力，编译失败；应使用 cmp.Ordered 之类的约束。",
+      "以为泛型有运行期类型信息：Go 泛型在编译期为每个实例化类型生成代码，运行期没有“泛型擦除”这回事。",
+      "忘记泛型需要 Go 1.18+，且本项目移动端 Yaegi 未实测支持——本主题标记为 desktop only。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 Min 增加第三个参数（三值取最小），并为 []int 实现一个泛型 SliceMin。",
+        "hint": "同一约束函数体里可以反复使用 < 比较。",
+        "answer": "func Min3[T cmp.Ordered](a, b, c T) T { return Min(a, Min(b, c)) }；SliceMin 循环取小。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。没有泛型时，同一算法要为每种类型复制一份，或在 interface{} 上做断言而丢失类型安全。类型参数 [T cmp.Ordered] 表示 T 可以是任何满足 cmp.Ordered 的类型；cmp.Ordered 是一个预声明的约束，涵盖所有可用 <、> 比较的内置类型与字符串。函数体里因此可以直接写 a < b。编译器在调用点用实际类型实例化：Min(3,7) 实例化为 int 版本，Min(\"pear\",\"apple\") 实例化为 string 版本，各自是独立的静态代码，因而没有装箱与断言开销。泛型属于 Go 的静态编译特性，本项目移动端的 Yaegi 解释器未实测支持，故标记 desktop only，不得声称移动端可运行。",
+    "code": "// T062 泛型一：类型参数与约束。\n//\n// Min/Max 在没有泛型时要为每种类型各写一份（或在 interface{} 上做断言），\n// 泛型用 [T cmp.Ordered] 表达\"T 必须可比较大小\"，一份代码服务多种类型。\n// 注意：泛型属于 Go 1.18+ 的静态编译特性，本项目的移动端 Yaegi 解释器\n// 未实测支持，因此本主题标记为 desktop only。\npackage main\n\nimport (\n\t\"cmp\"\n\t\"fmt\"\n)\n\n// Min 返回 a、b 中较小者。T 被约束为 cmp.Ordered，\n// 因此可以在函数体内直接使用 < 比较。\nfunc Min[T cmp.Ordered](a, b T) T {\n\tif a < b {\n\t\treturn a\n\t}\n\treturn b\n}\n\n// Max 同理返回较大者。编译器会为每个实际类型参数实例化一份机器码。\nfunc Max[T cmp.Ordered](a, b T) T {\n\tif a > b {\n\t\treturn a\n\t}\n\treturn b\n}\n\nfunc main() {\n\tfmt.Println(\"Min[int](3, 7) =\", Min(3, 7))\n\tfmt.Println(\"Max[int](3, 7) =\", Max(3, 7))\n\n\t// 字符串也满足 cmp.Ordered（按字典序比较）。\n\tfmt.Println(\"Min[string](\\\"pear\\\", \\\"apple\\\") =\", Min(\"pear\", \"apple\"))\n\n\t// 浮点同样适用；没有为 float64 再写一份代码。\n\tfmt.Println(\"Max[float64](2.5, 1.5) =\", Max(2.5, 1.5))\n}\n",
+    "output": "Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string](\"pear\", \"apple\") = apple\nMax[float64](2.5, 1.5) = 2.5"
+  },
+  "example": {
+    "id": "go-example-062",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "泛型一：类型参数与约束（示例）",
+    "summary": "对应主题 T062 的可运行示例。",
+    "concepts": [
+      "泛型",
+      "类型参数",
+      "约束",
+      "cmp.Ordered"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T062 泛型一：类型参数与约束。\n//\n// Min/Max 在没有泛型时要为每种类型各写一份（或在 interface{} 上做断言），\n// 泛型用 [T cmp.Ordered] 表达\"T 必须可比较大小\"，一份代码服务多种类型。\n// 注意：泛型属于 Go 1.18+ 的静态编译特性，本项目的移动端 Yaegi 解释器\n// 未实测支持，因此本主题标记为 desktop only。\npackage main\n\nimport (\n\t\"cmp\"\n\t\"fmt\"\n)\n\n// Min 返回 a、b 中较小者。T 被约束为 cmp.Ordered，\n// 因此可以在函数体内直接使用 < 比较。\nfunc Min[T cmp.Ordered](a, b T) T {\n\tif a < b {\n\t\treturn a\n\t}\n\treturn b\n}\n\n// Max 同理返回较大者。编译器会为每个实际类型参数实例化一份机器码。\nfunc Max[T cmp.Ordered](a, b T) T {\n\tif a > b {\n\t\treturn a\n\t}\n\treturn b\n}\n\nfunc main() {\n\tfmt.Println(\"Min[int](3, 7) =\", Min(3, 7))\n\tfmt.Println(\"Max[int](3, 7) =\", Max(3, 7))\n\n\t// 字符串也满足 cmp.Ordered（按字典序比较）。\n\tfmt.Println(\"Min[string](\\\"pear\\\", \\\"apple\\\") =\", Min(\"pear\", \"apple\"))\n\n\t// 浮点同样适用；没有为 float64 再写一份代码。\n\tfmt.Println(\"Max[float64](2.5, 1.5) =\", Max(2.5, 1.5))\n}\n",
+    "expectedOutput": "Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string](\"pear\", \"apple\") = apple\nMax[float64](2.5, 1.5) = 2.5",
+    "templateType": "go"
+  }
+}

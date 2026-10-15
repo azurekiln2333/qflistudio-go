@@ -1,0 +1,72 @@
+{
+  "id": "T107",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "fixture_test.go",
+    "go.mod"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-107",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "测试夹具：t.TempDir、t.Cleanup",
+    "summary": "用 t.TempDir 提供隔离临时目录、t.Cleanup 注册测试结束清理，保证无残留。",
+    "concepts": [
+      "t.TempDir",
+      "t.Cleanup",
+      "隔离",
+      "清理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 t.TempDir 与 t.Cleanup 编写隔离且自动清理的文件系统测试。",
+    "prerequisites": [
+      "T086 文件读写：os.Open/Create 与缓冲",
+      "T105 表驱动测试与子测试"
+    ],
+    "pitfalls": [
+      "自己 os.MkdirTemp 而忘记 RemoveAll：测试残留文件堆积。",
+      "在 t.Cleanup 里依赖测试内的局部变量顺序：Cleanup 按注册逆序执行。"
+    ],
+    "exercises": [
+      {
+        "prompt": "写一个测试：在 t.TempDir 建三个文件，用 t.Cleanup 在结束前校验目录已清空。",
+        "hint": "Cleanup 在测试返回后执行，无法断言“清空后”。可断言文件在测试内存在。",
+        "answer": "测试内断言三文件存在；依赖框架自动清理临时目录。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：fixture_test.go、go.mod。运行命令：go test ./...。文件系统测试需要隔离与清理。t.TempDir() 返回一个测试专属、测试结束由框架自动删除的目录，多个测试各得其所、互不干扰。t.Cleanup(fn) 注册结束回调，即使测试失败也会运行，适合关闭句柄、回滚状态等。示例在 TempDir 内读写文件并断言内容，另一个测试验证 TempDir 初始为空。用框架提供的夹具而非手工清理，能显著减少测试间污染与残留。test-package，go test 运行，desktop only。",
+    "code": "// T107 测试夹具：t.TempDir、t.Cleanup。\n//\n// t.TempDir() 为每个测试提供独立、自动清理的临时目录；\n// t.Cleanup(fn) 注册测试结束时执行的清理，即使测试失败也会运行。\n// 二者让涉及文件系统的测试隔离且无残留。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   fixturetest/\n//   ├── go.mod         // module fixturetest\\n\\ngo 1.27\n//   └── fixture_test.go // 本文件\n// 运行：go test ./...   desktop only（文件系统）。\npackage fixturetest\n\nimport (\n\t\"os\"\n\t\"path/filepath\"\n\t\"testing\"\n)\n\nfunc TestWriteAndReadFixture(t *testing.T) {\n\tdir := t.TempDir() // 每个测试独享，测试结束自动删除\n\n\t// 注册清理：验证确实执行（演示 t.Cleanup 语义）。\n\tcleaned := false\n\tt.Cleanup(func() { cleaned = true })\n\n\tpath := filepath.Join(dir, \"data.txt\")\n\tif err := os.WriteFile(path, []byte(\"hello\"), 0o644); err != nil {\n\t\tt.Fatalf(\"write: %v\", err)\n\t}\n\tgot, err := os.ReadFile(path)\n\tif err != nil {\n\t\tt.Fatalf(\"read: %v\", err)\n\t}\n\tif string(got) != \"hello\" {\n\t\tt.Fatalf(\"content = %q, want hello\", string(got))\n\t}\n\t// 同一测试内 cleaned 仍为 false（Cleanup 在测试返回后才跑）。\n\tif cleaned {\n\t\tt.Fatal(\"cleanup ran too early\")\n\t}\n}\n\nfunc TestTempDirIsolated(t *testing.T) {\n\t// 第二个测试拿到不同的临时目录，互不影响。\n\tdir := t.TempDir()\n\tentries, err := os.ReadDir(dir)\n\tif err != nil {\n\t\tt.Fatalf(\"readdir: %v\", err)\n\t}\n\tif len(entries) != 0 {\n\t\tt.Fatalf(\"expected empty temp dir, got %d entries\", len(entries))\n\t}\n}\n",
+    "output": "ok  \tqfli.example/t107\t0.002s"
+  },
+  "example": {
+    "id": "go-example-107",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "测试夹具：t.TempDir、t.Cleanup（示例）",
+    "summary": "对应主题 T107 的可运行示例。",
+    "concepts": [
+      "t.TempDir",
+      "t.Cleanup",
+      "隔离",
+      "清理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T107 测试夹具：t.TempDir、t.Cleanup。\n//\n// t.TempDir() 为每个测试提供独立、自动清理的临时目录；\n// t.Cleanup(fn) 注册测试结束时执行的清理，即使测试失败也会运行。\n// 二者让涉及文件系统的测试隔离且无残留。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   fixturetest/\n//   ├── go.mod         // module fixturetest\\n\\ngo 1.27\n//   └── fixture_test.go // 本文件\n// 运行：go test ./...   desktop only（文件系统）。\npackage fixturetest\n\nimport (\n\t\"os\"\n\t\"path/filepath\"\n\t\"testing\"\n)\n\nfunc TestWriteAndReadFixture(t *testing.T) {\n\tdir := t.TempDir() // 每个测试独享，测试结束自动删除\n\n\t// 注册清理：验证确实执行（演示 t.Cleanup 语义）。\n\tcleaned := false\n\tt.Cleanup(func() { cleaned = true })\n\n\tpath := filepath.Join(dir, \"data.txt\")\n\tif err := os.WriteFile(path, []byte(\"hello\"), 0o644); err != nil {\n\t\tt.Fatalf(\"write: %v\", err)\n\t}\n\tgot, err := os.ReadFile(path)\n\tif err != nil {\n\t\tt.Fatalf(\"read: %v\", err)\n\t}\n\tif string(got) != \"hello\" {\n\t\tt.Fatalf(\"content = %q, want hello\", string(got))\n\t}\n\t// 同一测试内 cleaned 仍为 false（Cleanup 在测试返回后才跑）。\n\tif cleaned {\n\t\tt.Fatal(\"cleanup ran too early\")\n\t}\n}\n\nfunc TestTempDirIsolated(t *testing.T) {\n\t// 第二个测试拿到不同的临时目录，互不影响。\n\tdir := t.TempDir()\n\tentries, err := os.ReadDir(dir)\n\tif err != nil {\n\t\tt.Fatalf(\"readdir: %v\", err)\n\t}\n\tif len(entries) != 0 {\n\t\tt.Fatalf(\"expected empty temp dir, got %d entries\", len(entries))\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

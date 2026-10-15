@@ -1,0 +1,69 @@
+{
+  "id": "T040",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "method value 12\nmethod expression 12\npointer call 12\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-040",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "方法与函数表达式的互转",
+    "summary": "理解方法值与方法表达式，掌握接收者绑定时机差异。",
+    "concepts": [
+      "方法值",
+      "方法表达式",
+      "接收者绑定"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能区分方法值 r.area（绑定接收者）与方法表达式 rect.area（接收者作首参）。",
+    "prerequisites": [
+      "T039 值/指针接收者"
+    ],
+    "pitfalls": [
+      "混淆绑定时机：方法值 r.area 在取值时绑定接收者副本，之后即使 r 变化也调用原副本；方法表达式则每次传入当前接收者。",
+      "对指针接收者方法取值需要可寻址接收者：对不可寻址的临时值调用指针接收者方法会编译报错。",
+      "平台限制：方法表达式（T.method; g(recv)）在当前项目移动端 Yaegi 解释器下会 panic（reflect: Call with too many input arguments），本主题仅桌面官方 Go 可运行；移动端请使用方法值（recv.method）形式。"
+    ],
+    "exercises": [
+      {
+        "prompt": "用方法表达式把 rect.area 赋给变量并显式传入接收者调用。",
+        "hint": "g := rect.area; g(r)。",
+        "answer": "g(r) 与 r.area() 结果一致，说明方法表达式把接收者变成普通首个参数。"
+      }
+    ],
+    "explain": "方法有两种取值形式：方法值（r.area）在求值时把接收者绑定到函数值，调用时无需再传接收者；方法表达式（rect.area）把接收者变成显式的第一个参数，调用时传入。二者的接收者绑定时机不同：方法值绑定的是取值那一刻的接收者副本。\n\n当接收者是值类型且方法用值接收者时两种形式结果一致；对指针接收者，方法值会捕获指针，方法表达式要求传入指针或可寻址值。\n\n本样例分别用方法值、方法表达式与指针调用得到相同结果。",
+    "code": "package main\n\nimport \"fmt\"\n\ntype rect struct{ w, h int }\n\nfunc (r rect) area() int { return r.w * r.h }\n\nfunc main() {\n\tr := rect{3, 4}\n\t// 方法值：绑定到具体接收者\n\tf := r.area\n\tfmt.Println(\"method value\", f())\n\t// 方法表达式：接收者作为第一个参数\n\tg := rect.area\n\tfmt.Println(\"method expression\", g(r))\n\t// 对指针的普通调用会自动取址\n\tp := &r\n\tfmt.Println(\"pointer call\", p.area())\n}\n",
+    "output": "method value 12\nmethod expression 12\npointer call 12"
+  },
+  "example": {
+    "id": "go-example-040",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "方法与函数表达式的互转",
+    "summary": "理解方法值与方法表达式，掌握接收者绑定时机差异。",
+    "concepts": [
+      "方法值",
+      "方法表达式",
+      "接收者绑定"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\ntype rect struct{ w, h int }\n\nfunc (r rect) area() int { return r.w * r.h }\n\nfunc main() {\n\tr := rect{3, 4}\n\t// 方法值：绑定到具体接收者\n\tf := r.area\n\tfmt.Println(\"method value\", f())\n\t// 方法表达式：接收者作为第一个参数\n\tg := rect.area\n\tfmt.Println(\"method expression\", g(r))\n\t// 对指针的普通调用会自动取址\n\tp := &r\n\tfmt.Println(\"pointer call\", p.area())\n}\n",
+    "expectedOutput": "method value 12\nmethod expression 12\npointer call 12",
+    "templateType": "go"
+  }
+}

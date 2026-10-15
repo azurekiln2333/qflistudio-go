@@ -1,0 +1,70 @@
+{
+  "id": "T044",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "read: start-more\nclosed: true\nminimal interface reuse: a one-method type satisfies Reader"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-044",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "接口组合与最小接口原则",
+    "summary": "把多个单方法接口组合成 ReadWriteCloser，并演示最小接口的复用。",
+    "concepts": [
+      "接口组合",
+      "最小接口",
+      "嵌入接口",
+      "解耦"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用接口嵌入组合接口，并说明“接口越小越易复用”的原则。",
+    "prerequisites": [
+      "T041 接口基础与鸭子类型"
+    ],
+    "pitfalls": [
+      "定义过大的接口：实现方被迫实现不需要的方法，降低复用。",
+      "把接口定义在实现方而非使用方：偏离 Go 惯例，耦合更紧。"
+    ],
+    "exercises": [
+      {
+        "prompt": "新增一个 Stringer 组合接口（含 Read 与 String），让另一类型实现并传入。",
+        "hint": "用接口嵌入把 Reader 与 fmt.Stringer 组合。",
+        "answer": "type ReadStringer interface { Reader; String() string }。"
+      }
+    ],
+    "explain": "Go 鼓励“小而专”的接口：Reader、Writer、Closer 各管一件事，再按需组合。接口可以嵌入接口形成组合接口，如 ReadWriteCloser = Reader+Writer+Closer。示例用组合接口统一读写设备，并把组合接口赋给最小的 Reader 使用——因为接口越小，能被满足的类型越多，替换与测试越容易。这是 Go 生态（io、net）广泛采用的设计原则。",
+    "code": "// T044 接口组合与最小接口原则。\n//\n// Go 鼓励“小而专”的接口：Reader、Writer、Closer 各管一件事，再按需组合。\n// 接口可以嵌入接口形成组合接口，如 ReadWriteCloser = Reader+Writer+Closer。\n// 本示例用合成接口统一读写设备，并演示最小接口的好处。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Reader / Writer / Closer 是最小的单方法接口。\ntype Reader interface{ Read() string }\ntype Writer interface{ Write(s string) }\ntype Closer interface{ Close() error }\n\n// ReadWriteCloser 组合三个最小接口。\ntype ReadWriteCloser interface {\n\tReader\n\tWriter\n\tCloser\n}\n\n// MemDevice 实现了全部三个方法，因此满足组合接口。\ntype MemDevice struct {\n\tdata   string\n\tclosed bool\n}\n\nfunc (d *MemDevice) Read() string { return d.data }\nfunc (d *MemDevice) Write(s string) {\n\td.data += s\n}\nfunc (d *MemDevice) Close() error {\n\td.closed = true\n\treturn nil\n}\n\n// useReader 只需要最小的 Reader 接口，任何能 Read 的类型都能传入。\nfunc useReader(r Reader) string { return r.Read() }\n\nfunc main() {\n\tvar dev ReadWriteCloser = &MemDevice{data: \"start\"}\n\n\tdev.Write(\"-more\")\n\tfmt.Println(\"read:\", useReader(dev)) // 组合接口可赋给最小接口\n\n\tif err := dev.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"closed:\", dev.(*MemDevice).closed)\n\n\t// 只实现 Read 的轻量类型也能满足 Reader，便于替换与测试。\n\tlit := strings.NewReader(\"literal\")\n\t_ = lit\n\tfmt.Println(\"minimal interface reuse: a one-method type satisfies Reader\")\n}\n",
+    "output": "read: start-more\nclosed: true\nminimal interface reuse: a one-method type satisfies Reader"
+  },
+  "example": {
+    "id": "go-example-044",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "接口组合与最小接口原则（示例）",
+    "summary": "对应主题 T044 的可运行示例。",
+    "concepts": [
+      "接口组合",
+      "最小接口",
+      "嵌入接口",
+      "解耦"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T044 接口组合与最小接口原则。\n//\n// Go 鼓励“小而专”的接口：Reader、Writer、Closer 各管一件事，再按需组合。\n// 接口可以嵌入接口形成组合接口，如 ReadWriteCloser = Reader+Writer+Closer。\n// 本示例用合成接口统一读写设备，并演示最小接口的好处。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Reader / Writer / Closer 是最小的单方法接口。\ntype Reader interface{ Read() string }\ntype Writer interface{ Write(s string) }\ntype Closer interface{ Close() error }\n\n// ReadWriteCloser 组合三个最小接口。\ntype ReadWriteCloser interface {\n\tReader\n\tWriter\n\tCloser\n}\n\n// MemDevice 实现了全部三个方法，因此满足组合接口。\ntype MemDevice struct {\n\tdata   string\n\tclosed bool\n}\n\nfunc (d *MemDevice) Read() string { return d.data }\nfunc (d *MemDevice) Write(s string) {\n\td.data += s\n}\nfunc (d *MemDevice) Close() error {\n\td.closed = true\n\treturn nil\n}\n\n// useReader 只需要最小的 Reader 接口，任何能 Read 的类型都能传入。\nfunc useReader(r Reader) string { return r.Read() }\n\nfunc main() {\n\tvar dev ReadWriteCloser = &MemDevice{data: \"start\"}\n\n\tdev.Write(\"-more\")\n\tfmt.Println(\"read:\", useReader(dev)) // 组合接口可赋给最小接口\n\n\tif err := dev.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"closed:\", dev.(*MemDevice).closed)\n\n\t// 只实现 Read 的轻量类型也能满足 Reader，便于替换与测试。\n\tlit := strings.NewReader(\"literal\")\n\t_ = lit\n\tfmt.Println(\"minimal interface reuse: a one-method type satisfies Reader\")\n}\n",
+    "expectedOutput": "read: start-more\nclosed: true\nminimal interface reuse: a one-method type satisfies Reader",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "T003",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "count=0 name=\"\" ok=false total=42 msg=零值演示\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-003",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "变量声明：var、短变量与零值",
+    "summary": "区分 var、:= 与零值初始化，理解 Go 为何强调零值可用。",
+    "concepts": [
+      "var",
+      "短变量声明",
+      "零值"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 var 和 := 声明变量，并说明未显式初始化时各类型的零值。",
+    "prerequisites": [
+      "T002 package main 与 main"
+    ],
+    "pitfalls": [
+      "在函数外用 :=：短变量声明只能出现在函数内部，包级别必须用 var。",
+      "误以为 var x int 是未初始化：Go 会把 x 设为零值 0，不存在未定义值的变量。"
+    ],
+    "exercises": [
+      {
+        "prompt": "声明一个未初始化的 string 和 bool，打印它们并解释看到的零值。",
+        "hint": "string 的零值是空串，bool 的零值是 false。",
+        "answer": "打印 name=\"\" 与 ok=false，因为字符串和布尔的零值分别是空串和 false。"
+      }
+    ],
+    "explain": "Go 的变量总有确定的值。var 声明的变量若不带初始化表达式，会被赋予该类型的零值：数值为 0，字符串为空串，布尔为 false，指针/切片/映射/通道/接口为 nil。:= 是短变量声明，只在函数体内可用，它同时声明并推断类型，是局部变量的常用写法。\n\n把零值设计成「可用状态」是 Go 的重要取向：例如未初始化的 map 为 nil，但可以通过 make 创建；这减少了大量显式初始化样板。\n\n本样例混合使用 var 与 :=，并用 %q 打印字符串以看清空串。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tvar count int\n\tvar name string\n\tvar ok bool\n\ttotal := 42\n\tmsg := \"零值演示\"\n\tfmt.Printf(\"count=%d name=%q ok=%t total=%d msg=%s\\n\", count, name, ok, total, msg)\n}\n",
+    "output": "count=0 name=\"\" ok=false total=42 msg=零值演示"
+  },
+  "example": {
+    "id": "go-example-003",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "零值一览",
+    "summary": "演示 int/string/bool 的零值以及短变量声明的推断类型。",
+    "concepts": [
+      "var",
+      "短变量声明",
+      "零值"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tvar count int\n\tvar name string\n\tvar ok bool\n\ttotal := 42\n\tmsg := \"零值演示\"\n\tfmt.Printf(\"count=%d name=%q ok=%t total=%d msg=%s\\n\", count, name, ok, total, msg)\n}\n",
+    "expectedOutput": "count=0 name=\"\" ok=false total=42 msg=零值演示",
+    "templateType": "go"
+  }
+}

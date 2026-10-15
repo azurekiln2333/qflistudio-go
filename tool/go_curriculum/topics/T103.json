@@ -1,0 +1,72 @@
+{
+  "id": "T103",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "go.mod",
+    "mw_test.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-103",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "中间件：日志、恢复与链式组合",
+    "summary": "用中间件包裹 Handler 实现日志与 panic 恢复，并按顺序组合成链。",
+    "concepts": [
+      "中间件",
+      "Handler 装饰",
+      "recover",
+      "链式组合"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能编写 Middleware 函数并组合成链，用 recover 中间件防止 panic 中断服务。",
+    "prerequisites": [
+      "T100 net/http 服务端：Handler 与路由",
+      "T054 panic 与 recover：边界与代价"
+    ],
+    "pitfalls": [
+      "中间件顺序搞反：先执行的应是最外层；chain(h,a,b) 中 a 最先。",
+      "recover 中间件不设状态码：panic 后若不写 header，可能返回 200。"
+    ],
+    "exercises": [
+      {
+        "prompt": "新增一个鉴权中间件，未带 X-Token 时返回 401。",
+        "hint": "在中间件里检查 r.Header.Get(\"X-Token\")。",
+        "answer": "若为空则 w.WriteHeader(401) 并 return，否则 next.ServeHTTP。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、mw_test.go。运行命令：go test ./...。中间件是“接收 Handler、返回 Handler”的函数，可在调用前后插入逻辑（日志、恢复、鉴权）。chain 按顺序包裹：chain(h, a, b) 等价于 a(b(h))，因此 a 是最外层、最先执行。示例用日志中间件记录方法+路径、用 recover 中间件捕获 panic 并返回 500，然后断言：正常请求体正确、panic 请求状态码为 500、日志恰好两条且顺序确定。这展示了中间件链的可组合性与可测试性。test-package，go test 运行，desktop only。",
+    "code": "// T103 中间件：日志、恢复与链式组合。\n//\n// 中间件是\"接收一个 Handler、返回一个 Handler\"的函数，可在调用前后插入\n// 逻辑（日志、恢复、鉴权）。多个中间件可链式包裹。本示例用中间件记录\n// 请求方法并统计调用次数，用 httptest 断言链路确实被经过。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpmw/\n//   ├── go.mod     // module httpmw\\n\\ngo 1.27\n//   └── mw_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage httpmw\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// Middleware 是标准中间件签名。\ntype Middleware func(http.Handler) http.Handler\n\n// logging 记录每个经过的请求方法。\nfunc logging(log *[]string) Middleware {\n\treturn func(next http.Handler) http.Handler {\n\t\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t\t*log = append(*log, r.Method+\" \"+r.URL.Path)\n\t\t\tnext.ServeHTTP(w, r)\n\t\t})\n\t}\n}\n\n// recoverer 捕获 panic，返回 500，保证链路不崩。\nfunc recoverer(next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tdefer func() {\n\t\t\tif rec := recover(); rec != nil {\n\t\t\t\tw.WriteHeader(http.StatusInternalServerError)\n\t\t\t}\n\t\t}()\n\t\tnext.ServeHTTP(w, r)\n\t})\n}\n\n// chain 按顺序包裹：chain(h, a, b) == a(b(h))。\nfunc chain(h http.Handler, mws ...Middleware) http.Handler {\n\tfor i := len(mws) - 1; i >= 0; i-- {\n\t\th = mws[i](h)\n\t}\n\treturn h\n}\n\nfunc TestMiddlewareChain(t *testing.T) {\n\tvar log []string\n\n\tfinal := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.URL.Path == \"/boom\" {\n\t\t\tpanic(\"boom\")\n\t\t}\n\t\t_, _ = io.WriteString(w, \"ok\")\n\t})\n\th := chain(final, logging(&log), recoverer)\n\n\t// 正常请求。\n\trec := httptest.NewRecorder()\n\th.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, \"/ok\", nil))\n\tif rec.Body.String() != \"ok\" {\n\t\tt.Fatalf(\"body = %q, want ok\", rec.Body.String())\n\t}\n\n\t// panic 请求：recoverer 应返回 500。\n\trec2 := httptest.NewRecorder()\n\th.ServeHTTP(rec2, httptest.NewRequest(http.MethodGet, \"/boom\", nil))\n\tif rec2.Code != http.StatusInternalServerError {\n\t\tt.Fatalf(\"panic status = %d, want 500\", rec2.Code)\n\t}\n\n\t// 日志中间件应记录两次，且顺序确定。\n\tif len(log) != 2 || log[0] != \"GET /ok\" || log[1] != \"GET /boom\" {\n\t\tt.Fatalf(\"log = %v\", log)\n\t}\n}\n",
+    "output": "ok  \tqfli.example/t103\t0.003s"
+  },
+  "example": {
+    "id": "go-example-103",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "中间件：日志、恢复与链式组合（示例）",
+    "summary": "对应主题 T103 的可运行示例。",
+    "concepts": [
+      "中间件",
+      "Handler 装饰",
+      "recover",
+      "链式组合"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T103 中间件：日志、恢复与链式组合。\n//\n// 中间件是\"接收一个 Handler、返回一个 Handler\"的函数，可在调用前后插入\n// 逻辑（日志、恢复、鉴权）。多个中间件可链式包裹。本示例用中间件记录\n// 请求方法并统计调用次数，用 httptest 断言链路确实被经过。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpmw/\n//   ├── go.mod     // module httpmw\\n\\ngo 1.27\n//   └── mw_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage httpmw\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// Middleware 是标准中间件签名。\ntype Middleware func(http.Handler) http.Handler\n\n// logging 记录每个经过的请求方法。\nfunc logging(log *[]string) Middleware {\n\treturn func(next http.Handler) http.Handler {\n\t\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t\t*log = append(*log, r.Method+\" \"+r.URL.Path)\n\t\t\tnext.ServeHTTP(w, r)\n\t\t})\n\t}\n}\n\n// recoverer 捕获 panic，返回 500，保证链路不崩。\nfunc recoverer(next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tdefer func() {\n\t\t\tif rec := recover(); rec != nil {\n\t\t\t\tw.WriteHeader(http.StatusInternalServerError)\n\t\t\t}\n\t\t}()\n\t\tnext.ServeHTTP(w, r)\n\t})\n}\n\n// chain 按顺序包裹：chain(h, a, b) == a(b(h))。\nfunc chain(h http.Handler, mws ...Middleware) http.Handler {\n\tfor i := len(mws) - 1; i >= 0; i-- {\n\t\th = mws[i](h)\n\t}\n\treturn h\n}\n\nfunc TestMiddlewareChain(t *testing.T) {\n\tvar log []string\n\n\tfinal := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.URL.Path == \"/boom\" {\n\t\t\tpanic(\"boom\")\n\t\t}\n\t\t_, _ = io.WriteString(w, \"ok\")\n\t})\n\th := chain(final, logging(&log), recoverer)\n\n\t// 正常请求。\n\trec := httptest.NewRecorder()\n\th.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, \"/ok\", nil))\n\tif rec.Body.String() != \"ok\" {\n\t\tt.Fatalf(\"body = %q, want ok\", rec.Body.String())\n\t}\n\n\t// panic 请求：recoverer 应返回 500。\n\trec2 := httptest.NewRecorder()\n\th.ServeHTTP(rec2, httptest.NewRequest(http.MethodGet, \"/boom\", nil))\n\tif rec2.Code != http.StatusInternalServerError {\n\t\tt.Fatalf(\"panic status = %d, want 500\", rec2.Code)\n\t}\n\n\t// 日志中间件应记录两次，且顺序确定。\n\tif len(log) != 2 || log[0] != \"GET /ok\" || log[1] != \"GET /boom\" {\n\t\tt.Fatalf(\"log = %v\", log)\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

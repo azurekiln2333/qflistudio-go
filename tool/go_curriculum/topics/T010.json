@@ -1,0 +1,68 @@
+{
+  "id": "T010",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "add 10 sub 2 mul 24 div 1 mod 2\nand 4 or 6 xor 2 shl 12 shr 3\nexpr true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-010",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "运算符、优先级与位运算",
+    "summary": "掌握算术、比较、位运算及其优先级，理解整数除法与取余。",
+    "concepts": [
+      "运算符",
+      "位运算",
+      "优先级"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能正确使用算术与位运算符，并说明整数除法截断与逻辑短路。",
+    "prerequisites": [
+      "T003 变量与零值"
+    ],
+    "pitfalls": [
+      "整数除法截断：6/4 结果是 1 而不是 1.5，需要浮点结果时要先转换类型。",
+      "混淆 & 与 &&：& 是按位与（对整数逐位运算），&& 是逻辑短路；用于布尔条件时只能用 &&。"
+    ],
+    "exercises": [
+      {
+        "prompt": "计算 12>>2 与 12&3 并解释二进制层面的含义。",
+        "hint": "12 的二进制是 1100。",
+        "answer": "12>>2=3（右移两位得 11），12&3=0（1100 & 0011 = 0000）。"
+      }
+    ],
+    "explain": "Go 的算术运算符与多数语言一致，但整数除法直接截断小数、取余用 %。位运算 &、|、^、<<、>> 作用于整数的二进制表示。优先级上，乘除模高于加减，比较低于算术，&& 低于 ||，且 && 与 || 短路——右侧只在必要时求值。\n\n本样例同时打印算术结果与位运算结果，并用一个复合表达式演示优先级：1+2*3 == 7 && 4%2 == 0 先算乘除与取余，再比较，最后做逻辑与。\n\n整数除法是常见误区：需要浮点结果时必须先做类型转换，否则会静默截断。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ta, b := 6, 4\n\tfmt.Println(\"add\", a+b, \"sub\", a-b, \"mul\", a*b, \"div\", a/b, \"mod\", a%b)\n\tfmt.Println(\"and\", a&b, \"or\", a|b, \"xor\", a^b, \"shl\", a<<1, \"shr\", a>>1)\n\t// 优先级：* / % 高于 + -，比较低于算术，&& 低于 ||\n\tfmt.Println(\"expr\", 1+2*3 == 7 && 4%2 == 0)\n}\n",
+    "output": "add 10 sub 2 mul 24 div 1 mod 2\nand 4 or 6 xor 2 shl 12 shr 3\nexpr true"
+  },
+  "example": {
+    "id": "go-example-010",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "算术与位运算",
+    "summary": "对同一组数打印算术、位运算与优先级表达式的结果。",
+    "concepts": [
+      "运算符",
+      "位运算",
+      "优先级"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ta, b := 6, 4\n\tfmt.Println(\"add\", a+b, \"sub\", a-b, \"mul\", a*b, \"div\", a/b, \"mod\", a%b)\n\tfmt.Println(\"and\", a&b, \"or\", a|b, \"xor\", a^b, \"shl\", a<<1, \"shr\", a>>1)\n\t// 优先级：* / % 高于 + -，比较低于算术，&& 低于 ||\n\tfmt.Println(\"expr\", 1+2*3 == 7 && 4%2 == 0)\n}\n",
+    "expectedOutput": "add 10 sub 2 mul 24 div 1 mod 2\nand 4 or 6 xor 2 shl 12 shr 3\nexpr true",
+    "templateType": "go"
+  }
+}

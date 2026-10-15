@@ -1,0 +1,72 @@
+{
+  "id": "T080",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test -bench . -run '^$' ./...",
+  "verification": {
+    "kind": "bench-exists",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "go.mod",
+    "pool_test.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-080",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "sync.Pool 与临时对象复用",
+    "summary": "用 sync.Pool 复用缓冲对象降低分配，并用基准对比（仅作参考）。",
+    "concepts": [
+      "sync.Pool",
+      "对象复用",
+      "分配",
+      "benchmark"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 sync.Pool 缓存可复用对象，并说明其对象可能被 GC 回收、不可存持久状态。",
+    "prerequisites": [
+      "T036 字符串构造：strings.Builder 与字节缓冲",
+      "T077 sync.Mutex 与临界区保护"
+    ],
+    "pitfalls": [
+      "把 Pool 当缓存存持久状态：GC 可能随时清空 Pool。",
+      "不 Reset 就复用对象：会残留上次内容，导致结果错误。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 Pool 增加一个复用 []byte 的 GetBytes/PutBytes 帮助方法。",
+        "hint": "Get 类型断言为 *[]byte，Put 前切片归零。",
+        "answer": "定义 pool 的 New 返回 new([]byte)；Get 后 (*b) = (*b)[:0]。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、pool_test.go。运行命令：go test -bench . -run '^$' ./...。sync.Pool 缓存可复用对象，减少高频分配压力。示例用 Pool 缓存 bytes.Buffer：Get 取出、Reset 清空、用完 Put 放回。关键是 Reset——复用对象必须清掉旧内容。Pool 的对象可能被 GC 随时回收，所以它只是“临时缓冲池”，不能当持久缓存。验证策略：功能测试用确定性“内容正确”断言（两次复用结果都对）；benchmark 只要求能跑出 ns/op，不作为通过条件（数值随机器变化）。test-package：go.mod + *_test.go，移动端不支持 bench，desktop only。",
+    "code": "// T080 sync.Pool 与临时对象复用。\n//\n// sync.Pool 缓存可复用对象，减少高频分配的压力。注意：Pool 中的对象可能被\n// GC 随时回收，因此不能用于持久状态，只能当\"临时缓冲池\"。\n//\n// 这是一个 test-package / benchmark 工程例子，不能一键导入。完整结构：\n//   poolbench/\n//   ├── go.mod        // module poolbench\\n\\ngo 1.27\n//   └── pool_test.go  // 本文件\n// 运行（官方 SDK）：\n//   go test ./...                      // 功能测试（确定性）\n//   go test -bench . -benchmem ./...   // 只看分配指标，不作为通过条件\n//\n// 断言策略：功能测试用确定性\"内容正确\"断言；benchmark 只要求能跑出 ns/op。\n// 移动端不支持 bench，desktop only。\npackage poolbench\n\nimport (\n\t\"bytes\"\n\t\"sync\"\n\t\"testing\"\n)\n\nvar bufPool = sync.Pool{\n\tNew: func() any { return new(bytes.Buffer) },\n}\n\n// render 用池中的 Buffer 组装字符串，用完重置并放回。\nfunc render(parts []string) string {\n\tbuf := bufPool.Get().(*bytes.Buffer)\n\tbuf.Reset()\n\tdefer bufPool.Put(buf)\n\tfor _, p := range parts {\n\t\tbuf.WriteString(p)\n\t}\n\treturn buf.String()\n}\n\n// renderNoPool 不使用池，每次新建 Buffer，作为对照。\nfunc renderNoPool(parts []string) string {\n\tvar buf bytes.Buffer\n\tfor _, p := range parts {\n\t\tbuf.WriteString(p)\n\t}\n\treturn buf.String()\n}\n\nfunc TestRenderCorrect(t *testing.T) {\n\tparts := []string{\"go\", \"-\", \"pool\"}\n\tif got, want := render(parts), \"go-pool\"; got != want {\n\t\tt.Fatalf(\"render = %q, want %q\", got, want)\n\t}\n\t// 复用一个池对象多次，结果必须仍然正确（证明 Reset 有效）。\n\tif got := render([]string{\"a\", \"b\"}); got != \"ab\" {\n\t\tt.Fatalf(\"second render = %q, want %q\", got, \"ab\")\n\t}\n}\n\nfunc TestRenderNoPoolMatches(t *testing.T) {\n\tparts := []string{\"x\", \"y\", \"z\"}\n\tif render(parts) != renderNoPool(parts) {\n\t\tt.Fatal(\"pooled and unpooled results differ\")\n\t}\n}\n\nfunc BenchmarkRenderPool(b *testing.B) {\n\tparts := []string{\"go\", \"-\", \"pool\", \"-\", \"bench\"}\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = render(parts)\n\t}\n}\n\nfunc BenchmarkRenderNoPool(b *testing.B) {\n\tparts := []string{\"go\", \"-\", \"pool\", \"-\", \"bench\"}\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = renderNoPool(parts)\n\t}\n}\n",
+    "output": "BenchmarkRenderPool-2    \t26144017\t43.59 ns/op\t16 B/op\t1 allocs/op\nBenchmarkRenderNoPool-2  \t23817556\t49.87 ns/op\t80 B/op\t2 allocs/op"
+  },
+  "example": {
+    "id": "go-example-080",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "sync.Pool 与临时对象复用（示例）",
+    "summary": "对应主题 T080 的可运行示例。",
+    "concepts": [
+      "sync.Pool",
+      "对象复用",
+      "分配",
+      "benchmark"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T080 sync.Pool 与临时对象复用。\n//\n// sync.Pool 缓存可复用对象，减少高频分配的压力。注意：Pool 中的对象可能被\n// GC 随时回收，因此不能用于持久状态，只能当\"临时缓冲池\"。\n//\n// 这是一个 test-package / benchmark 工程例子，不能一键导入。完整结构：\n//   poolbench/\n//   ├── go.mod        // module poolbench\\n\\ngo 1.27\n//   └── pool_test.go  // 本文件\n// 运行（官方 SDK）：\n//   go test ./...                      // 功能测试（确定性）\n//   go test -bench . -benchmem ./...   // 只看分配指标，不作为通过条件\n//\n// 断言策略：功能测试用确定性\"内容正确\"断言；benchmark 只要求能跑出 ns/op。\n// 移动端不支持 bench，desktop only。\npackage poolbench\n\nimport (\n\t\"bytes\"\n\t\"sync\"\n\t\"testing\"\n)\n\nvar bufPool = sync.Pool{\n\tNew: func() any { return new(bytes.Buffer) },\n}\n\n// render 用池中的 Buffer 组装字符串，用完重置并放回。\nfunc render(parts []string) string {\n\tbuf := bufPool.Get().(*bytes.Buffer)\n\tbuf.Reset()\n\tdefer bufPool.Put(buf)\n\tfor _, p := range parts {\n\t\tbuf.WriteString(p)\n\t}\n\treturn buf.String()\n}\n\n// renderNoPool 不使用池，每次新建 Buffer，作为对照。\nfunc renderNoPool(parts []string) string {\n\tvar buf bytes.Buffer\n\tfor _, p := range parts {\n\t\tbuf.WriteString(p)\n\t}\n\treturn buf.String()\n}\n\nfunc TestRenderCorrect(t *testing.T) {\n\tparts := []string{\"go\", \"-\", \"pool\"}\n\tif got, want := render(parts), \"go-pool\"; got != want {\n\t\tt.Fatalf(\"render = %q, want %q\", got, want)\n\t}\n\t// 复用一个池对象多次，结果必须仍然正确（证明 Reset 有效）。\n\tif got := render([]string{\"a\", \"b\"}); got != \"ab\" {\n\t\tt.Fatalf(\"second render = %q, want %q\", got, \"ab\")\n\t}\n}\n\nfunc TestRenderNoPoolMatches(t *testing.T) {\n\tparts := []string{\"x\", \"y\", \"z\"}\n\tif render(parts) != renderNoPool(parts) {\n\t\tt.Fatal(\"pooled and unpooled results differ\")\n\t}\n}\n\nfunc BenchmarkRenderPool(b *testing.B) {\n\tparts := []string{\"go\", \"-\", \"pool\", \"-\", \"bench\"}\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = render(parts)\n\t}\n}\n\nfunc BenchmarkRenderNoPool(b *testing.B) {\n\tparts := []string{\"go\", \"-\", \"pool\", \"-\", \"bench\"}\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = renderNoPool(parts)\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

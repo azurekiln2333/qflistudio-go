@@ -1,0 +1,68 @@
+{
+  "id": "T035",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "parts=[Go Rust Go] count=3\njoined Go|Rust|Go\ncontains Go: true\nreplace: Golang|Rust|Go\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-035",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "字符串处理：strings 包常用函数",
+    "summary": "组合 TrimSpace、FieldsFunc、Join、Contains、Replace 清洗文本。",
+    "concepts": [
+      "strings",
+      "FieldsFunc",
+      "Replace"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 strings 包对文本做去空白、按分隔符切分、拼接、查找与替换。",
+    "prerequisites": [
+      "T007 字符串与 rune"
+    ],
+    "pitfalls": [
+      "把 Replace 的第 4 个参数当可选：Replace(s,old,new,n) 的 n 是替换次数，-1 才表示全部替换。",
+      "对多字节文本按字节切：按分隔符切分应使用 rune 谓词的 FieldsFunc 或 Fields，避免按字节破坏 UTF-8。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把分隔符再加一个 ':'，并预测 parts 的变化。",
+        "hint": "在 FieldsFunc 的谓词里补上 r == ':'。",
+        "answer": "更多片段被切出，parts 数量增加，Join 结果中相应位置变为 | 连接。"
+      }
+    ],
+    "explain": "strings 包提供大量不修改原串、返回新串的函数。TrimSpace 去掉首尾空白；FieldsFunc 用一个 rune 谓词把字符串切成片段（可自定义任意分隔符）；Join 用指定分隔符拼接；Contains 判断子串；Replace 按次数替换，n<0 表示全部。\n\n这些函数都基于 UTF-8 安全地处理 rune，比手工按字节操作更可靠。样例先去除首尾空白，再按逗号/分号/空格切分，然后拼接与替换。\n\n注意 Replace 的次数参数：写错会只替换第一处或全部替换。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\ts := \"  Go, Rust; Go  \"\n\ttrimmed := strings.TrimSpace(s)\n\tparts := strings.FieldsFunc(trimmed, func(r rune) bool {\n\t\treturn r == ',' || r == ';' || r == ' '\n\t})\n\tfmt.Printf(\"parts=%v count=%d\\n\", parts, len(parts))\n\tjoined := strings.Join(parts, \"|\")\n\tfmt.Println(\"joined\", joined)\n\tfmt.Println(\"contains Go:\", strings.Contains(joined, \"Go\"))\n\tfmt.Println(\"replace:\", strings.Replace(joined, \"Go\", \"Golang\", 1))\n}\n",
+    "output": "parts=[Go Rust Go] count=3\njoined Go|Rust|Go\ncontains Go: true\nreplace: Golang|Rust|Go"
+  },
+  "example": {
+    "id": "go-example-035",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "字符串处理：strings 包常用函数",
+    "summary": "组合 TrimSpace、FieldsFunc、Join、Contains、Replace 清洗文本。",
+    "concepts": [
+      "strings",
+      "FieldsFunc",
+      "Replace"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\ts := \"  Go, Rust; Go  \"\n\ttrimmed := strings.TrimSpace(s)\n\tparts := strings.FieldsFunc(trimmed, func(r rune) bool {\n\t\treturn r == ',' || r == ';' || r == ' '\n\t})\n\tfmt.Printf(\"parts=%v count=%d\\n\", parts, len(parts))\n\tjoined := strings.Join(parts, \"|\")\n\tfmt.Println(\"joined\", joined)\n\tfmt.Println(\"contains Go:\", strings.Contains(joined, \"Go\"))\n\tfmt.Println(\"replace:\", strings.Replace(joined, \"Go\", \"Golang\", 1))\n}\n",
+    "expectedOutput": "parts=[Go Rust Go] count=3\njoined Go|Rust|Go\ncontains Go: true\nreplace: Golang|Rust|Go",
+    "templateType": "go"
+  }
+}

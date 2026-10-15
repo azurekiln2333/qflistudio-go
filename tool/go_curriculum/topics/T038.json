@@ -1,0 +1,68 @@
+{
+  "id": "T038",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "7\nbase#7\nchild\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-038",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "匿名字段与结构体嵌入",
+    "summary": "通过嵌入复用字段与方法，理解提升与同名遮蔽。",
+    "concepts": [
+      "嵌入",
+      "提升字段/方法",
+      "遮蔽"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能嵌入一个结构体并调用被提升的字段与方法，说明同名遮蔽规则。",
+    "prerequisites": [
+      "T037 结构体"
+    ],
+    "pitfalls": [
+      "以为嵌入等价于继承：嵌入是组合，外部类型不「是」内部类型，只是字段与方法被提升；接口满足与类型转换规则仍然独立。",
+      "同名冲突：外层字段/方法会遮蔽内层同名者，访问内层需写出完整路径 d.base.ID。"
+    ],
+    "exercises": [
+      {
+        "prompt": "给 derived 添加与 base 同名的 ID 字段，验证 d.ID 取外层、d.base.ID 取内层。",
+        "hint": "外层字段优先。",
+        "answer": "d.ID 返回外层字段值，d.base.ID 返回内层值，说明外层遮蔽内层。"
+      }
+    ],
+    "explain": "嵌入（匿名）字段让被嵌入类型的方法与字段被「提升」到外层类型，可直接用 d.describe() 与 d.ID 访问，无需写 d.base.describe()。这是一种组合复用，不是继承：derived 并不会自动满足 base 实现的接口，二者类型独立。\n\n当外层与内层有同名字段或方法时，外层遮蔽内层；要访问被遮蔽的内层成员需写出完整选择路径 d.base.ID。\n\n本样例嵌入 base 并调用提升的字段与方法。",
+    "code": "package main\n\nimport \"fmt\"\n\ntype base struct {\n\tID int\n}\n\nfunc (b base) describe() string { return fmt.Sprintf(\"base#%d\", b.ID) }\n\ntype derived struct {\n\tbase // 嵌入：字段与方法被提升\n\tName string\n}\n\nfunc main() {\n\td := derived{base{ID: 7}, \"child\"}\n\tfmt.Println(d.ID)         // 提升字段\n\tfmt.Println(d.describe()) // 提升方法\n\tfmt.Println(d.Name)\n}\n",
+    "output": "7\nbase#7\nchild"
+  },
+  "example": {
+    "id": "go-example-038",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "匿名字段与结构体嵌入",
+    "summary": "通过嵌入复用字段与方法，理解提升与同名遮蔽。",
+    "concepts": [
+      "嵌入",
+      "提升字段/方法",
+      "遮蔽"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\ntype base struct {\n\tID int\n}\n\nfunc (b base) describe() string { return fmt.Sprintf(\"base#%d\", b.ID) }\n\ntype derived struct {\n\tbase // 嵌入：字段与方法被提升\n\tName string\n}\n\nfunc main() {\n\td := derived{base{ID: 7}, \"child\"}\n\tfmt.Println(d.ID)         // 提升字段\n\tfmt.Println(d.describe()) // 提升方法\n\tfmt.Println(d.Name)\n}\n",
+    "expectedOutput": "7\nbase#7\nchild",
+    "templateType": "go"
+  }
+}

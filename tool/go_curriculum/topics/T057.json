@@ -1,0 +1,70 @@
+{
+  "id": "T057",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "log entries: 1\n  logged: request failed: service: disk failure\nanti-pattern entries (duplicated): 2"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-057",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "错误与日志打印边界",
+    "summary": "中间层只返回错误不记录，边界层记录一次，避免同一错误重复打印。",
+    "concepts": [
+      "日志边界",
+      "只记一次",
+      "错误传播",
+      "噪音"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能区分“返回错误”与“记录日志”的职责，把记录集中在边界层。",
+    "prerequisites": [
+      "T056 错误处理模式：立即返回与上下文补充"
+    ],
+    "pitfalls": [
+      "每层都 log：同一错误被打印多遍，噪音大且难追踪。",
+      "边界层记录后又把原始错误抛给上层记录：重复记录。"
+    ],
+    "exercises": [
+      {
+        "prompt": "让 handle 在错误时返回用户可见文案，并只记录一次结构化日志。",
+        "hint": "边界处 log.Error 后返回整理过的错误。",
+        "answer": "log.Errorf(...) 一次；return fmt.Errorf(\"操作失败\")。"
+      }
+    ],
+    "explain": "反模式：每一层都 log 一次，同一个错误被打印多遍，噪音大且难追踪。惯例：中间层只 return（可包装），到“边界”（main、HTTP handler、job runner）才记录一次日志或向用户展示。示例用内存 logger 展示正确做法——边界只记录一次；再对照反模式，说明重复记录会产生多条噪音。关键是把“记录”当成边界职责，把“传播”当成中间层职责。",
+    "code": "// T057 错误与日志打印边界。\n//\n// 反模式：每一层都 log 一次，同一个错误被打印多遍，噪音大且难追踪。\n// 惯例：中间层只 return（可包装），到“边界”（main、HTTP handler、job runner）\n// 才记录一次日志或向用户展示。\npackage main\n\nimport \"fmt\"\n\n// 用内存 logger 模拟，保证输出确定（生产可换 log/slog）。\ntype logger struct{ lines []string }\n\nfunc (l *logger) Errorf(format string, args ...any) {\n\tl.lines = append(l.lines, fmt.Sprintf(format, args...))\n}\n\n// read 最底层：只返回错误，不记录。\nfunc read() error { return fmt.Errorf(\"disk failure\") }\n\n// service 中间层：补充上下文后继续 return，不记录。\nfunc service() error {\n\tif err := read(); err != nil {\n\t\treturn fmt.Errorf(\"service: %w\", err)\n\t}\n\treturn nil\n}\n\n// handle 边界层：在这里记录恰好一次。\nfunc handle(log *logger) error {\n\tif err := service(); err != nil {\n\t\tlog.Errorf(\"request failed: %v\", err)\n\t\treturn err\n\t}\n\treturn nil\n}\n\nfunc main() {\n\tlog := &logger{}\n\t_ = handle(log)\n\n\tfmt.Println(\"log entries:\", len(log.lines))\n\tfor _, l := range log.lines {\n\t\tfmt.Println(\"  logged:\", l)\n\t}\n\n\t// 对照反模式：若每层都记录，会出现多条重复噪音。\n\tantiLog := &logger{}\n\tif err := read(); err != nil {\n\t\tantiLog.Errorf(\"read: %v\", err)\n\t}\n\tif err := read(); err != nil {\n\t\tantiLog.Errorf(\"service: %v\", err)\n\t}\n\tfmt.Println(\"anti-pattern entries (duplicated):\", len(antiLog.lines))\n}\n",
+    "output": "log entries: 1\n  logged: request failed: service: disk failure\nanti-pattern entries (duplicated): 2"
+  },
+  "example": {
+    "id": "go-example-057",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "错误与日志打印边界（示例）",
+    "summary": "对应主题 T057 的可运行示例。",
+    "concepts": [
+      "日志边界",
+      "只记一次",
+      "错误传播",
+      "噪音"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T057 错误与日志打印边界。\n//\n// 反模式：每一层都 log 一次，同一个错误被打印多遍，噪音大且难追踪。\n// 惯例：中间层只 return（可包装），到“边界”（main、HTTP handler、job runner）\n// 才记录一次日志或向用户展示。\npackage main\n\nimport \"fmt\"\n\n// 用内存 logger 模拟，保证输出确定（生产可换 log/slog）。\ntype logger struct{ lines []string }\n\nfunc (l *logger) Errorf(format string, args ...any) {\n\tl.lines = append(l.lines, fmt.Sprintf(format, args...))\n}\n\n// read 最底层：只返回错误，不记录。\nfunc read() error { return fmt.Errorf(\"disk failure\") }\n\n// service 中间层：补充上下文后继续 return，不记录。\nfunc service() error {\n\tif err := read(); err != nil {\n\t\treturn fmt.Errorf(\"service: %w\", err)\n\t}\n\treturn nil\n}\n\n// handle 边界层：在这里记录恰好一次。\nfunc handle(log *logger) error {\n\tif err := service(); err != nil {\n\t\tlog.Errorf(\"request failed: %v\", err)\n\t\treturn err\n\t}\n\treturn nil\n}\n\nfunc main() {\n\tlog := &logger{}\n\t_ = handle(log)\n\n\tfmt.Println(\"log entries:\", len(log.lines))\n\tfor _, l := range log.lines {\n\t\tfmt.Println(\"  logged:\", l)\n\t}\n\n\t// 对照反模式：若每层都记录，会出现多条重复噪音。\n\tantiLog := &logger{}\n\tif err := read(); err != nil {\n\t\tantiLog.Errorf(\"read: %v\", err)\n\t}\n\tif err := read(); err != nil {\n\t\tantiLog.Errorf(\"service: %v\", err)\n\t}\n\tfmt.Println(\"anti-pattern entries (duplicated):\", len(antiLog.lines))\n}\n",
+    "expectedOutput": "log entries: 1\n  logged: request failed: service: disk failure\nanti-pattern entries (duplicated): 2",
+    "templateType": "go"
+  }
+}

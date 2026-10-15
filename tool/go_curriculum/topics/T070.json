@@ -1,0 +1,76 @@
+{
+  "id": "T070",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "Monday  => Monday\nTuesday => Tuesday\nDay(99) => Day(99)\nnote: `go generate ./...` reruns the generator for day_string.go;\n      it is not part of `go build` and is desktop only here."
+  },
+  "sampleFiles": [
+    "day.go",
+    "day_string.go",
+    "gen_main.go",
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-070",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "代码生成与 go:generate 边界",
+    "summary": "理解 go:generate 是显式约定的生成步骤，并用“生成器等价物”手写枚举的 String()。",
+    "concepts": [
+      "go:generate",
+      "代码生成",
+      "Stringer",
+      "枚举"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能说明 go:generate 不参与 go build、需要显式运行，并写出等价的 String() 实现。",
+    "prerequisites": [
+      "T045 标准接口：Stringer 与 error",
+      "T059 包、导出规则与初始化顺序"
+    ],
+    "pitfalls": [
+      "以为 go build 会自动运行生成器：不会，必须显式 go generate。",
+      "生成文件忘了提交或忘了重新生成：CI 会因为源码缺失或过期而失败。",
+      "移动端 Yaegi 不执行 go:generate——本主题 desktop only。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 Day 增加一个越界值并在 String() 中打印数值回退，验证与 stringer 行为一致。",
+        "hint": "回退格式 Day(N)。",
+        "answer": "dayNames 索引越界时返回 fmt.Sprintf(\"Day(%d)\", int(d))。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：day.go、day_string.go、gen_main.go、go.mod、main.go。运行命令：go run .。//go:generate 是一条普通注释里的约定指令：运行 go generate 时，Go 执行注释中的命令来生成源码（典型是 stringer 为枚举生成 String()）。它是显式的开发步骤，不参与 go build，也不会在别人 clone 后自动跑，因此生成结果通常要一并提交。本例不依赖外部生成器，而是手写“生成器会产出的那张表”（dayNames）并实现 String()，从而在不联网、不装工具的前提下理解生成的本质与边界（越界回退）。真实工程是 module-project：需要 day.go + 生成文件 + go.mod，并用 go generate 触发生成。",
+    "code": "// T070 代码生成与 go:generate 边界。\n//\n// go:generate 是注释里的约定指令：运行 `go generate` 时执行其中的命令来生成源码。\n// 它不是 go build 的一部分，必须显式运行；移动端 Yaegi 也不执行它。\n//\n// 本例是一个完整的多文件工程（module-project，不能一键导入）：\n//   T070/\n//   ├── go.mod            // module qfli.example/t070  (go 1.21)\n//   ├── day.go            // type Day + 常量枚举\n//   ├── day_string.go     // 本文件：由生成器产出/维护的 String() 与名字表\n//   ├── gen_main.go       // 一个本地生成器（//go:build ignore），不参与常规构建\n//   └── main.go           // 使用方\n//\n// 运行（官方 SDK）：\n//   go run .            // 使用现成的 day_string.go\n//   go generate ./...   // 重新运行 day.go 顶部 //go:generate 指定的生成器\n//                       // 生成器写回 day_string.go（内容与现有一致）\n//\n// 说明：day_string.go 是“生成物”，这里同样提交进仓库，因为它必须随源码可用。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// 有了 String()，打印 Day 得到名字而不是数字。\n\tfmt.Println(\"Monday  =>\", Monday)\n\tfmt.Println(\"Tuesday =>\", Tuesday)\n\n\t// 越界值走回退分支。\n\tout := Day(99)\n\tfmt.Println(\"Day(99) =>\", out)\n\n\tfmt.Println(\"note: `go generate ./...` reruns the generator for day_string.go;\")\n\tfmt.Println(\"      it is not part of `go build` and is desktop only here.\")\n}\n",
+    "output": "Monday  => Monday\nTuesday => Tuesday\nDay(99) => Day(99)\nnote: `go generate ./...` reruns the generator for day_string.go;\n      it is not part of `go build` and is desktop only here."
+  },
+  "example": {
+    "id": "go-example-070",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "代码生成与 go:generate 边界（示例）",
+    "summary": "对应主题 T070 的可运行示例。",
+    "concepts": [
+      "go:generate",
+      "代码生成",
+      "Stringer",
+      "枚举"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T070 代码生成与 go:generate 边界。\n//\n// go:generate 是注释里的约定指令：运行 `go generate` 时执行其中的命令来生成源码。\n// 它不是 go build 的一部分，必须显式运行；移动端 Yaegi 也不执行它。\n//\n// 本例是一个完整的多文件工程（module-project，不能一键导入）：\n//   T070/\n//   ├── go.mod            // module qfli.example/t070  (go 1.21)\n//   ├── day.go            // type Day + 常量枚举\n//   ├── day_string.go     // 本文件：由生成器产出/维护的 String() 与名字表\n//   ├── gen_main.go       // 一个本地生成器（//go:build ignore），不参与常规构建\n//   └── main.go           // 使用方\n//\n// 运行（官方 SDK）：\n//   go run .            // 使用现成的 day_string.go\n//   go generate ./...   // 重新运行 day.go 顶部 //go:generate 指定的生成器\n//                       // 生成器写回 day_string.go（内容与现有一致）\n//\n// 说明：day_string.go 是“生成物”，这里同样提交进仓库，因为它必须随源码可用。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// 有了 String()，打印 Day 得到名字而不是数字。\n\tfmt.Println(\"Monday  =>\", Monday)\n\tfmt.Println(\"Tuesday =>\", Tuesday)\n\n\t// 越界值走回退分支。\n\tout := Day(99)\n\tfmt.Println(\"Day(99) =>\", out)\n\n\tfmt.Println(\"note: `go generate ./...` reruns the generator for day_string.go;\")\n\tfmt.Println(\"      it is not part of `go build` and is desktop only here.\")\n}\n",
+    "expectedOutput": "Monday  => Monday\nTuesday => Tuesday\nDay(99) => Day(99)\nnote: `go generate ./...` reruns the generator for day_string.go;\n      it is not part of `go build` and is desktop only here.",
+    "templateType": "go"
+  }
+}

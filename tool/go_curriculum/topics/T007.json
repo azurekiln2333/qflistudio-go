@@ -1,0 +1,70 @@
+{
+  "id": "T007",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "bytes: 14\nrunes: 9\nat 0: h\nat 1: é\nat 3: l\nat 4: l\nat 5: o\nat 6: ,\nat 7:  \nat 8: 世\nat 11: 界\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-007",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "字符串、rune 与字节",
+    "summary": "区分 string、byte、rune，按字节与按字符两种方式遍历 UTF-8 文本。",
+    "concepts": [
+      "string",
+      "byte",
+      "rune",
+      "UTF-8"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能说明 len(s) 与 RuneCountInString 的差异，并用 range 正确遍历含中文的字符串。",
+    "prerequisites": [
+      "T004 基础类型"
+    ],
+    "pitfalls": [
+      "用 s[i] 遍历字符串：索引得到的是单个字节（byte），遇到多字节 UTF-8 字符会切碎，应使用 range 得到 rune。",
+      "以为 len(s) 是字符数：len 返回字节数，含中文的字符串字节数大于字符数。"
+    ],
+    "exercises": [
+      {
+        "prompt": "对同一字符串分别打印 len 与 RuneCountInString，并解释差异来源。",
+        "hint": "UTF-8 中一个中文字符通常占 3 个字节。",
+        "answer": "len 统计字节数，RuneCountInString 统计 Unicode 码点个数；中文每字 3 字节，所以字节数更大。"
+      }
+    ],
+    "explain": "Go 的 string 是不可变的字节序列，按 UTF-8 编码存储。len(s) 返回字节数；若文本含多字节字符，字符数会小于字节数，需要用 utf8.RuneCountInString 或 range 遍历来按「字符」（rune，即 Unicode 码点）处理。\n\nrange 遍历字符串时，第一个返回值是当前 rune 起始处的字节索引，第二个是该 rune。这解释了为什么样例里索引是 0、1、3、4……：é 与中文字符占多个字节，跳过了中间字节位置。\n\n本样例对含 é 与中文的字符串打印字节数、字符数，并按 rune 逐字打印索引与字符。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"unicode/utf8\"\n)\n\nfunc main() {\n\ts := \"héllo, 世界\"\n\tfmt.Println(\"bytes:\", len(s))\n\tfmt.Println(\"runes:\", utf8.RuneCountInString(s))\n\tfor i, r := range s {\n\t\tfmt.Printf(\"at %d: %c\\n\", i, r)\n\t}\n}\n",
+    "output": "bytes: 14\nrunes: 9\nat 0: h\nat 1: é\nat 3: l\nat 4: l\nat 5: o\nat 6: ,\nat 7:  \nat 8: 世\nat 11: 界"
+  },
+  "example": {
+    "id": "go-example-007",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "字节与字符计数",
+    "summary": "用 len 与 utf8.RuneCountInString 对比同一字符串的字节数与字符数。",
+    "concepts": [
+      "string",
+      "byte",
+      "rune",
+      "UTF-8"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"unicode/utf8\"\n)\n\nfunc main() {\n\ts := \"héllo, 世界\"\n\tfmt.Println(\"bytes:\", len(s))\n\tfmt.Println(\"runes:\", utf8.RuneCountInString(s))\n}\n",
+    "expectedOutput": "bytes: 14\nrunes: 9",
+    "templateType": "go"
+  }
+}

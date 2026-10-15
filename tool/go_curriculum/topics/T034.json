@@ -1,0 +1,68 @@
+{
+  "id": "T034",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "unique [c go rust]\nlen 1 -> 1 words\nlen 2 -> 3 words\nlen 4 -> 2 words\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-034",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "映射的进阶模式：集合、分组与逆映射",
+    "summary": "用 map 实现集合去重与按键分组，并有序输出结果。",
+    "concepts": [
+      "集合",
+      "分组",
+      "有序输出"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 map[T]bool 表示集合、map[K][]V 分组，并对不确定顺序的键排序后输出。",
+    "prerequisites": [
+      "T022 映射"
+    ],
+    "pitfalls": [
+      "依赖 map 遍历顺序输出：分组或集合的键顺序不确定，需先取键排序再输出才可复现。",
+      "分组时复用同一个底层切片：append 到 map 值切片是安全的，但把同一临时切片复用到多个键会串数据。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把词按首字母分组，并按键排序打印每组。",
+        "hint": "key 用 w[0]，再对键排序。",
+        "answer": "分组后收集键、排序、逐键打印，输出确定且每组含对应词。"
+      }
+    ],
+    "explain": "map 适合表达集合与分组：用 map[string]bool 记录出现过的元素即可去重（value 不关心）；用 map[int][]string 把元素按某键收集成组。由于 map 遍历顺序不确定，要得到可复现输出必须先收集键、排序，再按序访问。\n\n样例先按词去重并排序输出，再按词长分组，最后对组的键排序后按组统计数量。\n\n逆映射（map[V]K）在值唯一时用值反查键，是另一种常见模式。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc main() {\n\twords := []string{\"go\", \"rust\", \"go\", \"c\", \"rust\", \"go\"}\n\tseen := map[string]bool{}\n\tfor _, w := range words {\n\t\tseen[w] = true\n\t}\n\tunique := make([]string, 0, len(seen))\n\tfor w := range seen {\n\t\tunique = append(unique, w)\n\t}\n\tsort.Strings(unique)\n\tfmt.Println(\"unique\", unique)\n\n\tgroups := map[int][]string{}\n\tfor _, w := range words {\n\t\tgroups[len(w)] = append(groups[len(w)], w)\n\t}\n\tlens := make([]int, 0, len(groups))\n\tfor k := range groups {\n\t\tlens = append(lens, k)\n\t}\n\tsort.Ints(lens)\n\tfor _, k := range lens {\n\t\tfmt.Printf(\"len %d -> %d words\\n\", k, len(groups[k]))\n\t}\n}\n",
+    "output": "unique [c go rust]\nlen 1 -> 1 words\nlen 2 -> 3 words\nlen 4 -> 2 words"
+  },
+  "example": {
+    "id": "go-example-034",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "映射的进阶模式：集合、分组与逆映射",
+    "summary": "用 map 实现集合去重与按键分组，并有序输出结果。",
+    "concepts": [
+      "集合",
+      "分组",
+      "有序输出"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc main() {\n\twords := []string{\"go\", \"rust\", \"go\", \"c\", \"rust\", \"go\"}\n\tseen := map[string]bool{}\n\tfor _, w := range words {\n\t\tseen[w] = true\n\t}\n\tunique := make([]string, 0, len(seen))\n\tfor w := range seen {\n\t\tunique = append(unique, w)\n\t}\n\tsort.Strings(unique)\n\tfmt.Println(\"unique\", unique)\n\n\tgroups := map[int][]string{}\n\tfor _, w := range words {\n\t\tgroups[len(w)] = append(groups[len(w)], w)\n\t}\n\tlens := make([]int, 0, len(groups))\n\tfor k := range groups {\n\t\tlens = append(lens, k)\n\t}\n\tsort.Ints(lens)\n\tfor _, k := range lens {\n\t\tfmt.Printf(\"len %d -> %d words\\n\", k, len(groups[k]))\n\t}\n}\n",
+    "expectedOutput": "unique [c go rust]\nlen 1 -> 1 words\nlen 2 -> 3 words\nlen 4 -> 2 words",
+    "templateType": "go"
+  }
+}

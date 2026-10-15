@@ -1,0 +1,70 @@
+{
+  "id": "T043",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "nil\nint=1\nfloat64=2.5\nstring=\"go\" len=2\nbool=true\n[]int len=3\nother(struct { X int })\nint count: 1 string count: 1 other: 5"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-043",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "空接口、any 与类型 switch",
+    "summary": "用类型 switch 对 any 值按动态类型分发，处理异构集合。",
+    "concepts": [
+      "any",
+      "类型 switch",
+      "异构集合",
+      "分发"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用类型 switch 对任意值分类，并说明 any 等价 interface{}。",
+    "prerequisites": [
+      "T042 接口的动态类型与类型断言"
+    ],
+    "pitfalls": [
+      "类型 switch 的变量在各 case 中类型不同：别在 case 外使用它。",
+      "可比较性：含不可比较字段的类型不能作为 map 键，类型 switch 本身不受影响。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 classify 增加 []string 与 map[string]int 两个 case。",
+        "hint": "在 switch 中直接 case []string、case map[string]int。",
+        "answer": "新增两个 case 返回相应描述。"
+      }
+    ],
+    "explain": "any（即 interface{}）能装任何值。类型 switch 在同一个 switch 里按动态类型分发，是处理异构集合与实现通用函数的常用手段。示例把 nil、int、float64、string、bool、[]int 以及匿名结构体放入 []any，逐个分类打印，并额外按类型计数。类型 switch 的绑定变量在每个 case 中具有该 case 的具体类型，因此可直接访问类型特有操作（如 len）。",
+    "code": "// T043 空接口、any 与类型 switch。\n//\n// any（即 interface{}）能装任何值。用类型 switch 可以在一个 switch 里\n// 按动态类型分发处理，是处理异构集合的常用手段。\npackage main\n\nimport \"fmt\"\n\n// classify 用类型 switch 对任意值分类，返回可读描述。\nfunc classify(v any) string {\n\tswitch x := v.(type) {\n\tcase nil:\n\t\treturn \"nil\"\n\tcase int:\n\t\treturn fmt.Sprintf(\"int=%d\", x)\n\tcase float64:\n\t\treturn fmt.Sprintf(\"float64=%.1f\", x)\n\tcase string:\n\t\treturn fmt.Sprintf(\"string=%q len=%d\", x, len(x))\n\tcase bool:\n\t\treturn fmt.Sprintf(\"bool=%t\", x)\n\tcase []int:\n\t\treturn fmt.Sprintf(\"[]int len=%d\", len(x))\n\tdefault:\n\t\treturn fmt.Sprintf(\"other(%T)\", x)\n\t}\n}\n\nfunc main() {\n\t// 异构集合：混合类型放进同一个 []any。\n\tvalues := []any{nil, 1, 2.5, \"go\", true, []int{1, 2, 3}, struct{ X int }{X: 9}}\n\n\tcounts := map[string]int{}\n\tfor _, v := range values {\n\t\tdesc := classify(v)\n\t\tfmt.Println(desc)\n\t\t// 按类型名统计，演示对类型 switch 结果的再处理。\n\t\tswitch v.(type) {\n\t\tcase int:\n\t\t\tcounts[\"int\"]++\n\t\tcase string:\n\t\t\tcounts[\"string\"]++\n\t\tdefault:\n\t\t\tcounts[\"other\"]++\n\t\t}\n\t}\n\tfmt.Println(\"int count:\", counts[\"int\"], \"string count:\", counts[\"string\"], \"other:\", counts[\"other\"])\n}\n",
+    "output": "nil\nint=1\nfloat64=2.5\nstring=\"go\" len=2\nbool=true\n[]int len=3\nother(struct { X int })\nint count: 1 string count: 1 other: 5"
+  },
+  "example": {
+    "id": "go-example-043",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "空接口、any 与类型 switch（示例）",
+    "summary": "对应主题 T043 的可运行示例。",
+    "concepts": [
+      "any",
+      "类型 switch",
+      "异构集合",
+      "分发"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T043 空接口、any 与类型 switch。\n//\n// any（即 interface{}）能装任何值。用类型 switch 可以在一个 switch 里\n// 按动态类型分发处理，是处理异构集合的常用手段。\npackage main\n\nimport \"fmt\"\n\n// classify 用类型 switch 对任意值分类，返回可读描述。\nfunc classify(v any) string {\n\tswitch x := v.(type) {\n\tcase nil:\n\t\treturn \"nil\"\n\tcase int:\n\t\treturn fmt.Sprintf(\"int=%d\", x)\n\tcase float64:\n\t\treturn fmt.Sprintf(\"float64=%.1f\", x)\n\tcase string:\n\t\treturn fmt.Sprintf(\"string=%q len=%d\", x, len(x))\n\tcase bool:\n\t\treturn fmt.Sprintf(\"bool=%t\", x)\n\tcase []int:\n\t\treturn fmt.Sprintf(\"[]int len=%d\", len(x))\n\tdefault:\n\t\treturn fmt.Sprintf(\"other(%T)\", x)\n\t}\n}\n\nfunc main() {\n\t// 异构集合：混合类型放进同一个 []any。\n\tvalues := []any{nil, 1, 2.5, \"go\", true, []int{1, 2, 3}, struct{ X int }{X: 9}}\n\n\tcounts := map[string]int{}\n\tfor _, v := range values {\n\t\tdesc := classify(v)\n\t\tfmt.Println(desc)\n\t\t// 按类型名统计，演示对类型 switch 结果的再处理。\n\t\tswitch v.(type) {\n\t\tcase int:\n\t\t\tcounts[\"int\"]++\n\t\tcase string:\n\t\t\tcounts[\"string\"]++\n\t\tdefault:\n\t\t\tcounts[\"other\"]++\n\t\t}\n\t}\n\tfmt.Println(\"int count:\", counts[\"int\"], \"string count:\", counts[\"string\"], \"other:\", counts[\"other\"])\n}\n",
+    "expectedOutput": "nil\nint=1\nfloat64=2.5\nstring=\"go\" len=2\nbool=true\n[]int len=3\nother(struct { X int })\nint count: 1 string count: 1 other: 5",
+    "templateType": "go"
+  }
+}

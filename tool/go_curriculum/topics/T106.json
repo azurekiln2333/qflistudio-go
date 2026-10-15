@@ -1,0 +1,71 @@
+{
+  "id": "T106",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "assert_test.go",
+    "go.mod"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-106",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "断言与辅助函数、t.Helper",
+    "summary": "把重复断言抽成 helper 并用 t.Helper() 让失败行号指向调用处。",
+    "concepts": [
+      "断言辅助",
+      "t.Helper",
+      "失败定位",
+      "测试"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能编写断言 helper 并用 t.Helper 保持失败定位在调用者而非 helper 内部。",
+    "prerequisites": [
+      "T105 表驱动测试与子测试"
+    ],
+    "pitfalls": [
+      "helper 里不调 t.Helper()：失败堆栈指向 helper 内部，定位困难。",
+      "helper 里用 t.Fatal 之外的返回而忘记终止：可能继续执行导致误报。"
+    ],
+    "exercises": [
+      {
+        "prompt": "写一个 equalSlice helper 比较两个 []int 并调用 t.Helper。",
+        "hint": "先比长度再逐元素比较。",
+        "answer": "func equalSlice(t *testing.T, got, want []int){ t.Helper(); if len(got)!=len(want){t.Fatalf(...)}; for i:=range got{...} }。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：assert_test.go、go.mod。运行命令：go test ./...。测试里常有重复的断言逻辑，抽成 helper 能减少样板。但 helper 内部失败若不调用 t.Helper()，报错行号会指向 helper 自身，而不是真正出错的调用点，调试成本高。t.Helper() 标记“这个函数是测试辅助”，使 t.Fatalf/Errorf 报告调用者的位置。示例提供 equalInt 与 assertTrue 两个 helper，并在 TestParseLen 中复用，验证失败定位正确。test-package，go test 运行，desktop only。",
+    "code": "// T106 断言与辅助函数、t.Helper。\n//\n// 把重复的断言逻辑抽成 helper，并在 helper 里调用 t.Helper()，\n// 这样失败时报告的行号指向调用者而不是 helper 内部，定位更快。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   asserthlp/\n//   ├── go.mod         // module asserthlp\\n\\ngo 1.27\n//   └── assert_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage asserthlp\n\nimport (\n\t\"strconv\"\n\t\"testing\"\n)\n\n// equalInt 是断言 helper：t.Helper() 让失败堆栈指向调用处。\nfunc equalInt(t *testing.T, got, want int) {\n\tt.Helper()\n\tif got != want {\n\t\tt.Fatalf(\"got %d, want %d\", got, want)\n\t}\n}\n\n// assertTrue 是布尔断言 helper，单独存在以免混用类型。\nfunc assertTrue(t *testing.T, cond bool, msg string) {\n\tt.Helper()\n\tif !cond {\n\t\tt.Fatal(msg)\n\t}\n}\n\n// ParseLen 返回字符串长度（作为被测函数）。\nfunc ParseLen(s string) int { return len(s) }\n\nfunc TestParseLen(t *testing.T) {\n\tequalInt(t, ParseLen(\"go\"), 2)\n\tequalInt(t, ParseLen(\"\"), 0)\n\n\t// 用 helper 验证 strconv 往返，证明 helper 可复用。\n\tn, err := strconv.Atoi(\"123\")\n\tassertTrue(t, err == nil, \"Atoi error\")\n\tequalInt(t, n, 123)\n}\n",
+    "output": "ok  \tqfli.example/t106\t0.002s"
+  },
+  "example": {
+    "id": "go-example-106",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "断言与辅助函数、t.Helper（示例）",
+    "summary": "对应主题 T106 的可运行示例。",
+    "concepts": [
+      "断言辅助",
+      "t.Helper",
+      "失败定位",
+      "测试"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T106 断言与辅助函数、t.Helper。\n//\n// 把重复的断言逻辑抽成 helper，并在 helper 里调用 t.Helper()，\n// 这样失败时报告的行号指向调用者而不是 helper 内部，定位更快。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   asserthlp/\n//   ├── go.mod         // module asserthlp\\n\\ngo 1.27\n//   └── assert_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage asserthlp\n\nimport (\n\t\"strconv\"\n\t\"testing\"\n)\n\n// equalInt 是断言 helper：t.Helper() 让失败堆栈指向调用处。\nfunc equalInt(t *testing.T, got, want int) {\n\tt.Helper()\n\tif got != want {\n\t\tt.Fatalf(\"got %d, want %d\", got, want)\n\t}\n}\n\n// assertTrue 是布尔断言 helper，单独存在以免混用类型。\nfunc assertTrue(t *testing.T, cond bool, msg string) {\n\tt.Helper()\n\tif !cond {\n\t\tt.Fatal(msg)\n\t}\n}\n\n// ParseLen 返回字符串长度（作为被测函数）。\nfunc ParseLen(s string) int { return len(s) }\n\nfunc TestParseLen(t *testing.T) {\n\tequalInt(t, ParseLen(\"go\"), 2)\n\tequalInt(t, ParseLen(\"\"), 0)\n\n\t// 用 helper 验证 strconv 往返，证明 helper 可复用。\n\tn, err := strconv.Atoi(\"123\")\n\tassertTrue(t, err == nil, \"Atoi error\")\n\tequalInt(t, n, 123)\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "id": "T096",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "Inventory for warehouse-a:\n- bolt x100 (in stock)\n- nut x0 (out of stock)\nTotal lines: 2"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-096",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "文本模板 text/template",
+    "summary": "用 text/template 的占位符、range 与 if 渲染结构化文本。",
+    "concepts": [
+      "text/template",
+      "占位符",
+      "range",
+      "if"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 text/template 定义模板并渲染结构体数据，理解 {{.}}/{{range}}/{{if}}。",
+    "prerequisites": [
+      "T037 结构体定义、字面量与字段访问"
+    ],
+    "pitfalls": [
+      "模板里访问未导出字段：模板无法读取，执行会报错。",
+      "忘记检查 Execute 的错误：写目标失败（如管道关闭）会被忽略。",
+      "平台限制：本主题在移动端 Yaegi 解释器下 text/template 输出为空，仅桌面官方 Go 可运行（保持 desktop-only）。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为模板增加“总计数量”一行，用 range 内累加实现。",
+        "hint": "可在模板里用变量，或在数据里预先算好 Total。",
+        "answer": "在数据结构里加 Total，模板写 Total: {{.Total}}。"
+      }
+    ],
+    "explain": "text/template 用 {{.Field}} 引用数据字段，{{range}} 遍历切片，{{if}}/{{else}} 做条件分支。模板在解析时用 Must 包装以便在模板语法错误时快速失败，执行时再检查 Execute 的错误。示例渲染一份“库存清单”：表头用占位符、条目用 range、库存状态用 if。输出末尾的换行由模板控制，因此断言包含尾随换行。模板适合生成配置、报告、邮件等结构化文本。移动端模板能力未实测，标 Yaegi*（待实测），默认 desktop。",
+    "code": "// T096 文本模板 text/template。\n//\n// text/template 用 {{.Field}} 占位符渲染结构化数据。模板可包含\n// 条件 {{if}}、循环 {{range}}。本示例把渲染结果写入 bytes.Buffer，\n// 再统一打印——不直接依赖 os.Stdout 捕获，输出因此确定、易测试。\npackage main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"text/template\"\n)\n\nfunc main() {\n\tconst tpl = `Inventory for {{.Owner}}:\n{{range .Items}}- {{.Name}} x{{.Qty}} ({{if .InStock}}in stock{{else}}out of stock{{end}})\n{{end}}Total lines: {{len .Items}}`\n\n\tdata := struct {\n\t\tOwner string\n\t\tItems []struct {\n\t\t\tName    string\n\t\t\tQty     int\n\t\t\tInStock bool\n\t\t}\n\t}{\n\t\tOwner: \"warehouse-a\",\n\t\tItems: []struct {\n\t\t\tName    string\n\t\t\tQty     int\n\t\t\tInStock bool\n\t\t}{\n\t\t\t{\"bolt\", 100, true},\n\t\t\t{\"nut\", 0, false},\n\t\t},\n\t}\n\n\tt := template.Must(template.New(\"inv\").Parse(tpl))\n\n\t// 渲染到内存缓冲，再打印，避免依赖底层 stdout 的捕获方式。\n\tvar buf bytes.Buffer\n\tif err := t.Execute(&buf, data); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(buf.String())\n}\n",
+    "output": "Inventory for warehouse-a:\n- bolt x100 (in stock)\n- nut x0 (out of stock)\nTotal lines: 2"
+  },
+  "example": {
+    "id": "go-example-096",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "文本模板 text/template（示例）",
+    "summary": "对应主题 T096 的可运行示例。",
+    "concepts": [
+      "text/template",
+      "占位符",
+      "range",
+      "if"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T096 文本模板 text/template。\n//\n// text/template 用 {{.Field}} 占位符渲染结构化数据。模板可包含\n// 条件 {{if}}、循环 {{range}}。本示例把渲染结果写入 bytes.Buffer，\n// 再统一打印——不直接依赖 os.Stdout 捕获，输出因此确定、易测试。\npackage main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"text/template\"\n)\n\nfunc main() {\n\tconst tpl = `Inventory for {{.Owner}}:\n{{range .Items}}- {{.Name}} x{{.Qty}} ({{if .InStock}}in stock{{else}}out of stock{{end}})\n{{end}}Total lines: {{len .Items}}`\n\n\tdata := struct {\n\t\tOwner string\n\t\tItems []struct {\n\t\t\tName    string\n\t\t\tQty     int\n\t\t\tInStock bool\n\t\t}\n\t}{\n\t\tOwner: \"warehouse-a\",\n\t\tItems: []struct {\n\t\t\tName    string\n\t\t\tQty     int\n\t\t\tInStock bool\n\t\t}{\n\t\t\t{\"bolt\", 100, true},\n\t\t\t{\"nut\", 0, false},\n\t\t},\n\t}\n\n\tt := template.Must(template.New(\"inv\").Parse(tpl))\n\n\t// 渲染到内存缓冲，再打印，避免依赖底层 stdout 的捕获方式。\n\tvar buf bytes.Buffer\n\tif err := t.Execute(&buf, data); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(buf.String())\n}\n",
+    "expectedOutput": "Inventory for warehouse-a:\n- bolt x100 (in stock)\n- nut x0 (out of stock)\nTotal lines: 2",
+    "templateType": "go"
+  }
+}

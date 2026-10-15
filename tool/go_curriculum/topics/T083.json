@@ -1,0 +1,72 @@
+{
+  "id": "T083",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "slow: deadline exceeded = true\nok: result = 42 err = <nil>\ncanceled: err is context canceled = true"
+  },
+  "sampleFiles": [
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-083",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "context 二：超时与截止时间",
+    "summary": "用 context.WithTimeout 处理超时，用 errors.Is 区分超时与主动取消。",
+    "concepts": [
+      "context",
+      "超时",
+      "DeadlineExceeded",
+      "errors.Is"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 WithTimeout 控制任务时长，并用 errors.Is(ctx.Err(), context.DeadlineExceeded) 判断超时。",
+    "prerequisites": [
+      "T082 context 一：取消与传播",
+      "T052 errors.Is 与 errors.As 的适用差异"
+    ],
+    "pitfalls": [
+      "用具体耗时作为测试断言：机器快慢不同，会不稳定；应断言“是否超时”。",
+      "超时后用 ctx.Err() 之外的方式判断：应以 ctx.Err() 与 errors.Is 为准。"
+    ],
+    "exercises": [
+      {
+        "prompt": "给一个 http 请求封装 WithTimeout，超时返回明确错误。",
+        "hint": "用 context.WithTimeout 生成 ctx，传给 http.NewRequestWithContext。",
+        "answer": "ctx, cancel := context.WithTimeout(parent, d); defer cancel(); req.WithContext(ctx)。"
+      }
+    ],
+    "explain": "WithTimeout 在指定时长后自动 cancel，ctx.Err() 返回 context.DeadlineExceeded。示例分三种情形：慢任务在超时后走 Done 分支（断言确实超时）、快任务正常返回、被主动 cancel 的任务返回 context.Canceled。所有断言都只看“是否超时/是否取消”，不比较具体耗时——时间不是可靠的通过条件。区分超时与主动取消用 errors.Is(ctx.Err(), context.DeadlineExceeded) 与 context.Canceled。务必 defer cancel() 释放定时器资源。",
+    "code": "// T083 context 二：超时与截止时间。\n//\n// WithTimeout 在指定时长后自动取消，超时后 ctx.Err() 返回\n// context.DeadlineExceeded。本示例只断言「超时是否发生」这类语义结果，\n// 不让任何分支依赖墙钟或调度竞速：慢任务用永不就绪的 channel 等待超时，\n// 快/未取消路径用一个不会被取消的 context 顺序验证。\npackage main\n\nimport (\n\t\"context\"\n\t\"errors\"\n\t\"fmt\"\n)\n\nfunc main() {\n\t// 场景一：任务永不完成 -> 一定超时。选择超时分支是确定性的。\n\tslowCtx, slowCancel := context.WithTimeout(context.Background(), 1)\n\tdefer slowCancel()\n\tselect {\n\tcase <-neverReady():\n\t\tfmt.Println(\"slow: task finished\")\n\tcase <-slowCtx.Done():\n\t\tfmt.Println(\"slow: deadline exceeded =\", errors.Is(slowCtx.Err(), context.DeadlineExceeded))\n\t}\n\n\t// 场景二：未取消的 context -> 顺序返回结果，不依赖时间竞速。\n\tokCtx, okCancel := context.WithCancel(context.Background())\n\tdefer okCancel()\n\tresult, err := doWork(okCtx)\n\tfmt.Println(\"ok: result =\", result, \"err =\", err)\n\n\t// 场景三：显式取消后立即返回 context.Canceled。\n\tcanceledCtx, cancel := context.WithCancel(context.Background())\n\tcancel()\n\t_, err = doWork(canceledCtx)\n\tfmt.Println(\"canceled: err is context canceled =\", errors.Is(err, context.Canceled))\n}\n\n// doWork 在 ctx 已取消时返回错误，否则顺序返回结果。\nfunc doWork(ctx context.Context) (int, error) {\n\tselect {\n\tcase <-ctx.Done():\n\t\treturn 0, ctx.Err()\n\tdefault:\n\t\treturn 42, nil\n\t}\n}\n\n// neverReady 返回一个永不就绪的 channel，用于确定性地触发超时分支。\nfunc neverReady() <-chan struct{} { return make(chan struct{}) }\n",
+    "output": "slow: deadline exceeded = true\nok: result = 42 err = <nil>\ncanceled: err is context canceled = true"
+  },
+  "example": {
+    "id": "go-example-083",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "context 二：超时与截止时间（示例）",
+    "summary": "对应主题 T083 的可运行示例。",
+    "concepts": [
+      "context",
+      "超时",
+      "DeadlineExceeded",
+      "errors.Is"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T083 context 二：超时与截止时间。\n//\n// WithTimeout 在指定时长后自动取消，超时后 ctx.Err() 返回\n// context.DeadlineExceeded。本示例只断言「超时是否发生」这类语义结果，\n// 不让任何分支依赖墙钟或调度竞速：慢任务用永不就绪的 channel 等待超时，\n// 快/未取消路径用一个不会被取消的 context 顺序验证。\npackage main\n\nimport (\n\t\"context\"\n\t\"errors\"\n\t\"fmt\"\n)\n\nfunc main() {\n\t// 场景一：任务永不完成 -> 一定超时。选择超时分支是确定性的。\n\tslowCtx, slowCancel := context.WithTimeout(context.Background(), 1)\n\tdefer slowCancel()\n\tselect {\n\tcase <-neverReady():\n\t\tfmt.Println(\"slow: task finished\")\n\tcase <-slowCtx.Done():\n\t\tfmt.Println(\"slow: deadline exceeded =\", errors.Is(slowCtx.Err(), context.DeadlineExceeded))\n\t}\n\n\t// 场景二：未取消的 context -> 顺序返回结果，不依赖时间竞速。\n\tokCtx, okCancel := context.WithCancel(context.Background())\n\tdefer okCancel()\n\tresult, err := doWork(okCtx)\n\tfmt.Println(\"ok: result =\", result, \"err =\", err)\n\n\t// 场景三：显式取消后立即返回 context.Canceled。\n\tcanceledCtx, cancel := context.WithCancel(context.Background())\n\tcancel()\n\t_, err = doWork(canceledCtx)\n\tfmt.Println(\"canceled: err is context canceled =\", errors.Is(err, context.Canceled))\n}\n\n// doWork 在 ctx 已取消时返回错误，否则顺序返回结果。\nfunc doWork(ctx context.Context) (int, error) {\n\tselect {\n\tcase <-ctx.Done():\n\t\treturn 0, ctx.Err()\n\tdefault:\n\t\treturn 42, nil\n\t}\n}\n\n// neverReady 返回一个永不就绪的 channel，用于确定性地触发超时分支。\nfunc neverReady() <-chan struct{} { return make(chan struct{}) }\n",
+    "expectedOutput": "slow: deadline exceeded = true\nok: result = 42 err = <nil>\ncanceled: err is context canceled = true",
+    "templateType": "go"
+  }
+}

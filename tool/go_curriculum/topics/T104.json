@@ -1,0 +1,72 @@
+{
+  "id": "T104",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "go.mod",
+    "timeout_test.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-104",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "超时、重试与优雅关闭",
+    "summary": "给客户端设超时、给服务器做优雅关闭，并只断言“是否超时/是否关闭成功”。",
+    "concepts": [
+      "超时",
+      "优雅关闭",
+      "Shutdown",
+      "确定性断言"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能为 http.Client 设置超时、用 Server.Shutdown 优雅停机，并避免用耗时作断言。",
+    "prerequisites": [
+      "T099 net/http 客户端：GET 与响应处理",
+      "T083 context 二：超时与截止时间"
+    ],
+    "pitfalls": [
+      "不设超时：慢服务会耗尽连接，客户端可能永久阻塞。",
+      "用“耗时约 X 毫秒”作断言：不稳定；应断言是否发生超时。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为客户端加指数退避重试（仅对可重试错误），并测试重试次数。",
+        "hint": "循环调用，失败则 sleep 递增，统计尝试次数。",
+        "answer": "for attempt := 0; attempt < max; attempt++ { ...; if err==nil { break }; time.Sleep(backoff) }。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、timeout_test.go。运行命令：go test ./...。生产环境的 HTTP 需要超时与优雅关闭。示例用 httptest 起一个“慢于客户端超时”的服务器，客户端 Client.Timeout 很短，断言必然返回超时错误——只判断“是否超时”，不比较精确耗时。再用 Server.Shutdown(ctx) 做优雅关闭，等待在途请求结束后释放监听，断言关闭调用无错误。这两个主题（超时、关闭）涉及监听，移动端未实测，标 Go only/desktop；测试用 httptest 保证离线。test-package，go test 运行。",
+    "code": "// T104 超时、重试与优雅关闭。\n//\n// http.Server 应设置超时避免慢连接耗尽资源；优雅关闭用\n// Server.Shutdown(ctx) 等待在途请求结束。本示例用 httptest 服务器 +\n// 带 Client.Timeout 的客户端演示超时，并用 Shutdown 演示优雅关闭。\n// 断言只看\"是否超时/是否成功关闭\"，不比较具体耗时。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httptimeout/\n//   ├── go.mod            // module httptimeout\\n\\ngo 1.27\n//   └── timeout_test.go   // 本文件\n// 运行：go test ./...   desktop only（涉及监听/关闭）。\npackage httptimeout\n\nimport (\n\t\"context\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n\t\"time\"\n)\n\nfunc TestClientTimeout(t *testing.T) {\n\t// 服务器故意慢于客户端超时。\n\tsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\ttime.Sleep(50 * time.Millisecond)\n\t\t_, _ = w.Write([]byte(\"late\"))\n\t}))\n\tdefer srv.Close()\n\n\tclient := &http.Client{Timeout: 5 * time.Millisecond}\n\t_, err := client.Get(srv.URL)\n\t// 断言：必然超时（错误来自 Client.Timeout），不比较精确耗时。\n\tif err == nil {\n\t\tt.Fatal(\"expected timeout error, got nil\")\n\t}\n}\n\nfunc TestGracefulShutdown(t *testing.T) {\n\tsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = w.Write([]byte(\"ok\"))\n\t}))\n\n\t// 正常请求成功。\n\tresp, err := http.Get(srv.URL)\n\tif err != nil {\n\t\tt.Fatalf(\"GET: %v\", err)\n\t}\n\tresp.Body.Close()\n\n\t// 优雅关闭：给一个确定的短超时；断言关闭调用无错误。\n\tctx, cancel := context.WithTimeout(context.Background(), time.Second)\n\tdefer cancel()\n\tif err := srv.Config.Shutdown(ctx); err != nil {\n\t\tt.Fatalf(\"shutdown: %v\", err)\n\t}\n\tsrv.Close()\n}\n",
+    "output": "ok  \tqfli.example/t104\t0.058s"
+  },
+  "example": {
+    "id": "go-example-104",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "超时、重试与优雅关闭（示例）",
+    "summary": "对应主题 T104 的可运行示例。",
+    "concepts": [
+      "超时",
+      "优雅关闭",
+      "Shutdown",
+      "确定性断言"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T104 超时、重试与优雅关闭。\n//\n// http.Server 应设置超时避免慢连接耗尽资源；优雅关闭用\n// Server.Shutdown(ctx) 等待在途请求结束。本示例用 httptest 服务器 +\n// 带 Client.Timeout 的客户端演示超时，并用 Shutdown 演示优雅关闭。\n// 断言只看\"是否超时/是否成功关闭\"，不比较具体耗时。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httptimeout/\n//   ├── go.mod            // module httptimeout\\n\\ngo 1.27\n//   └── timeout_test.go   // 本文件\n// 运行：go test ./...   desktop only（涉及监听/关闭）。\npackage httptimeout\n\nimport (\n\t\"context\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n\t\"time\"\n)\n\nfunc TestClientTimeout(t *testing.T) {\n\t// 服务器故意慢于客户端超时。\n\tsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\ttime.Sleep(50 * time.Millisecond)\n\t\t_, _ = w.Write([]byte(\"late\"))\n\t}))\n\tdefer srv.Close()\n\n\tclient := &http.Client{Timeout: 5 * time.Millisecond}\n\t_, err := client.Get(srv.URL)\n\t// 断言：必然超时（错误来自 Client.Timeout），不比较精确耗时。\n\tif err == nil {\n\t\tt.Fatal(\"expected timeout error, got nil\")\n\t}\n}\n\nfunc TestGracefulShutdown(t *testing.T) {\n\tsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = w.Write([]byte(\"ok\"))\n\t}))\n\n\t// 正常请求成功。\n\tresp, err := http.Get(srv.URL)\n\tif err != nil {\n\t\tt.Fatalf(\"GET: %v\", err)\n\t}\n\tresp.Body.Close()\n\n\t// 优雅关闭：给一个确定的短超时；断言关闭调用无错误。\n\tctx, cancel := context.WithTimeout(context.Background(), time.Second)\n\tdefer cancel()\n\tif err := srv.Config.Shutdown(ctx); err != nil {\n\t\tt.Fatalf(\"shutdown: %v\", err)\n\t}\n\tsrv.Close()\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

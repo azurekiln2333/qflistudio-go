@@ -1,0 +1,70 @@
+{
+  "id": "T117",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "addr=192.168.1.5 level=warn port=9000\naddr=10.0.0.1 level=warn port=8080\naddr=127.0.0.1 level=info port=8080"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-117",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "配置、标志与环境变量",
+    "summary": "用 flag 与环境变量分层注入配置，命令行优先于环境变量优先于默认值。",
+    "concepts": [
+      "flag",
+      "环境变量",
+      "配置优先级",
+      "默认值"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 flag 解析命令行参数、按优先级合并环境变量与默认值。",
+    "prerequisites": [
+      "T067 包级 API 设计与向后兼容"
+    ],
+    "pitfalls": [
+      "直接 os.Getenv 而不设默认值：缺失时得到空字符串，产生隐蔽 bug。",
+      "在 flag.Parse 之后才注册 flag：不会被解析，需在 Parse 前注册。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加一个 --verbose 布尔标志，并让环境变量 APP_VERBOSE=1 也能开启。",
+        "hint": "用 fs.Bool 与 getenv 合并。",
+        "answer": "level := fs.Bool(\"verbose\", getenv(\"APP_VERBOSE\")==\"1\", ...)。"
+      }
+    ],
+    "explain": "配置常来自三处：默认值、环境变量、命令行标志。惯例优先级是命令行 > 环境变量 > 默认值。示例把 getenv 作为参数注入（而非直接读环境），从而在测试与演示中得到确定结果：带标志时标志覆盖环境变量，不带标志时环境变量生效，都没有时用默认值。用 flag.NewFlagSet 便于隔离与测试。这种分层注入让配置既灵活又可测，是 CLI/服务配置的常见基线。",
+    "code": "// T117 配置、标志与环境变量。\n//\n// flag 解析命令行参数；环境变量常用于容器/CI 注入配置。\n// 常见优先级：命令行标志优先于环境变量，环境变量优先于默认值。\n// 本示例构造确定参数并打印生效配置，输出确定（不读真实环境）。\npackage main\n\nimport (\n\t\"flag\"\n\t\"fmt\"\n\t\"os\"\n)\n\n// config 是最终生效的配置。\ntype config struct {\n\tAddr  string\n\tLevel string\n\tPort  int\n}\n\n// loadConfig 依次从默认值、环境变量、命令行标志解析配置。\nfunc loadConfig(args []string, getenv func(string) string) (config, error) {\n\tc := config{Addr: \"127.0.0.1\", Level: \"info\", Port: 8080}\n\n\t// 环境变量层。\n\tif v := getenv(\"APP_ADDR\"); v != \"\" {\n\t\tc.Addr = v\n\t}\n\tif v := getenv(\"APP_LEVEL\"); v != \"\" {\n\t\tc.Level = v\n\t}\n\n\t// 命令行标志层（优先级最高）。\n\tfs := flag.NewFlagSet(\"demo\", flag.ContinueOnError)\n\taddr := fs.String(\"addr\", c.Addr, \"listen address\")\n\tlevel := fs.String(\"level\", c.Level, \"log level\")\n\tport := fs.Int(\"port\", c.Port, \"listen port\")\n\tif err := fs.Parse(args); err != nil {\n\t\treturn config{}, err\n\t}\n\tc.Addr, c.Level, c.Port = *addr, *level, *port\n\treturn c, nil\n}\n\nfunc main() {\n\t// 模拟环境变量：通过注入的 getenv 获得确定性。\n\tenv := map[string]string{\"APP_ADDR\": \"10.0.0.1\", \"APP_LEVEL\": \"warn\"}\n\tgetenv := func(k string) string { return env[k] }\n\n\t// 仅带命令行标志覆盖（应覆盖 env 的 addr）。\n\tc, err := loadConfig([]string{\"-addr\", \"192.168.1.5\", \"-port\", \"9000\"}, getenv)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"addr=%s level=%s port=%d\\n\", c.Addr, c.Level, c.Port)\n\n\t// 不带标志时，环境变量生效。\n\tc2, _ := loadConfig(nil, getenv)\n\tfmt.Printf(\"addr=%s level=%s port=%d\\n\", c2.Addr, c2.Level, c2.Port)\n\n\t// 无 env、无标志时，默认值生效。\n\tc3, _ := loadConfig(nil, func(string) string { return \"\" })\n\tfmt.Printf(\"addr=%s level=%s port=%d\\n\", c3.Addr, c3.Level, c3.Port)\n\n\t_ = os.Getenv // 说明真实环境变量读法；此处为确定性不直接使用。\n}\n",
+    "output": "addr=192.168.1.5 level=warn port=9000\naddr=10.0.0.1 level=warn port=8080\naddr=127.0.0.1 level=info port=8080"
+  },
+  "example": {
+    "id": "go-example-117",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "配置、标志与环境变量（示例）",
+    "summary": "对应主题 T117 的可运行示例。",
+    "concepts": [
+      "flag",
+      "环境变量",
+      "配置优先级",
+      "默认值"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T117 配置、标志与环境变量。\n//\n// flag 解析命令行参数；环境变量常用于容器/CI 注入配置。\n// 常见优先级：命令行标志优先于环境变量，环境变量优先于默认值。\n// 本示例构造确定参数并打印生效配置，输出确定（不读真实环境）。\npackage main\n\nimport (\n\t\"flag\"\n\t\"fmt\"\n\t\"os\"\n)\n\n// config 是最终生效的配置。\ntype config struct {\n\tAddr  string\n\tLevel string\n\tPort  int\n}\n\n// loadConfig 依次从默认值、环境变量、命令行标志解析配置。\nfunc loadConfig(args []string, getenv func(string) string) (config, error) {\n\tc := config{Addr: \"127.0.0.1\", Level: \"info\", Port: 8080}\n\n\t// 环境变量层。\n\tif v := getenv(\"APP_ADDR\"); v != \"\" {\n\t\tc.Addr = v\n\t}\n\tif v := getenv(\"APP_LEVEL\"); v != \"\" {\n\t\tc.Level = v\n\t}\n\n\t// 命令行标志层（优先级最高）。\n\tfs := flag.NewFlagSet(\"demo\", flag.ContinueOnError)\n\taddr := fs.String(\"addr\", c.Addr, \"listen address\")\n\tlevel := fs.String(\"level\", c.Level, \"log level\")\n\tport := fs.Int(\"port\", c.Port, \"listen port\")\n\tif err := fs.Parse(args); err != nil {\n\t\treturn config{}, err\n\t}\n\tc.Addr, c.Level, c.Port = *addr, *level, *port\n\treturn c, nil\n}\n\nfunc main() {\n\t// 模拟环境变量：通过注入的 getenv 获得确定性。\n\tenv := map[string]string{\"APP_ADDR\": \"10.0.0.1\", \"APP_LEVEL\": \"warn\"}\n\tgetenv := func(k string) string { return env[k] }\n\n\t// 仅带命令行标志覆盖（应覆盖 env 的 addr）。\n\tc, err := loadConfig([]string{\"-addr\", \"192.168.1.5\", \"-port\", \"9000\"}, getenv)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"addr=%s level=%s port=%d\\n\", c.Addr, c.Level, c.Port)\n\n\t// 不带标志时，环境变量生效。\n\tc2, _ := loadConfig(nil, getenv)\n\tfmt.Printf(\"addr=%s level=%s port=%d\\n\", c2.Addr, c2.Level, c2.Port)\n\n\t// 无 env、无标志时，默认值生效。\n\tc3, _ := loadConfig(nil, func(string) string { return \"\" })\n\tfmt.Printf(\"addr=%s level=%s port=%d\\n\", c3.Addr, c3.Level, c3.Port)\n\n\t_ = os.Getenv // 说明真实环境变量读法；此处为确定性不直接使用。\n}\n",
+    "expectedOutput": "addr=192.168.1.5 level=warn port=9000\naddr=10.0.0.1 level=warn port=8080\naddr=127.0.0.1 level=info port=8080",
+    "templateType": "go"
+  }
+}

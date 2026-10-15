@@ -1,0 +1,72 @@
+{
+  "id": "T078",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "config_test.go",
+    "go.mod"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-078",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "sync.RWMutex 读写分离",
+    "summary": "读多写少场景用 RWMutex 允许多读并发、写独占，并验证读写结果正确。",
+    "concepts": [
+      "RWMutex",
+      "读写分离",
+      "并发映射",
+      "go test -race"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能根据读写比例选择 RWMutex，并说明 RLock/RUnlock 与 Lock/Unlock 的区别。",
+    "prerequisites": [
+      "T077 sync.Mutex 与临界区保护",
+      "T022 映射：增删查与存在性判断"
+    ],
+    "pitfalls": [
+      "读操作里做了写：会导致死锁或数据损坏，RLock 区不可写。",
+      "写少时也全用 RWMutex：RWMutex 有额外开销，写多时不如普通 Mutex。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 Config 增加 Keys() 返回排序后的键，并在并发测试中验证。",
+        "hint": "Keys 用 RLock；返回前排序。",
+        "answer": "func (c *Config) Keys() []string { c.mu.RLock(); defer c.mu.RUnlock(); ... sort.Strings(ks); return ks }"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：config_test.go、go.mod。运行命令：go test ./...。RWMutex 区分读锁与写锁：RWMutex.RLock 允许多个读者并发，写者用 Lock 独占。因此读多写少时吞吐更高。示例用 20 个写者写入不同键、50 个读者并发读取，并断言每个键都能读回正确值——这是确定性判据。test-package：go.mod + *_test.go，go test 运行。注意 RLock 区不能修改共享数据，否则破坏语义。移动端 Yaegi 未实测，desktop only。",
+    "code": "// T078 sync.RWMutex 读写分离。\n//\n// 读多写少的场景下，用 RWMutex 允许多个读并发进行，只有写才独占。\n// 本示例维护一个配置映射：读操作可并发，写操作互斥，最终值确定。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   rwconfig/\n//   ├── go.mod         // module rwconfig\\n\\ngo 1.27\n//   └── config_test.go // 本文件\n// 运行：go test ./...  /  go test -race ./...\n// 移动端 Yaegi 不支持 go test/-race，desktop only。\npackage rwconfig\n\nimport (\n\t\"strconv\"\n\t\"sync\"\n\t\"testing\"\n)\n\n// Config 是并发安全的键值配置。\ntype Config struct {\n\tmu sync.RWMutex\n\tm  map[string]string\n}\n\n// NewConfig 建立空配置。\nfunc NewConfig() *Config { return &Config{m: make(map[string]string)} }\n\n// Set 写操作：独占锁。\nfunc (c *Config) Set(k, v string) {\n\tc.mu.Lock()\n\tdefer c.mu.Unlock()\n\tc.m[k] = v\n}\n\n// Get 读操作：共享锁，多读可并发。\nfunc (c *Config) Get(k string) (string, bool) {\n\tc.mu.RLock()\n\tdefer c.mu.RUnlock()\n\tv, ok := c.m[k]\n\treturn v, ok\n}\n\nfunc TestConfigConcurrentReadWrite(t *testing.T) {\n\tc := NewConfig()\n\tvar wg sync.WaitGroup\n\n\t// 若干写者写入互不相同的键。\n\tconst writers = 20\n\twg.Add(writers)\n\tfor i := 0; i < writers; i++ {\n\t\tgo func(i int) {\n\t\t\tdefer wg.Done()\n\t\t\tc.Set(\"k\"+strconv.Itoa(i), strconv.Itoa(i))\n\t\t}(i)\n\t}\n\twg.Wait()\n\n\t// 若干读者并发读取；确定性断言：每个键都能读回正确值。\n\tconst readers = 50\n\twg.Add(readers)\n\terrs := make(chan string, readers)\n\tfor i := 0; i < readers; i++ {\n\t\tgo func(i int) {\n\t\t\tdefer wg.Done()\n\t\t\tkey := \"k\" + strconv.Itoa(i%writers)\n\t\t\tv, ok := c.Get(key)\n\t\t\tif !ok || v != strconv.Itoa(i%writers) {\n\t\t\t\terrs <- \"bad value for \" + key\n\t\t\t}\n\t\t}(i)\n\t}\n\twg.Wait()\n\tclose(errs)\n\n\tfor e := range errs {\n\t\tt.Fatal(e)\n\t}\n}\n",
+    "output": "ok  \tqfli.example/t078\t0.003s"
+  },
+  "example": {
+    "id": "go-example-078",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "sync.RWMutex 读写分离（示例）",
+    "summary": "对应主题 T078 的可运行示例。",
+    "concepts": [
+      "RWMutex",
+      "读写分离",
+      "并发映射",
+      "go test -race"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T078 sync.RWMutex 读写分离。\n//\n// 读多写少的场景下，用 RWMutex 允许多个读并发进行，只有写才独占。\n// 本示例维护一个配置映射：读操作可并发，写操作互斥，最终值确定。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   rwconfig/\n//   ├── go.mod         // module rwconfig\\n\\ngo 1.27\n//   └── config_test.go // 本文件\n// 运行：go test ./...  /  go test -race ./...\n// 移动端 Yaegi 不支持 go test/-race，desktop only。\npackage rwconfig\n\nimport (\n\t\"strconv\"\n\t\"sync\"\n\t\"testing\"\n)\n\n// Config 是并发安全的键值配置。\ntype Config struct {\n\tmu sync.RWMutex\n\tm  map[string]string\n}\n\n// NewConfig 建立空配置。\nfunc NewConfig() *Config { return &Config{m: make(map[string]string)} }\n\n// Set 写操作：独占锁。\nfunc (c *Config) Set(k, v string) {\n\tc.mu.Lock()\n\tdefer c.mu.Unlock()\n\tc.m[k] = v\n}\n\n// Get 读操作：共享锁，多读可并发。\nfunc (c *Config) Get(k string) (string, bool) {\n\tc.mu.RLock()\n\tdefer c.mu.RUnlock()\n\tv, ok := c.m[k]\n\treturn v, ok\n}\n\nfunc TestConfigConcurrentReadWrite(t *testing.T) {\n\tc := NewConfig()\n\tvar wg sync.WaitGroup\n\n\t// 若干写者写入互不相同的键。\n\tconst writers = 20\n\twg.Add(writers)\n\tfor i := 0; i < writers; i++ {\n\t\tgo func(i int) {\n\t\t\tdefer wg.Done()\n\t\t\tc.Set(\"k\"+strconv.Itoa(i), strconv.Itoa(i))\n\t\t}(i)\n\t}\n\twg.Wait()\n\n\t// 若干读者并发读取；确定性断言：每个键都能读回正确值。\n\tconst readers = 50\n\twg.Add(readers)\n\terrs := make(chan string, readers)\n\tfor i := 0; i < readers; i++ {\n\t\tgo func(i int) {\n\t\t\tdefer wg.Done()\n\t\t\tkey := \"k\" + strconv.Itoa(i%writers)\n\t\t\tv, ok := c.Get(key)\n\t\t\tif !ok || v != strconv.Itoa(i%writers) {\n\t\t\t\terrs <- \"bad value for \" + key\n\t\t\t}\n\t\t}(i)\n\t}\n\twg.Wait()\n\tclose(errs)\n\n\tfor e := range errs {\n\t\tt.Fatal(e)\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

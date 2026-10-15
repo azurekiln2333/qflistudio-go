@@ -1,0 +1,71 @@
+{
+  "id": "T099",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "client_test.go",
+    "go.mod"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-099",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "net/http 客户端：GET 与响应处理",
+    "summary": "用 http.Client 发起 GET 并在本地 httptest 服务器上验证状态码与响应体。",
+    "concepts": [
+      "http.Client",
+      "GET",
+      "httptest",
+      "响应体"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 http.Client 发起请求、读取响应体，并用 httptest 离线测试。",
+    "prerequisites": [
+      "T085 io.Reader / io.Writer 抽象"
+    ],
+    "pitfalls": [
+      "不关闭 resp.Body：连接无法复用、资源泄漏。",
+      "对真实网络做测试：不稳定且依赖外网；应使 httptest 本地服务器。"
+    ],
+    "exercises": [
+      {
+        "prompt": "断言服务器收到的请求方法，并对非 200 状态做错误处理。",
+        "hint": "在 handler 里检查 r.Method；客户端检查 resp.StatusCode。",
+        "answer": "handler 用 t.Errorf 校验方法；客户端 if resp.StatusCode != 200 { ... }。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：client_test.go、go.mod。运行命令：go test ./...。net/http 的客户端核心是 http.Client 与 http.Get/Do。响应体 resp.Body 是 io.ReadCloser，读完必须 Close 以便连接复用。示例用 net/http/httptest.NewServer 起一个本地服务器，完全离线；测试断言状态码 200 与响应体内容。这是 test-package 工程例子（go.mod + *_test.go），用 go test 运行；移动端 net 能力未实测，标 Yaegi*（待实测），默认 desktop。用 httptest 而非真实服务，满足“离线、确定”的硬约束。",
+    "code": "// T099 net/http 客户端：GET 与响应处理。\n//\n// http.Client 发起请求、读取响应。为避免联网，本示例用\n// net/http/httptest 起一个本地测试服务器，Client 请求它并读取 body。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpclient/\n//   ├── go.mod        // module httpclient\\n\\ngo 1.27\n//   └── client_test.go // 本文件\n// 运行（官方 SDK）：go test ./...\n// 移动端 Yaegi 对 net 未实测，desktop only。\npackage httpclient\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\nfunc TestClientGet(t *testing.T) {\n\t// 本地测试服务器，不访问外网。\n\tsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.Method != http.MethodGet {\n\t\t\tt.Errorf(\"method = %s, want GET\", r.Method)\n\t\t}\n\t\tw.WriteHeader(http.StatusOK)\n\t\t_, _ = io.WriteString(w, \"hello from server\")\n\t}))\n\tdefer srv.Close()\n\n\tresp, err := http.Get(srv.URL)\n\tif err != nil {\n\t\tt.Fatalf(\"GET failed: %v\", err)\n\t}\n\tdefer resp.Body.Close()\n\n\tif resp.StatusCode != http.StatusOK {\n\t\tt.Fatalf(\"status = %d, want 200\", resp.StatusCode)\n\t}\n\tbody, err := io.ReadAll(resp.Body)\n\tif err != nil {\n\t\tt.Fatalf(\"read body: %v\", err)\n\t}\n\tif string(body) != \"hello from server\" {\n\t\tt.Fatalf(\"body = %q\", string(body))\n\t}\n}\n",
+    "output": "ok  \tqfli.example/t099\t0.006s"
+  },
+  "example": {
+    "id": "go-example-099",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "net/http 客户端：GET 与响应处理（示例）",
+    "summary": "对应主题 T099 的可运行示例。",
+    "concepts": [
+      "http.Client",
+      "GET",
+      "httptest",
+      "响应体"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T099 net/http 客户端：GET 与响应处理。\n//\n// http.Client 发起请求、读取响应。为避免联网，本示例用\n// net/http/httptest 起一个本地测试服务器，Client 请求它并读取 body。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpclient/\n//   ├── go.mod        // module httpclient\\n\\ngo 1.27\n//   └── client_test.go // 本文件\n// 运行（官方 SDK）：go test ./...\n// 移动端 Yaegi 对 net 未实测，desktop only。\npackage httpclient\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\nfunc TestClientGet(t *testing.T) {\n\t// 本地测试服务器，不访问外网。\n\tsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.Method != http.MethodGet {\n\t\t\tt.Errorf(\"method = %s, want GET\", r.Method)\n\t\t}\n\t\tw.WriteHeader(http.StatusOK)\n\t\t_, _ = io.WriteString(w, \"hello from server\")\n\t}))\n\tdefer srv.Close()\n\n\tresp, err := http.Get(srv.URL)\n\tif err != nil {\n\t\tt.Fatalf(\"GET failed: %v\", err)\n\t}\n\tdefer resp.Body.Close()\n\n\tif resp.StatusCode != http.StatusOK {\n\t\tt.Fatalf(\"status = %d, want 200\", resp.StatusCode)\n\t}\n\tbody, err := io.ReadAll(resp.Body)\n\tif err != nil {\n\t\tt.Fatalf(\"read body: %v\", err)\n\t}\n\tif string(body) != \"hello from server\" {\n\t\tt.Fatalf(\"body = %q\", string(body))\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

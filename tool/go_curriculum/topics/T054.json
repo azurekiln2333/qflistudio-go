@@ -1,0 +1,71 @@
+{
+  "id": "T054",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "10/2: 5 err: <nil>\n1/0 -> 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-054",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "panic 与 recover：边界与代价",
+    "summary": "用 recover 在 defer 中兜底，把 panic 转成错误并说明其适用边界。",
+    "concepts": [
+      "panic",
+      "recover",
+      "defer",
+      "边界"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能在 defer 中用 recover 兜底，说明库函数应返回 error 而非 panic。",
+    "prerequisites": [
+      "T028 defer 基础与执行顺序",
+      "T049 error 接口与错误即值"
+    ],
+    "pitfalls": [
+      "在非 defer 中调用 recover：无效，recover 只在 defer 中生效。",
+      "用 panic 处理可预期错误：应返回 error；panic 只用于不可恢复的编程错误。"
+    ],
+    "exercises": [
+      {
+        "prompt": "写一个函数，把切片越界 panic 转为错误返回。",
+        "hint": "defer + recover 包裹索引访问。",
+        "answer": "defer 中 recover 后设置命名返回值 err；访问 s[i] 触发越界时被捕获。"
+      }
+    ],
+    "explain": "panic 表示不可继续的程序错误；recover 只能在 defer 中调用，用于兜底。惯例：库函数用 error 表达可预期失败，不使用 panic；recover 一般只用在进程或请求边界（如 HTTP handler、job runner），避免单个请求的 panic 拖垮整个服务。示例用 recover 把除零 panic 转成 error 让程序继续，并用 recover 捕获显式 panic 后继续运行，演示边界兜底的价值与代价。",
+    "code": "// T054 panic 与 recover：边界与代价。\n//\n// panic 表示不可继续的程序错误；recover 只能在 defer 中调用，用于兜底。\n// 惯例：库函数用 error，不使用 panic；recover 一般只用在进程/请求边界。\npackage main\n\nimport \"fmt\"\n\n// safeDivide 用 recover 把除零 panic 转成 error（边界兜底）。\nfunc safeDivide(a, b int) (result int, err error) {\n\tdefer func() {\n\t\tif r := recover(); r != nil {\n\t\t\terr = fmt.Errorf(\"recovered: %v\", r)\n\t\t}\n\t}()\n\treturn a / b, nil // b==0 时 panics，被上面 recover 捕获\n}\n\n// mustPositive panics 表示违反前提（不可恢复）。\nfunc mustPositive(n int) int {\n\tif n <= 0 {\n\t\tpanic(\"n must be positive\")\n\t}\n\treturn n\n}\n\nfunc main() {\n\t// 正常路径。\n\tr, err := safeDivide(10, 2)\n\tfmt.Println(\"10/2:\", r, \"err:\", err)\n\n\t// 除零被 recover 转成 error，程序继续运行。\n\tr, err = safeDivide(1, 0)\n\tfmt.Println(\"1/0 ->\", r, \"err:\", err)\n\n\t// 直接 panic 且不 recover 会终止程序；示例用 recover 演示其可被捕获。\n\tfunc() {\n\t\tdefer func() {\n\t\t\tfmt.Println(\"caught panic:\", recover())\n\t\t}()\n\t\tmustPositive(0)\n\t}()\n\n\tfmt.Println(\"program continues after recovered panic\")\n}\n",
+    "output": "10/2: 5 err: <nil>\n1/0 -> 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic"
+  },
+  "example": {
+    "id": "go-example-054",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "panic 与 recover：边界与代价（示例）",
+    "summary": "对应主题 T054 的可运行示例。",
+    "concepts": [
+      "panic",
+      "recover",
+      "defer",
+      "边界"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T054 panic 与 recover：边界与代价。\n//\n// panic 表示不可继续的程序错误；recover 只能在 defer 中调用，用于兜底。\n// 惯例：库函数用 error，不使用 panic；recover 一般只用在进程/请求边界。\npackage main\n\nimport \"fmt\"\n\n// safeDivide 用 recover 把除零 panic 转成 error（边界兜底）。\nfunc safeDivide(a, b int) (result int, err error) {\n\tdefer func() {\n\t\tif r := recover(); r != nil {\n\t\t\terr = fmt.Errorf(\"recovered: %v\", r)\n\t\t}\n\t}()\n\treturn a / b, nil // b==0 时 panics，被上面 recover 捕获\n}\n\n// mustPositive panics 表示违反前提（不可恢复）。\nfunc mustPositive(n int) int {\n\tif n <= 0 {\n\t\tpanic(\"n must be positive\")\n\t}\n\treturn n\n}\n\nfunc main() {\n\t// 正常路径。\n\tr, err := safeDivide(10, 2)\n\tfmt.Println(\"10/2:\", r, \"err:\", err)\n\n\t// 除零被 recover 转成 error，程序继续运行。\n\tr, err = safeDivide(1, 0)\n\tfmt.Println(\"1/0 ->\", r, \"err:\", err)\n\n\t// 直接 panic 且不 recover 会终止程序；示例用 recover 演示其可被捕获。\n\tfunc() {\n\t\tdefer func() {\n\t\t\tfmt.Println(\"caught panic:\", recover())\n\t\t}()\n\t\tmustPositive(0)\n\t}()\n\n\tfmt.Println(\"program continues after recovered panic\")\n}\n",
+    "expectedOutput": "10/2: 5 err: <nil>\n1/0 -> 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic",
+    "templateType": "go"
+  }
+}

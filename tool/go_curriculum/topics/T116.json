@@ -1,0 +1,71 @@
+{
+  "id": "T116",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "level=INFO msg=\"server starting\" addr=127.0.0.1:8080 pid=1\nlevel=WARN msg=\"slow query\" component=db ms=120\n{\"level\":\"ERROR\",\"msg\":\"failed to connect\",\"host\":\"db1\"}\nlevel=INFO msg=\"shutdown complete\""
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-116",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "日志与可观测性基线：log/slog",
+    "summary": "用 log/slog 输出结构化日志（Text/JSON），设置级别并用 ReplaceAttr 保证输出确定。",
+    "concepts": [
+      "slog",
+      "结构化日志",
+      "级别",
+      "go1.21"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 slog 记录结构化字段、设置级别，并理解 Text/JSON handler 的差异。",
+    "prerequisites": [
+      "T008 格式化输出与 fmt 谓词"
+    ],
+    "pitfalls": [
+      "log/slog 需要 Go 1.21+：低版本不可用。",
+      "默认 Text handler 带时间戳：会破坏确定性；示例用 ReplaceAttr 去掉 time 字段。",
+      "平台限制：本主题在移动端 Yaegi 解释器下 log/slog 输出为空，仅桌面官方 Go 可运行（保持 desktop-only）。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把级别提到 Warn，验证 Info 日志被过滤。",
+        "hint": "HandlerOptions{Level: slog.LevelWarn}。",
+        "answer": "级别设为 Warn 后 Info 不输出，只有 Warn/Error 出现。"
+      }
+    ],
+    "explain": "log/slog（Go 1.21+）提供结构化日志：字段以 key=value 形式输出，可被机器检索。Text handler 输出人类可读行，JSON handler 输出单行 JSON。可设级别（Info/Warn/Error）过滤低级别日志。为使示例输出确定，用 ReplaceAttr 去掉默认的 time 属性——日志时间依赖运行时刻，不能作为固定输出。示例演示 Info/Warn 结构化字段、Debug 被过滤、以及 JSON handler 的 Error 输出。移动端 slog 支持未实测，标 Yaegi*（待实测），默认 desktop。",
+    "code": "// T116 日志与可观测性基线：log/slog。\n//\n// log/slog（Go 1.21+）提供结构化日志：键值对可被机器检索。\n// 可设置级别（Info/Warn/Error），并选择 Text 或 JSON handler。\n//\n// 为让输出确定且可被任何运行环境捕获，本示例把日志写入 bytes.Buffer\n// （而非直接写 os.Stdout），并用 ReplaceAttr 去掉默认的时间戳字段——\n// 日志时间依赖运行时刻，不能作为固定输出。\npackage main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"log/slog\"\n)\n\n// dropTime 删除 slog 默认的 time 属性，使输出与运行时刻无关。\nfunc dropTime(_ []string, a slog.Attr) slog.Attr {\n\tif a.Key == slog.TimeKey {\n\t\treturn slog.Attr{} // 空 Attr 会被忽略\n\t}\n\treturn a\n}\n\nfunc main() {\n\tvar buf bytes.Buffer\n\topts := &slog.HandlerOptions{Level: slog.LevelInfo, ReplaceAttr: dropTime}\n\n\t// Text handler，级别 Info；输出写入内存缓冲。\n\tlogger := slog.New(slog.NewTextHandler(&buf, opts))\n\n\tlogger.Info(\"server starting\", \"addr\", \"127.0.0.1:8080\", \"pid\", 1)\n\tlogger.With(\"component\", \"db\").Warn(\"slow query\", \"ms\", 120)\n\tlogger.Debug(\"this is filtered out\") // 低于 Info，被过滤\n\n\t// JSON handler，级别 Error；同一缓冲区继续追加。\n\tjsonLogger := slog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{\n\t\tLevel:       slog.LevelError,\n\t\tReplaceAttr: dropTime,\n\t}))\n\tjsonLogger.Error(\"failed to connect\", \"host\", \"db1\")\n\n\tlogger.Info(\"shutdown complete\")\n\n\t// 一次性打印全部结构化日志，输出确定。\n\tfmt.Print(buf.String())\n}\n",
+    "output": "level=INFO msg=\"server starting\" addr=127.0.0.1:8080 pid=1\nlevel=WARN msg=\"slow query\" component=db ms=120\n{\"level\":\"ERROR\",\"msg\":\"failed to connect\",\"host\":\"db1\"}\nlevel=INFO msg=\"shutdown complete\""
+  },
+  "example": {
+    "id": "go-example-116",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "日志与可观测性基线：log/slog（示例）",
+    "summary": "对应主题 T116 的可运行示例。",
+    "concepts": [
+      "slog",
+      "结构化日志",
+      "级别",
+      "go1.21"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T116 日志与可观测性基线：log/slog。\n//\n// log/slog（Go 1.21+）提供结构化日志：键值对可被机器检索。\n// 可设置级别（Info/Warn/Error），并选择 Text 或 JSON handler。\n//\n// 为让输出确定且可被任何运行环境捕获，本示例把日志写入 bytes.Buffer\n// （而非直接写 os.Stdout），并用 ReplaceAttr 去掉默认的时间戳字段——\n// 日志时间依赖运行时刻，不能作为固定输出。\npackage main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"log/slog\"\n)\n\n// dropTime 删除 slog 默认的 time 属性，使输出与运行时刻无关。\nfunc dropTime(_ []string, a slog.Attr) slog.Attr {\n\tif a.Key == slog.TimeKey {\n\t\treturn slog.Attr{} // 空 Attr 会被忽略\n\t}\n\treturn a\n}\n\nfunc main() {\n\tvar buf bytes.Buffer\n\topts := &slog.HandlerOptions{Level: slog.LevelInfo, ReplaceAttr: dropTime}\n\n\t// Text handler，级别 Info；输出写入内存缓冲。\n\tlogger := slog.New(slog.NewTextHandler(&buf, opts))\n\n\tlogger.Info(\"server starting\", \"addr\", \"127.0.0.1:8080\", \"pid\", 1)\n\tlogger.With(\"component\", \"db\").Warn(\"slow query\", \"ms\", 120)\n\tlogger.Debug(\"this is filtered out\") // 低于 Info，被过滤\n\n\t// JSON handler，级别 Error；同一缓冲区继续追加。\n\tjsonLogger := slog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{\n\t\tLevel:       slog.LevelError,\n\t\tReplaceAttr: dropTime,\n\t}))\n\tjsonLogger.Error(\"failed to connect\", \"host\", \"db1\")\n\n\tlogger.Info(\"shutdown complete\")\n\n\t// 一次性打印全部结构化日志，输出确定。\n\tfmt.Print(buf.String())\n}\n",
+    "expectedOutput": "level=INFO msg=\"server starting\" addr=127.0.0.1:8080 pid=1\nlevel=WARN msg=\"slow query\" component=db ms=120\n{\"level\":\"ERROR\",\"msg\":\"failed to connect\",\"host\":\"db1\"}\nlevel=INFO msg=\"shutdown complete\"",
+    "templateType": "go"
+  }
+}

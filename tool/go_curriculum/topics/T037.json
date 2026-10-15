@@ -1,0 +1,68 @@
+{
+  "id": "T037",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "Ada 36\nBob 0\npointer set 37\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-037",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "结构体定义、字面量与字段访问",
+    "summary": "定义结构体并用位置/键值字面量初始化，通过指针访问字段。",
+    "concepts": [
+      "结构体",
+      "字面量",
+      "字段访问"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用两种字面量创建结构体，并用指针直接读写字段。",
+    "prerequisites": [
+      "T004 基础类型"
+    ],
+    "pitfalls": [
+      "位置字面量必须给全字段且顺序正确：字段增删会导致位置字面量编译错误或错位，需谨慎使用。",
+      "键值字面量未写的字段是零值而非报错：容易误以为字段缺失，应明确知道未写字段为零值。"
+    ],
+    "exercises": [
+      {
+        "prompt": "给 user 增加 Email 字段，并只写 Name 初始化，打印 Email 观察零值。",
+        "hint": "未写的字段取零值。",
+        "answer": "Email 打印为空串，因为 string 的零值是空串。"
+      }
+    ],
+    "explain": "结构体把多个字段聚合为一个类型。初始化有两种字面量：位置字面量按字段声明顺序逐个赋值（易受字段变动影响），键值字面量按字段名赋值、未写的字段取零值。样例各演示一种。\n\n通过指针访问字段时 Go 会自动解引用：p.Age 等价于 (*p).Age，因此 p.Age=37 直接修改了 u。字段可见性取决于首字母大小写：大写导出、小写仅包内可见。\n\n本样例演示字面量、零值字段与指针字段访问。",
+    "code": "package main\n\nimport \"fmt\"\n\ntype user struct {\n\tName string\n\tAge  int\n}\n\nfunc main() {\n\tu := user{\"Ada\", 36}          // 位置字面量\n\tv := user{Name: \"Bob\"}        // 键值字面量，未写的字段为零值\n\tfmt.Println(u.Name, u.Age)\n\tfmt.Println(v.Name, v.Age)\n\t// 指针字段访问自动解引用\n\tp := &u\n\tp.Age = 37\n\tfmt.Println(\"pointer set\", u.Age)\n}\n",
+    "output": "Ada 36\nBob 0\npointer set 37"
+  },
+  "example": {
+    "id": "go-example-037",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "结构体定义、字面量与字段访问",
+    "summary": "定义结构体并用位置/键值字面量初始化，通过指针访问字段。",
+    "concepts": [
+      "结构体",
+      "字面量",
+      "字段访问"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\ntype user struct {\n\tName string\n\tAge  int\n}\n\nfunc main() {\n\tu := user{\"Ada\", 36}          // 位置字面量\n\tv := user{Name: \"Bob\"}        // 键值字面量，未写的字段为零值\n\tfmt.Println(u.Name, u.Age)\n\tfmt.Println(v.Name, v.Age)\n\t// 指针字段访问自动解引用\n\tp := &u\n\tp.Age = 37\n\tfmt.Println(\"pointer set\", u.Age)\n}\n",
+    "expectedOutput": "Ada 36\nBob 0\npointer set 37",
+    "templateType": "go"
+  }
+}

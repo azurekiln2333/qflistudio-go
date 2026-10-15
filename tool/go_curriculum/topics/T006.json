@@ -1,0 +1,68 @@
+{
+  "id": "T006",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "3 3\nbig=1099511627776 small=0\ntrunc(3.9)=3\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-006",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "类型转换与数值精度",
+    "summary": "显式类型转换、截断与浮点取整，理解 Go 不做隐式数值转换。",
+    "concepts": [
+      "类型转换",
+      "截断",
+      "精度"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能在数值类型间做显式转换，并解释截断与浮点取整的行为。",
+    "prerequisites": [
+      "T004 基础类型"
+    ],
+    "pitfalls": [
+      "期待隐式转换：Go 不会在 int 与 float64 间自动转换，必须写 float64(i)，否则编译报错。",
+      "把 3.9 直接写成 int(3.9)：无类型浮点常量不能直接转成 int，会报 cannot convert；要先赋给 float64 变量再转换。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把一个大 int64 转成 int32 并打印，解释看到的数值变化。",
+        "hint": "窄化转换会保留低 32 位，符号位按目标类型解释。",
+        "answer": "1<<40 转 int32 后为 0，因为低 32 位全为 0；说明窄化是截断而非饱和。"
+      }
+    ],
+    "explain": "Go 的数值类型之间没有隐式转换：把 int 赋给 float64 或反向都不允许，必须显式写出目标类型。这消除了大量因隐式提升导致的精度意外。转换语义分两类：整数窄化（如 int64 到 int32）按位截断，只保留能放进目标宽度的低位；浮点到整数丢弃小数部分（向零取整）。\n\n一个容易踩的细节：无类型常量 3.9 不能被写成 int(3.9)，因为它是精度无限的常量，编译器不允许直接窄化为整数；要先把它放进 float64 变量，再做转换。\n\n本样例演示显式转换、int64 到 int32 的截断，以及浮点变量的取整结果。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tvar i int = 3\n\tvar f float64 = float64(i) // 显式转换\n\tbig := int64(1 << 40)\n\tsmall := int32(big) // 截断，保留低位\n\tfmt.Println(i, f)\n\tfmt.Printf(\"big=%d small=%d\\n\", big, small)\n\t// 浮点到整数会丢弃小数部分（向零取整）；常量 3.9 不能直接转 int，\n\t// 必须先放进 float64 变量再转换。\n\tvar x float64 = 3.9\n\tfmt.Printf(\"trunc(3.9)=%d\\n\", int(x))\n}\n",
+    "output": "3 3\nbig=1099511627776 small=0\ntrunc(3.9)=3"
+  },
+  "example": {
+    "id": "go-example-006",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "显式转换与截断",
+    "summary": "演示 int/float 显式转换、int64 到 int32 的截断与浮点取整。",
+    "concepts": [
+      "类型转换",
+      "截断",
+      "精度"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tvar i int = 3\n\tvar f float64 = float64(i) // 显式转换\n\tbig := int64(1 << 40)\n\tsmall := int32(big) // 截断，保留低位\n\tfmt.Println(i, f)\n\tfmt.Printf(\"big=%d small=%d\\n\", big, small)\n\t// 浮点到整数会丢弃小数部分（向零取整）；常量 3.9 不能直接转 int，\n\t// 必须先放进 float64 变量再转换。\n\tvar x float64 = 3.9\n\tfmt.Printf(\"trunc(3.9)=%d\\n\", int(x))\n}\n",
+    "expectedOutput": "3 3\nbig=1099511627776 small=0\ntrunc(3.9)=3",
+    "templateType": "go"
+  }
+}

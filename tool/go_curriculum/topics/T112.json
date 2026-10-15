@@ -1,0 +1,72 @@
+{
+  "id": "T112",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "value: 1 2\npointer: 3 4\ninterface: {5 6}\nhint: `go build -gcflags=-m .` shows which variables escape to the heap"
+  },
+  "sampleFiles": [
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-112",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "内存分配与逃逸分析",
+    "summary": "用 -gcflags=-m 查看逃逸报告，理解返回值、返回指针、存入接口的不同分配行为。",
+    "concepts": [
+      "逃逸分析",
+      "堆/栈",
+      "gcflags -m",
+      "性能"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 gcflags=-m 判断变量是否逃逸，并据此减少堆分配。",
+    "prerequisites": [
+      "T030 指针二：指针与切片/映射的关系",
+      "T041 接口基础与鸭子类型"
+    ],
+    "pitfalls": [
+      "以为返回结构体一定拷贝很贵：小结构体按值返回通常栈分配、可被内联优化。",
+      "盲目用指针避免“拷贝”：可能导致逃逸到堆，反而增加 GC 压力。"
+    ],
+    "exercises": [
+      {
+        "prompt": "对 makeValue/makePointer/makeInterface 分别运行 gcflags=-m，记录哪些变量逃逸并解释原因。",
+        "hint": "地址被返回或存入接口的会逃逸。",
+        "answer": "makePointer 的 p 逃逸（&p 返回）；makeInterface 的 p 逃逸（装箱进 any）；makeValue 的 p 可能不逃逸。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。Go 编译器做逃逸分析，决定变量分配在栈还是堆。若变量地址逃出函数（被返回、存入接口、被长期闭包捕获），就分配到堆。用 go build -gcflags=-m 可查看报告。示例给出三种典型写法：按值返回小结构体（常栈分配）、返回局部变量指针（逃逸到堆）、存入 any 接口（通常逃逸）。理解这些差异有助于在性能敏感处减少堆分配、降低 GC 压力。module-project 工程例子（go.mod + main.go），用 go run 运行并可用 -gcflags=-m 观察；desktop only。",
+    "code": "// T112 内存分配与逃逸分析。\n//\n// 编译器决定一个变量分配在栈还是堆上。若变量\"逃逸\"到函数外（被返回、\n// 存入接口、被闭包长期捕获等），就分配到堆。用\n//   go build -gcflags=-m\n// 可查看逃逸报告。本示例给出可对比的两种写法。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   escapeanalyze/\n//   ├── go.mod   // module escapeanalyze\\n\\ngo 1.27\n//   └── main.go  // 本文件\n// 运行（官方 SDK）：\n//   go run .\n//   go build -gcflags=-m .    // 查看逃逸报告\n// desktop only。\npackage main\n\nimport \"fmt\"\n\n// Point 是小的值类型。\ntype Point struct{ X, Y int }\n\n// makeValue 按值返回：调用方拿到副本。\nfunc makeValue() Point {\n\tp := Point{1, 2} // 可能留在栈上\n\treturn p\n}\n\n// makePointer 返回指针：p 逃逸到堆。\nfunc makePointer() *Point {\n\tp := Point{3, 4} // 逃逸：地址被返回\n\treturn &p\n}\n\n// makeInterface 存入接口：通常逃逸（接口值在堆上）。\nfunc makeInterface() any {\n\tp := Point{5, 6}\n\treturn p\n}\n\nfunc main() {\n\tv := makeValue()\n\tfmt.Println(\"value:\", v.X, v.Y)\n\n\tp := makePointer()\n\tfmt.Println(\"pointer:\", p.X, p.Y)\n\n\tvar a any = makeInterface()\n\tfmt.Println(\"interface:\", a)\n\n\tfmt.Println(\"hint: `go build -gcflags=-m .` shows which variables escape to the heap\")\n}\n",
+    "output": "value: 1 2\npointer: 3 4\ninterface: {5 6}\nhint: `go build -gcflags=-m .` shows which variables escape to the heap"
+  },
+  "example": {
+    "id": "go-example-112",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "内存分配与逃逸分析（示例）",
+    "summary": "对应主题 T112 的可运行示例。",
+    "concepts": [
+      "逃逸分析",
+      "堆/栈",
+      "gcflags -m",
+      "性能"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T112 内存分配与逃逸分析。\n//\n// 编译器决定一个变量分配在栈还是堆上。若变量\"逃逸\"到函数外（被返回、\n// 存入接口、被闭包长期捕获等），就分配到堆。用\n//   go build -gcflags=-m\n// 可查看逃逸报告。本示例给出可对比的两种写法。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   escapeanalyze/\n//   ├── go.mod   // module escapeanalyze\\n\\ngo 1.27\n//   └── main.go  // 本文件\n// 运行（官方 SDK）：\n//   go run .\n//   go build -gcflags=-m .    // 查看逃逸报告\n// desktop only。\npackage main\n\nimport \"fmt\"\n\n// Point 是小的值类型。\ntype Point struct{ X, Y int }\n\n// makeValue 按值返回：调用方拿到副本。\nfunc makeValue() Point {\n\tp := Point{1, 2} // 可能留在栈上\n\treturn p\n}\n\n// makePointer 返回指针：p 逃逸到堆。\nfunc makePointer() *Point {\n\tp := Point{3, 4} // 逃逸：地址被返回\n\treturn &p\n}\n\n// makeInterface 存入接口：通常逃逸（接口值在堆上）。\nfunc makeInterface() any {\n\tp := Point{5, 6}\n\treturn p\n}\n\nfunc main() {\n\tv := makeValue()\n\tfmt.Println(\"value:\", v.X, v.Y)\n\n\tp := makePointer()\n\tfmt.Println(\"pointer:\", p.X, p.Y)\n\n\tvar a any = makeInterface()\n\tfmt.Println(\"interface:\", a)\n\n\tfmt.Println(\"hint: `go build -gcflags=-m .` shows which variables escape to the heap\")\n}\n",
+    "expectedOutput": "value: 1 2\npointer: 3 4\ninterface: {5 6}\nhint: `go build -gcflags=-m .` shows which variables escape to the heap",
+    "templateType": "go"
+  }
+}

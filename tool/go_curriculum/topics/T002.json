@@ -1,0 +1,68 @@
+{
+  "id": "T002",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "hello, go\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-002",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "第一个程序：package main 与 main 函数",
+    "summary": "编写、编译并运行最小 Go 程序，理解 package main 与 main 函数的约定。",
+    "concepts": [
+      "package main",
+      "main 函数",
+      "go run"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能写出一个最小可运行的 Go 程序，并解释 package main 与 func main 各自的角色。",
+    "prerequisites": [
+      "T001 工具链概览"
+    ],
+    "pitfalls": [
+      "把函数名写成 Main 或 mian：Go 区分大小写，入口必须是全小写的 main，否则编译通过但运行时报 'function main is undeclared'。",
+      "在同一个包里写多个 func main：Go 会报 main redeclared，入口必须唯一。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把输出文本改成 hello, qfli 并重新运行；再故意把 main 改成 Main 观察报错信息。",
+        "hint": "go run 会先编译，编译错误在运行前就会显示。",
+        "answer": "正常输出 hello, qfli；改成 Main 后报 function main is undeclared in the main package。"
+      }
+    ],
+    "explain": "Go 程序由包组成，可执行程序的入口包固定叫 main，入口函数固定叫 func main()，二者都是约定而非配置。编译时工具链会寻找 package main 里的 func main 作为起点。fmt.Println 是标准库 fmt 包导出的函数——Go 只有首字母大写的标识符才会导出到包外。\n\nimport \"fmt\" 声明本文件依赖 fmt 包；Go 在编译期检查未使用的导入并直接报错，这强迫依赖显式而干净。\n\n运行：在样例目录执行 go run .，等效于先 go build 再执行产物。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"hello, go\")\n}\n",
+    "output": "hello, go"
+  },
+  "example": {
+    "id": "go-example-002",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "最小 main 包",
+    "summary": "只导入 fmt，打印一行固定文本，作为一切 Go 程序的起点骨架。",
+    "concepts": [
+      "package main",
+      "main 函数",
+      "go run"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"hello, go\")\n}\n",
+    "expectedOutput": "hello, go",
+    "templateType": "go"
+  }
+}

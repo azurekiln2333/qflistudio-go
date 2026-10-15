@@ -1,0 +1,72 @@
+{
+  "id": "T102",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "api_test.go",
+    "go.mod"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-102",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "JSON API 与错误响应约定",
+    "summary": "用统一 envelope 返回成功/错误 JSON，并测试正常与错误两条路径。",
+    "concepts": [
+      "JSON API",
+      "统一响应",
+      "错误约定",
+      "Content-Type"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能设计统一 JSON 响应结构并设置 Content-Type，区分成功与错误响应。",
+    "prerequisites": [
+      "T089 JSON 一：Marshal/Unmarshal 基础",
+      "T101 请求与响应：Method、Header、状态码"
+    ],
+    "pitfalls": [
+      "忘记设置 Content-Type: application/json：客户端可能按文本解析。",
+      "错误响应里也带 data 字段：会混淆调用方，应按约定省略。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 API 增加分页字段并更新错误约定（如 code 字段）。",
+        "hint": "扩展 Envelope 增加 code；测试断言错误路径含 code 而无 data。",
+        "answer": "Envelope{OK,Data,Error,Code}；错误路径只填 OK/Error/Code。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：api_test.go、go.mod。运行命令：go test ./...。一个稳定的 JSON API 应统一响应外壳：成功返回 data，失败返回 error，并始终设置 Content-Type: application/json。示例的 Envelope 用 omitempty 让 data 与 error 互斥出现。测试覆盖两条路径：带 name 参数返回 200 且 data 正确；不带 name 返回 400 且只有 error、无 data。这种“同结构成功/失败”便于客户端统一解析。用 httptest 保证离线与确定。test-package，go test 运行，desktop only。",
+    "code": "// T102 JSON API 与错误响应约定。\n//\n// 一个 JSON API 应统一响应结构：成功返回数据，失败返回错误码与消息，\n// 并设置 Content-Type: application/json。本示例用统一 envelope 输出，\n// 并测试正常与错误两条路径。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpjson/\n//   ├── go.mod      // module httpjson\\n\\ngo 1.27\n//   └── api_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage httpjson\n\nimport (\n\t\"encoding/json\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// Envelope 是所有响应的统一外壳。\ntype Envelope struct {\n\tOK    bool   `json:\"ok\"`\n\tData  any    `json:\"data,omitempty\"`\n\tError string `json:\"error,omitempty\"`\n}\n\n// handler 依赖查询参数 name：有则成功，无则错误。\nfunc handler(w http.ResponseWriter, r *http.Request) {\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tname := r.URL.Query().Get(\"name\")\n\tif name == \"\" {\n\t\tw.WriteHeader(http.StatusBadRequest)\n\t\t_ = json.NewEncoder(w).Encode(Envelope{OK: false, Error: \"name is required\"})\n\t\treturn\n\t}\n\t_ = json.NewEncoder(w).Encode(Envelope{OK: true, Data: map[string]string{\"name\": name}})\n}\n\nfunc TestJSONAPI(t *testing.T) {\n\t// 成功路径。\n\tokReq := httptest.NewRequest(http.MethodGet, \"/?name=alice\", nil)\n\tokRec := httptest.NewRecorder()\n\thandler(okRec, okReq)\n\tif okRec.Code != http.StatusOK {\n\t\tt.Fatalf(\"status = %d, want 200\", okRec.Code)\n\t}\n\tif ct := okRec.Header().Get(\"Content-Type\"); ct != \"application/json\" {\n\t\tt.Fatalf(\"content-type = %q\", ct)\n\t}\n\tvar okEnv Envelope\n\tif err := json.Unmarshal(okRec.Body.Bytes(), &okEnv); err != nil {\n\t\tt.Fatalf(\"decode: %v\", err)\n\t}\n\tif !okEnv.OK {\n\t\tt.Fatalf(\"ok = false, want true\")\n\t}\n\n\t// 错误路径。\n\tbadReq := httptest.NewRequest(http.MethodGet, \"/\", nil)\n\tbadRec := httptest.NewRecorder()\n\thandler(badRec, badReq)\n\tif badRec.Code != http.StatusBadRequest {\n\t\tt.Fatalf(\"status = %d, want 400\", badRec.Code)\n\t}\n\tvar badEnv Envelope\n\tif err := json.Unmarshal(badRec.Body.Bytes(), &badEnv); err != nil {\n\t\tt.Fatalf(\"decode: %v\", err)\n\t}\n\tif badEnv.OK || badEnv.Error == \"\" {\n\t\tt.Fatalf(\"error envelope = %+v\", badEnv)\n\t}\n\tvar raw map[string]json.RawMessage\n\t_ = json.Unmarshal(badRec.Body.Bytes(), &raw)\n\tif _, present := raw[\"data\"]; present {\n\t\tt.Fatal(\"error response must not include data\")\n\t}\n}\n",
+    "output": "ok  \tqfli.example/t102\t0.003s"
+  },
+  "example": {
+    "id": "go-example-102",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "JSON API 与错误响应约定（示例）",
+    "summary": "对应主题 T102 的可运行示例。",
+    "concepts": [
+      "JSON API",
+      "统一响应",
+      "错误约定",
+      "Content-Type"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T102 JSON API 与错误响应约定。\n//\n// 一个 JSON API 应统一响应结构：成功返回数据，失败返回错误码与消息，\n// 并设置 Content-Type: application/json。本示例用统一 envelope 输出，\n// 并测试正常与错误两条路径。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpjson/\n//   ├── go.mod      // module httpjson\\n\\ngo 1.27\n//   └── api_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage httpjson\n\nimport (\n\t\"encoding/json\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// Envelope 是所有响应的统一外壳。\ntype Envelope struct {\n\tOK    bool   `json:\"ok\"`\n\tData  any    `json:\"data,omitempty\"`\n\tError string `json:\"error,omitempty\"`\n}\n\n// handler 依赖查询参数 name：有则成功，无则错误。\nfunc handler(w http.ResponseWriter, r *http.Request) {\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tname := r.URL.Query().Get(\"name\")\n\tif name == \"\" {\n\t\tw.WriteHeader(http.StatusBadRequest)\n\t\t_ = json.NewEncoder(w).Encode(Envelope{OK: false, Error: \"name is required\"})\n\t\treturn\n\t}\n\t_ = json.NewEncoder(w).Encode(Envelope{OK: true, Data: map[string]string{\"name\": name}})\n}\n\nfunc TestJSONAPI(t *testing.T) {\n\t// 成功路径。\n\tokReq := httptest.NewRequest(http.MethodGet, \"/?name=alice\", nil)\n\tokRec := httptest.NewRecorder()\n\thandler(okRec, okReq)\n\tif okRec.Code != http.StatusOK {\n\t\tt.Fatalf(\"status = %d, want 200\", okRec.Code)\n\t}\n\tif ct := okRec.Header().Get(\"Content-Type\"); ct != \"application/json\" {\n\t\tt.Fatalf(\"content-type = %q\", ct)\n\t}\n\tvar okEnv Envelope\n\tif err := json.Unmarshal(okRec.Body.Bytes(), &okEnv); err != nil {\n\t\tt.Fatalf(\"decode: %v\", err)\n\t}\n\tif !okEnv.OK {\n\t\tt.Fatalf(\"ok = false, want true\")\n\t}\n\n\t// 错误路径。\n\tbadReq := httptest.NewRequest(http.MethodGet, \"/\", nil)\n\tbadRec := httptest.NewRecorder()\n\thandler(badRec, badReq)\n\tif badRec.Code != http.StatusBadRequest {\n\t\tt.Fatalf(\"status = %d, want 400\", badRec.Code)\n\t}\n\tvar badEnv Envelope\n\tif err := json.Unmarshal(badRec.Body.Bytes(), &badEnv); err != nil {\n\t\tt.Fatalf(\"decode: %v\", err)\n\t}\n\tif badEnv.OK || badEnv.Error == \"\" {\n\t\tt.Fatalf(\"error envelope = %+v\", badEnv)\n\t}\n\tvar raw map[string]json.RawMessage\n\t_ = json.Unmarshal(badRec.Body.Bytes(), &raw)\n\tif _, present := raw[\"data\"]; present {\n\t\tt.Fatal(\"error response must not include data\")\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

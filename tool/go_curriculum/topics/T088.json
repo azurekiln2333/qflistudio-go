@@ -1,0 +1,70 @@
+{
+  "id": "T088",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "alpha.txt  file size=1\nbeta.txt   file size=2\nsub        dir"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-088",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "目录遍历与文件信息",
+    "summary": "用 os.ReadDir 列出目录条目（已排序）并用 FileInfo 读取元数据。",
+    "concepts": [
+      "os.ReadDir",
+      "FileInfo",
+      "排序",
+      "目录"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 os.ReadDir 遍历目录并判断条目是否为目录、读取大小等元数据。",
+    "prerequisites": [
+      "T086 文件读写：os.Open/Create 与缓冲"
+    ],
+    "pitfalls": [
+      "依赖目录原始顺序：不同文件系统顺序不同，ReadDir 已按名字排序，应利用这一点。",
+      "对符号链接用 Info 判断类型会得到目标信息：需用 Lstat 或 DirEntry.Type 区分。"
+    ],
+    "exercises": [
+      {
+        "prompt": "实现一个只列 .txt 文件的函数，返回按大小排序的文件名。",
+        "hint": "先 ReadDir 过滤后缀，再按 Info().Size() 排序。",
+        "answer": "过滤 strings.HasSuffix(name,\".txt\")，收集 (name,size) 后排序输出。"
+      }
+    ],
+    "explain": "os.ReadDir 返回目录条目切片，并保证按文件名排序，因此遍历输出天然确定——这是构建可复现输出的关键。每个 DirEntry 可通过 Info() 拿到 FileInfo（大小、模式等），IsDir() 判断是否为目录。示例在临时目录建两个文件和一个子目录，然后列出并按“名字 + 类型 + 大小”打印，输出稳定。移动端目录访问能力未实测，标 Yaegi*（待实测），默认 desktop。",
+    "code": "// T088 目录遍历与文件信息。\n//\n// os.ReadDir 返回目录条目并按文件名排序，因此输出天然确定。\n// 用 FileInfo 可拿到名称、大小、是否为目录等元数据。\n//\n// 注意：目录条目的 Size() 是**文件系统相关**的值（Linux 上常见 4096，\n// Windows 上常见 0），不能作为确定性输出。因此本示例对目录只打印类型，\n// 只对普通文件打印大小——这样跨平台输出一致。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n)\n\nfunc main() {\n\tdir, err := os.MkdirTemp(\"\", \"qfli-t088-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(dir)\n\n\t// 建两个文件和一个子目录，用于演示“是否目录”的判断。\n\tmustWrite(filepath.Join(dir, \"alpha.txt\"), \"a\")\n\tmustWrite(filepath.Join(dir, \"beta.txt\"), \"bb\")\n\tif err := os.Mkdir(filepath.Join(dir, \"sub\"), 0o755); err != nil {\n\t\tpanic(err)\n\t}\n\n\tentries, err := os.ReadDir(dir)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\t// ReadDir 已按名字排序：alpha.txt, beta.txt, sub。\n\tfor _, e := range entries {\n\t\tif e.IsDir() {\n\t\t\t// 目录不打印易变的 size。\n\t\t\tfmt.Printf(\"%-10s dir\\n\", e.Name())\n\t\t\tcontinue\n\t\t}\n\t\tinfo, err := e.Info()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%-10s file size=%d\\n\", e.Name(), info.Size())\n\t}\n}\n\nfunc mustWrite(path, content string) {\n\tif err := os.WriteFile(path, []byte(content), 0o644); err != nil {\n\t\tpanic(err)\n\t}\n}\n",
+    "output": "alpha.txt  file size=1\nbeta.txt   file size=2\nsub        dir"
+  },
+  "example": {
+    "id": "go-example-088",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "目录遍历与文件信息（示例）",
+    "summary": "对应主题 T088 的可运行示例。",
+    "concepts": [
+      "os.ReadDir",
+      "FileInfo",
+      "排序",
+      "目录"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T088 目录遍历与文件信息。\n//\n// os.ReadDir 返回目录条目并按文件名排序，因此输出天然确定。\n// 用 FileInfo 可拿到名称、大小、是否为目录等元数据。\n//\n// 注意：目录条目的 Size() 是**文件系统相关**的值（Linux 上常见 4096，\n// Windows 上常见 0），不能作为确定性输出。因此本示例对目录只打印类型，\n// 只对普通文件打印大小——这样跨平台输出一致。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n)\n\nfunc main() {\n\tdir, err := os.MkdirTemp(\"\", \"qfli-t088-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(dir)\n\n\t// 建两个文件和一个子目录，用于演示“是否目录”的判断。\n\tmustWrite(filepath.Join(dir, \"alpha.txt\"), \"a\")\n\tmustWrite(filepath.Join(dir, \"beta.txt\"), \"bb\")\n\tif err := os.Mkdir(filepath.Join(dir, \"sub\"), 0o755); err != nil {\n\t\tpanic(err)\n\t}\n\n\tentries, err := os.ReadDir(dir)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\t// ReadDir 已按名字排序：alpha.txt, beta.txt, sub。\n\tfor _, e := range entries {\n\t\tif e.IsDir() {\n\t\t\t// 目录不打印易变的 size。\n\t\t\tfmt.Printf(\"%-10s dir\\n\", e.Name())\n\t\t\tcontinue\n\t\t}\n\t\tinfo, err := e.Info()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%-10s file size=%d\\n\", e.Name(), info.Size())\n\t}\n}\n\nfunc mustWrite(path, content string) {\n\tif err := os.WriteFile(path, []byte(content), 0o644); err != nil {\n\t\tpanic(err)\n\t}\n}\n",
+    "expectedOutput": "alpha.txt  file size=1\nbeta.txt   file size=2\nsub        dir",
+    "templateType": "go"
+  }
+}

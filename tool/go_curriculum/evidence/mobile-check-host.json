@@ -1,0 +1,678 @@
+[
+  {
+    "id": "T001",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T002",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T003",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T004",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T005",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T006",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T007",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T008",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": false,
+    "ok": false,
+    "stderr": ""
+  },
+  {
+    "id": "T009",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T010",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T011",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T012",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T013",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T014",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T015",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T016",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T017",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T018",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T019",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T020",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T021",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T022",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T023",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T024",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T025",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T026",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T027",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T028",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T029",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T030",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T031",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T032",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T033",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T034",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T035",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T036",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T037",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T038",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T039",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T040",
+    "sample": "main.go",
+    "yaegiExit": 1,
+    "stdoutMatchesExpected": false,
+    "ok": false,
+    "stderr": "D:/MyNewProjects/qfli_go/tool/go_curriculum/samples/T040/main.go:10:7: panic: main.main(...)\nreflect: Call with too many input arguments\n\nexit status 1"
+  },
+  {
+    "id": "T061",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T062",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T063",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T064",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T065",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T066",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T067",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T068",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T069",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T070",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T071",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T072",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T073",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T074",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T075",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T076",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T077",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T078",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T079",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T080",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T081",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T082",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T083",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T084",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T085",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T086",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T087",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T088",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T089",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T090",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T091",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T092",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T093",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T094",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T095",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T096",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T097",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T098",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T099",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T100",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T101",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T102",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T103",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T104",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T105",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T106",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T107",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T108",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T109",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T110",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T111",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T112",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T113",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T114",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T115",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T116",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T117",
+    "sample": "main.go",
+    "yaegiExit": 0,
+    "stdoutMatchesExpected": true,
+    "ok": true,
+    "stderr": ""
+  },
+  {
+    "id": "T118",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T119",
+    "skipped": "not single-file"
+  },
+  {
+    "id": "T120",
+    "skipped": "not single-file"
+  }
+]

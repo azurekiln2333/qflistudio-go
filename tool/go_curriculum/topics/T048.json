@@ -1,0 +1,71 @@
+{
+  "id": "T048",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-048",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "接口的 nil 陷阱与类型比较",
+    "summary": "演示“接口里装 nil 指针”不等于 nil 接口，以及由此引发的 panic。",
+    "concepts": [
+      "typed-nil",
+      "接口比较",
+      "陷阱",
+      "类型断言"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能识别 typed-nil 陷阱，并用类型断言安全检出内部 nil 指针。",
+    "prerequisites": [
+      "T042 接口的动态类型与类型断言",
+      "T029 指针一：地址、解引用与值/指针参数"
+    ],
+    "pitfalls": [
+      "判断接口是否为空用 == nil：typed-nil 时结果为 false，易漏判。",
+      "在 nil 接收者上访问字段：会 panic；方法应在 nil 时提前返回。"
+    ],
+    "exercises": [
+      {
+        "prompt": "让 Greet 在接收者为 nil 时返回空串而非 panic，并写测试验证。",
+        "hint": "方法开头 if p == nil { return \"\" }。",
+        "answer": "func (p *Person) Greet() string { if p == nil { return \"\" }; return \"hi \"+p.Name }。"
+      }
+    ],
+    "explain": "一个常见陷阱：接口值为 nil 与“接口里装了一个 nil 的具体指针”不是一回事。当把一个 nil 的 *Person 赋给接口，接口本身非 nil（动态类型是 *Person），但动态值是 nil，因此 g == nil 为 false，调用方法会在 nil 接收者上解引用字段而 panic。正确做法是用类型断言取出指针并判 nil；或让方法在 nil 接收者时安全返回。示例完整演示陷阱与检出方式。",
+    "code": "// T048 接口的 nil 陷阱与类型比较。\n//\n// 一个常见陷阱：接口值为 nil 与“接口里装了一个 nil 的具体指针”不是一回事。\n// 本示例演示 typed-nil 陷阱：接口非 nil，但内部动态值为 nil，调用方法会 panic。\npackage main\n\nimport \"fmt\"\n\n// Greeter 是接口。\ntype Greeter interface {\n\tGreet() string\n}\n\n// Person 实现 Greeter。\ntype Person struct{ Name string }\n\nfunc (p *Person) Greet() string { return \"hi \" + p.Name }\n\nfunc main() {\n\t// 情形一：真正的 nil 接口。\n\tvar g Greeter\n\tfmt.Println(\"nil interface == nil:\", g == nil)\n\n\t// 情形二：typed-nil 陷阱。把一个 nil 的 *Person 放进接口。\n\tvar p *Person // p 是 nil\n\tg = p         // 接口非 nil，但动态类型是 *Person、动态值是 nil\n\tfmt.Println(\"typed-nil interface == nil:\", g == nil) // 输出 false！\n\n\t// 调用会 panic，因为方法在 nil 接收者上解引用字段。\n\tfunc() {\n\t\tdefer func() {\n\t\t\tif r := recover(); r != nil {\n\t\t\t\tfmt.Println(\"calling method on typed-nil panicked:\", r != nil)\n\t\t\t}\n\t\t}()\n\t\t_ = g.Greet()\n\t}()\n\n\t// 正确做法：用类型断言判断内部是否为 nil 指针。\n\tif pp, ok := g.(*Person); ok && pp == nil {\n\t\tfmt.Println(\"detected typed-nil via assertion\")\n\t}\n\n\t// 有实际值时正常。\n\tg = &Person{Name: \"gopher\"}\n\tfmt.Println(\"real value:\", g.Greet())\n}\n",
+    "output": "nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher"
+  },
+  "example": {
+    "id": "go-example-048",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "接口的 nil 陷阱与类型比较（示例）",
+    "summary": "对应主题 T048 的可运行示例。",
+    "concepts": [
+      "typed-nil",
+      "接口比较",
+      "陷阱",
+      "类型断言"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T048 接口的 nil 陷阱与类型比较。\n//\n// 一个常见陷阱：接口值为 nil 与“接口里装了一个 nil 的具体指针”不是一回事。\n// 本示例演示 typed-nil 陷阱：接口非 nil，但内部动态值为 nil，调用方法会 panic。\npackage main\n\nimport \"fmt\"\n\n// Greeter 是接口。\ntype Greeter interface {\n\tGreet() string\n}\n\n// Person 实现 Greeter。\ntype Person struct{ Name string }\n\nfunc (p *Person) Greet() string { return \"hi \" + p.Name }\n\nfunc main() {\n\t// 情形一：真正的 nil 接口。\n\tvar g Greeter\n\tfmt.Println(\"nil interface == nil:\", g == nil)\n\n\t// 情形二：typed-nil 陷阱。把一个 nil 的 *Person 放进接口。\n\tvar p *Person // p 是 nil\n\tg = p         // 接口非 nil，但动态类型是 *Person、动态值是 nil\n\tfmt.Println(\"typed-nil interface == nil:\", g == nil) // 输出 false！\n\n\t// 调用会 panic，因为方法在 nil 接收者上解引用字段。\n\tfunc() {\n\t\tdefer func() {\n\t\t\tif r := recover(); r != nil {\n\t\t\t\tfmt.Println(\"calling method on typed-nil panicked:\", r != nil)\n\t\t\t}\n\t\t}()\n\t\t_ = g.Greet()\n\t}()\n\n\t// 正确做法：用类型断言判断内部是否为 nil 指针。\n\tif pp, ok := g.(*Person); ok && pp == nil {\n\t\tfmt.Println(\"detected typed-nil via assertion\")\n\t}\n\n\t// 有实际值时正常。\n\tg = &Person{Name: \"gopher\"}\n\tfmt.Println(\"real value:\", g.Greet())\n}\n",
+    "expectedOutput": "nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher",
+    "templateType": "go"
+  }
+}

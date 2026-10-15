@@ -1,0 +1,7 @@
+{"file":".trellis/tasks/10-12-go-curriculum-pi/prd.md","reason":"Requirements R1-R9, acceptance criteria AC1-AC7, resolved constraints C1/C2/C3."}
+{"file":".trellis/tasks/10-12-go-curriculum-pi/design.md","reason":"Data flow, durable paths, runtime honesty, honest multi-file representation, shared-repo integration/locking."}
+{"file":".trellis/tasks/10-12-go-curriculum-pi/implement.md","reason":"Ordered checklist, exact 120/120 gates, per-item verification, duplication whitelist, durable tool layout."}
+{"file":".trellis/tasks/10-12-go-curriculum-pi/research/content-audit.md","reason":"Repository evidence: content locations, placeholder proof, schema/validator contract, runtime and import boundaries."}
+{"file":".trellis/tasks/10-12-go-curriculum-pi/research/curriculum-map.md","reason":"120-topic lesson/example map (T001-T120, S1-S12) with desktop/mobile markers, owned by w8:p3."}
+{"file":".trellis/spec/frontend/content-code-import.md","reason":"Preserve content loading, localizations, and the single-file import/entry-file contract."}
+{"file":".trellis/spec/backend/native-go-runtime.md","reason":"Desktop official SDK vs mobile Yaegi boundary used to gate runtime-honesty claims."}

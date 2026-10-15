@@ -1,0 +1,73 @@
+{
+  "id": "T109",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "calc.go",
+    "calc_test.go",
+    "go.mod"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-109",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "覆盖率与测试组织",
+    "summary": "在同一包内组织多个文件（逻辑 + 测试），并用表驱动覆盖所有分支。",
+    "concepts": [
+      "覆盖率",
+      "多文件包",
+      "coverprofile",
+      "测试组织"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能组织同包多文件并生成覆盖率报告，理解 coverprofile 的用途。",
+    "prerequisites": [
+      "T059 包、导出规则与初始化顺序",
+      "T105 表驱动测试与子测试"
+    ],
+    "pitfalls": [
+      "只测 happy path：覆盖率低，边界分支缺陷漏检。",
+      "把覆盖率当唯一目标：100% 覆盖率不等于正确，仍需语义断言。"
+    ],
+    "exercises": [
+      {
+        "prompt": "用 go test -coverprofile 生成报告，并补一个未覆盖分支的用例。",
+        "hint": "go tool cover -func=cover.out 查看函数级覆盖率。",
+        "answer": "go test -coverprofile=cover.out .; go tool cover -func=cover.out。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：calc.go、calc_test.go、go.mod。运行命令：go test ./...。Go 的测试与被测代码通常同包，允许放在同一目录的多个文件里：calc.go 放逻辑，calc_test.go 放测试。go test -coverprofile 生成覆盖率文件，go tool cover 可查看函数/行级覆盖。示例的 Classify 有三个分支，表驱动测试逐一覆盖。要强调：覆盖率是“是否执行到”的指标，不能替代语义断言——高覆盖率仍可能漏掉错误逻辑。test-package 工程例子（go.mod + calc.go + calc_test.go），go test 运行，desktop only。",
+    "code": "// T109 覆盖率与测试组织。\n//\n// go test -coverprofile 生成覆盖率文件，go tool cover 可生成 HTML 报告。\n// 本文件既演示如何组织多个测试文件共享同一包（见目录结构说明），\n// 又通过一条断言确保关键分支都被覆盖到。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   covertest/\n//   ├── go.mod        // module covertest\\n\\ngo 1.27\n//   ├── calc.go       // 被测逻辑\n//   └── calc_test.go  // 本文件\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -coverprofile=cover.out ./... && go tool cover -func=cover.out\n// desktop only。\npackage covertest\n\nimport \"testing\"\n\n// Classify 定义在 calc.go（同包另一文件），此处只做测试，\n// 演示同一包内多文件如何组织。\nfunc TestClassifyAllBranches(t *testing.T) {\n\tcases := map[int]string{-1: \"negative\", 0: \"zero\", 1: \"positive\"}\n\tfor in, want := range cases {\n\t\tif got := Classify(in); got != want {\n\t\t\tt.Errorf(\"Classify(%d) = %q, want %q\", in, got, want)\n\t\t}\n\t}\n}\n",
+    "output": "ok  \tqfli.example/t109\t0.002s"
+  },
+  "example": {
+    "id": "go-example-109",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "覆盖率与测试组织（示例）",
+    "summary": "对应主题 T109 的可运行示例。",
+    "concepts": [
+      "覆盖率",
+      "多文件包",
+      "coverprofile",
+      "测试组织"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T109 覆盖率与测试组织。\n//\n// go test -coverprofile 生成覆盖率文件，go tool cover 可生成 HTML 报告。\n// 本文件既演示如何组织多个测试文件共享同一包（见目录结构说明），\n// 又通过一条断言确保关键分支都被覆盖到。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   covertest/\n//   ├── go.mod        // module covertest\\n\\ngo 1.27\n//   ├── calc.go       // 被测逻辑\n//   └── calc_test.go  // 本文件\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -coverprofile=cover.out ./... && go tool cover -func=cover.out\n// desktop only。\npackage covertest\n\nimport \"testing\"\n\n// Classify 定义在 calc.go（同包另一文件），此处只做测试，\n// 演示同一包内多文件如何组织。\nfunc TestClassifyAllBranches(t *testing.T) {\n\tcases := map[int]string{-1: \"negative\", 0: \"zero\", 1: \"positive\"}\n\tfor in, want := range cases {\n\t\tif got := Classify(in); got != want {\n\t\t\tt.Errorf(\"Classify(%d) = %q, want %q\", in, got, want)\n\t\t}\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

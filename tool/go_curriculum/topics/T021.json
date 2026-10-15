@@ -1,0 +1,68 @@
+{
+  "id": "T021",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "copied 5 [1 2 3 4 5]\nafter delete [1 2 4 5] s mutated to [1 2 4 5 5]\nunique [1 2 3]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-021",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "切片三：copy、删除与去重",
+    "summary": "用 copy 安全复制、用 append 模式删除元素，并实现去重。",
+    "concepts": [
+      "copy",
+      "删除元素",
+      "去重"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 copy 复制切片、用 append+切片拼接删除元素，并写出无别名的去重。",
+    "prerequisites": [
+      "T020 截取与共享数组"
+    ],
+    "pitfalls": [
+      "用 append(s[:i], s[i+1:]...) 删除会就地修改 s 并保留尾部重复元素：删除不是原地截断，长度减一但容量不变，尾部残留旧值。",
+      "去重时直接复用源切片底层数组：若在原切片上 append 去重结果，可能覆盖尚未读取的元素；用 s[:0:0] 起一个新的零容量切片更安全。"
+    ],
+    "exercises": [
+      {
+        "prompt": "对 []int{5,5,5,6} 去重并说明为什么用 s[:0:0] 而不是 s[:0]。",
+        "hint": "三索引切片把容量限制为 0，append 必然重新分配。",
+        "answer": "得到 [5 6]；s[:0:0] 容量为 0，append 会分配新数组，避免覆盖仍在遍历的源元素。"
+      }
+    ],
+    "explain": "切片的增删改在标准库里没有直接方法，需用组合操作实现。copy(dst, src) 复制 min(len(dst),len(src)) 个元素并返回复制数量；删除索引 i 的惯用法是 append(s[:i], s[i+1:]...)，它把后续元素前移覆盖 i。注意这是就地覆盖：源切片 s 本身被改动，且末尾残留一个旧值（长度已减一，容量未变）。\n\n去重时若在原切片上 append，可能覆盖尚未读取的元素。样例用 s[:0:0] 创建一个零长度零容量的切片，append 时必然分配新数组，从而与源隔离。最后用 map 记录出现过的值。\n\n本样例演示 copy、删除与去重三种模式，并打印删除后源切片被就地改动的事实。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := []int{1, 2, 3, 4, 5}\n\t// copy 到等长目标\n\tdst := make([]int, len(s))\n\tn := copy(dst, s)\n\tfmt.Println(\"copied\", n, dst)\n\t// 删除索引 2；append 会就地覆盖共享数组，s 本身也被改动\n\tdel := append(s[:2], s[3:]...)\n\tfmt.Println(\"after delete\", del, \"s mutated to\", s)\n\t// 去重\n\tseen := map[int]bool{}\n\tuniq := s[:0:0]\n\tfor _, v := range []int{1, 1, 2, 3, 3, 3} {\n\t\tif !seen[v] {\n\t\t\tseen[v] = true\n\t\t\tuniq = append(uniq, v)\n\t\t}\n\t}\n\tfmt.Println(\"unique\", uniq)\n}\n",
+    "output": "copied 5 [1 2 3 4 5]\nafter delete [1 2 4 5] s mutated to [1 2 4 5 5]\nunique [1 2 3]"
+  },
+  "example": {
+    "id": "go-example-021",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "切片三：copy、删除与去重",
+    "summary": "用 copy 安全复制、用 append 模式删除元素，并实现去重。",
+    "concepts": [
+      "copy",
+      "删除元素",
+      "去重"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\ts := []int{1, 2, 3, 4, 5}\n\t// copy 到等长目标\n\tdst := make([]int, len(s))\n\tn := copy(dst, s)\n\tfmt.Println(\"copied\", n, dst)\n\t// 删除索引 2；append 会就地覆盖共享数组，s 本身也被改动\n\tdel := append(s[:2], s[3:]...)\n\tfmt.Println(\"after delete\", del, \"s mutated to\", s)\n\t// 去重\n\tseen := map[int]bool{}\n\tuniq := s[:0:0]\n\tfor _, v := range []int{1, 1, 2, 3, 3, 3} {\n\t\tif !seen[v] {\n\t\t\tseen[v] = true\n\t\t\tuniq = append(uniq, v)\n\t\t}\n\t}\n\tfmt.Println(\"unique\", uniq)\n}\n",
+    "expectedOutput": "copied 5 [1 2 3 4 5]\nafter delete [1 2 4 5] s mutated to [1 2 4 5 5]\nunique [1 2 3]",
+    "templateType": "go"
+  }
+}

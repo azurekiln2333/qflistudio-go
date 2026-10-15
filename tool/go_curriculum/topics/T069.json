@@ -1,0 +1,73 @@
+{
+  "id": "T069",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "selected impl = default\nwith -tags special impl = special"
+  },
+  "sampleFiles": [
+    "go.mod",
+    "impl_default.go",
+    "impl_special.go",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-069",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "构建标签与多平台文件后缀",
+    "summary": "用 //go:build 标签与 _GOOS 文件后缀在编译期选择平台相关实现。",
+    "concepts": [
+      "构建标签",
+      "文件后缀",
+      "多平台",
+      "GOOS"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用构建约束与文件后缀为不同平台/特性集提供互斥实现。",
+    "prerequisites": [
+      "T060 Go Modules：go.mod 与依赖版本"
+    ],
+    "pitfalls": [
+      "用运行期 if runtime.GOOS 替代编译期构建标签：会同时编译两份代码，依赖的平台库可能无法在某些平台编译。",
+      "//go:build 与旧的 // +build 混用且不一致：新工具链以 //go:build 为准，可能产生困惑。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为本示例补一个 file_windows.go 与 file_linux.go，各提供一个同名函数，用 go build 分别交叉编译验证。",
+        "hint": "文件名后缀 _windows.go/_linux.go 会自动按 GOOS 生效。",
+        "answer": "两个文件各定义 func platformName() string；GOOS=windows/linux 交叉编译各自生效，且无需 //go:build。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、impl_default.go、impl_special.go、main.go。运行命令：go run .。构建标签与文件后缀都参与“哪些文件进入本次编译”的决定。文件后缀（_windows.go、_linux_amd64.go）由工具链按 GOOS/GOARCH 自动选择，简单直观；//go:build 行可表达更复杂条件，如 -tags special 或 !release。二者都在编译期生效，未选中的文件根本不参与编译，因此可以安全地在不同平台使用不同依赖。本例由 implName/specialImplName 两个函数演示标签切换，并刻意不打印 runtime.GOOS/GOARCH（那会随平台变化，破坏确定输出）。完整的标签切换需在多文件工程里用 `go run .` 与 `go run -tags special .` 对照验证。",
+    "code": "// T069 构建标签与多平台文件后缀。\n//\n// 用 //go:build 标签与 _GOOS 文件后缀在编译期选择平台相关实现。\n//\n// 完整多文件工程（module-project，不能一键导入）：\n//   T069/\n//   ├── go.mod            // module qfli.example/t069  (go 1.21)\n//   ├── main.go           // 本文件：打印选中的实现\n//   ├── impl_default.go   // //go:build !special\n//   └── impl_special.go   // //go:build special\n//\n// 运行（官方 SDK）：\n//   go run .              // 默认实现\n//   go run -tags special .// special 实现\n//\n// 为了输出跨平台确定，这里只打印由构建标签选择的实现名，\n// 不打印 runtime.GOOS/GOARCH（那会随平台变化）。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// implName 由构建标签在编译期决定来源于哪个文件：\n\t//   include -tags special 时来自 impl_special.go，否则来自 impl_default.go。\n\tfmt.Println(\"selected impl =\", implName())\n\tfmt.Println(\"with -tags special impl =\", specialImplName())\n}\n",
+    "output": "selected impl = default\nwith -tags special impl = special"
+  },
+  "example": {
+    "id": "go-example-069",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "构建标签与多平台文件后缀（示例）",
+    "summary": "对应主题 T069 的可运行示例。",
+    "concepts": [
+      "构建标签",
+      "文件后缀",
+      "多平台",
+      "GOOS"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T069 构建标签与多平台文件后缀。\n//\n// 用 //go:build 标签与 _GOOS 文件后缀在编译期选择平台相关实现。\n//\n// 完整多文件工程（module-project，不能一键导入）：\n//   T069/\n//   ├── go.mod            // module qfli.example/t069  (go 1.21)\n//   ├── main.go           // 本文件：打印选中的实现\n//   ├── impl_default.go   // //go:build !special\n//   └── impl_special.go   // //go:build special\n//\n// 运行（官方 SDK）：\n//   go run .              // 默认实现\n//   go run -tags special .// special 实现\n//\n// 为了输出跨平台确定，这里只打印由构建标签选择的实现名，\n// 不打印 runtime.GOOS/GOARCH（那会随平台变化）。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// implName 由构建标签在编译期决定来源于哪个文件：\n\t//   include -tags special 时来自 impl_special.go，否则来自 impl_default.go。\n\tfmt.Println(\"selected impl =\", implName())\n\tfmt.Println(\"with -tags special impl =\", specialImplName())\n}\n",
+    "expectedOutput": "selected impl = default\nwith -tags special impl = special",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "id": "T046",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "dave   20\nalice  25\nbob    30\ncarol  30\nreversed first: carol"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-046",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "排序与比较：sort.Interface 实现",
+    "summary": "为自定义集合实现 sort.Interface 并用 sort.Sort 排序与逆序。",
+    "concepts": [
+      "sort.Interface",
+      "Len/Less/Swap",
+      "多字段排序",
+      "Reverse"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能实现 Len/Less/Swap 三方法，并用 sort.Sort/sort.Reverse 排序。",
+    "prerequisites": [
+      "T032 排序：sort.Slice 与自定义比较"
+    ],
+    "pitfalls": [
+      "Less 不是严格弱序：会导致排序结果不确定或 panic。",
+      "Swap 的实现与 Less 视角不一致：会得到错误顺序。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 ByAge 增加一个按名字优先、年龄次之的 ByName 类型并排序。",
+        "hint": "Less 先比 Name，再比 Age。",
+        "answer": "type ByName []Person；Less 比较 Name 后比较 Age。"
+      }
+    ],
+    "explain": "sort.Interface 要求三个方法：Len、Less、Swap。实现它就能用 sort.Sort 排序任意集合。Less 决定顺序，必须构成严格弱序；Swap 决定交换方式。示例按“年龄升序、同龄按名字”排序，再用 sort.Reverse 得到逆序。相比 sort.Slice，实现 sort.Interface 让排序规则可复用、有名字，适合多处使用的自定义类型。",
+    "code": "// T046 排序与比较：sort.Interface 实现。\n//\n// sort.Interface 要求三个方法：Len、Less、Swap。实现它即可用 sort.Sort\n// 排序任意集合。Less 决定顺序，Swap 决定交换方式。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\n// Person 是要排序的元素。\ntype Person struct {\n\tName string\n\tAge  int\n}\n\n// ByAge 是 []Person 的排序视图：先按年龄，年龄相同按名字。\ntype ByAge []Person\n\nfunc (p ByAge) Len() int      { return len(p) }\nfunc (p ByAge) Swap(i, j int) { p[i], p[j] = p[j], p[i] }\nfunc (p ByAge) Less(i, j int) bool {\n\tif p[i].Age != p[j].Age {\n\t\treturn p[i].Age < p[j].Age\n\t}\n\treturn p[i].Name < p[j].Name\n}\n\nfunc main() {\n\tpeople := []Person{\n\t\t{\"carol\", 30},\n\t\t{\"alice\", 25},\n\t\t{\"bob\", 30},\n\t\t{\"dave\", 20},\n\t}\n\n\t// sort.Sort 会读取 Len/Less/Swap 完成排序。\n\tsort.Sort(ByAge(people))\n\tfor _, p := range people {\n\t\tfmt.Printf(\"%-6s %d\\n\", p.Name, p.Age)\n\t}\n\n\t// 用 sort.Sort(sort.Reverse(...)) 得到逆序。\n\tsort.Sort(sort.Reverse(ByAge(people)))\n\tfmt.Println(\"reversed first:\", people[0].Name)\n}\n",
+    "output": "dave   20\nalice  25\nbob    30\ncarol  30\nreversed first: carol"
+  },
+  "example": {
+    "id": "go-example-046",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "排序与比较：sort.Interface 实现（示例）",
+    "summary": "对应主题 T046 的可运行示例。",
+    "concepts": [
+      "sort.Interface",
+      "Len/Less/Swap",
+      "多字段排序",
+      "Reverse"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T046 排序与比较：sort.Interface 实现。\n//\n// sort.Interface 要求三个方法：Len、Less、Swap。实现它即可用 sort.Sort\n// 排序任意集合。Less 决定顺序，Swap 决定交换方式。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\n// Person 是要排序的元素。\ntype Person struct {\n\tName string\n\tAge  int\n}\n\n// ByAge 是 []Person 的排序视图：先按年龄，年龄相同按名字。\ntype ByAge []Person\n\nfunc (p ByAge) Len() int      { return len(p) }\nfunc (p ByAge) Swap(i, j int) { p[i], p[j] = p[j], p[i] }\nfunc (p ByAge) Less(i, j int) bool {\n\tif p[i].Age != p[j].Age {\n\t\treturn p[i].Age < p[j].Age\n\t}\n\treturn p[i].Name < p[j].Name\n}\n\nfunc main() {\n\tpeople := []Person{\n\t\t{\"carol\", 30},\n\t\t{\"alice\", 25},\n\t\t{\"bob\", 30},\n\t\t{\"dave\", 20},\n\t}\n\n\t// sort.Sort 会读取 Len/Less/Swap 完成排序。\n\tsort.Sort(ByAge(people))\n\tfor _, p := range people {\n\t\tfmt.Printf(\"%-6s %d\\n\", p.Name, p.Age)\n\t}\n\n\t// 用 sort.Sort(sort.Reverse(...)) 得到逆序。\n\tsort.Sort(sort.Reverse(ByAge(people)))\n\tfmt.Println(\"reversed first:\", people[0].Name)\n}\n",
+    "expectedOutput": "dave   20\nalice  25\nbob    30\ncarol  30\nreversed first: carol",
+    "templateType": "go"
+  }
+}

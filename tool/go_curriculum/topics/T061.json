@@ -1,0 +1,69 @@
+{
+  "id": "T061",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "exported constant: visible outside package\nunexported constant: visible only inside package\ninternal rule: a package under an internal/ directory may only\nbe imported by code in the directory tree rooted at internal's parent."
+  },
+  "sampleFiles": [
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-061",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内部包 internal 与可见性",
+    "summary": "用 internal 目录限制包只能在模块内被导入，并区分导出与非导出标识符。",
+    "concepts": [
+      "internal",
+      "可见性",
+      "导出规则"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能说明导出（大写）与非导出（小写）标识符的可见范围，并能用 internal/ 目录把包限制在模块内。",
+    "prerequisites": [
+      "T059 包、导出规则与初始化顺序"
+    ],
+    "pitfalls": [
+      "把 internal 当成安全边界：它只是编译期导入限制，不是运行时沙箱。",
+      "以为 internal 里的标识符仍然导出：internal 限制的是“包能否被导入”，包内小写标识符照样不导出。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把本示例的 main 拆成 cmd/ 与 internal/secret/ 两个目录，使 cmd 能导入 internal/secret，并在模块外新建另一个 module 尝试导入它，观察编译错误。",
+        "hint": "内部包只能被以 internal 父目录为根的目录树内的代码导入。",
+        "answer": "cmd/main.go 导入 demo/internal/secret 成功；另一个 module 导入 demo/internal/secret 时报 'use of internal package not allowed'。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。Go 的可见性由标识符首字母决定：大写导出、小写不导出，这比很多语言的 public/private 关键字更简单，但粒度是“包”级。internal 规则再进一步：任何路径中含有 internal 的目录，其包只能被以该 internal 目录父目录为根的树内代码导入。于是 internal/ 成为“模块私有”的约定手段——外部模块即使知道 import 路径，编译器也会拒绝。需要强调的是，它是编译期约束，不是运行时安全边界；能拿到源码或二进制的人仍可读代码。示例本身在单文件内演示导出/非导出差异，并在注释中给出完整的 cmd/ 与 internal/secret/ 目录结构；因为真实的 internal 规则需要子目录，故标记为 module-project。",
+    "code": "// T061 internal 包与可见性：演示 Go 如何用 internal 目录限制包被外部导入。\n//\n// 本文件本身是可直接 `go run` 的单文件程序；它演示 internal 规则时，\n// 同时说明一个完整的多文件工程结构（见教程文本）：\n//\n//\tmodule demo\n//\t├── main.go            // 导入 demo/internal/secret（合法：同一 module 内）\n//\t├── internal/secret/secret.go   // 包 secret，只有 demo 模块内可导入\n//\t└── external/main.go    // 若放在另一个 module，导入 internal 会被编译器拒绝\n//\n// 这里我们只保留 main 程序，用一段注释与可运行逻辑说明可见性规则：\n// 大写标识符导出，小写不导出；internal 目录进一步把包限制在模块内。\npackage main\n\nimport \"fmt\"\n\n// Exported 以大写字母开头，导出到本包之外可见。\nconst Exported = \"visible outside package\"\n\n// unexported 以小写字母开头，仅本包内可见。\nconst unexported = \"visible only inside package\"\n\nfunc main() {\n\tfmt.Println(\"exported constant:\", Exported)\n\tfmt.Println(\"unexported constant:\", unexported)\n\n\t// 在同一文件内可以访问 unexported；若把这一行放进另一个包，编译会失败：\n\t//   ./other/main.go: undefined: main.unexported\n\tfmt.Println(\"internal rule: a package under an internal/ directory may only\")\n\tfmt.Println(\"be imported by code in the directory tree rooted at internal's parent.\")\n}\n",
+    "output": "exported constant: visible outside package\nunexported constant: visible only inside package\ninternal rule: a package under an internal/ directory may only\nbe imported by code in the directory tree rooted at internal's parent."
+  },
+  "example": {
+    "id": "go-example-061",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内部包 internal 与可见性（示例）",
+    "summary": "对应主题 T061 的可运行示例。",
+    "concepts": [
+      "internal",
+      "可见性",
+      "导出规则"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T061 internal 包与可见性：演示 Go 如何用 internal 目录限制包被外部导入。\n//\n// 本文件本身是可直接 `go run` 的单文件程序；它演示 internal 规则时，\n// 同时说明一个完整的多文件工程结构（见教程文本）：\n//\n//\tmodule demo\n//\t├── main.go            // 导入 demo/internal/secret（合法：同一 module 内）\n//\t├── internal/secret/secret.go   // 包 secret，只有 demo 模块内可导入\n//\t└── external/main.go    // 若放在另一个 module，导入 internal 会被编译器拒绝\n//\n// 这里我们只保留 main 程序，用一段注释与可运行逻辑说明可见性规则：\n// 大写标识符导出，小写不导出；internal 目录进一步把包限制在模块内。\npackage main\n\nimport \"fmt\"\n\n// Exported 以大写字母开头，导出到本包之外可见。\nconst Exported = \"visible outside package\"\n\n// unexported 以小写字母开头，仅本包内可见。\nconst unexported = \"visible only inside package\"\n\nfunc main() {\n\tfmt.Println(\"exported constant:\", Exported)\n\tfmt.Println(\"unexported constant:\", unexported)\n\n\t// 在同一文件内可以访问 unexported；若把这一行放进另一个包，编译会失败：\n\t//   ./other/main.go: undefined: main.unexported\n\tfmt.Println(\"internal rule: a package under an internal/ directory may only\")\n\tfmt.Println(\"be imported by code in the directory tree rooted at internal's parent.\")\n}\n",
+    "expectedOutput": "exported constant: visible outside package\nunexported constant: visible only inside package\ninternal rule: a package under an internal/ directory may only\nbe imported by code in the directory tree rooted at internal's parent.",
+    "templateType": "go"
+  }
+}

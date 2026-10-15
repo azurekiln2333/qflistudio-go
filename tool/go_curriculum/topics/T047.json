@@ -1,0 +1,72 @@
+{
+  "id": "T047",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "normal total: 100\ndiscount total: 80\ndecorated run: run build\nlog lines:\n  before run build\n  after run build"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-047",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "组合优于继承：策略与装饰模式",
+    "summary": "用接口+组合实现运行期可切换策略与可叠加装饰，替代继承。",
+    "concepts": [
+      "组合",
+      "策略模式",
+      "装饰模式",
+      "接口"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用组合与接口实现策略切换和装饰增强，说明为何组合优于继承。",
+    "prerequisites": [
+      "T041 接口基础与鸭子类型",
+      "T039 方法：值接收者与指针接收者"
+    ],
+    "pitfalls": [
+      "用类型分支代替多态：新增策略要改 switch，违背开闭原则。",
+      "装饰器无限嵌套：注意装饰链深度与调用开销。",
+      "平台限制：接口赋值在移动端 Yaegi 下会 panic（reflect.Set 错误），仅桌面官方 Go 可运行（保持 desktop-only）。"
+    ],
+    "exercises": [
+      {
+        "prompt": "再加一个 PercentOff(20) 策略，并写一个同时记录耗时与日志的装饰器。",
+        "hint": "策略实现 Pricing；装饰器实现 Job 并在内部调用 inner.Run()。",
+        "answer": "PercentOff 返回 base*(100-p)/100；装饰器在调用前后追加。"
+      }
+    ],
+    "explain": "Go 没有继承，用“接口 + 组合”实现行为的可替换与增强。策略模式把可变算法抽成接口（Pricing），Order 组合一个策略，运行期切换即改变行为。装饰模式用组合在原有行为上叠加：LogJob 持有内部 Job，在调用前后插入日志，而不修改 SimpleJob。这种设计比继承更灵活——可在不改动原有类型的前提下新增策略与装饰，符合开闭原则。示例同时展示策略切换与装饰链。",
+    "code": "// T047 组合优于继承：策略与装饰模式。\n//\n// Go 没有继承，用“接口 + 组合”实现行为的可替换与增强：\n// 策略模式把可变的算法抽成接口，装饰模式用组合在原有行为上叠加。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Pricing 是价格计算策略。\ntype Pricing interface {\n\tPrice(base int) int\n}\n\n// NormalPrice 原价。\ntype NormalPrice struct{}\n\nfunc (NormalPrice) Price(base int) int { return base }\n\n// DiscountPrice 打八折。\ntype DiscountPrice struct{}\n\nfunc (DiscountPrice) Price(base int) int { return base * 8 / 10 }\n\n// Order 组合一个 Pricing 策略（而非继承一个具体类）。\ntype Order struct {\n\tbase     int\n\tstrategy Pricing\n}\n\n// Total 委托给当前策略，切换策略即改变行为。\nfunc (o *Order) Total() int { return o.strategy.Price(o.base) }\n\n// Job 是被装饰的核心行为。\ntype Job interface {\n\tRun() string\n}\n\n// SimpleJob 基础实现。\ntype SimpleJob struct{ name string }\n\nfunc (j SimpleJob) Run() string { return \"run \" + j.name }\n\n// LogJob 是装饰器：在原有 Job 前后叠加日志（组合，而非改写 SimpleJob）。\ntype LogJob struct {\n\tinner Job\n\tlines *[]string\n}\n\nfunc (l LogJob) Run() string {\n\t*l.lines = append(*l.lines, \"before \"+l.inner.Run())\n\tout := l.inner.Run()\n\t*l.lines = append(*l.lines, \"after \"+l.inner.Run())\n\treturn out\n}\n\nfunc main() {\n\to := &Order{base: 100, strategy: NormalPrice{}}\n\tfmt.Println(\"normal total:\", o.Total())\n\n\to.strategy = DiscountPrice{} // 运行期切换策略\n\tfmt.Println(\"discount total:\", o.Total())\n\n\tvar lines []string\n\tvar job Job = SimpleJob{name: \"build\"}\n\tjob = LogJob{inner: job, lines: &lines} // 装饰\n\tfmt.Println(\"decorated run:\", job.Run())\n\tfmt.Println(\"log lines:\")\n\tfor _, l := range lines {\n\t\tfmt.Println(\" \", strings.TrimSpace(l))\n\t}\n}\n",
+    "output": "normal total: 100\ndiscount total: 80\ndecorated run: run build\nlog lines:\n  before run build\n  after run build"
+  },
+  "example": {
+    "id": "go-example-047",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "组合优于继承：策略与装饰模式（示例）",
+    "summary": "对应主题 T047 的可运行示例。",
+    "concepts": [
+      "组合",
+      "策略模式",
+      "装饰模式",
+      "接口"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T047 组合优于继承：策略与装饰模式。\n//\n// Go 没有继承，用“接口 + 组合”实现行为的可替换与增强：\n// 策略模式把可变的算法抽成接口，装饰模式用组合在原有行为上叠加。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Pricing 是价格计算策略。\ntype Pricing interface {\n\tPrice(base int) int\n}\n\n// NormalPrice 原价。\ntype NormalPrice struct{}\n\nfunc (NormalPrice) Price(base int) int { return base }\n\n// DiscountPrice 打八折。\ntype DiscountPrice struct{}\n\nfunc (DiscountPrice) Price(base int) int { return base * 8 / 10 }\n\n// Order 组合一个 Pricing 策略（而非继承一个具体类）。\ntype Order struct {\n\tbase     int\n\tstrategy Pricing\n}\n\n// Total 委托给当前策略，切换策略即改变行为。\nfunc (o *Order) Total() int { return o.strategy.Price(o.base) }\n\n// Job 是被装饰的核心行为。\ntype Job interface {\n\tRun() string\n}\n\n// SimpleJob 基础实现。\ntype SimpleJob struct{ name string }\n\nfunc (j SimpleJob) Run() string { return \"run \" + j.name }\n\n// LogJob 是装饰器：在原有 Job 前后叠加日志（组合，而非改写 SimpleJob）。\ntype LogJob struct {\n\tinner Job\n\tlines *[]string\n}\n\nfunc (l LogJob) Run() string {\n\t*l.lines = append(*l.lines, \"before \"+l.inner.Run())\n\tout := l.inner.Run()\n\t*l.lines = append(*l.lines, \"after \"+l.inner.Run())\n\treturn out\n}\n\nfunc main() {\n\to := &Order{base: 100, strategy: NormalPrice{}}\n\tfmt.Println(\"normal total:\", o.Total())\n\n\to.strategy = DiscountPrice{} // 运行期切换策略\n\tfmt.Println(\"discount total:\", o.Total())\n\n\tvar lines []string\n\tvar job Job = SimpleJob{name: \"build\"}\n\tjob = LogJob{inner: job, lines: &lines} // 装饰\n\tfmt.Println(\"decorated run:\", job.Run())\n\tfmt.Println(\"log lines:\")\n\tfor _, l := range lines {\n\t\tfmt.Println(\" \", strings.TrimSpace(l))\n\t}\n}\n",
+    "expectedOutput": "normal total: 100\ndiscount total: 80\ndecorated run: run build\nlog lines:\n  before run build\n  after run build",
+    "templateType": "go"
+  }
+}

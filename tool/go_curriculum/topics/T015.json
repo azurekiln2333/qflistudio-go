@@ -1,0 +1,71 @@
+{
+  "id": "T015",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "slice 0=10\nslice 1=20\nslice 2=30\nmap total 3\nstr 0=a\nstr 1=b\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-015",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "for range 遍历集合",
+    "summary": "用 range 遍历切片、映射与字符串，理解各类型返回的索引与值。",
+    "concepts": [
+      "range",
+      "切片",
+      "映射",
+      "字符串"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 range 正确遍历切片、映射和字符串，并说明映射遍历顺序不确定。",
+    "prerequisites": [
+      "T007 字符串与 rune",
+      "T014 for"
+    ],
+    "pitfalls": [
+      "依赖 map 的遍历顺序：Go 的 map range 顺序是随机的，需要有序输出时必须先取键排序。",
+      "混用索引与值：range 切片返回 (index, value)，只取值要用 _ 忽略索引，写反会拿到下标。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把 map 的 range 改成先收集键、排序后按序打印，观察输出变得确定。",
+        "hint": "用 sort.Strings 对键切片排序。",
+        "answer": "排序后输出稳定为 a 再 b，验证 map 顺序本身不确定、有序输出需自行排序。"
+      }
+    ],
+    "explain": "range 是遍历集合的通用语法，返回内容随被遍历对象而变：切片/数组返回 (index, value)，映射返回 (key, value)，字符串返回 (byteIndex, rune)。对 map 而言，遍历顺序在语言层面是随机化的，因此样例只对值做累加而不是逐条打印依赖顺序的结果。\n\n只关心值时用 _ 忽略索引或键；只关心键时省略第二个变量。range 对字符串按 rune 迭代，索引是 rune 起始字节位置，这与 T007 的字节/字符区分相呼应。\n\n本样例分别遍历切片、映射（求和）与字符串。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{10, 20, 30}\n\tfor i, v := range nums {\n\t\tfmt.Printf(\"slice %d=%d\\n\", i, v)\n\t}\n\tm := map[string]int{\"a\": 1, \"b\": 2}\n\ttotal := 0\n\tfor _, v := range m {\n\t\ttotal += v\n\t}\n\tfmt.Println(\"map total\", total)\n\tfor i, r := range \"ab\" {\n\t\tfmt.Printf(\"str %d=%c\\n\", i, r)\n\t}\n}\n",
+    "output": "slice 0=10\nslice 1=20\nslice 2=30\nmap total 3\nstr 0=a\nstr 1=b"
+  },
+  "example": {
+    "id": "go-example-015",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "range 遍历一览",
+    "summary": "对切片、映射与字符串分别用 range 遍历。",
+    "concepts": [
+      "range",
+      "切片",
+      "映射",
+      "字符串"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tnums := []int{10, 20, 30}\n\tfor i, v := range nums {\n\t\tfmt.Printf(\"slice %d=%d\\n\", i, v)\n\t}\n\tm := map[string]int{\"a\": 1, \"b\": 2}\n\ttotal := 0\n\tfor _, v := range m {\n\t\ttotal += v\n\t}\n\tfmt.Println(\"map total\", total)\n\tfor i, r := range \"ab\" {\n\t\tfmt.Printf(\"str %d=%c\\n\", i, r)\n\t}\n}\n",
+    "expectedOutput": "slice 0=10\nslice 1=20\nslice 2=30\nmap total 3\nstr 0=a\nstr 1=b",
+    "templateType": "go"
+  }
+}

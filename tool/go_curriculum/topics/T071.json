@@ -1,0 +1,70 @@
+{
+  "id": "T071",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-sorted",
+    "expected": "worker-0 done\nworker-1 done\nworker-2 done\nworker-3 done\nworker-4 done"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-071",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "goroutine 基础与启动",
+    "summary": "启动多个 goroutine 并用 WaitGroup 汇合，排序输出以消除完成顺序的不确定性。",
+    "concepts": [
+      "goroutine",
+      "WaitGroup",
+      "并发",
+      "确定性"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能启动 goroutine、用 sync.WaitGroup 等待其完成，并说明为何要排序输出。",
+    "prerequisites": [
+      "T025 函数是一等值：高阶函数"
+    ],
+    "pitfalls": [
+      "闭包直接捕获循环变量：多个 goroutine 可能读到同一个 i，应作为参数传入。",
+      "假定 goroutine 完成顺序固定：调度不确定，输出顺序不可依赖。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把 n 改成 10，并让每个 worker 返回其编号的平方，收集排序后打印。",
+        "hint": "用索引写入 results 切片，避免竞争；最后 sort。",
+        "answer": "results[id] = id*id，wg.Wait 后排序并打印。"
+      }
+    ],
+    "explain": "go 关键字在函数调用前启动一个轻量级 goroutine，由运行时调度到线程上。它们何时完成不确定，因此不能假定顺序。WaitGroup 是计数信号量：Add 增加待完成数，每次 Done 减一，Wait 阻塞到归零，主 goroutine 因此能安全等待全部完成而不必睡眠。为得到确定输出，示例把结果写入按编号索引的切片，最后排序再打印，从而消掉“完成顺序”这一不确定因素。这是本课程并发示例的统一做法。",
+    "code": "// T071 goroutine 基础与启动。\n//\n// 启动 goroutine 只需在调用前加 go。多个 goroutine 的完成顺序不确定，\n// 因此本示例不打印\"谁先谁后\"，而是用 sync.WaitGroup 汇合后，\n// 把各自写入的结果收集进切片，排序后再输出——保证输出确定。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\nfunc main() {\n\tconst n = 5\n\tresults := make([]string, n)\n\tvar wg sync.WaitGroup\n\n\tfor i := 0; i < n; i++ {\n\t\twg.Add(1)\n\t\t// i 作为参数传入，避免闭包共享同一个循环变量。\n\t\tgo func(id int) {\n\t\t\tdefer wg.Done()\n\t\t\tresults[id] = fmt.Sprintf(\"worker-%d done\", id)\n\t\t}(i)\n\t}\n\n\t// Wait 阻塞到所有 goroutine 调用 Done，保证 results 已全部写入。\n\twg.Wait()\n\n\t// 排序消除 goroutine 完成顺序的不确定性，输出因此确定。\n\tsort.Strings(results)\n\tfor _, r := range results {\n\t\tfmt.Println(r)\n\t}\n}\n",
+    "output": "worker-0 done\nworker-1 done\nworker-2 done\nworker-3 done\nworker-4 done"
+  },
+  "example": {
+    "id": "go-example-071",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "goroutine 基础与启动（示例）",
+    "summary": "对应主题 T071 的可运行示例。",
+    "concepts": [
+      "goroutine",
+      "WaitGroup",
+      "并发",
+      "确定性"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T071 goroutine 基础与启动。\n//\n// 启动 goroutine 只需在调用前加 go。多个 goroutine 的完成顺序不确定，\n// 因此本示例不打印\"谁先谁后\"，而是用 sync.WaitGroup 汇合后，\n// 把各自写入的结果收集进切片，排序后再输出——保证输出确定。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\nfunc main() {\n\tconst n = 5\n\tresults := make([]string, n)\n\tvar wg sync.WaitGroup\n\n\tfor i := 0; i < n; i++ {\n\t\twg.Add(1)\n\t\t// i 作为参数传入，避免闭包共享同一个循环变量。\n\t\tgo func(id int) {\n\t\t\tdefer wg.Done()\n\t\t\tresults[id] = fmt.Sprintf(\"worker-%d done\", id)\n\t\t}(i)\n\t}\n\n\t// Wait 阻塞到所有 goroutine 调用 Done，保证 results 已全部写入。\n\twg.Wait()\n\n\t// 排序消除 goroutine 完成顺序的不确定性，输出因此确定。\n\tsort.Strings(results)\n\tfor _, r := range results {\n\t\tfmt.Println(r)\n\t}\n}\n",
+    "expectedOutput": "worker-0 done\nworker-1 done\nworker-2 done\nworker-3 done\nworker-4 done",
+    "templateType": "go"
+  }
+}

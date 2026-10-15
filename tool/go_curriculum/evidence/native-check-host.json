@@ -1,0 +1,524 @@
+[
+  {
+    "topic": "T001",
+    "stdout": "hello, go\ntoolchain ready\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T002",
+    "stdout": "hello, go\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T003",
+    "stdout": "count=0 name=\"\" ok=false total=42 msg=零值演示\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T004",
+    "stdout": "int8=127 uint8=255 float64=3.5 bool=true string=\"go\"\ntyped 是 int\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T005",
+    "stdout": "0 1 2\npi as float64 = 3.14\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T006",
+    "stdout": "3 3\nbig=1099511627776 small=0\ntrunc(3.9)=3\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T007",
+    "stdout": "bytes: 14\nrunes: 9\nat 0: h\nat 1: é\nat 3: l\nat 4: l\nat 5: o\nat 6: ,\nat 7:  \nat 8: 世\nat 11: 界\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T008",
+    "stdout": "v={3 4} +v={X:3 Y:4}\nd=42 q=\"go\" t=struct { X int; Y int }\nf=3.14 e=1.234500e+03\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T009",
+    "stdout": "lines=2 words=3\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T010",
+    "stdout": "add 10 sub 2 mul 24 div 1 mod 2\nand 4 or 6 xor 2 shl 12 shr 3\nexpr true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T011",
+    "stdout": "95 -\u003e A\n72 -\u003e B\n50 -\u003e C\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T012",
+    "stdout": "-1=negative\n0=zero\n5=small\n99=large\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T013",
+    "stdout": "int:1\nstring:go\nbool:true\nunknown\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T014",
+    "stdout": "sum 12\nn 3\ncount 2\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T015",
+    "stdout": "slice 0=10\nslice 1=20\nslice 2=30\nmap total 3\nstr 0=a\nstr 1=b\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T016",
+    "stdout": "found at 1,1\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T017",
+    "stdout": "processed 3 items\ncleanup after: negative input\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T018",
+    "stdout": "a [1 2 3]\nb [99 2 3]\nlen 3\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T019",
+    "stdout": "start len=0 cap=2\nafter 1: len=1 cap=2\nafter 2: len=2 cap=2\nafter 3: len=3 cap=4\nafter 4: len=4 cap=4\nafter 5: len=5 cap=8\nvalues [1 2 3 4 5]\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T020",
+    "stdout": "base [1 99 3 4 5]\nview [99 3]\nappended [99 3 100]\nbase after append [1 99 3 100 5]\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T021",
+    "stdout": "copied 5 [1 2 3 4 5]\nafter delete [1 2 4 5] s mutated to [1 2 4 5 5]\nunique [1 2 3]\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T022",
+    "stdout": "go present: 3\njava absent\nkeys: 1\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T023",
+    "stdout": "q,r 3 2\nsplit 40 50\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T024",
+    "stdout": "6\n15\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T025",
+    "stdout": "[2 4 6]\n[11 12 13]\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T026",
+    "stdout": "1 2 3\n1\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T027",
+    "stdout": "0 1 1 2 3 5 8 \n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T028",
+    "stdout": "body\nresult: 42\nsecond deferred\nfirst deferred\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T029",
+    "stdout": "after byValue 1\nafter byPtr 100\naddress of x is non-nil: true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T030",
+    "stdout": "after element change [2 2 3]\nafter reassign [2 2 3]\nnew value 7\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T031",
+    "stdout": "{Ada 0}\n30\nModified\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T032",
+    "stdout": "[{Al 25} {Cy 25} {Bob 30}]\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T033",
+    "stdout": "insert position for 6: 3\nfirst \u003e= 7 at index 3\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T034",
+    "stdout": "unique [c go rust]\nlen 1 -\u003e 1 words\nlen 2 -\u003e 3 words\nlen 4 -\u003e 2 words\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T035",
+    "stdout": "parts=[Go Rust Go] count=3\njoined Go|Rust|Go\ncontains Go: true\nreplace: Golang|Rust|Go\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T036",
+    "stdout": "item0;item1;item2; len 18\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T037",
+    "stdout": "Ada 36\nBob 0\npointer set 37\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T038",
+    "stdout": "7\nbase#7\nchild\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T039",
+    "stdout": "count 2\nafter copy inc: 2 3\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T040",
+    "stdout": "method value 12\n",
+    "stderr": "src/qfli-project/main.go:10:7: panic: qfli-project.main(...)\nreflect: Call with too many input arguments\n",
+    "exit": 1
+  },
+  {
+    "topic": "T041",
+    "stdout": "shape 0: area=3.14 perimeter=6.28\nshape 1: area=6.00 perimeter=10.00\nnil interface is nil: true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T042",
+    "stdout": "assert Name ok: true value: gopher\nassert Number while type is Name: false\nsingle-value assert panicked: true\nafter reassign assert Number ok: true value: 7\nany-\u003estring ok: text\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T043",
+    "stdout": "nil\nint=1\nfloat64=2.5\nstring=\"go\" len=2\nbool=true\n[]int len=3\nother(struct { X int })\nint count: 1 string count: 1 other: 5\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T044",
+    "stdout": "read: start-more\nclosed: true\nminimal interface reuse: a one-method type satisfies Reader\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T045",
+    "stdout": "color: RED\ncolor with %v: GREEN, %d: {1 140698112585024}\nunknown: Color(99)\nerror: validation failed on age: must be positive\nsame error: false\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T046",
+    "stdout": "dave   20\nalice  25\nbob    30\ncarol  30\nreversed first: carol\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T047",
+    "stdout": "normal total: 100\n",
+    "stderr": "src/qfli-project/main.go:60:14: panic: qfli-project.main(...)\nreflect.Set: value of type interp.valueInterface is not assignable to type struct {}\n",
+    "exit": 1
+  },
+  {
+    "topic": "T048",
+    "stdout": "nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher\n",
+    "stderr": "src/qfli-project/main.go:17:50: panic: qfli-project.Greet(...)\n",
+    "exit": 0
+  },
+  {
+    "topic": "T049",
+    "stdout": "10/2 = 5 err: \u003cnil\u003e\nerror: divide by zero\nresult unusable, defaulting to 0\nvalue after error: 0\nstored error text: divide by zero\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T050",
+    "stdout": "found a: 1 err: \u003cnil\u003e\nerrors.Is ErrNotFound: true\nwrapped text: lookup \"missing\": not found\nwrapped Is ErrNotFound: true\nstring compare is fragile: true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T051",
+    "stdout": "full: level1: level2: base failure\nunwrap chain:\n  level1: level2: base failure\n  level2: base failure\n  base failure\nIs(errBase): true\nwith %v Is(errBase): false\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T052",
+    "stdout": "Is ErrPermission: true\n",
+    "stderr": "src/qfli-project/main.go:32:9: panic: qfli-project.main(...)\nerrors: *target must be interface or implement error\n",
+    "exit": 1
+  },
+  {
+    "topic": "T053",
+    "stdout": "text: query \"SELECT 1\" failed: timeout\nIs ErrTimeout: false\n",
+    "stderr": "src/qfli-project/main.go:32:9: panic: qfli-project.main(...)\nerrors: *target must be interface or implement error\n",
+    "exit": 1
+  },
+  {
+    "topic": "T054",
+    "stdout": "10/2: 5 err: \u003cnil\u003e\n1/0 -\u003e 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic\n",
+    "stderr": "src/qfli-project/main.go:21:5: panic: qfli-project.mustPositive(...)\n",
+    "exit": 0
+  },
+  {
+    "topic": "T055",
+    "stdout": "both closed cleanly\nclose error: close a: disk io\npreserved cause: true\nbody done\ndeferred 3\ndeferred 2\ndeferred 1\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T056",
+    "stdout": "error chain: start: loadConfig: not found\nstill Is ErrNotFound: true\n  - start: loadConfig: not found\n  - loadConfig: not found\n  - not found\nstarted ok\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T057",
+    "stdout": "log entries: 1\n  logged: request failed: service: disk failure\nanti-pattern entries (duplicated): 2\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T058",
+    "stdout": "all-ok err is nil: true\nsingle Unwrap(join) is nil: true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T066",
+    "stdout": "下午好，gopher\n上午好，gopher\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T067",
+    "stdout": "default: addr=127.0.0.1:8080 readTimeout=5s maxConns=128 access=false\ncustom:  addr=0.0.0.0:9000 readTimeout=30s maxConns=1024 access=true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T071",
+    "stdout": "worker-0 done\nworker-1 done\nworker-2 done\nworker-3 done\nworker-4 done\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T072",
+    "stdout": "received: handoff payload\nreceived: 42\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T073",
+    "stdout": "buffered: 2 cap: 2\nthird send succeeded: false\nfirst out: 10\nsend after one receive succeeded: true\nremaining: 20 30\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T074",
+    "stdout": "count: 5\nsum: 15\nafter close: value = 0 ok = false\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T075",
+    "stdout": "took ready channel: payload\ntimeout branch taken\nselected exactly one ready channel\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T076",
+    "stdout": "sum of squares 1..3 = 14\nread: 10\nread: 20\nread: 30\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T079",
+    "stdout": "init executed count: 1\nall goroutines finished: true\nsum of squares: 140\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T082",
+    "stdout": "worker reached checkpoint, requesting cancel\nworker stopped: context canceled\nmain observed worker exit\nchild canceled by parent: context canceled\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T083",
+    "stdout": "slow: context done, err = true\nfast: result = 42 err = \u003cnil\u003e\ncanceled: err is context canceled = true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T084",
+    "stdout": "pool error: unlucky 13\nsquares (sorted): [1 4 9 16 25 36 49 64 81 100 121 144 196 225 256 289 324 361 400]\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T085",
+    "stdout": "copied bytes: 16 err: \u003cnil\u003e\nbuffer content: hello, io.Reader\ncustom reader: ababab\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T086",
+    "stdout": "read back:\nline one\nline two\nsize matches: true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T087",
+    "stdout": "line 1: go is fun\nline 2: bufio scans lines\nline 3: and words too\ntotal lines: 3\ntotal words: 9\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T088",
+    "stdout": "alpha.txt  file size=1\nbeta.txt   file size=2\nsub        dir  size=0\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T089",
+    "stdout": "marshal: {\"name\":\"gopher\",\"age\":15,\"hobbies\":[\"coding\",\"reading\"]}\nunmarshal name: gopher\nunmarshal age: 15\nunmarshal hobbies: [coding reading]\nround-trip stable: true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T090",
+    "stdout": "minimal: {\"id\":7,\"name\":\"alice\",\"balance\":0}\nfilled:  {\"id\":7,\"name\":\"alice\",\"email\":\"alice@example.com\",\"nick_name\":\"ali\",\"balance\":100}\npassword hidden: true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T091",
+    "stdout": "event 1: type=start code=1\nevent 2: type=tick code=2\nevent 3: type=stop code=3\ndecoded events: 3\nstrict decode rejected unknown field: true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T092",
+    "stdout": "formatted: 2026-10-12 14:30:45\ndate only: 2026-10-12\nRFC3339:   2026-10-12T14:30:45Z\nparsed: 2020-01-02T03:04:05Z\nduration: 1h30m0s\nduration minutes: 90\nadd 90m -\u003e 16:00:45\ndiff == 90m: true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T093",
+    "stdout": "timer fired once\nticker fired count: 3\nno tick after stop\nelapsed is non-negative: true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T094",
+    "stdout": "matches: 3\n  key=user     value=alice\n  key=role     value=admin\n  key=active   value=true\nsingle full match: host=node1\nsingle group1: host\nsingle group2: node1\nno match is nil: true\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T095",
+    "stdout": "doubled: a2 b44 c666\nmasked:  a# b# c#\nsplit count: 4\n  [0]=one\n  [1]=two\n  [2]=three\n  [3]=four\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T096",
+    "stdout": "",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T097",
+    "stdout": "Atoi 42: 42 err: \u003cnil\u003e\nAtoi 4x2: 0 err non-nil: true\nItoa 255: 255\nParseFloat: 3.14\nParseBool TRUE: true\nParseInt ff base16: 255\nQuote: \"a\\tb\"\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T098",
+    "stdout": "sha256(abc) = ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\nmatches known vector: true\nsha256(\"\") length bytes: 32\nsha256(\"\") hex: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nstreamed == one-shot: true\ndecoded bytes: 32 err: \u003cnil\u003e\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T115",
+    "stdout": "total: 6\nhello, gopher (3 items)\nrun: `gofmt -l .` and `go vet ./...`\n",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T116",
+    "stdout": "",
+    "stderr": "",
+    "exit": 0
+  },
+  {
+    "topic": "T117",
+    "stdout": "addr=192.168.1.5 level=warn port=9000\naddr=10.0.0.1 level=warn port=8080\naddr=127.0.0.1 level=info port=8080\n",
+    "stderr": "",
+    "exit": 0
+  }
+]

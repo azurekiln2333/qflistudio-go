@@ -1,0 +1,70 @@
+{
+  "id": "T049",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "10/2 = 5 err: <nil>\nerror: divide by zero\nresult unusable, defaulting to 0\nvalue after error: 0\nstored error text: divide by zero"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-049",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "error 接口与错误即值",
+    "summary": "把错误当作普通值返回并显式检查，演示成功与失败两条路径。",
+    "concepts": [
+      "error",
+      "返回值",
+      "显式检查",
+      "错误即值"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能编写返回 (T, error) 的函数并显式检查错误、妥善降级。",
+    "prerequisites": [
+      "T023 函数签名、多返回值与命名返回"
+    ],
+    "pitfalls": [
+      "忽略返回的 error（用 _ 丢弃）：失败被静默吞掉，埋下隐患。",
+      "把错误当异常：Go 不用 try/catch，错误是正常控制流的一部分。"
+    ],
+    "exercises": [
+      {
+        "prompt": "写一个 sqrt 函数，负数时返回错误，正数时返回平方根。",
+        "hint": "用 math.Sqrt；负数返回 fmt.Errorf。",
+        "answer": "if x<0 { return 0, fmt.Errorf(\"negative\") }; return math.Sqrt(x), nil。"
+      }
+    ],
+    "explain": "Go 把错误当作普通值返回：函数返回 (T, error)，调用方必须显式检查。error 是一个接口：任何有 Error() string 的类型都能当错误。示例的 divide 在除零时返回错误，调用方检查 err 并降级，而不是忽略。这种“错误即值”让控制流显式、可读，也便于测试与传递：错误可以被存进变量、比较、返回给上层。",
+    "code": "// T049 error 接口与错误即值。\n//\n// Go 把错误当作普通值返回：函数返回 (T, error)，调用方必须显式检查。\n// error 是一个接口：任何有 Error() string 的类型都能当错误。\npackage main\n\nimport \"fmt\"\n\n// divide 在两个数相除时检查除零并返回错误。\nfunc divide(a, b int) (int, error) {\n\tif b == 0 {\n\t\treturn 0, fmt.Errorf(\"divide by zero\")\n\t}\n\treturn a / b, nil\n}\n\nfunc main() {\n\t// 成功：err 为 nil。\n\tq, err := divide(10, 2)\n\tfmt.Println(\"10/2 =\", q, \"err:\", err)\n\n\t// 失败：检查 err 并降级处理，而不是忽略。\n\tq, err = divide(1, 0)\n\tif err != nil {\n\t\tfmt.Println(\"error:\", err)\n\t\tfmt.Println(\"result unusable, defaulting to 0\")\n\t\tq = 0\n\t}\n\tfmt.Println(\"value after error:\", q)\n\n\t// 错误是值：可以存入变量、比较、传递。\n\tvar lastErr error\n\tif _, e := divide(3, 0); e != nil {\n\t\tlastErr = e\n\t}\n\tfmt.Println(\"stored error text:\", lastErr.Error())\n}\n",
+    "output": "10/2 = 5 err: <nil>\nerror: divide by zero\nresult unusable, defaulting to 0\nvalue after error: 0\nstored error text: divide by zero"
+  },
+  "example": {
+    "id": "go-example-049",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "error 接口与错误即值（示例）",
+    "summary": "对应主题 T049 的可运行示例。",
+    "concepts": [
+      "error",
+      "返回值",
+      "显式检查",
+      "错误即值"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T049 error 接口与错误即值。\n//\n// Go 把错误当作普通值返回：函数返回 (T, error)，调用方必须显式检查。\n// error 是一个接口：任何有 Error() string 的类型都能当错误。\npackage main\n\nimport \"fmt\"\n\n// divide 在两个数相除时检查除零并返回错误。\nfunc divide(a, b int) (int, error) {\n\tif b == 0 {\n\t\treturn 0, fmt.Errorf(\"divide by zero\")\n\t}\n\treturn a / b, nil\n}\n\nfunc main() {\n\t// 成功：err 为 nil。\n\tq, err := divide(10, 2)\n\tfmt.Println(\"10/2 =\", q, \"err:\", err)\n\n\t// 失败：检查 err 并降级处理，而不是忽略。\n\tq, err = divide(1, 0)\n\tif err != nil {\n\t\tfmt.Println(\"error:\", err)\n\t\tfmt.Println(\"result unusable, defaulting to 0\")\n\t\tq = 0\n\t}\n\tfmt.Println(\"value after error:\", q)\n\n\t// 错误是值：可以存入变量、比较、传递。\n\tvar lastErr error\n\tif _, e := divide(3, 0); e != nil {\n\t\tlastErr = e\n\t}\n\tfmt.Println(\"stored error text:\", lastErr.Error())\n}\n",
+    "expectedOutput": "10/2 = 5 err: <nil>\nerror: divide by zero\nresult unusable, defaulting to 0\nvalue after error: 0\nstored error text: divide by zero",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,962 @@
+[
+  {
+    "id": "T001",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "hello, go\ntoolchain ready",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T002",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "hello, go",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T003",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "count=0 name=\"\" ok=false total=42 msg=零值演示",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T004",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "int8=127 uint8=255 float64=3.5 bool=true string=\"go\"\ntyped 是 int",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T005",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "0 1 2\npi as float64 = 3.14",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T006",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "3 3\nbig=1099511627776 small=0\ntrunc(3.9)=3",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T007",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "bytes: 14\nrunes: 9\nat 0: h\nat 1: é\nat 3: l\nat 4: l\nat 5: o\nat 6: ,\nat 7:  \nat 8: 世\nat 11: 界",
+    "exampleVariant": "bytes: 14\nrunes: 9"
+  },
+  {
+    "id": "T008",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "v={3 4} +v={X:3 Y:4}\nd=42 q=\"go\" t=main.point\nf=3.14 e=1.234500e+03",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T009",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "lines=2 words=3",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T010",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "add 10 sub 2 mul 24 div 1 mod 2\nand 4 or 6 xor 2 shl 12 shr 3\nexpr true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T011",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "95 -> A\n72 -> B\n50 -> C",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T012",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "-1=negative\n0=zero\n5=small\n99=large",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T013",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "int:1\nstring:go\nbool:true\nunknown",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T014",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "sum 12\nn 3\ncount 2",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T015",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "slice 0=10\nslice 1=20\nslice 2=30\nmap total 3\nstr 0=a\nstr 1=b",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T016",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "found at 1,1",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T017",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "processed 3 items\ncleanup after: negative input",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T018",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "a [1 2 3]\nb [99 2 3]\nlen 3",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T019",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "start len=0 cap=2\nafter 1: len=1 cap=2\nafter 2: len=2 cap=2\nafter 3: len=3 cap=4\nafter 4: len=4 cap=4\nafter 5: len=5 cap=8\nvalues [1 2 3 4 5]",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T020",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "base [1 99 3 4 5]\nview [99 3]\nappended [99 3 100]\nbase after append [1 99 3 100 5]",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T021",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "copied 5 [1 2 3 4 5]\nafter delete [1 2 4 5] s mutated to [1 2 4 5 5]\nunique [1 2 3]",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T022",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "go present: 3\njava absent\nkeys: 1",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T023",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "q,r 3 2\nsplit 40 50",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T024",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "6\n15",
+    "exampleVariant": "6\n0"
+  },
+  {
+    "id": "T025",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "[2 4 6]\n[11 12 13]",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T026",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "1 2 3\n1",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T027",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "0 1 1 2 3 5 8",
+    "exampleVariant": "fib(10)=55"
+  },
+  {
+    "id": "T028",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "body\nresult: 42\nsecond deferred\nfirst deferred",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T029",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "after byValue 1\nafter byPtr 100\naddress of x is non-nil: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T030",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "after element change [2 2 3]\nafter reassign [2 2 3]\nnew value 7",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T031",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "{Ada 0}\n30\nModified",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T032",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "[{Al 25} {Cy 25} {Bob 30}]",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T033",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "insert position for 6: 3\nfirst >= 7 at index 3",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T034",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "unique [c go rust]\nlen 1 -> 1 words\nlen 2 -> 3 words\nlen 4 -> 2 words",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T035",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "parts=[Go Rust Go] count=3\njoined Go|Rust|Go\ncontains Go: true\nreplace: Golang|Rust|Go",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T036",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "item0;item1;item2; len 18",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T037",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "Ada 36\nBob 0\npointer set 37",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T038",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "7\nbase#7\nchild",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T039",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "count 2\nafter copy inc: 2 3",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T040",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "method value 12\nmethod expression 12\npointer call 12",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T041",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "shape 0: area=3.14 perimeter=6.28\nshape 1: area=6.00 perimeter=10.00\nnil interface is nil: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T042",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "assert Name ok: true value: gopher\nassert Number while type is Name: false\nsingle-value assert panicked: true\nafter reassign assert Number ok: true value: 7\nany->string ok: text",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T043",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "nil\nint=1\nfloat64=2.5\nstring=\"go\" len=2\nbool=true\n[]int len=3\nother(struct { X int })\nint count: 1 string count: 1 other: 5",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T044",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "read: start-more\nclosed: true\nminimal interface reuse: a one-method type satisfies Reader",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T045",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "color: RED\ncolor with %v: GREEN, %d: 1\nunknown: Color(99)\nerror: validation failed on age: must be positive\nsame error: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T046",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "dave   20\nalice  25\nbob    30\ncarol  30\nreversed first: carol",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T047",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "normal total: 100\ndiscount total: 80\ndecorated run: run build\nlog lines:\n  before run build\n  after run build",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T048",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T049",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "10/2 = 5 err: <nil>\nerror: divide by zero\nresult unusable, defaulting to 0\nvalue after error: 0\nstored error text: divide by zero",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T050",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "found a: 1 err: <nil>\nerrors.Is ErrNotFound: true\nwrapped text: lookup \"missing\": not found\nwrapped Is ErrNotFound: true\nstring compare is fragile: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T051",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "full: level1: level2: base failure\nunwrap chain:\n  level1: level2: base failure\n  level2: base failure\n  base failure\nIs(errBase): true\nwith %v Is(errBase): false",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T052",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "Is ErrPermission: true\nAs PathError -> path: secret.cfg op: open\nAs on wrapped: true read",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T053",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "text: query \"SELECT 1\" failed: timeout\nIs ErrTimeout: true\nSQL field: SELECT 1\nCause field: timeout\nUnwrap == ErrTimeout: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T054",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "10/2: 5 err: <nil>\n1/0 -> 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T055",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "both closed cleanly\nclose error: close a: disk io\npreserved cause: true\nbody done\ndeferred 3\ndeferred 2\ndeferred 1",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T056",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "error chain: start: loadConfig: not found\nstill Is ErrNotFound: true\n  - start: loadConfig: not found\n  - loadConfig: not found\n  - not found\nstarted ok",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T057",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "log entries: 1\n  logged: request failed: service: disk failure\nanti-pattern entries (duplicated): 2",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T058",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "collected errors: 2\n  task 2 failed\n  task 4 failed\nall-ok err is nil: true\nsingle Unwrap(join) is nil: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T059",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "init: package config loaded, a = 1\na = 1 b = 2\nexported: visible outside package\nunexported: visible only inside package\ninit runs before main; across packages it follows import order",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T060",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "selected local module version: v0.1.2\ngo.mod:\n  module qfli.example/t060\n  go 1.21\n  require qfli.example/lib v0.1.2\n  replace qfli.example/lib => ./lib\nrun: go run .  (no network; resolved via local replace)",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T061",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "exported constant: visible outside package\nunexported constant: visible only inside package\ninternal rule: a package under an internal/ directory may only\nbe imported by code in the directory tree rooted at internal's parent.",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T062",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string](\"pear\", \"apple\") = apple\nMax[float64](2.5, 1.5) = 2.5",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T063",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "Sum([]int{1,2,3}) = 6\nSum([]int64{10,20,30}) = 60\nSum([]float64{1.5,2.5}) = 4\nSum([]Celsius{...}) = 61",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T064",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "popped int: 3\npopped int: 2\npopped int: 1\npop empty stack ok = false\npopped string: generics",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T065",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "generic Sum[int] = 10\ngeneric Sum[float64] = 4\ninterface sum = 7",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T066",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "下午好，gopher\n上午好，gopher",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T067",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "default: addr=127.0.0.1:8080 readTimeout=5s maxConns=128 access=false\ncustom:  addr=0.0.0.0:9000 readTimeout=30s maxConns=1024 access=true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T068",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "constraints: v1.2.0, v1.5.3, v1.4.9\nselected (MVS) = v1.5.3\n此时最大版本恰好等于最小可行版本",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T069",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "selected impl = default\nwith -tags special impl = special",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T070",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "Monday  => Monday\nTuesday => Tuesday\nDay(99) => Day(99)\nnote: `go generate ./...` reruns the generator for day_string.go;\n      it is not part of `go build` and is desktop only here.",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T071",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-sorted",
+    "result": "worker-0 done\nworker-1 done\nworker-2 done\nworker-3 done\nworker-4 done",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T072",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "received: handoff payload\nreceived: 42",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T073",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "buffered: 2 cap: 2\nthird send succeeded: false\nfirst out: 10\nsend after one receive succeeded: true\nremaining: 20 30",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T074",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "count: 5\nsum: 15\nafter close: value = 0 ok = false",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T075",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "took ready channel: payload\ntimeout branch taken\nselected exactly one ready channel",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T076",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "sum of squares 1..3 = 14\nread: 10\nread: 20\nread: 30",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T077",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T078",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T079",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "init executed count: 1\nall goroutines finished: true\nsum of squares: 140",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T080",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "bench-exists",
+    "result": "bench-exists",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T081",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T082",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "worker reached checkpoint, requesting cancel\nworker stopped: context canceled\nmain observed worker exit\nchild canceled by parent: context canceled",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T083",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "slow: deadline exceeded = true\nok: result = 42 err = <nil>\ncanceled: err is context canceled = true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T084",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "pool error: unlucky 13\nsquares (sorted): [1 4 9 16 25 36 49 64 81 100 121 144 196 225 256 289 324 361 400]",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T085",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "copied bytes: 16 err: <nil>\nbuffer content: hello, io.Reader\ncustom reader: ababab",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T086",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "read back:\nline one\nline two\nsize matches: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T087",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "line 1: go is fun\nline 2: bufio scans lines\nline 3: and words too\ntotal lines: 3\ntotal words: 9",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T088",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "alpha.txt  file size=1\nbeta.txt   file size=2\nsub        dir",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T089",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "marshal: {\"name\":\"gopher\",\"age\":15,\"hobbies\":[\"coding\",\"reading\"]}\nunmarshal name: gopher\nunmarshal age: 15\nunmarshal hobbies: [coding reading]\nround-trip stable: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T090",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "minimal: {\"id\":7,\"name\":\"alice\",\"balance\":0}\nfilled:  {\"id\":7,\"name\":\"alice\",\"email\":\"alice@example.com\",\"nick_name\":\"ali\",\"balance\":100}\npassword hidden: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T091",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "event 1: type=start code=1\nevent 2: type=tick code=2\nevent 3: type=stop code=3\ndecoded events: 3\nstrict decode rejected unknown field: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T092",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "formatted: 2026-10-12 14:30:45\ndate only: 2026-10-12\nRFC3339:   2026-10-12T14:30:45Z\nparsed: 2020-01-02T03:04:05Z\nduration: 1h30m0s\nduration minutes: 90\nadd 90m -> 16:00:45\ndiff == 90m: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T093",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "timer fired once\nticker fired count: 3\nno tick after stop\nelapsed is non-negative: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T094",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "matches: 3\n  key=user     value=alice\n  key=role     value=admin\n  key=active   value=true\nsingle full match: host=node1\nsingle group1: host\nsingle group2: node1\nno match is nil: true",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T095",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "doubled: a2 b44 c666\nmasked:  a# b# c#\nsplit count: 4\n  [0]=one\n  [1]=two\n  [2]=three\n  [3]=four",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T096",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "Inventory for warehouse-a:\n- bolt x100 (in stock)\n- nut x0 (out of stock)\nTotal lines: 2",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T097",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "Atoi 42: 42 err: <nil>\nAtoi 4x2: 0 err non-nil: true\nItoa 255: 255\nParseFloat: 3.14\nParseBool TRUE: true\nParseInt ff base16: 255\nQuote: \"a\\tb\"",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T098",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "sha256(abc) = ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\nmatches known vector: true\nsha256(\"\") length bytes: 32\nsha256(\"\") hex: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nstreamed == one-shot: true\ndecoded bytes: 32 err: <nil>",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T099",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T100",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T101",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T102",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T103",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T104",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T105",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T106",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T107",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T108",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "bench-exists",
+    "result": "bench-exists",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T109",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T110",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T111",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "test-pass",
+    "result": "test-pass",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T112",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "value: 1 2\npointer: 3 4\ninterface: {5 6}\nhint: `go build -gcflags=-m .` shows which variables escape to the heap",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T113",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "hot(1000) = 2997\nprofile with: go test -bench . -cpuprofile=cpu.out .\nthen: go tool pprof cpu.out",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T114",
+    "runtime": "desktop",
+    "importKind": "test-package",
+    "verification": "bench-exists",
+    "result": "bench-exists",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T115",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "total: 6\nhello, gopher (3 items)\nrun: `gofmt -l .` and `go vet ./...`",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T116",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "level=INFO msg=\"server starting\" addr=127.0.0.1:8080 pid=1\nlevel=WARN msg=\"slow query\" component=db ms=120\n{\"level\":\"ERROR\",\"msg\":\"failed to connect\",\"host\":\"db1\"}\nlevel=INFO msg=\"shutdown complete\"",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T117",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "verification": "stdout-exact",
+    "result": "addr=192.168.1.5 level=warn port=9000\naddr=10.0.0.1 level=warn port=8080\naddr=127.0.0.1 level=info port=8080",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T118",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "1 [done] learn go\n2 [todo] write tests",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T119",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "parallel matches serial: true\ngo       4\ngopher   2\nruns     1\ntest     1",
+    "exampleVariant": "same-as-tutorial"
+  },
+  {
+    "id": "T120",
+    "runtime": "desktop",
+    "importKind": "module-project",
+    "verification": "stdout-exact",
+    "result": "routes: /health, /api/time\nverify with: go test ./...",
+    "exampleVariant": "same-as-tutorial"
+  }
+]

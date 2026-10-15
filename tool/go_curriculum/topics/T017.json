@@ -1,0 +1,68 @@
+{
+  "id": "T017",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "processed 3 items\ncleanup after: negative input\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-017",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "goto 的合理使用与误区",
+    "summary": "理解 goto 的合法场景（单出口清理）与可读性风险。",
+    "concepts": [
+      "goto",
+      "label",
+      "清理路径"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能说明 goto 只应在受控的清理/跳出场景使用，并避免跨越变量声明的乱跳。",
+    "prerequisites": [
+      "T016 label"
+    ],
+    "pitfalls": [
+      "goto 跨越变量声明：Go 禁止 goto 跳过变量定义进入其作用域，会报 jumps over declaration。",
+      "用 goto 取代普通控制流：多数“来回跳”的需求用 if/for/func 更清晰，滥用 goto 会让流程难以追踪。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 process 增加第二个错误分支（如空输入）也跳到 cleanup，保持单出口。",
+        "hint": "在循环前加对 len(items)==0 的检查并设置 err 后 goto cleanup。",
+        "answer": "两处错误共用 cleanup 收尾，说明 goto 在集中清理时能减少重复代码。"
+      }
+    ],
+    "explain": "goto 在 Go 里并未被移除，但用途被限制在少数场景：最典型的是把多个错误分支汇聚到同一个清理/收尾标签，形成单出口结构。它不能跳过变量声明进入作用域，也不能跳进其他函数。\n\n滥用 goto 会破坏结构化控制流，使阅读者难以判断执行路径；大多数情况下应优先用 if、for、defer 或把逻辑抽成函数。\n\n本样例让错误分支统一跳转到 cleanup 标签，演示受控使用。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc process(items []int) (err string) {\n\tfor _, v := range items {\n\t\tif v < 0 {\n\t\t\terr = \"negative input\"\n\t\t\tgoto cleanup\n\t\t}\n\t}\n\tfmt.Println(\"processed\", len(items), \"items\")\ncleanup:\n\tif err != \"\" {\n\t\tfmt.Println(\"cleanup after:\", err)\n\t}\n\treturn err\n}\n\nfunc main() {\n\tprocess([]int{1, 2, 3})\n\tprocess([]int{1, -2})\n}\n",
+    "output": "processed 3 items\ncleanup after: negative input"
+  },
+  "example": {
+    "id": "go-example-017",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "单出口清理",
+    "summary": "用 goto 把错误分支汇聚到统一清理标签。",
+    "concepts": [
+      "goto",
+      "label",
+      "清理路径"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc process(items []int) (err string) {\n\tfor _, v := range items {\n\t\tif v < 0 {\n\t\t\terr = \"negative input\"\n\t\t\tgoto cleanup\n\t\t}\n\t}\n\tfmt.Println(\"processed\", len(items), \"items\")\ncleanup:\n\tif err != \"\" {\n\t\tfmt.Println(\"cleanup after:\", err)\n\t}\n\treturn err\n}\n\nfunc main() {\n\tprocess([]int{1, 2, 3})\n\tprocess([]int{1, -2})\n}\n",
+    "expectedOutput": "processed 3 items\ncleanup after: negative input",
+    "templateType": "go"
+  }
+}

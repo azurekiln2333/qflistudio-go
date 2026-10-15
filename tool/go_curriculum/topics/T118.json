@@ -1,0 +1,74 @@
+{
+  "id": "T118",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "1 [done] learn go\n2 [todo] write tests"
+  },
+  "sampleFiles": [
+    "go.mod",
+    "main.go",
+    "store_test.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-118",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "综合项目一：命令行待办清单（CLI + JSON 持久化）",
+    "summary": "整合命令分发、JSON 持久化与错误处理，实现可重载一致的待办清单。",
+    "concepts": [
+      "CLI",
+      "JSON 持久化",
+      "原子写",
+      "错误处理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能整合参数解析、JSON 编解码与文件持久化，实现增/改/查并保证重载一致。",
+    "prerequisites": [
+      "T089 JSON 一：Marshal/Unmarshal 基础",
+      "T086 文件读写：os.Open/Create 与缓冲",
+      "T056 错误处理模式：立即返回与上下文补充"
+    ],
+    "pitfalls": [
+      "直接覆盖写文件：中途失败会留下半写文件；示例用“临时文件 + Rename”原子落盘。",
+      "map 遍历顺序不确定：示例用切片或排序保证输出确定。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为待办清单增加 delete 命令并补充端到端测试。",
+        "hint": "按 id 过滤切片后保存。",
+        "answer": "Delete(id) 过滤 items；测试删除后重载断言行数减一。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go、store_test.go。运行命令：go run .。这是第一个综合项目，整合多项技能：用 Item/Store 建模、用 encoding/json 持久化、用“写临时文件再 Rename”实现原子保存、用错误返回处理文件不存在与解码失败。main 演示一轮增/改/存/重载并打印，store_test.go 做端到端断言（保存后重载状态一致、对不存在 id 报错）。module-project 工程例子：go.mod + main.go + store_test.go，用 go run 与 go test 验证；涉及文件系统，desktop only。",
+    "code": "// T118 综合项目一：命令行待办清单（CLI + JSON 持久化）。\n//\n// 整合：命令分发、JSON 持久化、错误处理。待办项存为 JSON 文件，\n// 增/删/列/完成操作后落盘，重载后状态一致。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   todoapp/\n//   ├── go.mod        // module todoapp\\n\\ngo 1.27\n//   ├── main.go       // 本文件：CLI 入口\n//   ├── store.go      // 文件存储\n//   └── store_test.go // 端到端测试\n// 运行（官方 SDK）：\n//   go run . add \"learn go\"\n//   go run . list\n//   go test ./...\n// desktop only（文件系统 + go test）。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"sort\"\n)\n\n// Item 是一条待办。\ntype Item struct {\n\tID   int    `json:\"id\"`\n\tText string `json:\"text\"`\n\tDone bool   `json:\"done\"`\n}\n\n// Store 是待办存储。\ntype Store struct {\n\tpath  string\n\titems []Item\n}\n\n// Load 从文件加载；文件不存在时返回空存储。\nfunc Load(path string) (*Store, error) {\n\ts := &Store{path: path}\n\tdata, err := os.ReadFile(path)\n\tif os.IsNotExist(err) {\n\t\treturn s, nil\n\t}\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\tif err := json.Unmarshal(data, &s.items); err != nil {\n\t\treturn nil, fmt.Errorf(\"decode %s: %w\", path, err)\n\t}\n\treturn s, nil\n}\n\n// Save 原子落盘：先写临时文件再改名，避免半写状态。\nfunc (s *Store) Save() error {\n\tif err := os.MkdirAll(filepath.Dir(s.path), 0o755); err != nil {\n\t\treturn err\n\t}\n\tdata, err := json.MarshalIndent(s.items, \"\", \"  \")\n\tif err != nil {\n\t\treturn err\n\t}\n\ttmp := s.path + \".tmp\"\n\tif err := os.WriteFile(tmp, data, 0o644); err != nil {\n\t\treturn err\n\t}\n\treturn os.Rename(tmp, s.path)\n}\n\n// Add 追加一条并返回其 id。\nfunc (s *Store) Add(text string) int {\n\tid := 1\n\tfor _, it := range s.items {\n\t\tif it.ID >= id {\n\t\t\tid = it.ID + 1\n\t\t}\n\t}\n\ts.items = append(s.items, Item{ID: id, Text: text})\n\treturn id\n}\n\n// Complete 标记完成；找不到返回错误。\nfunc (s *Store) Complete(id int) error {\n\tfor i := range s.items {\n\t\tif s.items[i].ID == id {\n\t\t\ts.items[i].Done = true\n\t\t\treturn nil\n\t\t}\n\t}\n\treturn fmt.Errorf(\"item %d not found\", id)\n}\n\n// Items 返回按 id 排序的副本，保证输出确定。\nfunc (s *Store) Items() []Item {\n\tout := append([]Item(nil), s.items...)\n\tsort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })\n\treturn out\n}\n\nfunc main() {\n\t// 演示：用临时目录中的固定文件完成一轮增改查并重载。\n\tdir, err := os.MkdirTemp(\"\", \"qfli-t118-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(dir)\n\tpath := filepath.Join(dir, \"todo.json\")\n\n\tst, err := Load(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tst.Add(\"learn go\")\n\tst.Add(\"write tests\")\n\tif err := st.Complete(1); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := st.Save(); err != nil {\n\t\tpanic(err)\n\t}\n\n\t// 重载并打印，证明持久化一致。\n\treloaded, err := Load(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, it := range reloaded.Items() {\n\t\tstatus := \"todo\"\n\t\tif it.Done {\n\t\t\tstatus = \"done\"\n\t\t}\n\t\tfmt.Printf(\"%d [%s] %s\\n\", it.ID, status, it.Text)\n\t}\n}\n",
+    "output": "1 [done] learn go\n2 [todo] write tests"
+  },
+  "example": {
+    "id": "go-example-118",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "综合项目一：命令行待办清单（CLI + JSON 持久化）（示例）",
+    "summary": "对应主题 T118 的可运行示例。",
+    "concepts": [
+      "CLI",
+      "JSON 持久化",
+      "原子写",
+      "错误处理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T118 综合项目一：命令行待办清单（CLI + JSON 持久化）。\n//\n// 整合：命令分发、JSON 持久化、错误处理。待办项存为 JSON 文件，\n// 增/删/列/完成操作后落盘，重载后状态一致。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   todoapp/\n//   ├── go.mod        // module todoapp\\n\\ngo 1.27\n//   ├── main.go       // 本文件：CLI 入口\n//   ├── store.go      // 文件存储\n//   └── store_test.go // 端到端测试\n// 运行（官方 SDK）：\n//   go run . add \"learn go\"\n//   go run . list\n//   go test ./...\n// desktop only（文件系统 + go test）。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"sort\"\n)\n\n// Item 是一条待办。\ntype Item struct {\n\tID   int    `json:\"id\"`\n\tText string `json:\"text\"`\n\tDone bool   `json:\"done\"`\n}\n\n// Store 是待办存储。\ntype Store struct {\n\tpath  string\n\titems []Item\n}\n\n// Load 从文件加载；文件不存在时返回空存储。\nfunc Load(path string) (*Store, error) {\n\ts := &Store{path: path}\n\tdata, err := os.ReadFile(path)\n\tif os.IsNotExist(err) {\n\t\treturn s, nil\n\t}\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\tif err := json.Unmarshal(data, &s.items); err != nil {\n\t\treturn nil, fmt.Errorf(\"decode %s: %w\", path, err)\n\t}\n\treturn s, nil\n}\n\n// Save 原子落盘：先写临时文件再改名，避免半写状态。\nfunc (s *Store) Save() error {\n\tif err := os.MkdirAll(filepath.Dir(s.path), 0o755); err != nil {\n\t\treturn err\n\t}\n\tdata, err := json.MarshalIndent(s.items, \"\", \"  \")\n\tif err != nil {\n\t\treturn err\n\t}\n\ttmp := s.path + \".tmp\"\n\tif err := os.WriteFile(tmp, data, 0o644); err != nil {\n\t\treturn err\n\t}\n\treturn os.Rename(tmp, s.path)\n}\n\n// Add 追加一条并返回其 id。\nfunc (s *Store) Add(text string) int {\n\tid := 1\n\tfor _, it := range s.items {\n\t\tif it.ID >= id {\n\t\t\tid = it.ID + 1\n\t\t}\n\t}\n\ts.items = append(s.items, Item{ID: id, Text: text})\n\treturn id\n}\n\n// Complete 标记完成；找不到返回错误。\nfunc (s *Store) Complete(id int) error {\n\tfor i := range s.items {\n\t\tif s.items[i].ID == id {\n\t\t\ts.items[i].Done = true\n\t\t\treturn nil\n\t\t}\n\t}\n\treturn fmt.Errorf(\"item %d not found\", id)\n}\n\n// Items 返回按 id 排序的副本，保证输出确定。\nfunc (s *Store) Items() []Item {\n\tout := append([]Item(nil), s.items...)\n\tsort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })\n\treturn out\n}\n\nfunc main() {\n\t// 演示：用临时目录中的固定文件完成一轮增改查并重载。\n\tdir, err := os.MkdirTemp(\"\", \"qfli-t118-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(dir)\n\tpath := filepath.Join(dir, \"todo.json\")\n\n\tst, err := Load(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tst.Add(\"learn go\")\n\tst.Add(\"write tests\")\n\tif err := st.Complete(1); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := st.Save(); err != nil {\n\t\tpanic(err)\n\t}\n\n\t// 重载并打印，证明持久化一致。\n\treloaded, err := Load(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, it := range reloaded.Items() {\n\t\tstatus := \"todo\"\n\t\tif it.Done {\n\t\t\tstatus = \"done\"\n\t\t}\n\t\tfmt.Printf(\"%d [%s] %s\\n\", it.ID, status, it.Text)\n\t}\n}\n",
+    "expectedOutput": "1 [done] learn go\n2 [todo] write tests",
+    "templateType": "go"
+  }
+}

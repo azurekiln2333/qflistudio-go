@@ -1,0 +1,71 @@
+{
+  "id": "T052",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "Is ErrPermission: true\nAs PathError -> path: secret.cfg op: open\nAs on wrapped: true read"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-052",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "errors.Is 与 errors.As 的适用差异",
+    "summary": "区分 errors.Is（值/身份匹配）与 errors.As（类型匹配取字段）。",
+    "concepts": [
+      "errors.Is",
+      "errors.As",
+      "值匹配",
+      "类型匹配"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 errors.As 从链上取出具体错误类型读取字段，并区分其与 Is 的场景。",
+    "prerequisites": [
+      "T051 错误包装与 %w 的解包链"
+    ],
+    "pitfalls": [
+      "用 Is 匹配具体类型：Is 比较值/身份，不是类型，应改用 As。",
+      "As 的目标是指针的指针：传 &pe 而非 pe。",
+      "平台限制：errors.As 在移动端 Yaegi 下会 panic（*target 类型错误），仅桌面官方 Go 可运行（保持 desktop-only）。"
+    ],
+    "exercises": [
+      {
+        "prompt": "定义带 Code 字段的 HTTPError，用 As 取出 Code 并分支处理。",
+        "hint": "var e *HTTPError; errors.As(err, &e)。",
+        "answer": "if errors.As(err,&e) { switch e.Code { ... } }。"
+      }
+    ],
+    "explain": "errors.Is 用于“值/身份”匹配（哨兵错误），遍历解包链比较；errors.As 用于“类型”匹配，把链上某个具体类型的错误取出到目标变量，以便读取其字段。示例先用 Is 命中哨兵 ErrPermission，再用 As 取出 *PathError 读取 Path/Op；As 对内层包装同样生效。选型原则：判断“是不是某个已知错误”用 Is，需要“拿到错误的类型和字段”用 As。",
+    "code": "// T052 errors.Is 与 errors.As 的适用差异。\n//\n// errors.Is 用于“值/身份”匹配（哨兵错误），遍历解包链比较；\n// errors.As 用于“类型”匹配，把链上某个具体类型的错误取出到目标变量，读取其字段。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\n// PathError 是带字段的自定义错误类型。\ntype PathError struct {\n\tPath string\n\tOp   string\n}\n\nfunc (e *PathError) Error() string { return e.Op + \" \" + e.Path + \": failed\" }\n\nvar ErrPermission = errors.New(\"permission denied\")\n\n// open 在路径含 \"secret\" 时返回带类型的错误，否则返回哨兵错误。\nfunc open(path string) error {\n\tif len(path) >= 6 && path[:6] == \"secret\" {\n\t\treturn &PathError{Path: path, Op: \"open\"}\n\t}\n\treturn fmt.Errorf(\"open %s: %w\", path, ErrPermission)\n}\n\nfunc main() {\n\t// errors.Is：判断是否属于某个哨兵错误（值匹配）。\n\terr := open(\"data.txt\")\n\tfmt.Println(\"Is ErrPermission:\", errors.Is(err, ErrPermission))\n\n\t// errors.As：把具体类型取出，读取其字段（类型匹配）。\n\terr = open(\"secret.cfg\")\n\tvar pe *PathError\n\tif errors.As(err, &pe) {\n\t\tfmt.Println(\"As PathError -> path:\", pe.Path, \"op:\", pe.Op)\n\t}\n\n\t// As 对内层包装同样生效。\n\tinner := fmt.Errorf(\"wrapped: %w\", &PathError{Path: \"a\", Op: \"read\"})\n\tvar pe2 *PathError\n\tfmt.Println(\"As on wrapped:\", errors.As(inner, &pe2), pe2.Op)\n}\n",
+    "output": "Is ErrPermission: true\nAs PathError -> path: secret.cfg op: open\nAs on wrapped: true read"
+  },
+  "example": {
+    "id": "go-example-052",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "errors.Is 与 errors.As 的适用差异（示例）",
+    "summary": "对应主题 T052 的可运行示例。",
+    "concepts": [
+      "errors.Is",
+      "errors.As",
+      "值匹配",
+      "类型匹配"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T052 errors.Is 与 errors.As 的适用差异。\n//\n// errors.Is 用于“值/身份”匹配（哨兵错误），遍历解包链比较；\n// errors.As 用于“类型”匹配，把链上某个具体类型的错误取出到目标变量，读取其字段。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\n// PathError 是带字段的自定义错误类型。\ntype PathError struct {\n\tPath string\n\tOp   string\n}\n\nfunc (e *PathError) Error() string { return e.Op + \" \" + e.Path + \": failed\" }\n\nvar ErrPermission = errors.New(\"permission denied\")\n\n// open 在路径含 \"secret\" 时返回带类型的错误，否则返回哨兵错误。\nfunc open(path string) error {\n\tif len(path) >= 6 && path[:6] == \"secret\" {\n\t\treturn &PathError{Path: path, Op: \"open\"}\n\t}\n\treturn fmt.Errorf(\"open %s: %w\", path, ErrPermission)\n}\n\nfunc main() {\n\t// errors.Is：判断是否属于某个哨兵错误（值匹配）。\n\terr := open(\"data.txt\")\n\tfmt.Println(\"Is ErrPermission:\", errors.Is(err, ErrPermission))\n\n\t// errors.As：把具体类型取出，读取其字段（类型匹配）。\n\terr = open(\"secret.cfg\")\n\tvar pe *PathError\n\tif errors.As(err, &pe) {\n\t\tfmt.Println(\"As PathError -> path:\", pe.Path, \"op:\", pe.Op)\n\t}\n\n\t// As 对内层包装同样生效。\n\tinner := fmt.Errorf(\"wrapped: %w\", &PathError{Path: \"a\", Op: \"read\"})\n\tvar pe2 *PathError\n\tfmt.Println(\"As on wrapped:\", errors.As(inner, &pe2), pe2.Op)\n}\n",
+    "expectedOutput": "Is ErrPermission: true\nAs PathError -> path: secret.cfg op: open\nAs on wrapped: true read",
+    "templateType": "go"
+  }
+}

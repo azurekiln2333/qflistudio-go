@@ -1,0 +1,6 @@
+{"file":".trellis/tasks/10-12-go-curriculum-pi/prd.md","reason":"Verify each acceptance criterion AC1-AC7 with per-chapter and per-example evidence."}
+{"file":".trellis/tasks/10-12-go-curriculum-pi/design.md","reason":"Check runtime-honesty, honest multi-file representation, and single-integrator/lock apply against the design."}
+{"file":".trellis/tasks/10-12-go-curriculum-pi/research/content-audit.md","reason":"Placeholder baseline used to prove the new content is not template filler."}
+{"file":".trellis/tasks/10-12-go-curriculum-pi/research/curriculum-map.md","reason":"Topic uniqueness and desktop/mobile coverage source for the count and semantic gates."}
+{"file":".trellis/spec/frontend/content-code-import.md","reason":"Regression contract for content loading and single-file import/entry behavior."}
+{"file":".trellis/spec/backend/native-go-runtime.md","reason":"Validate mobile runtime claims against the real native interpreter."}

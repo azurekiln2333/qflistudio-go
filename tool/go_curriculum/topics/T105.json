@@ -1,0 +1,71 @@
+{
+  "id": "T105",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "calc_test.go",
+    "go.mod"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-105",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "表驱动测试与子测试",
+    "summary": "用表驱动测试与 t.Run 子测试覆盖多组用例，新增用例只需加一行数据。",
+    "concepts": [
+      "表驱动",
+      "t.Run",
+      "子测试",
+      "测试"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能编写表驱动测试并用 t.Run 组织子测试，理解子测试的独立性。",
+    "prerequisites": [
+      "T023 函数签名、多返回值与命名返回"
+    ],
+    "pitfalls": [
+      "循环变量捕获问题：子测试闭包引用循环变量，Go 1.22+ 已按轮次独立，但旧代码需显式拷贝。",
+      "用例名重复：子测试名应唯一，否则会加 #01 后缀，难以定位。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 multiply 写表驱动测试，覆盖 0、负数、大数。",
+        "hint": "表里每行 {name,a,b,want}。",
+        "answer": "cases := []struct{...}{...}; for _, c := range cases { t.Run(c.name, func(t *testing.T){ ... }) }。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：calc_test.go、go.mod。运行命令：go test ./...。表驱动测试把多组输入/期望放进一个切片，循环用 t.Run 建成子测试。好处：新增用例只加一行数据、子测试可单独运行（go test -run TestAdd/positive）、失败定位到具体子测试。示例为 Add 写了四组用例覆盖正数、含零、负数、正负抵消。这是最基础也最常用的 Go 测试写法。test-package 工程例子（go.mod + *_test.go），用官方 SDK 的 go test 运行；移动端不执行 go test，desktop only。",
+    "code": "// T105 表驱动测试与子测试。\n//\n// 表驱动测试把多组输入/期望写进一个切片，循环用 t.Run 建成子测试。\n// 这样新增用例只需加一行数据，且每个子测试可单独运行、单独报错。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   tabletest/\n//   ├── go.mod       // module tabletest\\n\\ngo 1.27\n//   └── calc_test.go // 本文件（含被测逻辑与测试）\n// 运行：go test ./...   /   go test -run TestAdd ./...\n// desktop only（移动端不执行 go test）。\npackage tabletest\n\nimport \"testing\"\n\n// Add 是被测函数。\nfunc Add(a, b int) int { return a + b }\n\nfunc TestAdd(t *testing.T) {\n\tcases := []struct {\n\t\tname string\n\t\ta, b int\n\t\twant int\n\t}{\n\t\t{\"positive\", 2, 3, 5},\n\t\t{\"with zero\", 0, 7, 7},\n\t\t{\"negative\", -2, -3, -5},\n\t\t{\"mixed\", -4, 4, 0},\n\t}\n\tfor _, c := range cases {\n\t\t// t.Run 为每组数据建立独立子测试，名字唯一。\n\t\tt.Run(c.name, func(t *testing.T) {\n\t\t\tif got := Add(c.a, c.b); got != c.want {\n\t\t\t\tt.Fatalf(\"Add(%d,%d) = %d, want %d\", c.a, c.b, got, c.want)\n\t\t\t}\n\t\t})\n\t}\n}\n",
+    "output": "ok  \tqfli.example/t105\t0.002s"
+  },
+  "example": {
+    "id": "go-example-105",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "表驱动测试与子测试（示例）",
+    "summary": "对应主题 T105 的可运行示例。",
+    "concepts": [
+      "表驱动",
+      "t.Run",
+      "子测试",
+      "测试"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T105 表驱动测试与子测试。\n//\n// 表驱动测试把多组输入/期望写进一个切片，循环用 t.Run 建成子测试。\n// 这样新增用例只需加一行数据，且每个子测试可单独运行、单独报错。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   tabletest/\n//   ├── go.mod       // module tabletest\\n\\ngo 1.27\n//   └── calc_test.go // 本文件（含被测逻辑与测试）\n// 运行：go test ./...   /   go test -run TestAdd ./...\n// desktop only（移动端不执行 go test）。\npackage tabletest\n\nimport \"testing\"\n\n// Add 是被测函数。\nfunc Add(a, b int) int { return a + b }\n\nfunc TestAdd(t *testing.T) {\n\tcases := []struct {\n\t\tname string\n\t\ta, b int\n\t\twant int\n\t}{\n\t\t{\"positive\", 2, 3, 5},\n\t\t{\"with zero\", 0, 7, 7},\n\t\t{\"negative\", -2, -3, -5},\n\t\t{\"mixed\", -4, 4, 0},\n\t}\n\tfor _, c := range cases {\n\t\t// t.Run 为每组数据建立独立子测试，名字唯一。\n\t\tt.Run(c.name, func(t *testing.T) {\n\t\t\tif got := Add(c.a, c.b); got != c.want {\n\t\t\t\tt.Fatalf(\"Add(%d,%d) = %d, want %d\", c.a, c.b, got, c.want)\n\t\t\t}\n\t\t})\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "id": "T068",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "constraints: v1.2.0, v1.5.3, v1.4.9\nselected (MVS) = v1.5.3\n此时最大版本恰好等于最小可行版本"
+  },
+  "sampleFiles": [
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-068",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "语义化版本与最小版本选择",
+    "summary": "实现最小版本选择（MVS）：在多个依赖版本要求中选出“满足全部要求的最小可行版本”。",
+    "concepts": [
+      "语义化版本",
+      "MVS",
+      "依赖解析",
+      "可复现构建"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能说明语义化版本 major/minor/patch 的含义，并解释 MVS 为何能保证可复现构建。",
+    "prerequisites": [
+      "T060 Go Modules：go.mod 与依赖版本",
+      "T032 排序：sort.Slice 与自定义比较"
+    ],
+    "pitfalls": [
+      "误以为 Go 总是选“最新版”：MVS 选的是满足所有约束的最小版本，不是最大/最新。",
+      "忽略 major 版本是互不兼容的不同模块路径（v1 与 v2 是不同 import path）。"
+    ],
+    "exercises": [
+      {
+        "prompt": "扩展 SelectMVS，当存在多个 major 版本要求时报告不兼容错误。",
+        "hint": "先按 major 分组，若出现两个不同 major 则返回错误。",
+        "answer": "按 Major 分组；若组数大于 1 返回 error 说明需要不同的模块路径。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。语义化版本用 major.minor.patch 表达兼容性：major 变更表示破坏性改动，minor 增加向后兼容的新功能，patch 为向后兼容的修复。Go 的最小版本选择（MVS）在解析依赖时，对所有约束取“满足全部要求的最小可行版本”。这与很多包管理器“取最新”不同，好处是升级只在你显式要求时发生，构建因此可复现。本例用 Version 类型与 Compare 实现语义化版本比较，再对一组要求求 MVS，并对照“取最大”的差异。工程上是 module-project：真实 MVS 由 go 命令在 go.mod/go.sum 上完成，本例用纯逻辑演示其规则。",
+    "code": "// T068 语义化版本与最小版本选择（MVS）。\n//\n// 本示例演示\"最小版本选择\"的决策逻辑，不联网：给定若干依赖对版本的要求，\n// 计算最终选中的版本——Go 的选择规则是\"满足所有要求的最小可行版本\"，\n// 而不是\"取最大\"或\"取最新\"。这保证构建可复现。\n//\n// 完整工程结构（module-project，不能一键导入）：\n//   demo/\n//   ├── go.mod                // module demo\\n\\ngo 1.27\n//   ├── main.go               // 本文件\n//   ├── internal/version/     // 语义化版本解析\n//   │   └── version.go\n//   └── internal/mvs/mvs.go   // MVS 计算\n// 运行：go run .\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\n// Version 是解析后的语义化版本 major.minor.patch。\ntype Version struct {\n\tMajor, Minor, Patch int\n}\n\n// Parse 解析 \"1.2.3\" 形式的版本字符串。\nfunc Parse(s string) (Version, error) {\n\ts = strings.TrimPrefix(s, \"v\")\n\tparts := strings.Split(s, \".\")\n\tif len(parts) != 3 {\n\t\treturn Version{}, fmt.Errorf(\"invalid version %q\", s)\n\t}\n\tnums := make([]int, 3)\n\tfor i, p := range parts {\n\t\tn, err := strconv.Atoi(p)\n\t\tif err != nil {\n\t\t\treturn Version{}, fmt.Errorf(\"invalid version %q: %w\", s, err)\n\t\t}\n\t\tnums[i] = n\n\t}\n\treturn Version{nums[0], nums[1], nums[2]}, nil\n}\n\n// String 输出规范化的 v1.2.3 形式。\nfunc (v Version) String() string { return fmt.Sprintf(\"v%d.%d.%d\", v.Major, v.Minor, v.Patch) }\n\n// Compare 按语义化版本规则比较：-1 小于，0 相等，1 大于。\nfunc (v Version) Compare(o Version) int {\n\tswitch {\n\tcase v.Major != o.Major:\n\t\treturn sign(v.Major - o.Major)\n\tcase v.Minor != o.Minor:\n\t\treturn sign(v.Minor - o.Minor)\n\tdefault:\n\t\treturn sign(v.Patch - o.Patch)\n\t}\n}\n\nfunc sign(n int) int {\n\tif n < 0 {\n\t\treturn -1\n\t}\n\tif n > 0 {\n\t\treturn 1\n\t}\n\treturn 0\n}\n\n// SelectMVS 返回满足所有约束的最小版本。\n// constraints 是\"每个依赖方要求的版本\"列表。\nfunc SelectMVS(constraints []Version) (Version, error) {\n\tif len(constraints) == 0 {\n\t\treturn Version{}, fmt.Errorf(\"no constraints\")\n\t}\n\tsorted := append([]Version(nil), constraints...)\n\tsort.Slice(sorted, func(i, j int) bool { return sorted[i].Compare(sorted[j]) < 0 })\n\t// 最小可行版本 = 所有下界中的最大者（因为每个版本都是它的下界）。\n\tbest := sorted[0]\n\tfor _, v := range sorted[1:] {\n\t\tif v.Compare(best) > 0 {\n\t\t\tbest = v\n\t\t}\n\t}\n\treturn best, nil\n}\n\nfunc main() {\n\t// 三个依赖方分别要求不同版本；MVS 选中满足全部要求的最小版本。\n\traw := []string{\"v1.2.0\", \"v1.5.3\", \"v1.4.9\"}\n\tvar cs []Version\n\tfor _, r := range raw {\n\t\tv, err := Parse(r)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tcs = append(cs, v)\n\t}\n\tselected, err := SelectMVS(cs)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"constraints:\", strings.Join(raw, \", \"))\n\tfmt.Println(\"selected (MVS) =\", selected)\n\n\t// 对比：如果错误地\"取最新/最大\"，结果会不同，从而破坏最小依赖原则。\n\tmaxV := cs[0]\n\tfor _, v := range cs[1:] {\n\t\tif v.Compare(maxV) > 0 {\n\t\t\tmaxV = v\n\t\t}\n\t}\n\tif maxV == selected {\n\t\tfmt.Println(\"此时最大版本恰好等于最小可行版本\")\n\t}\n}\n",
+    "output": "constraints: v1.2.0, v1.5.3, v1.4.9\nselected (MVS) = v1.5.3\n此时最大版本恰好等于最小可行版本"
+  },
+  "example": {
+    "id": "go-example-068",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "语义化版本与最小版本选择（示例）",
+    "summary": "对应主题 T068 的可运行示例。",
+    "concepts": [
+      "语义化版本",
+      "MVS",
+      "依赖解析",
+      "可复现构建"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T068 语义化版本与最小版本选择（MVS）。\n//\n// 本示例演示\"最小版本选择\"的决策逻辑，不联网：给定若干依赖对版本的要求，\n// 计算最终选中的版本——Go 的选择规则是\"满足所有要求的最小可行版本\"，\n// 而不是\"取最大\"或\"取最新\"。这保证构建可复现。\n//\n// 完整工程结构（module-project，不能一键导入）：\n//   demo/\n//   ├── go.mod                // module demo\\n\\ngo 1.27\n//   ├── main.go               // 本文件\n//   ├── internal/version/     // 语义化版本解析\n//   │   └── version.go\n//   └── internal/mvs/mvs.go   // MVS 计算\n// 运行：go run .\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\n// Version 是解析后的语义化版本 major.minor.patch。\ntype Version struct {\n\tMajor, Minor, Patch int\n}\n\n// Parse 解析 \"1.2.3\" 形式的版本字符串。\nfunc Parse(s string) (Version, error) {\n\ts = strings.TrimPrefix(s, \"v\")\n\tparts := strings.Split(s, \".\")\n\tif len(parts) != 3 {\n\t\treturn Version{}, fmt.Errorf(\"invalid version %q\", s)\n\t}\n\tnums := make([]int, 3)\n\tfor i, p := range parts {\n\t\tn, err := strconv.Atoi(p)\n\t\tif err != nil {\n\t\t\treturn Version{}, fmt.Errorf(\"invalid version %q: %w\", s, err)\n\t\t}\n\t\tnums[i] = n\n\t}\n\treturn Version{nums[0], nums[1], nums[2]}, nil\n}\n\n// String 输出规范化的 v1.2.3 形式。\nfunc (v Version) String() string { return fmt.Sprintf(\"v%d.%d.%d\", v.Major, v.Minor, v.Patch) }\n\n// Compare 按语义化版本规则比较：-1 小于，0 相等，1 大于。\nfunc (v Version) Compare(o Version) int {\n\tswitch {\n\tcase v.Major != o.Major:\n\t\treturn sign(v.Major - o.Major)\n\tcase v.Minor != o.Minor:\n\t\treturn sign(v.Minor - o.Minor)\n\tdefault:\n\t\treturn sign(v.Patch - o.Patch)\n\t}\n}\n\nfunc sign(n int) int {\n\tif n < 0 {\n\t\treturn -1\n\t}\n\tif n > 0 {\n\t\treturn 1\n\t}\n\treturn 0\n}\n\n// SelectMVS 返回满足所有约束的最小版本。\n// constraints 是\"每个依赖方要求的版本\"列表。\nfunc SelectMVS(constraints []Version) (Version, error) {\n\tif len(constraints) == 0 {\n\t\treturn Version{}, fmt.Errorf(\"no constraints\")\n\t}\n\tsorted := append([]Version(nil), constraints...)\n\tsort.Slice(sorted, func(i, j int) bool { return sorted[i].Compare(sorted[j]) < 0 })\n\t// 最小可行版本 = 所有下界中的最大者（因为每个版本都是它的下界）。\n\tbest := sorted[0]\n\tfor _, v := range sorted[1:] {\n\t\tif v.Compare(best) > 0 {\n\t\t\tbest = v\n\t\t}\n\t}\n\treturn best, nil\n}\n\nfunc main() {\n\t// 三个依赖方分别要求不同版本；MVS 选中满足全部要求的最小版本。\n\traw := []string{\"v1.2.0\", \"v1.5.3\", \"v1.4.9\"}\n\tvar cs []Version\n\tfor _, r := range raw {\n\t\tv, err := Parse(r)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tcs = append(cs, v)\n\t}\n\tselected, err := SelectMVS(cs)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"constraints:\", strings.Join(raw, \", \"))\n\tfmt.Println(\"selected (MVS) =\", selected)\n\n\t// 对比：如果错误地\"取最新/最大\"，结果会不同，从而破坏最小依赖原则。\n\tmaxV := cs[0]\n\tfor _, v := range cs[1:] {\n\t\tif v.Compare(maxV) > 0 {\n\t\t\tmaxV = v\n\t\t}\n\t}\n\tif maxV == selected {\n\t\tfmt.Println(\"此时最大版本恰好等于最小可行版本\")\n\t}\n}\n",
+    "expectedOutput": "constraints: v1.2.0, v1.5.3, v1.4.9\nselected (MVS) = v1.5.3\n此时最大版本恰好等于最小可行版本",
+    "templateType": "go"
+  }
+}

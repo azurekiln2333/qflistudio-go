@@ -1,0 +1,73 @@
+{
+  "id": "T113",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "hot(1000) = 2997\nprofile with: go test -bench . -cpuprofile=cpu.out .\nthen: go tool pprof cpu.out"
+  },
+  "sampleFiles": [
+    "go.mod",
+    "main.go",
+    "pprof_test.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-113",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "剖析：pprof CPU 与内存",
+    "summary": "介绍用 go test -cpuprofile 采集剖析、go tool pprof 分析热点的流程。",
+    "concepts": [
+      "pprof",
+      "CPU profile",
+      "内存 profile",
+      "热点"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能采集 CPU profile 并用 pprof 定位热点函数。",
+    "prerequisites": [
+      "T108 基准测试与 b.RunParallel",
+      "T112 内存分配与逃逸分析"
+    ],
+    "pitfalls": [
+      "对过短的负载采集 profile：样本不足，热点不准。",
+      "只看 CPU 忽略内存：分配热点同样影响吞吐，应结合 -memprofile。"
+    ],
+    "exercises": [
+      {
+        "prompt": "编写一个基准并采集 cpu.out，用 pprof top 找出占比最高的函数。",
+        "hint": "go tool pprof -top cpu.out。",
+        "answer": "go test -bench . -cpuprofile=cpu.out .; go tool pprof -top cpu.out。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go、pprof_test.go。运行命令：go run .。pprof 是 Go 的剖析工具。最简单的方式是在测试里采集：go test -bench . -cpuprofile=cpu.out 生成 CPU 剖面，go tool pprof cpu.out 进入交互式分析（top 看热点、list 看源码行）。示例提供一个 CPU 热点函数 hot 并打印确定结果，同时在注释中给出采集命令。剖析是性能优化的起点：先测量热点，再针对性优化，避免凭直觉改代码。module-project，go test 采集 + go run 演示；desktop only（移动端无 pprof 工具链）。",
+    "code": "// T113 剖析：pprof CPU 与内存。\n//\n// runtime/pprof 可在程序内采集 CPU/内存剖面；更常用的是在测试里\n// `go test -cpuprofile`/`-memprofile` 生成文件，再用 go tool pprof 分析。\n// 本示例提供一段可被 profile 的热点函数，并打印如何采集。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   pprofdemo/\n//   ├── go.mod              // module pprofdemo\\n\\ngo 1.27\n//   ├── main.go             // 本文件\n//   └── pprof_test.go       // 基准，供 -cpuprofile 采集\n// 运行（官方 SDK）：\n//   go test -bench . -cpuprofile=cpu.out .\n//   go tool pprof cpu.out\n// desktop only。\npackage main\n\nimport \"fmt\"\n\n// hot 是一个 CPU 热点：反复做整数运算。\nfunc hot(n int) int {\n\ttotal := 0\n\tfor i := 0; i < n; i++ {\n\t\ttotal += i % 7\n\t}\n\treturn total\n}\n\nfunc main() {\n\t// 运行热点并打印确定结果。\n\tfmt.Println(\"hot(1000) =\", hot(1000))\n\tfmt.Println(\"profile with: go test -bench . -cpuprofile=cpu.out .\")\n\tfmt.Println(\"then: go tool pprof cpu.out\")\n}\n",
+    "output": "hot(1000) = 2997\nprofile with: go test -bench . -cpuprofile=cpu.out .\nthen: go tool pprof cpu.out"
+  },
+  "example": {
+    "id": "go-example-113",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "剖析：pprof CPU 与内存（示例）",
+    "summary": "对应主题 T113 的可运行示例。",
+    "concepts": [
+      "pprof",
+      "CPU profile",
+      "内存 profile",
+      "热点"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T113 剖析：pprof CPU 与内存。\n//\n// runtime/pprof 可在程序内采集 CPU/内存剖面；更常用的是在测试里\n// `go test -cpuprofile`/`-memprofile` 生成文件，再用 go tool pprof 分析。\n// 本示例提供一段可被 profile 的热点函数，并打印如何采集。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   pprofdemo/\n//   ├── go.mod              // module pprofdemo\\n\\ngo 1.27\n//   ├── main.go             // 本文件\n//   └── pprof_test.go       // 基准，供 -cpuprofile 采集\n// 运行（官方 SDK）：\n//   go test -bench . -cpuprofile=cpu.out .\n//   go tool pprof cpu.out\n// desktop only。\npackage main\n\nimport \"fmt\"\n\n// hot 是一个 CPU 热点：反复做整数运算。\nfunc hot(n int) int {\n\ttotal := 0\n\tfor i := 0; i < n; i++ {\n\t\ttotal += i % 7\n\t}\n\treturn total\n}\n\nfunc main() {\n\t// 运行热点并打印确定结果。\n\tfmt.Println(\"hot(1000) =\", hot(1000))\n\tfmt.Println(\"profile with: go test -bench . -cpuprofile=cpu.out .\")\n\tfmt.Println(\"then: go tool pprof cpu.out\")\n}\n",
+    "expectedOutput": "hot(1000) = 2997\nprofile with: go test -bench . -cpuprofile=cpu.out .\nthen: go tool pprof cpu.out",
+    "templateType": "go"
+  }
+}

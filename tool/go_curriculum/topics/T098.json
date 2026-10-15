@@ -1,0 +1,70 @@
+{
+  "id": "T098",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "sha256(abc) = ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\nmatches known vector: true\nsha256(\"\") length bytes: 32\nsha256(\"\") hex: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nstreamed == one-shot: true\ndecoded bytes: 32 err: <nil>"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-098",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "哈希与校验：crypto/sha256 与 encoding/hex",
+    "summary": "用 crypto/sha256 计算摘要并以 hex 编码，对照公开已知测试向量。",
+    "concepts": [
+      "sha256",
+      "hex",
+      "已知测试向量",
+      "流式哈希"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能计算 SHA-256 摘要、用 hex 编解码，并用已知向量校验正确性。",
+    "prerequisites": [
+      "T007 字符串、rune 与字节"
+    ],
+    "pitfalls": [
+      "把 hex 字符串直接当字节用：它是编码形式，长度是原字节的两倍。",
+      "对摘要做 == 比较时用字符串而非字节切片：应先 hex 或 bytes.Equal。"
+    ],
+    "exercises": [
+      {
+        "prompt": "对一个大文件分块计算 SHA-256（流式），并与其他方式结果一致。",
+        "hint": "用 sha256.New() 反复 Write 后 Sum(nil)。",
+        "answer": "h:=sha256.New(); io.Copy(h, f); sum:=h.Sum(nil)。"
+      }
+    ],
+    "explain": "SHA-256 把任意字节映射为固定 32 字节摘要。sha256.Sum256 返回定长数组，切片化后用 hex.EncodeToString 得到十六进制字符串。示例把结果与 SHA-256(\"abc\") 这个广为人知的公开测试向量对照，因此校验确定、可离线复核，而不是自造随机输入。流式哈希用 sha256.New() 分块写入，结果与一次性计算一致——这对大文件很重要。hex.DecodeString 可把 hex 还原为字节，便于后续比较。",
+    "code": "// T098 哈希与校验：crypto/sha256 与 encoding/hex。\n//\n// SHA-256 把任意字节映射为固定的 32 字节摘要。本示例对固定输入计算摘要，\n// 并与公开已知测试向量对照（\"abc\" 的 SHA-256 是广为人知的标准向量），\n// 因此结果确定、可离线核对。\npackage main\n\nimport (\n\t\"crypto/sha256\"\n\t\"encoding/hex\"\n\t\"fmt\"\n)\n\nfunc main() {\n\t// 已知测试向量：SHA-256(\"abc\")\n\t// = ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\n\tconst want = \"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"\n\n\tsum := sha256.Sum256([]byte(\"abc\"))\n\tgot := hex.EncodeToString(sum[:])\n\tfmt.Println(\"sha256(abc) =\", got)\n\tfmt.Println(\"matches known vector:\", got == want)\n\n\t// 空串的已知向量。\n\tempty := sha256.Sum256(nil)\n\tfmt.Println(\"sha256(\\\"\\\") length bytes:\", len(empty))\n\tfmt.Println(\"sha256(\\\"\\\") hex:\", hex.EncodeToString(empty[:]))\n\n\t// 流式哈希：对分块写入的内容求和，结果与一次性相同。\n\th := sha256.New()\n\t_, _ = h.Write([]byte(\"a\"))\n\t_, _ = h.Write([]byte(\"bc\"))\n\tstreamed := hex.EncodeToString(h.Sum(nil))\n\tfmt.Println(\"streamed == one-shot:\", streamed == got)\n\n\t// hex 解码往返。\n\tdecoded, err := hex.DecodeString(got)\n\tfmt.Println(\"decoded bytes:\", len(decoded), \"err:\", err)\n}\n",
+    "output": "sha256(abc) = ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\nmatches known vector: true\nsha256(\"\") length bytes: 32\nsha256(\"\") hex: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nstreamed == one-shot: true\ndecoded bytes: 32 err: <nil>"
+  },
+  "example": {
+    "id": "go-example-098",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "哈希与校验：crypto/sha256 与 encoding/hex（示例）",
+    "summary": "对应主题 T098 的可运行示例。",
+    "concepts": [
+      "sha256",
+      "hex",
+      "已知测试向量",
+      "流式哈希"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T098 哈希与校验：crypto/sha256 与 encoding/hex。\n//\n// SHA-256 把任意字节映射为固定的 32 字节摘要。本示例对固定输入计算摘要，\n// 并与公开已知测试向量对照（\"abc\" 的 SHA-256 是广为人知的标准向量），\n// 因此结果确定、可离线核对。\npackage main\n\nimport (\n\t\"crypto/sha256\"\n\t\"encoding/hex\"\n\t\"fmt\"\n)\n\nfunc main() {\n\t// 已知测试向量：SHA-256(\"abc\")\n\t// = ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\n\tconst want = \"ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\"\n\n\tsum := sha256.Sum256([]byte(\"abc\"))\n\tgot := hex.EncodeToString(sum[:])\n\tfmt.Println(\"sha256(abc) =\", got)\n\tfmt.Println(\"matches known vector:\", got == want)\n\n\t// 空串的已知向量。\n\tempty := sha256.Sum256(nil)\n\tfmt.Println(\"sha256(\\\"\\\") length bytes:\", len(empty))\n\tfmt.Println(\"sha256(\\\"\\\") hex:\", hex.EncodeToString(empty[:]))\n\n\t// 流式哈希：对分块写入的内容求和，结果与一次性相同。\n\th := sha256.New()\n\t_, _ = h.Write([]byte(\"a\"))\n\t_, _ = h.Write([]byte(\"bc\"))\n\tstreamed := hex.EncodeToString(h.Sum(nil))\n\tfmt.Println(\"streamed == one-shot:\", streamed == got)\n\n\t// hex 解码往返。\n\tdecoded, err := hex.DecodeString(got)\n\tfmt.Println(\"decoded bytes:\", len(decoded), \"err:\", err)\n}\n",
+    "expectedOutput": "sha256(abc) = ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\nmatches known vector: true\nsha256(\"\") length bytes: 32\nsha256(\"\") hex: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nstreamed == one-shot: true\ndecoded bytes: 32 err: <nil>",
+    "templateType": "go"
+  }
+}

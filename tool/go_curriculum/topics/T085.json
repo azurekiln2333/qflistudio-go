@@ -1,0 +1,71 @@
+{
+  "id": "T085",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "copied bytes: 16 err: <nil>\nbuffer content: hello, io.Reader\ncustom reader: ababab"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-085",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "io.Reader / io.Writer 抽象",
+    "summary": "围绕 io.Reader/io.Writer 接口组合来源与目标，并实现一个自定义 Reader。",
+    "concepts": [
+      "io.Reader",
+      "io.Writer",
+      "io.Copy",
+      "自定义 Reader"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能基于 io.Reader/Writer 编写与来源无关的代码，并实现自定义 Reader。",
+    "prerequisites": [
+      "T041 接口基础与鸭子类型",
+      "T030 指针二：指针与切片/映射的关系"
+    ],
+    "pitfalls": [
+      "自定义 Read 用值接收者：无法推进读取位置，导致死循环或重复读（本示例曾因此 OOM）。",
+      "忽略 Read 的 n 与 err：必须同时处理“读了多少”和“是否结束”。"
+    ],
+    "exercises": [
+      {
+        "prompt": "实现一个 upperReader，把底层 Reader 的字节转成大写输出。",
+        "hint": "包装一个 io.Reader，Read 后对读到的 n 个字节做大写转换。",
+        "answer": "Read 委托底层后 for i:=0;i<n;i++ { p[i]=toUpper(p[i]) }。"
+      }
+    ],
+    "explain": "io.Reader 只有 Read([]byte) (int, error)，io.Writer 只有 Write([]byte) (int, error)。任何实现了它们的东西都能互相组合：字符串、文件、网络、内存缓冲。示例把 strings.Reader 当来源、bytes.Buffer 当目标，用 io.Copy 搬运，代码完全无需知道底层类型。随后实现 repeatReader：它把固定字节重复若干次——这里必须用指针接收者，因为要在 Read 中推进 pos；用值接收者会让 pos 永不前进，引发无限读取（本示例开发时就踩过这个坑，真实运行暴露后修正）。这就是“自定义接口实现”与接收者选择的实战意义。",
+    "code": "// T085 io.Reader / io.Writer 抽象。\n//\n// io.Reader 只有一个 Read([]byte) 方法，io.Writer 只有一个 Write([]byte) 方法。\n// 任何实现了它们的东西都能互相组合：文件、网络、内存缓冲、字符串……\n// 本示例把字符串当 Reader、把 bytes.Buffer 当 Writer，用 io.Copy 搬运，\n// 从而无需知道底层到底是什么。\npackage main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc main() {\n\t// strings.Reader 实现了 io.Reader。\n\tvar r io.Reader = strings.NewReader(\"hello, io.Reader\")\n\n\t// bytes.Buffer 实现了 io.Writer。\n\tvar w io.Writer = &bytes.Buffer{}\n\n\t// io.Copy 只依赖这两个接口，不关心具体类型。\n\tn, err := io.Copy(w, r)\n\tfmt.Println(\"copied bytes:\", n, \"err:\", err)\n\tfmt.Println(\"buffer content:\", w.(*bytes.Buffer).String())\n\n\t// 自定义 Reader：把固定字节重复 n 次。\n\trr := &repeatReader{data: []byte(\"ab\"), times: 3}\n\tout, _ := io.ReadAll(rr)\n\tfmt.Println(\"custom reader:\", string(out))\n}\n\n// repeatReader 是自定义 io.Reader，演示只要实现 Read 就能被 io 工具使用。\ntype repeatReader struct {\n\tdata  []byte\n\ttimes int\n\tpos   int\n}\n\nfunc (r *repeatReader) Read(p []byte) (int, error) {\n\t// 计算还剩多少重复次数。\n\tif r.pos >= len(r.data)*r.times {\n\t\treturn 0, io.EOF\n\t}\n\tn := copy(p, r.data[r.pos%len(r.data):])\n\tr.pos += n\n\treturn n, nil\n}\n",
+    "output": "copied bytes: 16 err: <nil>\nbuffer content: hello, io.Reader\ncustom reader: ababab"
+  },
+  "example": {
+    "id": "go-example-085",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "io.Reader / io.Writer 抽象（示例）",
+    "summary": "对应主题 T085 的可运行示例。",
+    "concepts": [
+      "io.Reader",
+      "io.Writer",
+      "io.Copy",
+      "自定义 Reader"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T085 io.Reader / io.Writer 抽象。\n//\n// io.Reader 只有一个 Read([]byte) 方法，io.Writer 只有一个 Write([]byte) 方法。\n// 任何实现了它们的东西都能互相组合：文件、网络、内存缓冲、字符串……\n// 本示例把字符串当 Reader、把 bytes.Buffer 当 Writer，用 io.Copy 搬运，\n// 从而无需知道底层到底是什么。\npackage main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc main() {\n\t// strings.Reader 实现了 io.Reader。\n\tvar r io.Reader = strings.NewReader(\"hello, io.Reader\")\n\n\t// bytes.Buffer 实现了 io.Writer。\n\tvar w io.Writer = &bytes.Buffer{}\n\n\t// io.Copy 只依赖这两个接口，不关心具体类型。\n\tn, err := io.Copy(w, r)\n\tfmt.Println(\"copied bytes:\", n, \"err:\", err)\n\tfmt.Println(\"buffer content:\", w.(*bytes.Buffer).String())\n\n\t// 自定义 Reader：把固定字节重复 n 次。\n\trr := &repeatReader{data: []byte(\"ab\"), times: 3}\n\tout, _ := io.ReadAll(rr)\n\tfmt.Println(\"custom reader:\", string(out))\n}\n\n// repeatReader 是自定义 io.Reader，演示只要实现 Read 就能被 io 工具使用。\ntype repeatReader struct {\n\tdata  []byte\n\ttimes int\n\tpos   int\n}\n\nfunc (r *repeatReader) Read(p []byte) (int, error) {\n\t// 计算还剩多少重复次数。\n\tif r.pos >= len(r.data)*r.times {\n\t\treturn 0, io.EOF\n\t}\n\tn := copy(p, r.data[r.pos%len(r.data):])\n\tr.pos += n\n\treturn n, nil\n}\n",
+    "expectedOutput": "copied bytes: 16 err: <nil>\nbuffer content: hello, io.Reader\ncustom reader: ababab",
+    "templateType": "go"
+  }
+}

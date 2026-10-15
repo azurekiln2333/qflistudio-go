@@ -1,0 +1,71 @@
+{
+  "id": "T081",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "atomic_test.go",
+    "go.mod"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-081",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "原子操作 sync/atomic",
+    "summary": "用 sync/atomic 的无锁原子量做并发计数与 CAS，并断言最终值精确。",
+    "concepts": [
+      "atomic",
+      "无锁",
+      "CAS",
+      "并发计数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 atomic.Int64 做无锁计数，并解释 CompareAndSwap 的语义。",
+    "prerequisites": [
+      "T077 sync.Mutex 与临界区保护"
+    ],
+    "pitfalls": [
+      "对普通 int 混用 atomic 与非原子访问：仍会竞争，必须全程原子。",
+      "以为 atomic 能替代所有锁：多字段一致性仍需 Mutex。"
+    ],
+    "exercises": [
+      {
+        "prompt": "用 atomic 实现一个只允许初始化一次的 CAS 标志。",
+        "hint": "用 atomic.Bool 的 CompareAndSwap(false,true)。",
+        "answer": "var done atomic.Bool; if done.CompareAndSwap(false,true){ init() }"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：atomic_test.go、go.mod。运行命令：go test ./...。对简单的计数/标志，原子操作无需加锁即可保证读改写不可分割，通常比 Mutex 更轻。示例用 atomic.Int64 在 64 个 goroutine 中并发自增，断言最终精确为 64000；这是确定性判据。CompareAndSwap(old,new) 只在当前值等于 old 时才写入 new，是实现无锁算法的基础。test-package：go.mod + *_test.go，go test 运行，desktop only（移动端未实测）。",
+    "code": "// T081 原子操作 sync/atomic。\n//\n// 对于简单的计数/标志，atomic 提供无锁的原子读改写，避免锁开销。\n// 本示例用 atomic.Int64 在多个 goroutine 中并发自增，最终值确定。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   atomiccount/\n//   ├── go.mod          // module atomiccount\\n\\ngo 1.27\n//   └── atomic_test.go  // 本文件\n// 运行：go test ./...  /  go test -race ./...\n// 移动端 Yaegi 对 sync/atomic 未实测，desktop only。\npackage atomiccount\n\nimport (\n\t\"sync\"\n\t\"sync/atomic\"\n\t\"testing\"\n)\n\n// Counter 用原子量计数。\ntype Counter struct{ n atomic.Int64 }\n\n// Inc 原子自增。\nfunc (c *Counter) Inc() { c.n.Add(1) }\n\n// Value 原子读取。\nfunc (c *Counter) Value() int64 { return c.n.Load() }\n\nfunc TestAtomicConcurrentIncrement(t *testing.T) {\n\tconst goroutines = 64\n\tconst per = 1000\n\tconst want = goroutines * per\n\n\tvar c Counter\n\tvar wg sync.WaitGroup\n\twg.Add(goroutines)\n\tfor i := 0; i < goroutines; i++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tfor j := 0; j < per; j++ {\n\t\t\t\tc.Inc()\n\t\t\t}\n\t\t}()\n\t}\n\twg.Wait()\n\n\t// 确定性断言：无锁自增也必须得到精确的总数。\n\tif got := c.Value(); got != want {\n\t\tt.Fatalf(\"value = %d, want %d\", got, want)\n\t}\n}\n\nfunc TestAtomicCompareAndSwap(t *testing.T) {\n\tvar n atomic.Int64\n\tn.Store(5)\n\t// 只有当当前值等于 5 时才替换为 9。\n\tswapped := n.CompareAndSwap(5, 9)\n\tif !swapped || n.Load() != 9 {\n\t\tt.Fatalf(\"CAS failed: swapped=%v value=%d\", swapped, n.Load())\n\t}\n\t// 当前值已是 9，用 5 作为旧值会失败。\n\tif n.CompareAndSwap(5, 100) {\n\t\tt.Fatal(\"unexpected CAS success\")\n\t}\n}\n",
+    "output": "ok  \tqfli.example/t081\t0.004s"
+  },
+  "example": {
+    "id": "go-example-081",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "原子操作 sync/atomic（示例）",
+    "summary": "对应主题 T081 的可运行示例。",
+    "concepts": [
+      "atomic",
+      "无锁",
+      "CAS",
+      "并发计数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T081 原子操作 sync/atomic。\n//\n// 对于简单的计数/标志，atomic 提供无锁的原子读改写，避免锁开销。\n// 本示例用 atomic.Int64 在多个 goroutine 中并发自增，最终值确定。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   atomiccount/\n//   ├── go.mod          // module atomiccount\\n\\ngo 1.27\n//   └── atomic_test.go  // 本文件\n// 运行：go test ./...  /  go test -race ./...\n// 移动端 Yaegi 对 sync/atomic 未实测，desktop only。\npackage atomiccount\n\nimport (\n\t\"sync\"\n\t\"sync/atomic\"\n\t\"testing\"\n)\n\n// Counter 用原子量计数。\ntype Counter struct{ n atomic.Int64 }\n\n// Inc 原子自增。\nfunc (c *Counter) Inc() { c.n.Add(1) }\n\n// Value 原子读取。\nfunc (c *Counter) Value() int64 { return c.n.Load() }\n\nfunc TestAtomicConcurrentIncrement(t *testing.T) {\n\tconst goroutines = 64\n\tconst per = 1000\n\tconst want = goroutines * per\n\n\tvar c Counter\n\tvar wg sync.WaitGroup\n\twg.Add(goroutines)\n\tfor i := 0; i < goroutines; i++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tfor j := 0; j < per; j++ {\n\t\t\t\tc.Inc()\n\t\t\t}\n\t\t}()\n\t}\n\twg.Wait()\n\n\t// 确定性断言：无锁自增也必须得到精确的总数。\n\tif got := c.Value(); got != want {\n\t\tt.Fatalf(\"value = %d, want %d\", got, want)\n\t}\n}\n\nfunc TestAtomicCompareAndSwap(t *testing.T) {\n\tvar n atomic.Int64\n\tn.Store(5)\n\t// 只有当当前值等于 5 时才替换为 9。\n\tswapped := n.CompareAndSwap(5, 9)\n\tif !swapped || n.Load() != 9 {\n\t\tt.Fatalf(\"CAS failed: swapped=%v value=%d\", swapped, n.Load())\n\t}\n\t// 当前值已是 9，用 5 作为旧值会失败。\n\tif n.CompareAndSwap(5, 100) {\n\t\tt.Fatal(\"unexpected CAS success\")\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

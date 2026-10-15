@@ -1,0 +1,72 @@
+{
+  "id": "T114",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test -bench . -run '^$' ./...",
+  "verification": {
+    "kind": "bench-exists",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "go.mod",
+    "patterns_test.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-114",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "性能优化范式：预分配、批处理、零拷贝",
+    "summary": "用预分配切片与 strings.Builder 降低分配，用功能等价断言 + 基准参考验证。",
+    "concepts": [
+      "预分配",
+      "strings.Builder",
+      "分配",
+      "benchmark"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 make([]T,0,n) 预分配、用 strings.Builder 拼接来减少分配次数。",
+    "prerequisites": [
+      "T036 字符串构造：strings.Builder 与字节缓冲",
+      "T108 基准测试与 b.RunParallel"
+    ],
+    "pitfalls": [
+      "预分配过大的容量：浪费内存；应按已知规模估计。",
+      "把“分配次数必须为 0”当通用断言：某些场景无法避免分配，应看基准而非硬阈值。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 appendPrealloc 与 appendNoPrealloc 增加基准，对比 allocs/op。",
+        "hint": "b.ReportAllocs()。",
+        "answer": "BenchmarkAppendNoPrealloc 与 BenchmarkAppendPrealloc 各 b.ReportAllocs() 后循环。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、patterns_test.go。运行命令：go test -bench . -run '^$' ./...。常见优化范式：一是预分配，make([]int, 0, n) 避免 append 反复扩容；二是用 strings.Builder 拼接字符串，避免每次 + 都产生新字符串；三是复用缓冲（见 T080 Pool）。示例对比预分配与不预分配、Builder 与 + 拼接，功能上结果等价（用确定性等价断言验证），性能差异用基准展示——但基准数值不作通过条件。这类优化在热路径上能显著减少分配与 GC。test-package，bench 需官方 SDK，desktop only。",
+    "code": "// T114 性能优化范式：预分配、批处理、零拷贝。\n//\n// 常见优化：用预分配切片（make([]T, 0, n)）避免反复扩容；\n// 用 strings.Builder 拼接避免多次分配；用复用缓冲避免重复分配。\n// 断言策略：功能等价断言（输出正确）+ 基准只作参考，不作通过条件。\n//\n// test-package / benchmark 工程例子，不能一键导入。完整结构：\n//   perfpatterns/\n//   ├── go.mod           // module perfpatterns\\n\\ngo 1.27\n//   └── patterns_test.go // 本文件\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -bench . -benchmem ./...\n// desktop only。\npackage perfpatterns\n\nimport (\n\t\"strings\"\n\t\"testing\"\n)\n\n// appendNoPrealloc 不预分配，靠 append 扩容。\nfunc appendNoPrealloc(n int) []int {\n\tvar s []int\n\tfor i := 0; i < n; i++ {\n\t\ts = append(s, i)\n\t}\n\treturn s\n}\n\n// appendPrealloc 预分配容量，减少扩容次数。\nfunc appendPrealloc(n int) []int {\n\ts := make([]int, 0, n)\n\tfor i := 0; i < n; i++ {\n\t\ts = append(s, i)\n\t}\n\treturn s\n}\n\n// joinConcat 用 + 拼接。\nfunc joinConcat(parts []string) string {\n\tout := \"\"\n\tfor _, p := range parts {\n\t\tout += p\n\t}\n\treturn out\n}\n\n// joinBuilder 用 strings.Builder 拼接。\nfunc joinBuilder(parts []string) string {\n\tvar b strings.Builder\n\tfor _, p := range parts {\n\t\tb.WriteString(p)\n\t}\n\treturn b.String()\n}\n\nfunc TestEquivalence(t *testing.T) {\n\ta := appendNoPrealloc(10)\n\tb := appendPrealloc(10)\n\tif len(a) != len(b) {\n\t\tt.Fatalf(\"lengths differ: %d vs %d\", len(a), len(b))\n\t}\n\tfor i := range a {\n\t\tif a[i] != b[i] {\n\t\t\tt.Fatalf(\"element %d differs\", i)\n\t\t}\n\t}\n\tparts := []string{\"a\", \"b\", \"c\"}\n\tif joinConcat(parts) != joinBuilder(parts) {\n\t\tt.Fatal(\"join results differ\")\n\t}\n}\n\nfunc BenchmarkAppendNoPrealloc(b *testing.B) {\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = appendNoPrealloc(256)\n\t}\n}\n\nfunc BenchmarkAppendPrealloc(b *testing.B) {\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = appendPrealloc(256)\n\t}\n}\n",
+    "output": "BenchmarkAppendNoPrealloc-2  \t1000000\t1093 ns/op\t4088 B/op\t9 allocs/op\nBenchmarkAppendPrealloc-2    \t11728428\t103.5 ns/op\t0 B/op\t0 allocs/op"
+  },
+  "example": {
+    "id": "go-example-114",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "性能优化范式：预分配、批处理、零拷贝（示例）",
+    "summary": "对应主题 T114 的可运行示例。",
+    "concepts": [
+      "预分配",
+      "strings.Builder",
+      "分配",
+      "benchmark"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T114 性能优化范式：预分配、批处理、零拷贝。\n//\n// 常见优化：用预分配切片（make([]T, 0, n)）避免反复扩容；\n// 用 strings.Builder 拼接避免多次分配；用复用缓冲避免重复分配。\n// 断言策略：功能等价断言（输出正确）+ 基准只作参考，不作通过条件。\n//\n// test-package / benchmark 工程例子，不能一键导入。完整结构：\n//   perfpatterns/\n//   ├── go.mod           // module perfpatterns\\n\\ngo 1.27\n//   └── patterns_test.go // 本文件\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -bench . -benchmem ./...\n// desktop only。\npackage perfpatterns\n\nimport (\n\t\"strings\"\n\t\"testing\"\n)\n\n// appendNoPrealloc 不预分配，靠 append 扩容。\nfunc appendNoPrealloc(n int) []int {\n\tvar s []int\n\tfor i := 0; i < n; i++ {\n\t\ts = append(s, i)\n\t}\n\treturn s\n}\n\n// appendPrealloc 预分配容量，减少扩容次数。\nfunc appendPrealloc(n int) []int {\n\ts := make([]int, 0, n)\n\tfor i := 0; i < n; i++ {\n\t\ts = append(s, i)\n\t}\n\treturn s\n}\n\n// joinConcat 用 + 拼接。\nfunc joinConcat(parts []string) string {\n\tout := \"\"\n\tfor _, p := range parts {\n\t\tout += p\n\t}\n\treturn out\n}\n\n// joinBuilder 用 strings.Builder 拼接。\nfunc joinBuilder(parts []string) string {\n\tvar b strings.Builder\n\tfor _, p := range parts {\n\t\tb.WriteString(p)\n\t}\n\treturn b.String()\n}\n\nfunc TestEquivalence(t *testing.T) {\n\ta := appendNoPrealloc(10)\n\tb := appendPrealloc(10)\n\tif len(a) != len(b) {\n\t\tt.Fatalf(\"lengths differ: %d vs %d\", len(a), len(b))\n\t}\n\tfor i := range a {\n\t\tif a[i] != b[i] {\n\t\t\tt.Fatalf(\"element %d differs\", i)\n\t\t}\n\t}\n\tparts := []string{\"a\", \"b\", \"c\"}\n\tif joinConcat(parts) != joinBuilder(parts) {\n\t\tt.Fatal(\"join results differ\")\n\t}\n}\n\nfunc BenchmarkAppendNoPrealloc(b *testing.B) {\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = appendNoPrealloc(256)\n\t}\n}\n\nfunc BenchmarkAppendPrealloc(b *testing.B) {\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = appendPrealloc(256)\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

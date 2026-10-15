@@ -1,0 +1,71 @@
+{
+  "id": "T058",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "collected errors: 2\n  task 2 failed\n  task 4 failed\nall-ok err is nil: true\nsingle Unwrap(join) is nil: true"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-058",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "错误集合并发安全的收集",
+    "summary": "并发收集子任务错误并用 errors.Join 聚合，排序输出以消解顺序不确定性。",
+    "concepts": [
+      "并发错误",
+      "errors.Join",
+      "Mutex",
+      "确定性"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能在并发场景下用锁保护错误切片，并用 errors.Join 聚合，验证 Is/As 可穿透。",
+    "prerequisites": [
+      "T077 sync.Mutex 与临界区保护",
+      "T051 错误包装与 %w 的解包链"
+    ],
+    "pitfalls": [
+      "多 goroutine 无锁 append 到同一切片：数据竞争。",
+      "期望 Join 的 Unwrap 返回单个错误：Join 实现的是 Unwrap() []error。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把失败任务数作为统计返回，并断言与错误切片长度一致。",
+        "hint": "统计 mu.Unwrap() 长度或单独计数。",
+        "answer": "failed := len(mu.Unwrap())；断言 failed == expectedFails。"
+      }
+    ],
+    "explain": "并行处理多个子任务时，需要并发安全地收集错误。示例用 Mutex 保护错误切片，等待全部完成后用 errors.Join 聚合，并通过 Unwrap() []error 展开子错误；由于并发完成顺序不定，示例对错误文本排序后再打印，保证输出确定。errors.Join 的返回值在 errors.Is/As 语义上仍可遍历全部子错误。还要注意：单个 errors.Unwrap 对 Join 结果返回 nil，因为它实现的是多值 Unwrap。",
+    "code": "// T058 错误集合并发安全的收集。\n//\n// 并行处理多个子任务时，需要并发安全地收集错误。\n// errors.Join（Go 1.20+）把多个错误合并成一个，errors.Is/As 仍可遍历全部。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\n// task 模拟一个可能失败的任务。\nfunc task(id int, failIDs map[int]bool) error {\n\tif failIDs[id] {\n\t\treturn fmt.Errorf(\"task %d failed\", id)\n\t}\n\treturn nil\n}\n\n// runAll 并发跑所有任务，用 Mutex 保护错误切片，返回聚合错误。\nfunc runAll(ids []int, failIDs map[int]bool) error {\n\tvar mu sync.Mutex\n\tvar errs []error\n\n\tvar wg sync.WaitGroup\n\tfor _, id := range ids {\n\t\twg.Add(1)\n\t\tgo func(id int) {\n\t\t\tdefer wg.Done()\n\t\t\tif err := task(id, failIDs); err != nil {\n\t\t\t\tmu.Lock()\n\t\t\t\terrs = append(errs, err)\n\t\t\t\tmu.Unlock()\n\t\t\t}\n\t\t}(id)\n\t}\n\twg.Wait()\n\n\treturn errors.Join(errs...)\n}\n\n// multiUnwrapper 是 errors.Join 返回值实现的接口：可展开出多个错误。\ntype multiUnwrapper interface{ Unwrap() []error }\n\nfunc main() {\n\tids := []int{1, 2, 3, 4, 5}\n\tfailIDs := map[int]bool{2: true, 4: true}\n\n\terr := runAll(ids, failIDs)\n\tif err != nil {\n\t\t// Join 的结果可通过 Unwrap() []error 展开成多个子错误。\n\t\tif mu, ok := err.(multiUnwrapper); ok {\n\t\t\tparts := make([]string, 0, len(mu.Unwrap()))\n\t\t\tfor _, e := range mu.Unwrap() {\n\t\t\t\tparts = append(parts, e.Error())\n\t\t\t}\n\t\t\t// 并发完成顺序不定，排序以保证输出确定。\n\t\t\tsort.Strings(parts)\n\t\t\tfmt.Println(\"collected errors:\", len(parts))\n\t\t\tfor _, p := range parts {\n\t\t\t\tfmt.Println(\" \", p)\n\t\t\t}\n\t\t}\n\t}\n\n\t// 无失败时返回 nil。\n\tfmt.Println(\"all-ok err is nil:\", runAll(ids, map[int]bool{}) == nil)\n\n\t// 演示单个 error 的 Unwrap 对 Join 结果不可用（它返回 nil）。\n\tfmt.Println(\"single Unwrap(join) is nil:\", errors.Unwrap(err) == nil)\n}\n",
+    "output": "collected errors: 2\n  task 2 failed\n  task 4 failed\nall-ok err is nil: true\nsingle Unwrap(join) is nil: true"
+  },
+  "example": {
+    "id": "go-example-058",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "错误集合并发安全的收集（示例）",
+    "summary": "对应主题 T058 的可运行示例。",
+    "concepts": [
+      "并发错误",
+      "errors.Join",
+      "Mutex",
+      "确定性"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T058 错误集合并发安全的收集。\n//\n// 并行处理多个子任务时，需要并发安全地收集错误。\n// errors.Join（Go 1.20+）把多个错误合并成一个，errors.Is/As 仍可遍历全部。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\n// task 模拟一个可能失败的任务。\nfunc task(id int, failIDs map[int]bool) error {\n\tif failIDs[id] {\n\t\treturn fmt.Errorf(\"task %d failed\", id)\n\t}\n\treturn nil\n}\n\n// runAll 并发跑所有任务，用 Mutex 保护错误切片，返回聚合错误。\nfunc runAll(ids []int, failIDs map[int]bool) error {\n\tvar mu sync.Mutex\n\tvar errs []error\n\n\tvar wg sync.WaitGroup\n\tfor _, id := range ids {\n\t\twg.Add(1)\n\t\tgo func(id int) {\n\t\t\tdefer wg.Done()\n\t\t\tif err := task(id, failIDs); err != nil {\n\t\t\t\tmu.Lock()\n\t\t\t\terrs = append(errs, err)\n\t\t\t\tmu.Unlock()\n\t\t\t}\n\t\t}(id)\n\t}\n\twg.Wait()\n\n\treturn errors.Join(errs...)\n}\n\n// multiUnwrapper 是 errors.Join 返回值实现的接口：可展开出多个错误。\ntype multiUnwrapper interface{ Unwrap() []error }\n\nfunc main() {\n\tids := []int{1, 2, 3, 4, 5}\n\tfailIDs := map[int]bool{2: true, 4: true}\n\n\terr := runAll(ids, failIDs)\n\tif err != nil {\n\t\t// Join 的结果可通过 Unwrap() []error 展开成多个子错误。\n\t\tif mu, ok := err.(multiUnwrapper); ok {\n\t\t\tparts := make([]string, 0, len(mu.Unwrap()))\n\t\t\tfor _, e := range mu.Unwrap() {\n\t\t\t\tparts = append(parts, e.Error())\n\t\t\t}\n\t\t\t// 并发完成顺序不定，排序以保证输出确定。\n\t\t\tsort.Strings(parts)\n\t\t\tfmt.Println(\"collected errors:\", len(parts))\n\t\t\tfor _, p := range parts {\n\t\t\t\tfmt.Println(\" \", p)\n\t\t\t}\n\t\t}\n\t}\n\n\t// 无失败时返回 nil。\n\tfmt.Println(\"all-ok err is nil:\", runAll(ids, map[int]bool{}) == nil)\n\n\t// 演示单个 error 的 Unwrap 对 Join 结果不可用（它返回 nil）。\n\tfmt.Println(\"single Unwrap(join) is nil:\", errors.Unwrap(err) == nil)\n}\n",
+    "expectedOutput": "collected errors: 2\n  task 2 failed\n  task 4 failed\nall-ok err is nil: true\nsingle Unwrap(join) is nil: true",
+    "templateType": "go"
+  }
+}

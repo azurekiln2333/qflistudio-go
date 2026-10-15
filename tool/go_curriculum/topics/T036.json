@@ -1,0 +1,68 @@
+{
+  "id": "T036",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "item0;item1;item2; len 18\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-036",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "字符串构造：strings.Builder 与字节缓冲",
+    "summary": "用 strings.Builder 高效拼接，避免 O(n²) 的反复分配。",
+    "concepts": [
+      "strings.Builder",
+      "高效拼接",
+      "Fprintf"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 strings.Builder 累积大量片段，并说明它相比 + 拼接的性能优势。",
+    "prerequisites": [
+      "T035 strings 函数"
+    ],
+    "pitfalls": [
+      "用 += 在循环里拼接长串：每次拼接都可能复制整个串，退化为 O(n²)。",
+      "复制已写入的 Builder：Builder 不应被复制，复制后会共享底层缓冲区导致未定义行为；需要传递时传指针。"
+    ],
+    "exercises": [
+      {
+        "prompt": "用 Builder 拼接 100 个数字并用 len 验证长度，再解释为何比 += 快。",
+        "hint": "循环里调用 b.WriteString。",
+        "answer": "Builder 复用同一底层缓冲、按需增长，避免每步复制整串，因此接近 O(n)。"
+      }
+    ],
+    "explain": "字符串不可变，用 + 在循环里累积会不断分配新串，复杂度可能退化到 O(n²)。strings.Builder 维护一个可增长的字节缓冲，WriteString/WriteByte/Fprintf 直接追加，最后由 String() 一次性产出，整体接近线性。\n\nBuilder 不能被复制：它内部持有一个切片，复制后两个副本会共享缓冲，可能触发未定义行为；需要跨函数传递时应传 *strings.Builder。\n\n本样例用 Fprintf 把 i 格式化写入 Builder 并打印长度。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\tvar b strings.Builder\n\tfor i := 0; i < 3; i++ {\n\t\tfmt.Fprintf(&b, \"item%d;\", i)\n\t}\n\tout := b.String()\n\tfmt.Println(out, \"len\", len(out))\n}\n",
+    "output": "item0;item1;item2; len 18"
+  },
+  "example": {
+    "id": "go-example-036",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "字符串构造：strings.Builder 与字节缓冲",
+    "summary": "用 strings.Builder 高效拼接，避免 O(n²) 的反复分配。",
+    "concepts": [
+      "strings.Builder",
+      "高效拼接",
+      "Fprintf"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\tvar b strings.Builder\n\tfor i := 0; i < 3; i++ {\n\t\tfmt.Fprintf(&b, \"item%d;\", i)\n\t}\n\tout := b.String()\n\tfmt.Println(out, \"len\", len(out))\n}\n",
+    "expectedOutput": "item0;item1;item2; len 18",
+    "templateType": "go"
+  }
+}

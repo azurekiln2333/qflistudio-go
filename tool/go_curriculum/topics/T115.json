@@ -1,0 +1,70 @@
+{
+  "id": "T115",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "total: 6\nhello, gopher (3 items)\nrun: `gofmt -l .` and `go vet ./...`"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-115",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "静态检查与工程规范：vet 与 gofmt 基线",
+    "summary": "用 gofmt 统一格式、go vet 检查可疑构造，作为标准库自带的静态检查基线。",
+    "concepts": [
+      "gofmt",
+      "go vet",
+      "规范",
+      "静态检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 gofmt -l/-d 与 go vet 保持代码风格与正确性。",
+    "prerequisites": [
+      "T001 Go 语言与工具链概览"
+    ],
+    "pitfalls": [
+      "依赖手工对齐而非 gofmt：团队风格不一致。",
+      "以为 vet 能发现所有 bug：vet 只查可疑构造，不替代测试。"
+    ],
+    "exercises": [
+      {
+        "prompt": "对 samples 目录运行 gofmt -l 与 go vet ./...，修正所有输出。",
+        "hint": "gofmt -w 自动修复格式。",
+        "answer": "gofmt -l 应无输出；go vet 应无告警。"
+      }
+    ],
+    "explain": "gofmt 是 Go 的官方格式化器：-l 列出不合规文件，-d 显示差异，-w 直接改写。go vet 检查可疑构造，如 Printf 动词与参数不匹配、锁值拷贝、无用标签等。二者随工具链提供，是无需第三方依赖的静态检查基线。示例本身格式规范、Printf 参数匹配，可作为“干净”的检查对象，并打印运行命令。single-file 示例可被 CodeSnippet 导入；静态检查需官方 SDK，移动端不提供，desktop only。",
+    "code": "// T115 静态检查与工程规范：vet 与 gofmt 基线。\n//\n// gofmt 统一格式（-l 列出不合规文件，-d 显示 diff）；\n// go vet 检查可疑构造（如 Printf 参数不匹配、无用的锁拷贝）。\n// 二者是标准库工具链自带的静态检查基线，不依赖第三方。\n//\n// single-file 示例：本文件本身可由 CodeSnippet 导入；同时用作\n// `gofmt`/`go vet` 的检查对象。\n//\n// 运行（官方 SDK）：\n//   gofmt -l .\n//   go vet ./...\n// desktop only（移动端不提供这些工具）。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// 正确格式：注意切片字面量对齐由 gofmt 统一。\n\tnums := []int{1, 2, 3}\n\ttotal := 0\n\tfor _, n := range nums {\n\t\ttotal += n\n\t}\n\tfmt.Println(\"total:\", total)\n\n\t// 演示 vet 会关注的正确写法：Printf 动词与参数类型匹配。\n\tname := \"gopher\"\n\tfmt.Printf(\"hello, %s (%d items)\\n\", name, len(nums))\n\n\tfmt.Println(\"run: `gofmt -l .` and `go vet ./...`\")\n}\n",
+    "output": "total: 6\nhello, gopher (3 items)\nrun: `gofmt -l .` and `go vet ./...`"
+  },
+  "example": {
+    "id": "go-example-115",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "静态检查与工程规范：vet 与 gofmt 基线（示例）",
+    "summary": "对应主题 T115 的可运行示例。",
+    "concepts": [
+      "gofmt",
+      "go vet",
+      "规范",
+      "静态检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T115 静态检查与工程规范：vet 与 gofmt 基线。\n//\n// gofmt 统一格式（-l 列出不合规文件，-d 显示 diff）；\n// go vet 检查可疑构造（如 Printf 参数不匹配、无用的锁拷贝）。\n// 二者是标准库工具链自带的静态检查基线，不依赖第三方。\n//\n// single-file 示例：本文件本身可由 CodeSnippet 导入；同时用作\n// `gofmt`/`go vet` 的检查对象。\n//\n// 运行（官方 SDK）：\n//   gofmt -l .\n//   go vet ./...\n// desktop only（移动端不提供这些工具）。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// 正确格式：注意切片字面量对齐由 gofmt 统一。\n\tnums := []int{1, 2, 3}\n\ttotal := 0\n\tfor _, n := range nums {\n\t\ttotal += n\n\t}\n\tfmt.Println(\"total:\", total)\n\n\t// 演示 vet 会关注的正确写法：Printf 动词与参数类型匹配。\n\tname := \"gopher\"\n\tfmt.Printf(\"hello, %s (%d items)\\n\", name, len(nums))\n\n\tfmt.Println(\"run: `gofmt -l .` and `go vet ./...`\")\n}\n",
+    "expectedOutput": "total: 6\nhello, gopher (3 items)\nrun: `gofmt -l .` and `go vet ./...`",
+    "templateType": "go"
+  }
+}

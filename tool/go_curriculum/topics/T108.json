@@ -1,0 +1,72 @@
+{
+  "id": "T108",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test -bench . -run '^$' ./...",
+  "verification": {
+    "kind": "bench-exists",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "bench_test.go",
+    "go.mod"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-108",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "基准测试与 b.RunParallel",
+    "summary": "编写串行与并行基准，用 b.N 与 RunParallel 测量，不把数值作为通过条件。",
+    "concepts": [
+      "benchmark",
+      "b.N",
+      "RunParallel",
+      "确定性"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能编写 BenchmarkXxx 与 b.RunParallel，说明 b.N 的作用与基准结果的读法。",
+    "prerequisites": [
+      "T105 表驱动测试与子测试",
+      "T071 goroutine 基础与启动"
+    ],
+    "pitfalls": [
+      "基准函数里包含无关开销：测量不反映目标代码。",
+      "把某个 ns/op 阈值当通过条件：机器/负载不同会误判。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为一个字符串拼接函数写并行基准并使用 b.SetParallelism。",
+        "hint": "RunParallel 里用 pb.Next() 控制迭代。",
+        "answer": "b.RunParallel(func(pb *testing.PB){ for pb.Next() { ... } })。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：bench_test.go、go.mod。运行命令：go test -bench . -run '^$' ./...。基准函数 BenchmarkXxx(*testing.B) 由框架自动调整 b.N 以获得稳定测量，输出 ns/op、allocs/op 等指标。b.RunParallel 用多个 goroutine 并行施压，适合测量并发路径。关键约定：基准数值随机器与负载变化，因此本课程不作为通过条件；验证只要求“基准能运行并报出指标”（bench-exists）。示例提供串行与并行两个基准，并有功能测试保证逻辑正确。test-package，移动端不支持 bench，desktop only。",
+    "code": "// T108 基准测试与 b.RunParallel。\n//\n// 基准测试函数名形如 BenchmarkXxx(*testing.B)，b.N 由框架自动调整以获得\n// 稳定测量。b.RunParallel 用多个 goroutine 并行施压，适合测量并发路径。\n// 断言策略：只要求基准能运行并报出指标（ns/op），不把数值作为通过条件。\n//\n// test-package / benchmark 工程例子，不能一键导入。完整结构：\n//   benchparallel/\n//   ├── go.mod         // module benchparallel\\n\\ngo 1.27\n//   └── bench_test.go  // 本文件\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -bench . -benchmem ./...\n// 移动端不支持 bench，desktop only。\npackage benchparallel\n\nimport (\n\t\"sync/atomic\"\n\t\"testing\"\n)\n\n// sumTo 是串行基准的被测逻辑。\nfunc sumTo(n int) int {\n\ttotal := 0\n\tfor i := 1; i <= n; i++ {\n\t\ttotal += i\n\t}\n\treturn total\n}\n\nfunc BenchmarkSum(b *testing.B) {\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = sumTo(1000)\n\t}\n}\n\nfunc BenchmarkSumParallel(b *testing.B) {\n\tvar counter atomic.Int64\n\tb.ReportAllocs()\n\tb.RunParallel(func(pb *testing.PB) {\n\t\t// 每个并行工作者拿到各自的一部分迭代。\n\t\tfor pb.Next() {\n\t\t\tcounter.Add(int64(sumTo(100)))\n\t\t}\n\t})\n\t// 消费 counter，避免被优化掉。\n\tif counter.Load() < 0 {\n\t\tb.Fatal(\"negative\")\n\t}\n}\n\nfunc TestSumTo(t *testing.T) {\n\tif got := sumTo(10); got != 55 {\n\t\tt.Fatalf(\"sumTo(10) = %d, want 55\", got)\n\t}\n}\n",
+    "output": "BenchmarkSum-2          \t7809880\t170.8 ns/op\t0 B/op\t0 allocs/op\nBenchmarkSumParallel-2  \t35680834\t29.04 ns/op\t0 B/op\t0 allocs/op"
+  },
+  "example": {
+    "id": "go-example-108",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "基准测试与 b.RunParallel（示例）",
+    "summary": "对应主题 T108 的可运行示例。",
+    "concepts": [
+      "benchmark",
+      "b.N",
+      "RunParallel",
+      "确定性"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T108 基准测试与 b.RunParallel。\n//\n// 基准测试函数名形如 BenchmarkXxx(*testing.B)，b.N 由框架自动调整以获得\n// 稳定测量。b.RunParallel 用多个 goroutine 并行施压，适合测量并发路径。\n// 断言策略：只要求基准能运行并报出指标（ns/op），不把数值作为通过条件。\n//\n// test-package / benchmark 工程例子，不能一键导入。完整结构：\n//   benchparallel/\n//   ├── go.mod         // module benchparallel\\n\\ngo 1.27\n//   └── bench_test.go  // 本文件\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -bench . -benchmem ./...\n// 移动端不支持 bench，desktop only。\npackage benchparallel\n\nimport (\n\t\"sync/atomic\"\n\t\"testing\"\n)\n\n// sumTo 是串行基准的被测逻辑。\nfunc sumTo(n int) int {\n\ttotal := 0\n\tfor i := 1; i <= n; i++ {\n\t\ttotal += i\n\t}\n\treturn total\n}\n\nfunc BenchmarkSum(b *testing.B) {\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = sumTo(1000)\n\t}\n}\n\nfunc BenchmarkSumParallel(b *testing.B) {\n\tvar counter atomic.Int64\n\tb.ReportAllocs()\n\tb.RunParallel(func(pb *testing.PB) {\n\t\t// 每个并行工作者拿到各自的一部分迭代。\n\t\tfor pb.Next() {\n\t\t\tcounter.Add(int64(sumTo(100)))\n\t\t}\n\t})\n\t// 消费 counter，避免被优化掉。\n\tif counter.Load() < 0 {\n\t\tb.Fatal(\"negative\")\n\t}\n}\n\nfunc TestSumTo(t *testing.T) {\n\tif got := sumTo(10); got != 55 {\n\t\tt.Fatalf(\"sumTo(10) = %d, want 55\", got)\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

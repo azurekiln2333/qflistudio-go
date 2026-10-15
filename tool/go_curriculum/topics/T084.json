@@ -1,0 +1,71 @@
+{
+  "id": "T084",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "pool error: unlucky 13\nsquares (sorted): [1 4 9 16 25 36 49 64 81 100 121 144 196 225 256 289 324 361 400]"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-084",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "并发模式：worker pool 与 errgroup 式编排",
+    "summary": "用固定数量 worker 的池处理任务并聚合结果，用标准库等价实现 errgroup 式编排。",
+    "concepts": [
+      "worker pool",
+      "并发编排",
+      "错误收集",
+      "标准库"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能实现固定 worker 池，说明任务/结果 channel 的分工，并用标准库收集错误。",
+    "prerequisites": [
+      "T071 goroutine 基础与启动",
+      "T077 sync.Mutex 与临界区保护"
+    ],
+    "pitfalls": [
+      "worker 数不设上限：任务多时会创建海量 goroutine，失去池的意义。",
+      "结果 channel 未关闭就 range：会死锁；应由 WaitGroup 完成后统一 close。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把“收集首个错误”改为“收集全部错误”并排序打印。",
+        "hint": "用一个受 Mutex 保护的 []error 或错误 channel。",
+        "answer": "增加 errors 切片 + Mutex，worker 出错 append；最后排序去重打印。"
+      }
+    ],
+    "explain": "worker pool 用固定数量 goroutine 从任务 channel 取活、把结果写回结果 channel。这样并发度可控，适合 CPU/IO 受限场景。示例用 4 个 worker 处理 20 个任务，任务 13 故意报错；错误通过带缓冲的 error channel 收集（只留首个），成功结果收集后排序打印，因此输出确定、与 worker 完成顺序无关。这里不引入第三方 errgroup，而是用标准库 WaitGroup + error channel 实现等价“并行执行、有错上报”的编排，满足离线与仅标准库的约束。最后 close(out) 由“全部 worker 完成”触发，避免 range 死锁。",
+    "code": "// T084 并发模式：worker pool 与 errgroup 式编排。\n//\n// 用固定数量的 worker 从任务 channel 取活、把结果写入结果 channel，\n// 是经典的 worker pool。本示例不引入第三方 errgroup，而是用标准库\n// WaitGroup + error channel 实现等价\"并行执行并在有错时返回\"的编排。\n// 结果收集后排序输出，保证确定性。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\nfunc main() {\n\tjobs := make([]int, 20)\n\tfor i := range jobs {\n\t\tjobs[i] = i + 1\n\t}\n\n\tresults, err := runPool(jobs, 4, func(n int) (int, error) {\n\t\tif n == 13 {\n\t\t\treturn 0, errors.New(\"unlucky 13\")\n\t\t}\n\t\treturn n * n, nil\n\t})\n\tif err != nil {\n\t\tfmt.Println(\"pool error:\", err)\n\t}\n\n\t// 排序后输出，消除 worker 完成顺序的不确定性。\n\tsort.Ints(results)\n\tfmt.Println(\"squares (sorted):\", results)\n}\n\n// runPool 用 workers 个 goroutine 处理 jobs，返回排序无关的成功结果切片。\n// 语义上等价于 errgroup：任一任务出错即记录；这里采用\"收集首个错误\"策略。\nfunc runPool(jobs []int, workers int, fn func(int) (int, error)) ([]int, error) {\n\tin := make(chan int)\n\tout := make(chan int)\n\terrCh := make(chan error, 1)\n\n\tvar wg sync.WaitGroup\n\twg.Add(workers)\n\tfor w := 0; w < workers; w++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tfor n := range in {\n\t\t\t\tv, err := fn(n)\n\t\t\t\tif err != nil {\n\t\t\t\t\tselect {\n\t\t\t\t\tcase errCh <- err: // 只记录第一个错误\n\t\t\t\t\tdefault:\n\t\t\t\t\t}\n\t\t\t\t\tcontinue\n\t\t\t\t}\n\t\t\t\tout <- v\n\t\t\t}\n\t\t}()\n\t}\n\n\t// 喂任务。\n\tgo func() {\n\t\tfor _, n := range jobs {\n\t\t\tin <- n\n\t\t}\n\t\tclose(in)\n\t}()\n\n\t// 收结果。\n\tvar results []int\n\tcollectDone := make(chan struct{})\n\tgo func() {\n\t\tfor v := range out {\n\t\t\tresults = append(results, v)\n\t\t}\n\t\tclose(collectDone)\n\t}()\n\n\twg.Wait()\n\tclose(out)\n\t<-collectDone\n\n\tselect {\n\tcase err := <-errCh:\n\t\treturn results, err\n\tdefault:\n\t\treturn results, nil\n\t}\n}\n",
+    "output": "pool error: unlucky 13\nsquares (sorted): [1 4 9 16 25 36 49 64 81 100 121 144 196 225 256 289 324 361 400]"
+  },
+  "example": {
+    "id": "go-example-084",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "并发模式：worker pool 与 errgroup 式编排（示例）",
+    "summary": "对应主题 T084 的可运行示例。",
+    "concepts": [
+      "worker pool",
+      "并发编排",
+      "错误收集",
+      "标准库"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T084 并发模式：worker pool 与 errgroup 式编排。\n//\n// 用固定数量的 worker 从任务 channel 取活、把结果写入结果 channel，\n// 是经典的 worker pool。本示例不引入第三方 errgroup，而是用标准库\n// WaitGroup + error channel 实现等价\"并行执行并在有错时返回\"的编排。\n// 结果收集后排序输出，保证确定性。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\nfunc main() {\n\tjobs := make([]int, 20)\n\tfor i := range jobs {\n\t\tjobs[i] = i + 1\n\t}\n\n\tresults, err := runPool(jobs, 4, func(n int) (int, error) {\n\t\tif n == 13 {\n\t\t\treturn 0, errors.New(\"unlucky 13\")\n\t\t}\n\t\treturn n * n, nil\n\t})\n\tif err != nil {\n\t\tfmt.Println(\"pool error:\", err)\n\t}\n\n\t// 排序后输出，消除 worker 完成顺序的不确定性。\n\tsort.Ints(results)\n\tfmt.Println(\"squares (sorted):\", results)\n}\n\n// runPool 用 workers 个 goroutine 处理 jobs，返回排序无关的成功结果切片。\n// 语义上等价于 errgroup：任一任务出错即记录；这里采用\"收集首个错误\"策略。\nfunc runPool(jobs []int, workers int, fn func(int) (int, error)) ([]int, error) {\n\tin := make(chan int)\n\tout := make(chan int)\n\terrCh := make(chan error, 1)\n\n\tvar wg sync.WaitGroup\n\twg.Add(workers)\n\tfor w := 0; w < workers; w++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tfor n := range in {\n\t\t\t\tv, err := fn(n)\n\t\t\t\tif err != nil {\n\t\t\t\t\tselect {\n\t\t\t\t\tcase errCh <- err: // 只记录第一个错误\n\t\t\t\t\tdefault:\n\t\t\t\t\t}\n\t\t\t\t\tcontinue\n\t\t\t\t}\n\t\t\t\tout <- v\n\t\t\t}\n\t\t}()\n\t}\n\n\t// 喂任务。\n\tgo func() {\n\t\tfor _, n := range jobs {\n\t\t\tin <- n\n\t\t}\n\t\tclose(in)\n\t}()\n\n\t// 收结果。\n\tvar results []int\n\tcollectDone := make(chan struct{})\n\tgo func() {\n\t\tfor v := range out {\n\t\t\tresults = append(results, v)\n\t\t}\n\t\tclose(collectDone)\n\t}()\n\n\twg.Wait()\n\tclose(out)\n\t<-collectDone\n\n\tselect {\n\tcase err := <-errCh:\n\t\treturn results, err\n\tdefault:\n\t\treturn results, nil\n\t}\n}\n",
+    "expectedOutput": "pool error: unlucky 13\nsquares (sorted): [1 4 9 16 25 36 49 64 81 100 121 144 196 225 256 289 324 361 400]",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "T013",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "int:1\nstring:go\nbool:true\nunknown\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-013",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "switch 与类型 switch",
+    "summary": "用类型 switch 对 any 值做类型分发，安全处理异构集合。",
+    "concepts": [
+      "类型 switch",
+      "any",
+      "类型断言"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 switch x := v.(type) 对任意值做类型分发并绑定具体类型变量。",
+    "prerequisites": [
+      "T012 switch"
+    ],
+    "pitfalls": [
+      "在 default 分支里假设具体类型：default 捕获所有未列出类型，x 在其中仍是原接口类型，不能直接当具体类型用。",
+      "类型 switch 只能用于接口值：对具体类型使用 v.(type) 会编译报错。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加 float64 分支返回带两位小数的字符串，再运行。",
+        "hint": "在 case float64: 里用 fmt.Sprintf(\"float:%.2f\", x)。",
+        "answer": "3.14 由 unknown 变为 float:3.14，其余分支不变。"
+      }
+    ],
+    "explain": "类型 switch 是接口值的专用语法：switch x := v.(type) 会依次尝试每个 case 的类型，匹配成功时把 v 以该具体类型绑定到 x。它把「先断言再使用」的两步合成一步，既安全又简洁，常用于处理 any（interface{}）集合。\n\ndefault 分支兜底所有未列出的类型；此时 x 仍保持接口类型，不能当作具体类型直接使用。类型 switch 只对接口值有意义，对具体类型写 v.(type) 会编译失败。\n\n本样例对 int/string/bool/float64 的混合集合做类型分发，float64 落入 default 演示兜底。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc describe(v any) string {\n\tswitch x := v.(type) {\n\tcase int:\n\t\treturn fmt.Sprintf(\"int:%d\", x)\n\tcase string:\n\t\treturn fmt.Sprintf(\"string:%s\", x)\n\tcase bool:\n\t\treturn fmt.Sprintf(\"bool:%t\", x)\n\tdefault:\n\t\treturn \"unknown\"\n\t}\n}\n\nfunc main() {\n\tfor _, v := range []any{1, \"go\", true, 3.14} {\n\t\tfmt.Println(describe(v))\n\t}\n}\n",
+    "output": "int:1\nstring:go\nbool:true\nunknown"
+  },
+  "example": {
+    "id": "go-example-013",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "任意值分发",
+    "summary": "对混合类型的 any 集合做类型 switch 分发。",
+    "concepts": [
+      "类型 switch",
+      "any",
+      "类型断言"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc describe(v any) string {\n\tswitch x := v.(type) {\n\tcase int:\n\t\treturn fmt.Sprintf(\"int:%d\", x)\n\tcase string:\n\t\treturn fmt.Sprintf(\"string:%s\", x)\n\tcase bool:\n\t\treturn fmt.Sprintf(\"bool:%t\", x)\n\tdefault:\n\t\treturn \"unknown\"\n\t}\n}\n\nfunc main() {\n\tfor _, v := range []any{1, \"go\", true, 3.14} {\n\t\tfmt.Println(describe(v))\n\t}\n}\n",
+    "expectedOutput": "int:1\nstring:go\nbool:true\nunknown",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,72 @@
+{
+  "id": "T065",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "generic Sum[int] = 10\ngeneric Sum[float64] = 4\ninterface sum = 7"
+  },
+  "sampleFiles": [
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-065",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "泛型与接口的选型对比",
+    "summary": "同一“求和”题用泛型与接口两种方式实现，比较类型安全、性能与扩展性的取舍。",
+    "concepts": [
+      "泛型",
+      "接口",
+      "多态",
+      "选型"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能根据“是否需要跨类型复用运算”与“是否需要运行期异构”选择泛型还是接口。",
+    "prerequisites": [
+      "T063 泛型二：自定义约束与联合类型",
+      "T041 接口基础与鸭子类型"
+    ],
+    "pitfalls": [
+      "用 interface{} 求和再断言：运行期才暴露错误，且每次断言有开销。",
+      "以为泛型能替代所有接口：需要运行期多态（异构集合、插件式扩展）时仍应用接口。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为两种方案各补充一个“求最大值”的变体，并说明哪种更适合在运行期插入新类型。",
+        "hint": "泛型要求编译期已知类型集；接口允许运行期新实现。",
+        "answer": "接口方案更适合运行期扩展新类型；泛型方案类型更安全、无断言开销。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。泛型与接口解决的是不同问题。泛型适合“同一套算法服务一组已知、可约束的类型”，优点是编译期安全检查、无装箱/断言开销。接口适合“运行期多态”，例如一个集合里同时放不同类型、或允许第三方插件新增实现。本例用同一求和需求展示两者：SumGeneric[T] 靠约束直接相加；SumInterface 靠 Value() 方法取数值。运行结果相同，选型取决于你是想要静态类型安全与性能，还是运行期扩展性。二者并非互斥——实际代码常在接口边界内使用泛型容器。",
+    "code": "// T065 泛型与接口的选型对比。\n//\n// 同一道题——\"对一组元素求和\"——用两种方式实现：\n//   1) 泛型函数 SumGeneric[T]：编译期特化，无装箱、无断言，但约束必须能表达运算。\n//   2) 接口 summable：运行期多态，能容纳异构实现，但有类型断言/装箱开销。\n// 运行结果相同；差别在\"类型安全与性能\"和\"扩展性\"之间的取舍。\n// 泛型 = desktop only（移动端 Yaegi 未实测）。\npackage main\n\nimport \"fmt\"\n\n// —— 方案一：泛型 ——\ntype Number interface{ ~int | ~float64 }\n\nfunc SumGeneric[T Number](xs []T) T {\n\tvar total T\n\tfor _, x := range xs {\n\t\ttotal += x\n\t}\n\treturn total\n}\n\n// —— 方案二：接口 ——\n// Summable 是任何能自报数值的类型的接口。\ntype Summable interface {\n\tValue() float64\n}\n\n// SumInterface 通过接口方法求和，返回 float64。\nfunc SumInterface(xs []Summable) float64 {\n\tvar total float64\n\tfor _, x := range xs {\n\t\ttotal += x.Value()\n\t}\n\treturn total\n}\n\n// Money 是一个实现了 Summable 的具体类型。\ntype Money float64\n\nfunc (m Money) Value() float64 { return float64(m) }\n\nfunc main() {\n\tnums := []int{1, 2, 3, 4}\n\tfmt.Println(\"generic Sum[int] =\", SumGeneric(nums))\n\tfmt.Println(\"generic Sum[float64] =\", SumGeneric([]float64{1.5, 2.5}))\n\n\tsums := []Summable{Money(1.5), Money(2.5), Money(3.0)}\n\tfmt.Println(\"interface sum =\", SumInterface(sums))\n}\n",
+    "output": "generic Sum[int] = 10\ngeneric Sum[float64] = 4\ninterface sum = 7"
+  },
+  "example": {
+    "id": "go-example-065",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "泛型与接口的选型对比（示例）",
+    "summary": "对应主题 T065 的可运行示例。",
+    "concepts": [
+      "泛型",
+      "接口",
+      "多态",
+      "选型"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T065 泛型与接口的选型对比。\n//\n// 同一道题——\"对一组元素求和\"——用两种方式实现：\n//   1) 泛型函数 SumGeneric[T]：编译期特化，无装箱、无断言，但约束必须能表达运算。\n//   2) 接口 summable：运行期多态，能容纳异构实现，但有类型断言/装箱开销。\n// 运行结果相同；差别在\"类型安全与性能\"和\"扩展性\"之间的取舍。\n// 泛型 = desktop only（移动端 Yaegi 未实测）。\npackage main\n\nimport \"fmt\"\n\n// —— 方案一：泛型 ——\ntype Number interface{ ~int | ~float64 }\n\nfunc SumGeneric[T Number](xs []T) T {\n\tvar total T\n\tfor _, x := range xs {\n\t\ttotal += x\n\t}\n\treturn total\n}\n\n// —— 方案二：接口 ——\n// Summable 是任何能自报数值的类型的接口。\ntype Summable interface {\n\tValue() float64\n}\n\n// SumInterface 通过接口方法求和，返回 float64。\nfunc SumInterface(xs []Summable) float64 {\n\tvar total float64\n\tfor _, x := range xs {\n\t\ttotal += x.Value()\n\t}\n\treturn total\n}\n\n// Money 是一个实现了 Summable 的具体类型。\ntype Money float64\n\nfunc (m Money) Value() float64 { return float64(m) }\n\nfunc main() {\n\tnums := []int{1, 2, 3, 4}\n\tfmt.Println(\"generic Sum[int] =\", SumGeneric(nums))\n\tfmt.Println(\"generic Sum[float64] =\", SumGeneric([]float64{1.5, 2.5}))\n\n\tsums := []Summable{Money(1.5), Money(2.5), Money(3.0)}\n\tfmt.Println(\"interface sum =\", SumInterface(sums))\n}\n",
+    "expectedOutput": "generic Sum[int] = 10\ngeneric Sum[float64] = 4\ninterface sum = 7",
+    "templateType": "go"
+  }
+}

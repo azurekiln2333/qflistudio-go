@@ -1,0 +1,71 @@
+{
+  "id": "T053",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "text: query \"SELECT 1\" failed: timeout\nIs ErrTimeout: true\nSQL field: SELECT 1\nCause field: timeout\nUnwrap == ErrTimeout: true"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-053",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "自定义错误类型与行为方法",
+    "summary": "定义带字段的错误类型并实现 Unwrap，使其融入 errors.Is/As 链。",
+    "concepts": [
+      "自定义错误",
+      "Unwrap",
+      "字段",
+      "errors.Is"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能定义带结构化字段的错误类型并实现 Unwrap，用 As 读取字段。",
+    "prerequisites": [
+      "T052 errors.Is 与 errors.As 的适用差异"
+    ],
+    "pitfalls": [
+      "实现 Unwrap 返回 nil 之外的东西却期望 Is 命中：链会断。",
+      "错误类型用值接收者但存了指针字段：注意一致性。",
+      "平台限制：自定义错误 + errors.As/Unwrap 在移动端 Yaegi 下会 panic，仅桌面官方 Go 可运行（保持 desktop-only）。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 QueryError 增加 Duration 字段并在 Error() 中输出。",
+        "hint": "在 Error() 里格式化 duration。",
+        "answer": "Error() 返回 fmt.Sprintf(\"query %q failed after %s: %v\", ...)。"
+      }
+    ],
+    "explain": "自定义错误类型可携带结构化信息（字段）并实现额外方法，比字符串错误更有用。示例的 QueryError 保存 SQL 与 Cause，并实现 Unwrap 暴露底层错误。这样它既能给出可读文本，又能被 errors.Is 命中底层哨兵（ErrTimeout），还能被 errors.As 取出并读取 SQL/Cause 字段。Unwrap 让自定义错误无缝融入标准错误链机制。",
+    "code": "// T053 自定义错误类型与行为方法。\n//\n// 自定义错误类型可携带结构化信息（字段）并实现额外方法，比字符串错误更有用。\n// 实现 Unwrap 还能融入 errors.Is/As 链。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\n// QueryError 携带 SQL 与原因，并实现 Unwrap 暴露底层错误。\ntype QueryError struct {\n\tSQL   string\n\tCause error\n}\n\nfunc (e *QueryError) Error() string {\n\treturn fmt.Sprintf(\"query %q failed: %v\", e.SQL, e.Cause)\n}\n\nfunc (e *QueryError) Unwrap() error { return e.Cause }\n\nvar ErrTimeout = errors.New(\"timeout\")\n\n// run 返回包装了哨兵错误的 QueryError。\nfunc run(sql string) error {\n\treturn &QueryError{SQL: sql, Cause: ErrTimeout}\n}\n\nfunc main() {\n\terr := run(\"SELECT 1\")\n\n\t// Error() 决定可读文本。\n\tfmt.Println(\"text:\", err)\n\n\t// Unwrap 让 errors.Is 能命中底层哨兵。\n\tfmt.Println(\"Is ErrTimeout:\", errors.Is(err, ErrTimeout))\n\n\t// errors.As 取出带字段的类型并读取元数据。\n\tvar qe *QueryError\n\tif errors.As(err, &qe) {\n\t\tfmt.Println(\"SQL field:\", qe.SQL)\n\t\tfmt.Println(\"Cause field:\", qe.Cause)\n\t}\n\n\t// errors.Unwrap 直接取出内层。\n\tfmt.Println(\"Unwrap == ErrTimeout:\", errors.Unwrap(err) == ErrTimeout)\n}\n",
+    "output": "text: query \"SELECT 1\" failed: timeout\nIs ErrTimeout: true\nSQL field: SELECT 1\nCause field: timeout\nUnwrap == ErrTimeout: true"
+  },
+  "example": {
+    "id": "go-example-053",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "自定义错误类型与行为方法（示例）",
+    "summary": "对应主题 T053 的可运行示例。",
+    "concepts": [
+      "自定义错误",
+      "Unwrap",
+      "字段",
+      "errors.Is"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T053 自定义错误类型与行为方法。\n//\n// 自定义错误类型可携带结构化信息（字段）并实现额外方法，比字符串错误更有用。\n// 实现 Unwrap 还能融入 errors.Is/As 链。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\n// QueryError 携带 SQL 与原因，并实现 Unwrap 暴露底层错误。\ntype QueryError struct {\n\tSQL   string\n\tCause error\n}\n\nfunc (e *QueryError) Error() string {\n\treturn fmt.Sprintf(\"query %q failed: %v\", e.SQL, e.Cause)\n}\n\nfunc (e *QueryError) Unwrap() error { return e.Cause }\n\nvar ErrTimeout = errors.New(\"timeout\")\n\n// run 返回包装了哨兵错误的 QueryError。\nfunc run(sql string) error {\n\treturn &QueryError{SQL: sql, Cause: ErrTimeout}\n}\n\nfunc main() {\n\terr := run(\"SELECT 1\")\n\n\t// Error() 决定可读文本。\n\tfmt.Println(\"text:\", err)\n\n\t// Unwrap 让 errors.Is 能命中底层哨兵。\n\tfmt.Println(\"Is ErrTimeout:\", errors.Is(err, ErrTimeout))\n\n\t// errors.As 取出带字段的类型并读取元数据。\n\tvar qe *QueryError\n\tif errors.As(err, &qe) {\n\t\tfmt.Println(\"SQL field:\", qe.SQL)\n\t\tfmt.Println(\"Cause field:\", qe.Cause)\n\t}\n\n\t// errors.Unwrap 直接取出内层。\n\tfmt.Println(\"Unwrap == ErrTimeout:\", errors.Unwrap(err) == ErrTimeout)\n}\n",
+    "expectedOutput": "text: query \"SELECT 1\" failed: timeout\nIs ErrTimeout: true\nSQL field: SELECT 1\nCause field: timeout\nUnwrap == ErrTimeout: true",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "id": "T060",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "selected local module version: v0.1.2\ngo.mod:\n  module qfli.example/t060\n  go 1.21\n  require qfli.example/lib v0.1.2\n  replace qfli.example/lib => ./lib\nrun: go run .  (no network; resolved via local replace)"
+  },
+  "sampleFiles": [
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-060",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go Modules：go.mod 与依赖版本",
+    "summary": "演示 go.mod 的模块路径、版本要求与本地 replace 的离线依赖解析。",
+    "concepts": [
+      "go.mod",
+      "模块版本",
+      "replace",
+      "离线"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能初始化模块并理解 require/replace，在离线环境下用本地 replace 解析依赖。",
+    "prerequisites": [
+      "T059 包、导出规则与初始化顺序"
+    ],
+    "pitfalls": [
+      "用网络拉取依赖：违反离线约束；应用本地 replace 指向同仓目录。",
+      "忘记 go mod tidy：go.mod 与实际导入不一致。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为本示例补一个 lib 子模块与 replace，改 main 调用 lib.Greeting()。",
+        "hint": "在 go.mod 写 replace qfli.example/lib => ./lib。",
+        "answer": "lib/go.mod 声明 module qfli.example/lib；main import 并调用，go run . 正常。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。go.mod 声明模块路径与 Go 版本，并记录依赖及版本；go.sum 记录校验和。示例在完全离线、无第三方依赖的前提下，用本地 replace 指向同仓目录来演示模块依赖解析，并内联语义化版本比较以展示版本选择。真实工程是“主模块 + lib 子模块”的多模块结构。",
+    "code": "// T060 Go Modules：go.mod 与依赖版本。\n//\n// go.mod 声明模块路径与 Go 版本，并记录依赖及版本；go.sum 记录校验和。\n// 本例演示“本地替换（replace）”——在完全离线、无第三方依赖的前提下，\n// 用 replace 指向同仓本地目录来演示模块依赖解析。\n//\n// 完整多模块工程（module-project，不能一键导入）：\n//   T060/\n//   ├── go.mod        // module qfli.example/t060; replace qfli.example/lib => ./lib\n//   ├── main.go       // 本文件：导入 lib 包\n//   └── lib/\n//       ├── go.mod    // module qfli.example/lib  (go 1.21)\n//       └── lib.go    // 提供 Greeting()\n//\n// 运行（官方 SDK，离线）：go run .\n//\n// 为在单文件内演示“模块版本/依赖”的解析结果，这里内联一个语义化版本比较，\n// 并注明确切的 go.mod 结构与命令。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Version 是简化语义化版本。\ntype Version struct{ Major, Minor, Patch int }\n\nfunc parse(s string) Version {\n\ts = strings.TrimPrefix(s, \"v\")\n\tvar v Version\n\tfmt.Sscanf(s, \"%d.%d.%d\", &v.Major, &v.Minor, &v.Patch)\n\treturn v\n}\n\nfunc compare(a, b Version) int {\n\tswitch {\n\tcase a.Major != b.Major:\n\t\treturn a.Major - b.Major\n\tcase a.Minor != b.Minor:\n\t\treturn a.Minor - b.Minor\n\tdefault:\n\t\treturn a.Patch - b.Patch\n\t}\n}\n\nfunc main() {\n\t// 模拟 replace + require 的解析：本地 replace 的模块版本仍按声明参与选择。\n\trequire := []string{\"v0.1.0\", \"v0.1.2\", \"v0.1.1\"}\n\tbest := parse(require[0])\n\tfor _, r := range require[1:] {\n\t\tif v := parse(r); compare(v, best) > 0 {\n\t\t\tbest = v\n\t\t}\n\t}\n\tfmt.Printf(\"selected local module version: v%d.%d.%d\\n\", best.Major, best.Minor, best.Patch)\n\n\tfmt.Println(\"go.mod:\")\n\tfmt.Println(\"  module qfli.example/t060\")\n\tfmt.Println(\"  go 1.21\")\n\tfmt.Println(\"  require qfli.example/lib v0.1.2\")\n\tfmt.Println(\"  replace qfli.example/lib => ./lib\")\n\tfmt.Println(\"run: go run .  (no network; resolved via local replace)\")\n}\n",
+    "output": "selected local module version: v0.1.2\ngo.mod:\n  module qfli.example/t060\n  go 1.21\n  require qfli.example/lib v0.1.2\n  replace qfli.example/lib => ./lib\nrun: go run .  (no network; resolved via local replace)"
+  },
+  "example": {
+    "id": "go-example-060",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go Modules：go.mod 与依赖版本（示例）",
+    "summary": "对应主题 T060 的可运行示例。",
+    "concepts": [
+      "go.mod",
+      "模块版本",
+      "replace",
+      "离线"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T060 Go Modules：go.mod 与依赖版本。\n//\n// go.mod 声明模块路径与 Go 版本，并记录依赖及版本；go.sum 记录校验和。\n// 本例演示“本地替换（replace）”——在完全离线、无第三方依赖的前提下，\n// 用 replace 指向同仓本地目录来演示模块依赖解析。\n//\n// 完整多模块工程（module-project，不能一键导入）：\n//   T060/\n//   ├── go.mod        // module qfli.example/t060; replace qfli.example/lib => ./lib\n//   ├── main.go       // 本文件：导入 lib 包\n//   └── lib/\n//       ├── go.mod    // module qfli.example/lib  (go 1.21)\n//       └── lib.go    // 提供 Greeting()\n//\n// 运行（官方 SDK，离线）：go run .\n//\n// 为在单文件内演示“模块版本/依赖”的解析结果，这里内联一个语义化版本比较，\n// 并注明确切的 go.mod 结构与命令。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Version 是简化语义化版本。\ntype Version struct{ Major, Minor, Patch int }\n\nfunc parse(s string) Version {\n\ts = strings.TrimPrefix(s, \"v\")\n\tvar v Version\n\tfmt.Sscanf(s, \"%d.%d.%d\", &v.Major, &v.Minor, &v.Patch)\n\treturn v\n}\n\nfunc compare(a, b Version) int {\n\tswitch {\n\tcase a.Major != b.Major:\n\t\treturn a.Major - b.Major\n\tcase a.Minor != b.Minor:\n\t\treturn a.Minor - b.Minor\n\tdefault:\n\t\treturn a.Patch - b.Patch\n\t}\n}\n\nfunc main() {\n\t// 模拟 replace + require 的解析：本地 replace 的模块版本仍按声明参与选择。\n\trequire := []string{\"v0.1.0\", \"v0.1.2\", \"v0.1.1\"}\n\tbest := parse(require[0])\n\tfor _, r := range require[1:] {\n\t\tif v := parse(r); compare(v, best) > 0 {\n\t\t\tbest = v\n\t\t}\n\t}\n\tfmt.Printf(\"selected local module version: v%d.%d.%d\\n\", best.Major, best.Minor, best.Patch)\n\n\tfmt.Println(\"go.mod:\")\n\tfmt.Println(\"  module qfli.example/t060\")\n\tfmt.Println(\"  go 1.21\")\n\tfmt.Println(\"  require qfli.example/lib v0.1.2\")\n\tfmt.Println(\"  replace qfli.example/lib => ./lib\")\n\tfmt.Println(\"run: go run .  (no network; resolved via local replace)\")\n}\n",
+    "expectedOutput": "selected local module version: v0.1.2\ngo.mod:\n  module qfli.example/t060\n  go 1.21\n  require qfli.example/lib v0.1.2\n  replace qfli.example/lib => ./lib\nrun: go run .  (no network; resolved via local replace)",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,74 @@
+{
+  "id": "T120",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "routes: /health, /api/time\nverify with: go test ./..."
+  },
+  "sampleFiles": [
+    "api_test.go",
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-120",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "综合项目三：极简 HTTP 服务（JSON API + 中间件 + 测试）",
+    "summary": "整合路由、JSON 响应、中间件与 httptest 测试，构建极简 HTTP 服务。",
+    "concepts": [
+      "net/http",
+      "JSON API",
+      "中间件",
+      "httptest"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能整合 HTTP 路由、JSON 响应、中间件与超时，并用 httptest 端到端验证。",
+    "prerequisites": [
+      "T102 JSON API 与错误响应约定",
+      "T103 中间件：日志、恢复与链式组合",
+      "T104 超时、重试与优雅关闭"
+    ],
+    "pitfalls": [
+      "把时间直接写进响应导致不确定：示例注入固定 now 函数，使响应确定可断言。",
+      "Handler 不校验方法：示例对 /api/time 拒绝非 GET，返回 405。"
+    ],
+    "exercises": [
+      {
+        "prompt": "新增 /api/echo 路由：POST JSON 并原样返回，补充 httptest 测试。",
+        "hint": "解码请求体到结构体再编码回写。",
+        "answer": "json.NewDecoder(r.Body).Decode(&in); json.NewEncoder(w).Encode(in)。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：api_test.go、go.mod、main.go。运行命令：go run .。这是 HTTP 综合项目：NewHandler 组装路由与日志中间件；/health 返回 ok，/api/time 用注入的 now 返回固定时间（因此响应确定），非 GET 返回 405；main 说明监听配置但不真正占端口，api_test.go 用 httptest 覆盖正常、错误、方法不符三条路径并断言中间件日志。整合了 net/http、JSON、中间件、超时与测试。module-project，go run + go test；涉及 net/监听，desktop only。",
+    "code": "// T120 综合项目三：极简 HTTP 服务（JSON API + 中间件 + 测试）。\n//\n// 整合：net/http 路由、JSON 响应、中间件、超时设置与 httptest 测试。\n// 服务提供 /health 与 /api/time；中间件记录请求。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   miniapi/\n//   ├── go.mod       // module miniapi\\n\\ngo 1.27\n//   ├── main.go      // 本文件：路由、中间件、服务器配置\n//   └── api_test.go  // httptest 端到端测试（真正断言的地方）\n// 运行（官方 SDK）：\n//   go test ./...     // 主要验证方式（httptest，离线）\n//   go run .          // 构造 handler 并说明如何监听\n// desktop only（net 监听 + go test）。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"net/http\"\n\t\"time\"\n)\n\n// response 是统一响应结构。\ntype response struct {\n\tStatus string `json:\"status\"`\n\tValue  string `json:\"value,omitempty\"`\n\tError  string `json:\"error,omitempty\"`\n}\n\n// logging 中间件：记录方法与路径到切片（便于测试断言）。\nfunc logging(log *[]string, next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t*log = append(*log, r.Method+\" \"+r.URL.Path)\n\t\tnext.ServeHTTP(w, r)\n\t})\n}\n\n// NewHandler 构造路由与中间件链。now 注入固定时间以保证响应确定。\nfunc NewHandler(now func() time.Time, log *[]string) http.Handler {\n\tmux := http.NewServeMux()\n\n\tmux.HandleFunc(\"/health\", func(w http.ResponseWriter, r *http.Request) {\n\t\twriteJSON(w, http.StatusOK, response{Status: \"ok\"})\n\t})\n\n\tmux.HandleFunc(\"/api/time\", func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.Method != http.MethodGet {\n\t\t\twriteJSON(w, http.StatusMethodNotAllowed, response{Status: \"error\", Error: \"GET only\"})\n\t\t\treturn\n\t\t}\n\t\twriteJSON(w, http.StatusOK, response{\n\t\t\tStatus: \"ok\",\n\t\t\tValue:  now().Format(time.RFC3339),\n\t\t})\n\t})\n\n\treturn logging(log, mux)\n}\n\nfunc writeJSON(w http.ResponseWriter, code int, v response) {\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tw.WriteHeader(code)\n\t_ = json.NewEncoder(w).Encode(v)\n}\n\nfunc main() {\n\tfixed := func() time.Time { return time.Date(2026, 10, 12, 14, 0, 0, 0, time.UTC) }\n\tvar log []string\n\n\tsrv := &http.Server{\n\t\tAddr:         \"127.0.0.1:8080\",\n\t\tHandler:      NewHandler(fixed, &log),\n\t\tReadTimeout:  5 * time.Second,\n\t\tWriteTimeout: 5 * time.Second,\n\t}\n\t// main 只说明如何启动；真正的响应断言在 api_test.go 中用 httptest 完成，\n\t// 因此这里不真正 ListenAndServe，避免示例依赖固定端口。\n\t_ = srv\n\tfmt.Println(\"routes: /health, /api/time\")\n\tfmt.Println(\"verify with: go test ./...\")\n}\n",
+    "output": "routes: /health, /api/time\nverify with: go test ./..."
+  },
+  "example": {
+    "id": "go-example-120",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "综合项目三：极简 HTTP 服务（JSON API + 中间件 + 测试）（示例）",
+    "summary": "对应主题 T120 的可运行示例。",
+    "concepts": [
+      "net/http",
+      "JSON API",
+      "中间件",
+      "httptest"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T120 综合项目三：极简 HTTP 服务（JSON API + 中间件 + 测试）。\n//\n// 整合：net/http 路由、JSON 响应、中间件、超时设置与 httptest 测试。\n// 服务提供 /health 与 /api/time；中间件记录请求。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   miniapi/\n//   ├── go.mod       // module miniapi\\n\\ngo 1.27\n//   ├── main.go      // 本文件：路由、中间件、服务器配置\n//   └── api_test.go  // httptest 端到端测试（真正断言的地方）\n// 运行（官方 SDK）：\n//   go test ./...     // 主要验证方式（httptest，离线）\n//   go run .          // 构造 handler 并说明如何监听\n// desktop only（net 监听 + go test）。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"net/http\"\n\t\"time\"\n)\n\n// response 是统一响应结构。\ntype response struct {\n\tStatus string `json:\"status\"`\n\tValue  string `json:\"value,omitempty\"`\n\tError  string `json:\"error,omitempty\"`\n}\n\n// logging 中间件：记录方法与路径到切片（便于测试断言）。\nfunc logging(log *[]string, next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t*log = append(*log, r.Method+\" \"+r.URL.Path)\n\t\tnext.ServeHTTP(w, r)\n\t})\n}\n\n// NewHandler 构造路由与中间件链。now 注入固定时间以保证响应确定。\nfunc NewHandler(now func() time.Time, log *[]string) http.Handler {\n\tmux := http.NewServeMux()\n\n\tmux.HandleFunc(\"/health\", func(w http.ResponseWriter, r *http.Request) {\n\t\twriteJSON(w, http.StatusOK, response{Status: \"ok\"})\n\t})\n\n\tmux.HandleFunc(\"/api/time\", func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.Method != http.MethodGet {\n\t\t\twriteJSON(w, http.StatusMethodNotAllowed, response{Status: \"error\", Error: \"GET only\"})\n\t\t\treturn\n\t\t}\n\t\twriteJSON(w, http.StatusOK, response{\n\t\t\tStatus: \"ok\",\n\t\t\tValue:  now().Format(time.RFC3339),\n\t\t})\n\t})\n\n\treturn logging(log, mux)\n}\n\nfunc writeJSON(w http.ResponseWriter, code int, v response) {\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tw.WriteHeader(code)\n\t_ = json.NewEncoder(w).Encode(v)\n}\n\nfunc main() {\n\tfixed := func() time.Time { return time.Date(2026, 10, 12, 14, 0, 0, 0, time.UTC) }\n\tvar log []string\n\n\tsrv := &http.Server{\n\t\tAddr:         \"127.0.0.1:8080\",\n\t\tHandler:      NewHandler(fixed, &log),\n\t\tReadTimeout:  5 * time.Second,\n\t\tWriteTimeout: 5 * time.Second,\n\t}\n\t// main 只说明如何启动；真正的响应断言在 api_test.go 中用 httptest 完成，\n\t// 因此这里不真正 ListenAndServe，避免示例依赖固定端口。\n\t_ = srv\n\tfmt.Println(\"routes: /health, /api/time\")\n\tfmt.Println(\"verify with: go test ./...\")\n}\n",
+    "expectedOutput": "routes: /health, /api/time\nverify with: go test ./...",
+    "templateType": "go"
+  }
+}

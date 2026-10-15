@@ -1,0 +1,70 @@
+{
+  "id": "T090",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "minimal: {\"id\":7,\"name\":\"alice\",\"balance\":0}\nfilled:  {\"id\":7,\"name\":\"alice\",\"email\":\"alice@example.com\",\"nick_name\":\"ali\",\"balance\":100}\npassword hidden: true"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-090",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "JSON 二：struct tag、omitempty 与自定义名称",
+    "summary": "用 struct tag 控制 JSON 键名、省略空值与完全忽略字段。",
+    "concepts": [
+      "struct tag",
+      "omitempty",
+      "忽略字段",
+      "字段改名"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 tag 控制字段名、用 omitempty 省略零值、用 \"-\" 屏蔽敏感字段。",
+    "prerequisites": [
+      "T089 JSON 一：Marshal/Unmarshal 基础"
+    ],
+    "pitfalls": [
+      "对结构体/切片用 omitempty：只有在 nil/空时省略，非空零值结构体不会被省略。",
+      "以为 tag 里的名字会影响 Go 字段访问：tag 只影响（反）序列化，字段名不变。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 Account 增加 UpdatedAt time.Time 字段，用字符串格式输出。",
+        "hint": "自定义 MarshalJSON 或改字段为 string。",
+        "answer": "改字段为 string 并赋 RFC3339 值，或实现 MarshalJSON 定制输出。"
+      }
+    ],
+    "explain": "struct tag 是反引号里的元数据，encoding/json 读取其中 json:\"...\" 部分：\"name\" 改键名、\"omitempty\" 在零值时省略、\"-\" 表示完全不序列化。示例的 Account 演示三者：Password 带 `json:\"-\"` 永不出现（即使非空），Email/Nickname 用 omitempty 仅在非空时出现，并提供 Password 确实被隐藏的断言。理解 tag 的边界很重要：它只影响序列化视角，不改变 Go 层字段名与可见性。",
+    "code": "// T090 JSON 二：struct tag、omitempty 与自定义名称。\n//\n// struct tag 控制 JSON 字段名、是否省略空值、是否忽略字段等。\n// omitempty 在字段为零值时省略该键；\"-\" 表示完全忽略；自定义名字改变键名。\n// 本示例展示三种行为，输出确定。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Account 演示 tag 的常见用法。\ntype Account struct {\n\tID       int    `json:\"id\"`\n\tName     string `json:\"name\"`\n\tPassword string `json:\"-\"`                    // 永不序列化\n\tEmail    string `json:\"email,omitempty\"`      // 空则省略\n\tNickname string `json:\"nick_name,omitempty\"`  // 改名 + 空则省略\n\tBalance  int    `json:\"balance\"`              // 零值也保留\n}\n\nfunc main() {\n\ta := Account{ID: 7, Name: \"alice\"}\n\tdata, _ := json.Marshal(a)\n\tfmt.Println(\"minimal:\", string(data))\n\n\t// 填入可选字段后，omitempty 的键出现。\n\ta.Email = \"alice@example.com\"\n\ta.Nickname = \"ali\"\n\ta.Balance = 100\n\tdata2, _ := json.Marshal(a)\n\tfmt.Println(\"filled: \", string(data2))\n\n\t// Password 设为非空也永远不会出现在 JSON 中。\n\ta.Password = \"secret\"\n\tdata3, _ := json.Marshal(a)\n\tfmt.Println(\"password hidden:\", !strings.Contains(string(data3), \"secret\"))\n}\n",
+    "output": "minimal: {\"id\":7,\"name\":\"alice\",\"balance\":0}\nfilled:  {\"id\":7,\"name\":\"alice\",\"email\":\"alice@example.com\",\"nick_name\":\"ali\",\"balance\":100}\npassword hidden: true"
+  },
+  "example": {
+    "id": "go-example-090",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "JSON 二：struct tag、omitempty 与自定义名称（示例）",
+    "summary": "对应主题 T090 的可运行示例。",
+    "concepts": [
+      "struct tag",
+      "omitempty",
+      "忽略字段",
+      "字段改名"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T090 JSON 二：struct tag、omitempty 与自定义名称。\n//\n// struct tag 控制 JSON 字段名、是否省略空值、是否忽略字段等。\n// omitempty 在字段为零值时省略该键；\"-\" 表示完全忽略；自定义名字改变键名。\n// 本示例展示三种行为，输出确定。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Account 演示 tag 的常见用法。\ntype Account struct {\n\tID       int    `json:\"id\"`\n\tName     string `json:\"name\"`\n\tPassword string `json:\"-\"`                    // 永不序列化\n\tEmail    string `json:\"email,omitempty\"`      // 空则省略\n\tNickname string `json:\"nick_name,omitempty\"`  // 改名 + 空则省略\n\tBalance  int    `json:\"balance\"`              // 零值也保留\n}\n\nfunc main() {\n\ta := Account{ID: 7, Name: \"alice\"}\n\tdata, _ := json.Marshal(a)\n\tfmt.Println(\"minimal:\", string(data))\n\n\t// 填入可选字段后，omitempty 的键出现。\n\ta.Email = \"alice@example.com\"\n\ta.Nickname = \"ali\"\n\ta.Balance = 100\n\tdata2, _ := json.Marshal(a)\n\tfmt.Println(\"filled: \", string(data2))\n\n\t// Password 设为非空也永远不会出现在 JSON 中。\n\ta.Password = \"secret\"\n\tdata3, _ := json.Marshal(a)\n\tfmt.Println(\"password hidden:\", !strings.Contains(string(data3), \"secret\"))\n}\n",
+    "expectedOutput": "minimal: {\"id\":7,\"name\":\"alice\",\"balance\":0}\nfilled:  {\"id\":7,\"name\":\"alice\",\"email\":\"alice@example.com\",\"nick_name\":\"ali\",\"balance\":100}\npassword hidden: true",
+    "templateType": "go"
+  }
+}

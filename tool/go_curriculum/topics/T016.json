@@ -1,0 +1,68 @@
+{
+  "id": "T016",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "found at 1,1\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-016",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "label 与嵌套循环控制",
+    "summary": "用带标签的 break 跳出多层循环，在二维查找中提前结束。",
+    "concepts": [
+      "label",
+      "break",
+      "嵌套循环"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能给循环加标签并用 break label 跳出指定外层循环。",
+    "prerequisites": [
+      "T014 for"
+    ],
+    "pitfalls": [
+      "裸 break 只跳出最内层：想一次跳出外层必须用带标签的 break，否则会在外层继续迭代。",
+      "标签与循环之间有语句：标签必须紧贴它所标记的 for，插入其他语句会让跳转目标不再是该循环。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把目标改成不存在的值，观察 not found 分支，并解释如何仍然只做一次完整扫描。",
+        "hint": "找不到时循环自然结束，found 保持 false。",
+        "answer": "目标缺失时走 not found；外层循环完整跑完但不再有匹配。"
+      }
+    ],
+    "explain": "当循环嵌套时，裸 break 只能跳出最内层循环。若要在找到目标后立刻结束所有外层循环，就给外层 for 起一个标签（如 search:），然后 break search。标签跳转让「找到即停」的意图明确，避免用额外标志变量控制。\n\n标签必须紧邻它标记的 for 语句；中间插入其他语句会使标签语义改变。continue 同样可带标签，用于跳到外层循环的下一次迭代。\n\n本样例在二维切片中查找目标，用 break search 一次性跳出两层循环。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tgrid := [][]int{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}\n\ttarget := 5\n\tfound := false\nsearch:\n\tfor i, row := range grid {\n\t\tfor j, v := range row {\n\t\t\tif v == target {\n\t\t\t\tfmt.Printf(\"found at %d,%d\\n\", i, j)\n\t\t\t\tfound = true\n\t\t\t\tbreak search\n\t\t\t}\n\t\t}\n\t}\n\tif !found {\n\t\tfmt.Println(\"not found\")\n\t}\n}\n",
+    "output": "found at 1,1"
+  },
+  "example": {
+    "id": "go-example-016",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "二维查找提前退出",
+    "summary": "用带标签的 break 在二维查找命中后跳出外层循环。",
+    "concepts": [
+      "label",
+      "break",
+      "嵌套循环"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tgrid := [][]int{{1, 2, 3}, {4, 5, 6}, {7, 8, 9}}\n\ttarget := 5\n\tfound := false\nsearch:\n\tfor i, row := range grid {\n\t\tfor j, v := range row {\n\t\t\tif v == target {\n\t\t\t\tfmt.Printf(\"found at %d,%d\\n\", i, j)\n\t\t\t\tfound = true\n\t\t\t\tbreak search\n\t\t\t}\n\t\t}\n\t}\n\tif !found {\n\t\tfmt.Println(\"not found\")\n\t}\n}\n",
+    "expectedOutput": "found at 1,1",
+    "templateType": "go"
+  }
+}

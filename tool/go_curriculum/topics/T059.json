@@ -1,0 +1,71 @@
+{
+  "id": "T059",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "init: package config loaded, a = 1\na = 1 b = 2\nexported: visible outside package\nunexported: visible only inside package\ninit runs before main; across packages it follows import order"
+  },
+  "sampleFiles": [
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-059",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "包、导出规则与初始化顺序",
+    "summary": "演示包内导出/非导出规则、包级变量与 init 的执行顺序。",
+    "concepts": [
+      "包",
+      "导出规则",
+      "init",
+      "初始化顺序"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能说明导出（大写）与非导出（小写）规则，以及 init 与包级变量的执行顺序。",
+    "prerequisites": [
+      "T037 结构体定义、字面量与字段访问"
+    ],
+    "pitfalls": [
+      "依赖 init 的副作用顺序：跨包 init 顺序由依赖关系决定，不要假设。",
+      "在 init 中做重活或发动网络请求：会拖慢启动且难测试。"
+    ],
+    "exercises": [
+      {
+        "prompt": "新增 util 子包，导出 Add 与非导出 helper，从 main 调用 Add。",
+        "hint": "小写标识符无法从其他包访问。",
+        "answer": "util.Add 可调用；util.helper 会编译报错 undefined。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。包把代码分组；导出（大写）标识符可被其他包访问，小写仅包内可见。init 函数与包级变量初始化在包被导入时自动执行，顺序遵循：先按声明顺序初始化包级变量，再执行 init；跨包时先完成被依赖包。示例在同一文件内演示包级变量初始化与 init 早于 main。真实工程是多包结构（config/util 子包）。",
+    "code": "// T059 包、导出规则与初始化顺序。\n//\n// 包把代码分组；导出（大写）标识符可被其他包访问，小写仅包内可见。\n// init 函数与包级变量初始化在包被导入时按依赖顺序自动执行。\n//\n// 完整多文件多包工程（module-project，不能一键导入）：\n//   T059/\n//   ├── go.mod              // module qfli.example/t059  (go 1.21)\n//   ├── main.go             // 本文件：程序入口\n//   ├── internal/config/config.go  // 包 config：包级变量 + init\n//   └── internal/util/util.go      // 包 util：导出/非导出演示\n//\n// 运行（官方 SDK）：go run .\n//\n// 为在单文件内演示同一机制，这里用本包内的包级变量初始化与 init，\n// 并注释说明真实的跨包结构。\npackage main\n\nimport \"fmt\"\n\n// 包级变量按声明顺序初始化。\nvar a = 1\nvar b = a + 1 // 依赖 a\n\n// exported 大写导出；unexported 小写仅本包可见。\nconst exported = \"visible outside package\"\nconst unexported = \"visible only inside package\"\n\n// init 在 main 之前执行；多个 init 按文件/声明顺序执行。\nfunc init() {\n\tfmt.Println(\"init: package config loaded, a =\", a)\n}\n\nfunc main() {\n\tfmt.Println(\"a =\", a, \"b =\", b)\n\tfmt.Println(\"exported:\", exported)\n\tfmt.Println(\"unexported:\", unexported)\n\n\t// 真实工程里，config 包的 init 会先于本 main 包执行（导入依赖顺序）。\n\tfmt.Println(\"init runs before main; across packages it follows import order\")\n}\n",
+    "output": "init: package config loaded, a = 1\na = 1 b = 2\nexported: visible outside package\nunexported: visible only inside package\ninit runs before main; across packages it follows import order"
+  },
+  "example": {
+    "id": "go-example-059",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "包、导出规则与初始化顺序（示例）",
+    "summary": "对应主题 T059 的可运行示例。",
+    "concepts": [
+      "包",
+      "导出规则",
+      "init",
+      "初始化顺序"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T059 包、导出规则与初始化顺序。\n//\n// 包把代码分组；导出（大写）标识符可被其他包访问，小写仅包内可见。\n// init 函数与包级变量初始化在包被导入时按依赖顺序自动执行。\n//\n// 完整多文件多包工程（module-project，不能一键导入）：\n//   T059/\n//   ├── go.mod              // module qfli.example/t059  (go 1.21)\n//   ├── main.go             // 本文件：程序入口\n//   ├── internal/config/config.go  // 包 config：包级变量 + init\n//   └── internal/util/util.go      // 包 util：导出/非导出演示\n//\n// 运行（官方 SDK）：go run .\n//\n// 为在单文件内演示同一机制，这里用本包内的包级变量初始化与 init，\n// 并注释说明真实的跨包结构。\npackage main\n\nimport \"fmt\"\n\n// 包级变量按声明顺序初始化。\nvar a = 1\nvar b = a + 1 // 依赖 a\n\n// exported 大写导出；unexported 小写仅本包可见。\nconst exported = \"visible outside package\"\nconst unexported = \"visible only inside package\"\n\n// init 在 main 之前执行；多个 init 按文件/声明顺序执行。\nfunc init() {\n\tfmt.Println(\"init: package config loaded, a =\", a)\n}\n\nfunc main() {\n\tfmt.Println(\"a =\", a, \"b =\", b)\n\tfmt.Println(\"exported:\", exported)\n\tfmt.Println(\"unexported:\", unexported)\n\n\t// 真实工程里，config 包的 init 会先于本 main 包执行（导入依赖顺序）。\n\tfmt.Println(\"init runs before main; across packages it follows import order\")\n}\n",
+    "expectedOutput": "init: package config loaded, a = 1\na = 1 b = 2\nexported: visible outside package\nunexported: visible only inside package\ninit runs before main; across packages it follows import order",
+    "templateType": "go"
+  }
+}

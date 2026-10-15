@@ -1,0 +1,72 @@
+{
+  "id": "T064",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "popped int: 3\npopped int: 2\npopped int: 1\npop empty stack ok = false\npopped string: generics"
+  },
+  "sampleFiles": [
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-064",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "泛型三：泛型类型（容器）",
+    "summary": "用类型参数定义泛型 Stack[T]，实现压栈、弹栈与长度，支持任意元素类型。",
+    "concepts": [
+      "泛型类型",
+      "容器",
+      "方法",
+      "LIFO"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能定义带类型参数的类型并为它编写方法，理解泛型类型如何实例化。",
+    "prerequisites": [
+      "T062 泛型一：类型参数与约束",
+      "T039 方法：值接收者与指针接收者"
+    ],
+    "pitfalls": [
+      "在泛型类型方法上误用值接收者：Push 需要修改切片，必须用指针接收者 *Stack[T]。",
+      "Pop 空栈返回的零值容易被忽略：必须用逗号-ok 形式区分“零值”与“空栈”。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 Stack 增加 Peek（只看栈顶不出栈）和 PushAll（批量压栈）两个方法。",
+        "hint": "Peek 与 Pop 类似但不改 items；PushAll 可先 append slice 再展开。",
+        "answer": "Peek 返回最后一个元素与 ok；PushAll 用 s.items = append(s.items, vs...)。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。泛型不仅用于函数，也能定义类型：Stack[T] 中的 T 是元素类型，字段 items 的类型因此写成 []T。方法接收者写 *Stack[T]，让方法体里的 T 与方法绑定的类型参数一致。用 Stack[int] 与 Stack[string] 分别实例化，得到两份独立、类型安全的实现——不会有 interface{} 断言，也不会混入错误类型。本例还演示 Pop 用逗号-ok 报告空栈。泛型类型同样是编译期特性，desktop only。",
+    "code": "// T064 泛型三：泛型类型（容器）。\n//\n// 泛型不仅能用于函数，也能定义带类型参数的类型。Stack[T] 用切片存元素，\n// 压栈/弹栈/判空都由同一份代码实现，实例化 Stack[int]、Stack[string] 都行。\n// 泛型 = desktop only（移动端 Yaegi 未实测）。\npackage main\n\nimport \"fmt\"\n\n// Stack 是一个后进先出（LIFO）栈。类型参数 T 是元素类型。\ntype Stack[T any] struct {\n\titems []T\n}\n\n// Push 把元素压入栈顶。\nfunc (s *Stack[T]) Push(v T) {\n\ts.items = append(s.items, v)\n}\n\n// Pop 弹出栈顶元素。第二个返回值表示是否成功（空栈时 ok=false）。\nfunc (s *Stack[T]) Pop() (T, bool) {\n\tvar zero T\n\tif len(s.items) == 0 {\n\t\treturn zero, false\n\t}\n\tlast := len(s.items) - 1\n\tv := s.items[last]\n\ts.items = s.items[:last]\n\treturn v, true\n}\n\n// Len 返回当前元素个数。\nfunc (s *Stack[T]) Len() int { return len(s.items) }\n\nfunc main() {\n\tvar ints Stack[int]\n\tints.Push(1)\n\tints.Push(2)\n\tints.Push(3)\n\n\tfor ints.Len() > 0 {\n\t\tv, _ := ints.Pop()\n\t\tfmt.Println(\"popped int:\", v)\n\t}\n\t_, ok := ints.Pop()\n\tfmt.Println(\"pop empty stack ok =\", ok)\n\n\tvar words Stack[string]\n\twords.Push(\"go\")\n\twords.Push(\"generics\")\n\tw, _ := words.Pop()\n\tfmt.Println(\"popped string:\", w)\n}\n",
+    "output": "popped int: 3\npopped int: 2\npopped int: 1\npop empty stack ok = false\npopped string: generics"
+  },
+  "example": {
+    "id": "go-example-064",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "泛型三：泛型类型（容器）（示例）",
+    "summary": "对应主题 T064 的可运行示例。",
+    "concepts": [
+      "泛型类型",
+      "容器",
+      "方法",
+      "LIFO"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T064 泛型三：泛型类型（容器）。\n//\n// 泛型不仅能用于函数，也能定义带类型参数的类型。Stack[T] 用切片存元素，\n// 压栈/弹栈/判空都由同一份代码实现，实例化 Stack[int]、Stack[string] 都行。\n// 泛型 = desktop only（移动端 Yaegi 未实测）。\npackage main\n\nimport \"fmt\"\n\n// Stack 是一个后进先出（LIFO）栈。类型参数 T 是元素类型。\ntype Stack[T any] struct {\n\titems []T\n}\n\n// Push 把元素压入栈顶。\nfunc (s *Stack[T]) Push(v T) {\n\ts.items = append(s.items, v)\n}\n\n// Pop 弹出栈顶元素。第二个返回值表示是否成功（空栈时 ok=false）。\nfunc (s *Stack[T]) Pop() (T, bool) {\n\tvar zero T\n\tif len(s.items) == 0 {\n\t\treturn zero, false\n\t}\n\tlast := len(s.items) - 1\n\tv := s.items[last]\n\ts.items = s.items[:last]\n\treturn v, true\n}\n\n// Len 返回当前元素个数。\nfunc (s *Stack[T]) Len() int { return len(s.items) }\n\nfunc main() {\n\tvar ints Stack[int]\n\tints.Push(1)\n\tints.Push(2)\n\tints.Push(3)\n\n\tfor ints.Len() > 0 {\n\t\tv, _ := ints.Pop()\n\t\tfmt.Println(\"popped int:\", v)\n\t}\n\t_, ok := ints.Pop()\n\tfmt.Println(\"pop empty stack ok =\", ok)\n\n\tvar words Stack[string]\n\twords.Push(\"go\")\n\twords.Push(\"generics\")\n\tw, _ := words.Pop()\n\tfmt.Println(\"popped string:\", w)\n}\n",
+    "expectedOutput": "popped int: 3\npopped int: 2\npopped int: 1\npop empty stack ok = false\npopped string: generics",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "T025",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "[2 4 6]\n[11 12 13]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-025",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "函数是一等值：高阶函数",
+    "summary": "把函数作为参数与返回值，构造 map 之类的通用管线。",
+    "concepts": [
+      "高阶函数",
+      "函数类型",
+      "闭包实参"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能定义接受函数参数的函数，并传入具名函数或函数字面量。",
+    "prerequisites": [
+      "T023 多返回值"
+    ],
+    "pitfalls": [
+      "把函数类型写错：func(int) int 与 func(int) float64 是不同类型，不能互相传递。",
+      "忘记函数值可能是 nil：调用 nil 函数值会 panic，作为可选回调时应判空。"
+    ],
+    "exercises": [
+      {
+        "prompt": "写一个 filter 高阶函数，保留满足谓词的元素。",
+        "hint": "参数是 []int 和 func(int) bool。",
+        "answer": "遍历判断 pred(v) 为真则 append，返回新切片。"
+      }
+    ],
+    "explain": "在 Go 里函数是一等值：可以作为参数、返回值、存进变量或数据结构。接受函数参数的函数称为高阶函数，它把「做什么」与「怎么遍历」分离。样例的 mapInts 接受一个 []int 和一个 func(int) int，既可传入具名函数 double，也可传入内联的函数字面量。\n\n函数类型必须完全匹配：参数或返回值类型不同即为不同类型。函数值若为 nil，调用会 panic，作为可选回调时应先判空。\n\n本样例用 mapInts 演示两种传入方式。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc mapInts(in []int, f func(int) int) []int {\n\tout := make([]int, len(in))\n\tfor i, v := range in {\n\t\tout[i] = f(v)\n\t}\n\treturn out\n}\n\nfunc main() {\n\tdouble := func(v int) int { return v * 2 }\n\tnums := []int{1, 2, 3}\n\tfmt.Println(mapInts(nums, double))\n\tfmt.Println(mapInts(nums, func(v int) int { return v + 10 }))\n}\n",
+    "output": "[2 4 6]\n[11 12 13]"
+  },
+  "example": {
+    "id": "go-example-025",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "函数是一等值：高阶函数",
+    "summary": "把函数作为参数与返回值，构造 map 之类的通用管线。",
+    "concepts": [
+      "高阶函数",
+      "函数类型",
+      "闭包实参"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc mapInts(in []int, f func(int) int) []int {\n\tout := make([]int, len(in))\n\tfor i, v := range in {\n\t\tout[i] = f(v)\n\t}\n\treturn out\n}\n\nfunc main() {\n\tdouble := func(v int) int { return v * 2 }\n\tnums := []int{1, 2, 3}\n\tfmt.Println(mapInts(nums, double))\n\tfmt.Println(mapInts(nums, func(v int) int { return v + 10 }))\n}\n",
+    "expectedOutput": "[2 4 6]\n[11 12 13]",
+    "templateType": "go"
+  }
+}

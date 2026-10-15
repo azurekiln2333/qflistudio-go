@@ -1,0 +1,72 @@
+{
+  "id": "T110",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "fuzz_test.go",
+    "go.mod"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-110",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Fuzz 测试发现边界缺陷",
+    "summary": "用 Fuzz 测试的不变量断言穷举输入，常规 go test 只跑确定性的种子语料。",
+    "concepts": [
+      "fuzz",
+      "种子语料",
+      "不变量",
+      "边界"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能编写 fuzz target 并声明不变量，理解常规测试只跑种子、-fuzz 才随机穷举。",
+    "prerequisites": [
+      "T105 表驱动测试与子测试",
+      "T097 strconv 与数据解析"
+    ],
+    "pitfalls": [
+      "fuzz target 里依赖外部状态：应只依赖输入，保证可复现。",
+      "把随机 fuzz 放进常规 CI 而不限时：运行时长不可控；-fuzztime 应显式限定。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 ParsePort 增加一个不变量：解析成功的值必须能用 strconv.Itoa 后再次解析回同一值。",
+        "hint": "在 f.Fuzz 内做往返断言。",
+        "answer": "n,err:=ParsePort(s); if err==nil { m,_:=ParsePort(strconv.Itoa(n)); if m!=n { t.Fatal } }。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：fuzz_test.go、go.mod。运行命令：go test ./...。Fuzz 测试（Go 1.18+）用 f.Fuzz 提供随机输入寻找边界缺陷，并最小化复现用例。示例的 ParsePort 只接受 1..65535，fuzz target 声明不变量：“要么解析失败，要么结果在范围内”，从而暴露越界。为让常规 go test 确定可复现，只运行种子语料（f.Add 提供的用例）；真正随机穷举需显式 go test -fuzz 并限制时长。test-package，移动端不支持 fuzz，desktop only。",
+    "code": "// T110 Fuzz 测试发现边界缺陷。\n//\n// Fuzz 测试（Go 1.18+）用 f.Fuzz 提供随机输入，穷举边界并最小化复现用例。\n// 本示例的 ParsePort 只接受 1..65535；fuzz target 断言\"要么解析成功且在\n// 范围内，要么返回错误\"，从而暴露越界。为避免运行时长不确定，\n// 常规 go test 只跑种子语料（确定性），fuzz 模式需显式 -fuzz。\n//\n// test-package / fuzz 工程例子，不能一键导入。完整结构：\n//   fuzztest/\n//   ├── go.mod       // module fuzztest\\n\\ngo 1.27\n//   └── fuzz_test.go // 本文件\n// 运行（官方 SDK）：\n//   go test ./...             // 只跑种子\n//   go test -fuzz FuzzParsePort -fuzztime 10s ./...\n// desktop only（移动端不支持 fuzz）。\npackage fuzztest\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"testing\"\n)\n\n// ParsePort 解析端口并校验范围。\nfunc ParsePort(s string) (int, error) {\n\tn, err := strconv.Atoi(s)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\tif n < 1 || n > 65535 {\n\t\treturn 0, fmt.Errorf(\"port %d out of range\", n)\n\t}\n\treturn n, nil\n}\n\nfunc TestParsePortSeeds(t *testing.T) {\n\tcases := []struct {\n\t\tin      string\n\t\twantErr bool\n\t}{\n\t\t{\"80\", false},\n\t\t{\"65535\", false},\n\t\t{\"0\", true},\n\t\t{\"65536\", true},\n\t\t{\"abc\", true},\n\t}\n\tfor _, c := range cases {\n\t\t_, err := ParsePort(c.in)\n\t\tif (err != nil) != c.wantErr {\n\t\t\tt.Fatalf(\"ParsePort(%q) err=%v, wantErr=%v\", c.in, err, c.wantErr)\n\t\t}\n\t}\n}\n\n// FuzzParsePort 断言不变量：成功则必在 [1,65535]，否则必有错误。\nfunc FuzzParsePort(f *testing.F) {\n\tf.Add(\"80\")\n\tf.Add(\"0\")\n\tf.Add(\"65536\")\n\tf.Add(\"not-a-number\")\n\tf.Fuzz(func(t *testing.T, s string) {\n\t\tn, err := ParsePort(s)\n\t\tif err == nil && (n < 1 || n > 65535) {\n\t\t\tt.Fatalf(\"ParsePort(%q) = %d with nil error, out of range\", s, n)\n\t\t}\n\t})\n}\n",
+    "output": "ok  \tqfli.example/t110\t0.002s"
+  },
+  "example": {
+    "id": "go-example-110",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Fuzz 测试发现边界缺陷（示例）",
+    "summary": "对应主题 T110 的可运行示例。",
+    "concepts": [
+      "fuzz",
+      "种子语料",
+      "不变量",
+      "边界"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T110 Fuzz 测试发现边界缺陷。\n//\n// Fuzz 测试（Go 1.18+）用 f.Fuzz 提供随机输入，穷举边界并最小化复现用例。\n// 本示例的 ParsePort 只接受 1..65535；fuzz target 断言\"要么解析成功且在\n// 范围内，要么返回错误\"，从而暴露越界。为避免运行时长不确定，\n// 常规 go test 只跑种子语料（确定性），fuzz 模式需显式 -fuzz。\n//\n// test-package / fuzz 工程例子，不能一键导入。完整结构：\n//   fuzztest/\n//   ├── go.mod       // module fuzztest\\n\\ngo 1.27\n//   └── fuzz_test.go // 本文件\n// 运行（官方 SDK）：\n//   go test ./...             // 只跑种子\n//   go test -fuzz FuzzParsePort -fuzztime 10s ./...\n// desktop only（移动端不支持 fuzz）。\npackage fuzztest\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"testing\"\n)\n\n// ParsePort 解析端口并校验范围。\nfunc ParsePort(s string) (int, error) {\n\tn, err := strconv.Atoi(s)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\tif n < 1 || n > 65535 {\n\t\treturn 0, fmt.Errorf(\"port %d out of range\", n)\n\t}\n\treturn n, nil\n}\n\nfunc TestParsePortSeeds(t *testing.T) {\n\tcases := []struct {\n\t\tin      string\n\t\twantErr bool\n\t}{\n\t\t{\"80\", false},\n\t\t{\"65535\", false},\n\t\t{\"0\", true},\n\t\t{\"65536\", true},\n\t\t{\"abc\", true},\n\t}\n\tfor _, c := range cases {\n\t\t_, err := ParsePort(c.in)\n\t\tif (err != nil) != c.wantErr {\n\t\t\tt.Fatalf(\"ParsePort(%q) err=%v, wantErr=%v\", c.in, err, c.wantErr)\n\t\t}\n\t}\n}\n\n// FuzzParsePort 断言不变量：成功则必在 [1,65535]，否则必有错误。\nfunc FuzzParsePort(f *testing.F) {\n\tf.Add(\"80\")\n\tf.Add(\"0\")\n\tf.Add(\"65536\")\n\tf.Add(\"not-a-number\")\n\tf.Fuzz(func(t *testing.T, s string) {\n\t\tn, err := ParsePort(s)\n\t\tif err == nil && (n < 1 || n > 65535) {\n\t\t\tt.Fatalf(\"ParsePort(%q) = %d with nil error, out of range\", s, n)\n\t\t}\n\t})\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

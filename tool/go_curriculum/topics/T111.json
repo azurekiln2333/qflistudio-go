@@ -1,0 +1,72 @@
+{
+  "id": "T111",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "go.mod",
+    "stub_test.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-111",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "接口打桩与依赖替换测试",
+    "summary": "把依赖抽象成接口，测试注入桩实现以隔离外部依赖并覆盖错误分支。",
+    "concepts": [
+      "接口",
+      "打桩",
+      "依赖替换",
+      "隔离测试"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用接口 + 桩实现隔离被测逻辑，并覆盖成功、缺失、后端故障三类路径。",
+    "prerequisites": [
+      "T066 依赖注入：显式传递优于全局",
+      "T041 接口基础与鸭子类型"
+    ],
+    "pitfalls": [
+      "被测代码直接 new 具体依赖：无法替换，测试会真的访问外部系统。",
+      "桩只覆盖成功路径：错误分支长期未测，上线踩坑。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 Service 增加一个 Delete 方法，用桩测试成功与后端错误两条路径。",
+        "hint": "桩加 delErr 字段控制返回。",
+        "answer": "Delete 调用 store.Delete；桩按配置返回 nil 或 sentinel 错误。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、stub_test.go。运行命令：go test ./...。当被测逻辑依赖外部系统（数据库、网络）时，把它抽象成接口，生产注入真实实现，测试注入桩。桩用 map 提供确定数据、可配置返回错误，于是测试无需外部系统即可覆盖成功、键缺失、后端故障三类路径。示例的 Service 依赖 Store 接口，桩 stubStore 演示三种场景，并用 errors.Is 校验哨兵错误透传。这种方式让测试快速、确定、可离线运行。test-package，go test 运行，desktop only。",
+    "code": "// T111 接口打桩与依赖替换测试。\n//\n// 被测逻辑依赖一个接口（如存储）。生产用真实实现，测试注入\"桩\"（stub）\n// 以隔离外部依赖、制造确定结果。这样测试不需要数据库/网络，且能覆盖\n// 错误分支。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   stubtest/\n//   ├── go.mod       // module stubtest\\n\\ngo 1.27\n//   └── stub_test.go // 本文件\n// 运行：go test ./...   desktop only（go test）。\npackage stubtest\n\nimport (\n\t\"errors\"\n\t\"testing\"\n)\n\n// Store 是被依赖的接口。\ntype Store interface {\n\tGet(key string) (string, error)\n}\n\n// Service 通过接口使用 Store。\ntype Service struct{ store Store }\n\n// Lookup 读取 key 并在缺失时返回统一错误。\nfunc (s *Service) Lookup(key string) (string, error) {\n\tv, err := s.store.Get(key)\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\treturn v, nil\n}\n\n// stubStore 是测试桩：用 map 提供确定数据，并可配置返回错误。\ntype stubStore struct {\n\tdata map[string]string\n\terr  error\n}\n\nfunc (s stubStore) Get(key string) (string, error) {\n\tif s.err != nil {\n\t\treturn \"\", s.err\n\t}\n\tv, ok := s.data[key]\n\tif !ok {\n\t\treturn \"\", errors.New(\"not found\")\n\t}\n\treturn v, nil\n}\n\nfunc TestLookupSuccess(t *testing.T) {\n\tsvc := &Service{store: stubStore{data: map[string]string{\"a\": \"1\"}}}\n\tv, err := svc.Lookup(\"a\")\n\tif err != nil || v != \"1\" {\n\t\tt.Fatalf(\"Lookup(a) = %q,%v\", v, err)\n\t}\n}\n\nfunc TestLookupNotFound(t *testing.T) {\n\tsvc := &Service{store: stubStore{data: map[string]string{}}}\n\tif _, err := svc.Lookup(\"missing\"); err == nil {\n\t\tt.Fatal(\"expected error for missing key\")\n\t}\n}\n\nfunc TestLookupStoreFailure(t *testing.T) {\n\tsentinel := errors.New(\"backend down\")\n\tsvc := &Service{store: stubStore{err: sentinel}}\n\t_, err := svc.Lookup(\"a\")\n\tif !errors.Is(err, sentinel) {\n\t\tt.Fatalf(\"err = %v, want sentinel\", err)\n\t}\n}\n",
+    "output": "ok  \tqfli.example/t111\t0.002s"
+  },
+  "example": {
+    "id": "go-example-111",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "接口打桩与依赖替换测试（示例）",
+    "summary": "对应主题 T111 的可运行示例。",
+    "concepts": [
+      "接口",
+      "打桩",
+      "依赖替换",
+      "隔离测试"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T111 接口打桩与依赖替换测试。\n//\n// 被测逻辑依赖一个接口（如存储）。生产用真实实现，测试注入\"桩\"（stub）\n// 以隔离外部依赖、制造确定结果。这样测试不需要数据库/网络，且能覆盖\n// 错误分支。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   stubtest/\n//   ├── go.mod       // module stubtest\\n\\ngo 1.27\n//   └── stub_test.go // 本文件\n// 运行：go test ./...   desktop only（go test）。\npackage stubtest\n\nimport (\n\t\"errors\"\n\t\"testing\"\n)\n\n// Store 是被依赖的接口。\ntype Store interface {\n\tGet(key string) (string, error)\n}\n\n// Service 通过接口使用 Store。\ntype Service struct{ store Store }\n\n// Lookup 读取 key 并在缺失时返回统一错误。\nfunc (s *Service) Lookup(key string) (string, error) {\n\tv, err := s.store.Get(key)\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\treturn v, nil\n}\n\n// stubStore 是测试桩：用 map 提供确定数据，并可配置返回错误。\ntype stubStore struct {\n\tdata map[string]string\n\terr  error\n}\n\nfunc (s stubStore) Get(key string) (string, error) {\n\tif s.err != nil {\n\t\treturn \"\", s.err\n\t}\n\tv, ok := s.data[key]\n\tif !ok {\n\t\treturn \"\", errors.New(\"not found\")\n\t}\n\treturn v, nil\n}\n\nfunc TestLookupSuccess(t *testing.T) {\n\tsvc := &Service{store: stubStore{data: map[string]string{\"a\": \"1\"}}}\n\tv, err := svc.Lookup(\"a\")\n\tif err != nil || v != \"1\" {\n\t\tt.Fatalf(\"Lookup(a) = %q,%v\", v, err)\n\t}\n}\n\nfunc TestLookupNotFound(t *testing.T) {\n\tsvc := &Service{store: stubStore{data: map[string]string{}}}\n\tif _, err := svc.Lookup(\"missing\"); err == nil {\n\t\tt.Fatal(\"expected error for missing key\")\n\t}\n}\n\nfunc TestLookupStoreFailure(t *testing.T) {\n\tsentinel := errors.New(\"backend down\")\n\tsvc := &Service{store: stubStore{err: sentinel}}\n\t_, err := svc.Lookup(\"a\")\n\tif !errors.Is(err, sentinel) {\n\t\tt.Fatalf(\"err = %v, want sentinel\", err)\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

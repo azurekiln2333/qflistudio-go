@@ -1,0 +1,71 @@
+{
+  "id": "T093",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "timer fired once\nticker fired count: 3\nno tick after stop\nelapsed is non-negative: true"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-093",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "时间二：定时器、Ticker 与单调时钟",
+    "summary": "用 Timer/Ticker 做一次性与周期性触发，只断言触发次数，不断言实际耗时。",
+    "concepts": [
+      "Timer",
+      "Ticker",
+      "单调时钟",
+      "确定性断言"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 Timer/Ticker 实现定时任务，并说明为何不能把耗时作为断言。",
+    "prerequisites": [
+      "T092 时间一：time.Time、Duration 与格式化",
+      "T075 select：多路复用与超时"
+    ],
+    "pitfalls": [
+      "忘记 Stop Timer/Ticker：会泄漏计时器资源。",
+      "把“耗时约等于 X”作为测试通过条件：机器负载不同会不稳定。"
+    ],
+    "exercises": [
+      {
+        "prompt": "用 Ticker 每 tick 累加，到 5 次后 Stop 并返回累计值。",
+        "hint": "for range ticker.C 计数，达到目标 break 后 Stop。",
+        "answer": "计数到 5 break；defer ticker.Stop()。"
+      }
+    ],
+    "explain": "Timer 触发一次（一次 C 接收），Ticker 周期性触发。二者基于单调时钟，不受系统墙钟调整影响。示例先等 Timer 触发一次，再用 Ticker 计数到 3 后停止，并用 select+default 探测停止后不再触发。对时间类示例，断言只针对“触发了几次/是否触发”，绝不比较真实耗时，否则机器快慢会让结果不稳定。最后用 time.Since 展示耗时非负——这是可与时间相关的最小确定性断言。桌面与移动端差异需实测，本主题默认 desktop。",
+    "code": "// T093 时间二：定时器、Ticker 与单调时钟。\n//\n// time.Timer 触发一次；time.Ticker 周期性触发。二者都基于单调时钟，\n// 不受系统墙钟调整影响。本示例只断言\"触发的次数\"，不比较实际耗时，\n// 因此输出确定、可离线验证。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc main() {\n\t// Timer：一次性。等待其通道被触发。\n\ttimer := time.NewTimer(1 * time.Millisecond)\n\t<-timer.C\n\tfmt.Println(\"timer fired once\")\n\n\t// Ticker：周期性。计数到 3 次后停止。\n\tticker := time.NewTicker(1 * time.Millisecond)\n\tdefer ticker.Stop()\n\n\tcount := 0\n\tfor range ticker.C {\n\t\tcount++\n\t\tif count == 3 {\n\t\t\tbreak\n\t\t}\n\t}\n\tfmt.Println(\"ticker fired count:\", count)\n\n\t// 停止后的 Ticker 不再触发（用 select+default 非阻塞探测，结果确定）。\n\tticker.Stop()\n\tselect {\n\tcase <-ticker.C:\n\t\tfmt.Println(\"unexpected tick after stop\")\n\tdefault:\n\t\tfmt.Println(\"no tick after stop\")\n\t}\n\n\t// 演示 Now 的单调性：两次调用取差值为正（不断言具体数值）。\n\tstart := time.Now()\n\telapsed := time.Since(start)\n\tfmt.Println(\"elapsed is non-negative:\", elapsed >= 0)\n}\n",
+    "output": "timer fired once\nticker fired count: 3\nno tick after stop\nelapsed is non-negative: true"
+  },
+  "example": {
+    "id": "go-example-093",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "时间二：定时器、Ticker 与单调时钟（示例）",
+    "summary": "对应主题 T093 的可运行示例。",
+    "concepts": [
+      "Timer",
+      "Ticker",
+      "单调时钟",
+      "确定性断言"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T093 时间二：定时器、Ticker 与单调时钟。\n//\n// time.Timer 触发一次；time.Ticker 周期性触发。二者都基于单调时钟，\n// 不受系统墙钟调整影响。本示例只断言\"触发的次数\"，不比较实际耗时，\n// 因此输出确定、可离线验证。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc main() {\n\t// Timer：一次性。等待其通道被触发。\n\ttimer := time.NewTimer(1 * time.Millisecond)\n\t<-timer.C\n\tfmt.Println(\"timer fired once\")\n\n\t// Ticker：周期性。计数到 3 次后停止。\n\tticker := time.NewTicker(1 * time.Millisecond)\n\tdefer ticker.Stop()\n\n\tcount := 0\n\tfor range ticker.C {\n\t\tcount++\n\t\tif count == 3 {\n\t\t\tbreak\n\t\t}\n\t}\n\tfmt.Println(\"ticker fired count:\", count)\n\n\t// 停止后的 Ticker 不再触发（用 select+default 非阻塞探测，结果确定）。\n\tticker.Stop()\n\tselect {\n\tcase <-ticker.C:\n\t\tfmt.Println(\"unexpected tick after stop\")\n\tdefault:\n\t\tfmt.Println(\"no tick after stop\")\n\t}\n\n\t// 演示 Now 的单调性：两次调用取差值为正（不断言具体数值）。\n\tstart := time.Now()\n\telapsed := time.Since(start)\n\tfmt.Println(\"elapsed is non-negative:\", elapsed >= 0)\n}\n",
+    "expectedOutput": "timer fired once\nticker fired count: 3\nno tick after stop\nelapsed is non-negative: true",
+    "templateType": "go"
+  }
+}

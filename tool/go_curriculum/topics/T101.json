@@ -1,0 +1,71 @@
+{
+  "id": "T101",
+  "runtime": "desktop",
+  "importKind": "test-package",
+  "runCommand": "go test ./...",
+  "verification": {
+    "kind": "test-pass",
+    "expected": ""
+  },
+  "sampleFiles": [
+    "go.mod",
+    "method_test.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-101",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "请求与响应：Method、Header、状态码",
+    "summary": "按方法分支处理请求、读写自定义头，并正确返回 405/201 状态码。",
+    "concepts": [
+      "Method",
+      "Header",
+      "状态码",
+      "405"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能按 r.Method 分支处理、用 w.Header 设置响应头、返回恰当状态码。",
+    "prerequisites": [
+      "T100 net/http 服务端：Handler 与路由"
+    ],
+    "pitfalls": [
+      "用了 w.Write 之后再调 WriteHeader：状态码无效，Go 会警告并忽略。",
+      "405 不带 Allow 头：不符合 HTTP 规范，客户端无法得知允许的方法。"
+    ],
+    "exercises": [
+      {
+        "prompt": "新增一个只接受 PUT 的 /update 路由，返回 204 No Content。",
+        "hint": "方法不符返回 405 并设 Allow: PUT。",
+        "answer": "if r.Method != http.MethodPut { w.Header().Set(\"Allow\", \"PUT\"); w.WriteHeader(405); return }; w.WriteHeader(204)。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、method_test.go。运行命令：go test ./...。Handler 可以读取请求的 Method 与 Header 并据此分支。写响应时状态码要在写 body 前用 WriteHeader 设定（一旦写入 body 就不能再改状态码）。示例的 handler 只接受 POST，否则返回 405 Method Not Allowed 并设置 Allow 头告知允许方法；成功时回显 X-Token 到 X-Echo 并返回 201。测试分别覆盖 POST 成功与 GET 被拒两条路径，断言状态码与响应头，确定性验证。test-package，go test 运行，desktop only。",
+    "code": "// T101 请求与响应：Method、Header、状态码。\n//\n// Handler 可读取 r.Method / r.Header 并据此分支；用 w.WriteHeader 设置\n// 状态码。方法不匹配时返回 405 Method Not Allowed 是常见约定。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpmethod/\n//   ├── go.mod         // module httpmethod\\n\\ngo 1.27\n//   └── method_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage httpmethod\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// handler 只接受 POST；其他方法返回 405 并带 Allow 头。\nfunc handler(w http.ResponseWriter, r *http.Request) {\n\tif r.Method != http.MethodPost {\n\t\tw.Header().Set(\"Allow\", http.MethodPost)\n\t\tw.WriteHeader(http.StatusMethodNotAllowed)\n\t\treturn\n\t}\n\t// 回显自定义头。\n\tw.Header().Set(\"X-Echo\", r.Header.Get(\"X-Token\"))\n\tw.WriteHeader(http.StatusCreated)\n\t_, _ = io.WriteString(w, \"created\")\n}\n\nfunc TestMethodRouting(t *testing.T) {\n\t// POST：应 201。\n\tpost := httptest.NewRequest(http.MethodPost, \"/\", nil)\n\tpost.Header.Set(\"X-Token\", \"abc\")\n\tpostRec := httptest.NewRecorder()\n\thandler(postRec, post)\n\tif postRec.Code != http.StatusCreated {\n\t\tt.Fatalf(\"POST status = %d, want 201\", postRec.Code)\n\t}\n\tif got := postRec.Header().Get(\"X-Echo\"); got != \"abc\" {\n\t\tt.Fatalf(\"X-Echo = %q, want abc\", got)\n\t}\n\n\t// GET：应 405 且带 Allow 头。\n\tget := httptest.NewRequest(http.MethodGet, \"/\", nil)\n\tgetRec := httptest.NewRecorder()\n\thandler(getRec, get)\n\tif getRec.Code != http.StatusMethodNotAllowed {\n\t\tt.Fatalf(\"GET status = %d, want 405\", getRec.Code)\n\t}\n\tif got := getRec.Header().Get(\"Allow\"); got != http.MethodPost {\n\t\tt.Fatalf(\"Allow = %q, want POST\", got)\n\t}\n}\n",
+    "output": "ok  \tqfli.example/t101\t0.003s"
+  },
+  "example": {
+    "id": "go-example-101",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "请求与响应：Method、Header、状态码（示例）",
+    "summary": "对应主题 T101 的可运行示例。",
+    "concepts": [
+      "Method",
+      "Header",
+      "状态码",
+      "405"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T101 请求与响应：Method、Header、状态码。\n//\n// Handler 可读取 r.Method / r.Header 并据此分支；用 w.WriteHeader 设置\n// 状态码。方法不匹配时返回 405 Method Not Allowed 是常见约定。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpmethod/\n//   ├── go.mod         // module httpmethod\\n\\ngo 1.27\n//   └── method_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage httpmethod\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// handler 只接受 POST；其他方法返回 405 并带 Allow 头。\nfunc handler(w http.ResponseWriter, r *http.Request) {\n\tif r.Method != http.MethodPost {\n\t\tw.Header().Set(\"Allow\", http.MethodPost)\n\t\tw.WriteHeader(http.StatusMethodNotAllowed)\n\t\treturn\n\t}\n\t// 回显自定义头。\n\tw.Header().Set(\"X-Echo\", r.Header.Get(\"X-Token\"))\n\tw.WriteHeader(http.StatusCreated)\n\t_, _ = io.WriteString(w, \"created\")\n}\n\nfunc TestMethodRouting(t *testing.T) {\n\t// POST：应 201。\n\tpost := httptest.NewRequest(http.MethodPost, \"/\", nil)\n\tpost.Header.Set(\"X-Token\", \"abc\")\n\tpostRec := httptest.NewRecorder()\n\thandler(postRec, post)\n\tif postRec.Code != http.StatusCreated {\n\t\tt.Fatalf(\"POST status = %d, want 201\", postRec.Code)\n\t}\n\tif got := postRec.Header().Get(\"X-Echo\"); got != \"abc\" {\n\t\tt.Fatalf(\"X-Echo = %q, want abc\", got)\n\t}\n\n\t// GET：应 405 且带 Allow 头。\n\tget := httptest.NewRequest(http.MethodGet, \"/\", nil)\n\tgetRec := httptest.NewRecorder()\n\thandler(getRec, get)\n\tif getRec.Code != http.StatusMethodNotAllowed {\n\t\tt.Fatalf(\"GET status = %d, want 405\", getRec.Code)\n\t}\n\tif got := getRec.Header().Get(\"Allow\"); got != http.MethodPost {\n\t\tt.Fatalf(\"Allow = %q, want POST\", got)\n\t}\n}\n",
+    "expectedOutput": "",
+    "templateType": "go"
+  }
+}

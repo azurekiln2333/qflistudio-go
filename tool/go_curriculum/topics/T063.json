@@ -1,0 +1,72 @@
+{
+  "id": "T063",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "Sum([]int{1,2,3}) = 6\nSum([]int64{10,20,30}) = 60\nSum([]float64{1.5,2.5}) = 4\nSum([]Celsius{...}) = 61"
+  },
+  "sampleFiles": [
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-063",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "泛型二：自定义约束与联合类型",
+    "summary": "自定义 interface 约束并用 ~ 与 | 表达“底层为这些类型的任意类型”。",
+    "concepts": [
+      "自定义约束",
+      "联合类型",
+      "~ 底层类型",
+      "泛型"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能定义形如 `~int | ~float64` 的联合约束，并用它让泛型函数接受命名类型。",
+    "prerequisites": [
+      "T062 泛型一：类型参数与约束",
+      "T006 类型转换与数值精度"
+    ],
+    "pitfalls": [
+      "写出 `int | float64` 而漏掉 `~`：这样只能匹配原名类型，自定义的 Celsius 不满足约束。",
+      "在联合约束上做超出允许范围的运算，例如想对 ~string 求和；+ 对字符串是拼接，语义会出乎意料。"
+    ],
+    "exercises": [
+      {
+        "prompt": "定义约束 Integer 仅允许底层为整数类型，并实现泛型 Average 返回 float64 平均值。",
+        "hint": "求和后用 float64(total) / float64(len(xs))。",
+        "answer": "type Integer interface{ ~int | ~int64 }；Average 内部先 Sum 再转 float64 相除。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。自定义约束本质是一个只含类型集合的 interface。`~int` 里的波浪号表示“底层类型为 int 的任意命名类型”，因此 `type Celsius float64` 也满足 `~float64`。`|` 是集合并，把多个候选类型合并成一个约束。这样 Sum 就能同时服务 int、int64、float64 以及它们的命名类型，而仍然保有编译期检查——传入一个 []bool 会直接编译失败。与 T062 用现成约束不同，本例重点在“如何自己写约束”，这也是设计可复用泛型库的关键。desktop only，理由同 T062。",
+    "code": "// T063 泛型二：自定义约束与联合类型。\n//\n// 约束不仅能用一个现成的接口（如 cmp.Ordered），还能自己定义：\n//   type Number interface { ~int | ~float64 }\n// 其中 ~int 表示\"底层类型是 int 的任意命名类型\"，| 是类型并集。\n// Sum 因此可以同时接受整数和浮点，且仍然保有编译期类型检查。\n// 泛型 = desktop only（移动端 Yaegi 未实测）。\npackage main\n\nimport \"fmt\"\n\n// Number 是一个自定义约束：允许底层类型为 int、int64 或 float64 的任意类型。\ntype Number interface {\n\t~int | ~int64 | ~float64\n}\n\n// Sum 把切片里所有元素相加。因为 T 满足 Number，可以直接用 + 运算。\nfunc Sum[T Number](values []T) T {\n\tvar total T // 零值：数值类型为 0\n\tfor _, v := range values {\n\t\ttotal += v\n\t}\n\treturn total\n}\n\n// Celsius 是一个\"底层类型为 float64\"的命名类型，它同样满足 Number，\n// 这就是 ~ 的作用：不要求类型本身叫 float64，只要底层是 float64。\ntype Celsius float64\n\nfunc main() {\n\tfmt.Println(\"Sum([]int{1,2,3}) =\", Sum([]int{1, 2, 3}))\n\tfmt.Println(\"Sum([]int64{10,20,30}) =\", Sum([]int64{10, 20, 30}))\n\tfmt.Println(\"Sum([]float64{1.5,2.5}) =\", Sum([]float64{1.5, 2.5}))\n\n\ttemps := []Celsius{20.5, 19.5, 21.0}\n\tfmt.Println(\"Sum([]Celsius{...}) =\", Sum(temps))\n}\n",
+    "output": "Sum([]int{1,2,3}) = 6\nSum([]int64{10,20,30}) = 60\nSum([]float64{1.5,2.5}) = 4\nSum([]Celsius{...}) = 61"
+  },
+  "example": {
+    "id": "go-example-063",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "泛型二：自定义约束与联合类型（示例）",
+    "summary": "对应主题 T063 的可运行示例。",
+    "concepts": [
+      "自定义约束",
+      "联合类型",
+      "~ 底层类型",
+      "泛型"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T063 泛型二：自定义约束与联合类型。\n//\n// 约束不仅能用一个现成的接口（如 cmp.Ordered），还能自己定义：\n//   type Number interface { ~int | ~float64 }\n// 其中 ~int 表示\"底层类型是 int 的任意命名类型\"，| 是类型并集。\n// Sum 因此可以同时接受整数和浮点，且仍然保有编译期类型检查。\n// 泛型 = desktop only（移动端 Yaegi 未实测）。\npackage main\n\nimport \"fmt\"\n\n// Number 是一个自定义约束：允许底层类型为 int、int64 或 float64 的任意类型。\ntype Number interface {\n\t~int | ~int64 | ~float64\n}\n\n// Sum 把切片里所有元素相加。因为 T 满足 Number，可以直接用 + 运算。\nfunc Sum[T Number](values []T) T {\n\tvar total T // 零值：数值类型为 0\n\tfor _, v := range values {\n\t\ttotal += v\n\t}\n\treturn total\n}\n\n// Celsius 是一个\"底层类型为 float64\"的命名类型，它同样满足 Number，\n// 这就是 ~ 的作用：不要求类型本身叫 float64，只要底层是 float64。\ntype Celsius float64\n\nfunc main() {\n\tfmt.Println(\"Sum([]int{1,2,3}) =\", Sum([]int{1, 2, 3}))\n\tfmt.Println(\"Sum([]int64{10,20,30}) =\", Sum([]int64{10, 20, 30}))\n\tfmt.Println(\"Sum([]float64{1.5,2.5}) =\", Sum([]float64{1.5, 2.5}))\n\n\ttemps := []Celsius{20.5, 19.5, 21.0}\n\tfmt.Println(\"Sum([]Celsius{...}) =\", Sum(temps))\n}\n",
+    "expectedOutput": "Sum([]int{1,2,3}) = 6\nSum([]int64{10,20,30}) = 60\nSum([]float64{1.5,2.5}) = 4\nSum([]Celsius{...}) = 61",
+    "templateType": "go"
+  }
+}

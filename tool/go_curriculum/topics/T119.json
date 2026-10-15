@@ -1,0 +1,73 @@
+{
+  "id": "T119",
+  "runtime": "desktop",
+  "importKind": "module-project",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "parallel matches serial: true\ngo       4\ngopher   2\nruns     1\ntest     1"
+  },
+  "sampleFiles": [
+    "freq_test.go",
+    "go.mod",
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-119",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "综合项目二：并发词频统计器（worker pool + IO）",
+    "summary": "用 worker pool 并发统计多段文本词频，结果与串行一致并按词排序输出。",
+    "concepts": [
+      "worker pool",
+      "并发",
+      "结果聚合",
+      "确定性"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能整合并发、IO 与结果聚合，保证并发结果与串行完全一致。",
+    "prerequisites": [
+      "T084 并发模式：worker pool 与 errgroup 式编排",
+      "T022 映射：增删查与存在性判断"
+    ],
+    "pitfalls": [
+      "多 worker 直接写同一 map：数据竞争；示例让每个 worker 返回局部计数再合并。",
+      "直接 range map 输出：顺序随机；示例对键排序后输出。"
+    ],
+    "exercises": [
+      {
+        "prompt": "扩展为从多个文件读入文本（用 bufio.Scanner），并断言并发结果与串行一致。",
+        "hint": "读文件得 []string 后交给 CountParallel。",
+        "answer": "读取每个文件内容进切片；CountParallel 后与串行 sameCounts 比较。"
+      }
+    ],
+    "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：freq_test.go、go.mod、main.go。运行命令：go run .。这是并发综合项目：CountParallel 用固定 worker 从任务 channel 取文本、各自统计局部词频，主流程合并。关键设计是“局部计数 + 合并”，避免多 worker 写同一 map 的竞争；输出前对键排序，保证与 worker 完成顺序无关。main 打印“并发是否等于串行”并列出排序词频；freq_test.go 对 1..4 个 worker 逐一断言与串行一致，并验证排序确定性。module-project，go run + go test；并发+文件，desktop only。",
+    "code": "// T119 综合项目二：并发词频统计器（worker pool + IO）。\n//\n// 整合：worker pool、文件/字符串 IO、结果聚合。多个 worker 并发统计\n// 若干文本的词频，最后按词排序输出，因此结果与串行一致且确定。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   wordfreq/\n//   ├── go.mod          // module wordfreq\\n\\ngo 1.27\n//   ├── main.go         // 本文件\n//   └── freq_test.go    // 端到端测试（含串行/并发一致性）\n// 运行（官方 SDK）：\n//   go run .\n//   go test ./...\n// desktop only（并发 + 文件）。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n\t\"sync\"\n)\n\n// countWords 串行统计一段文本的词频。\nfunc countWords(text string) map[string]int {\n\tcounts := make(map[string]int)\n\tfor _, w := range strings.Fields(strings.ToLower(text)) {\n\t\tcounts[w]++\n\t}\n\treturn counts\n}\n\n// merge 把一个局部计数并入全局计数。\nfunc merge(dst, src map[string]int) {\n\tfor k, v := range src {\n\t\tdst[k] += v\n\t}\n}\n\n// CountParallel 用 workers 个 goroutine 并发统计多段文本。\nfunc CountParallel(texts []string, workers int) map[string]int {\n\tif workers < 1 {\n\t\tworkers = 1\n\t}\n\tjobs := make(chan string)\n\tpartials := make(chan map[string]int)\n\n\tvar wg sync.WaitGroup\n\twg.Add(workers)\n\tfor i := 0; i < workers; i++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tfor text := range jobs {\n\t\t\t\tpartials <- countWords(text)\n\t\t\t}\n\t\t}()\n\t}\n\n\tgo func() {\n\t\tfor _, t := range texts {\n\t\t\tjobs <- t\n\t\t}\n\t\tclose(jobs)\n\t}()\n\n\tgo func() {\n\t\twg.Wait()\n\t\tclose(partials)\n\t}()\n\n\ttotal := make(map[string]int)\n\tfor p := range partials {\n\t\tmerge(total, p)\n\t}\n\treturn total\n}\n\n// sortedKeys 返回排序后的键，保证输出确定。\nfunc sortedKeys(m map[string]int) []string {\n\tkeys := make([]string, 0, len(m))\n\tfor k := range m {\n\t\tkeys = append(keys, k)\n\t}\n\tsort.Strings(keys)\n\treturn keys\n}\n\nfunc main() {\n\ttexts := []string{\n\t\t\"go go gopher\",\n\t\t\"gopher runs go\",\n\t\t\"go test\",\n\t}\n\n\tserial := make(map[string]int)\n\tfor _, t := range texts {\n\t\tmerge(serial, countWords(t))\n\t}\n\n\tparallel := CountParallel(texts, 3)\n\n\t// 并发结果必须与串行完全一致。\n\tfmt.Println(\"parallel matches serial:\", sameCounts(serial, parallel))\n\n\tfor _, k := range sortedKeys(parallel) {\n\t\tfmt.Printf(\"%-8s %d\\n\", k, parallel[k])\n\t}\n}\n\nfunc sameCounts(a, b map[string]int) bool {\n\tif len(a) != len(b) {\n\t\treturn false\n\t}\n\tfor k, v := range a {\n\t\tif b[k] != v {\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}\n",
+    "output": "parallel matches serial: true\ngo       4\ngopher   2\nruns     1\ntest     1"
+  },
+  "example": {
+    "id": "go-example-119",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "综合项目二：并发词频统计器（worker pool + IO）（示例）",
+    "summary": "对应主题 T119 的可运行示例。",
+    "concepts": [
+      "worker pool",
+      "并发",
+      "结果聚合",
+      "确定性"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T119 综合项目二：并发词频统计器（worker pool + IO）。\n//\n// 整合：worker pool、文件/字符串 IO、结果聚合。多个 worker 并发统计\n// 若干文本的词频，最后按词排序输出，因此结果与串行一致且确定。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   wordfreq/\n//   ├── go.mod          // module wordfreq\\n\\ngo 1.27\n//   ├── main.go         // 本文件\n//   └── freq_test.go    // 端到端测试（含串行/并发一致性）\n// 运行（官方 SDK）：\n//   go run .\n//   go test ./...\n// desktop only（并发 + 文件）。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n\t\"sync\"\n)\n\n// countWords 串行统计一段文本的词频。\nfunc countWords(text string) map[string]int {\n\tcounts := make(map[string]int)\n\tfor _, w := range strings.Fields(strings.ToLower(text)) {\n\t\tcounts[w]++\n\t}\n\treturn counts\n}\n\n// merge 把一个局部计数并入全局计数。\nfunc merge(dst, src map[string]int) {\n\tfor k, v := range src {\n\t\tdst[k] += v\n\t}\n}\n\n// CountParallel 用 workers 个 goroutine 并发统计多段文本。\nfunc CountParallel(texts []string, workers int) map[string]int {\n\tif workers < 1 {\n\t\tworkers = 1\n\t}\n\tjobs := make(chan string)\n\tpartials := make(chan map[string]int)\n\n\tvar wg sync.WaitGroup\n\twg.Add(workers)\n\tfor i := 0; i < workers; i++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tfor text := range jobs {\n\t\t\t\tpartials <- countWords(text)\n\t\t\t}\n\t\t}()\n\t}\n\n\tgo func() {\n\t\tfor _, t := range texts {\n\t\t\tjobs <- t\n\t\t}\n\t\tclose(jobs)\n\t}()\n\n\tgo func() {\n\t\twg.Wait()\n\t\tclose(partials)\n\t}()\n\n\ttotal := make(map[string]int)\n\tfor p := range partials {\n\t\tmerge(total, p)\n\t}\n\treturn total\n}\n\n// sortedKeys 返回排序后的键，保证输出确定。\nfunc sortedKeys(m map[string]int) []string {\n\tkeys := make([]string, 0, len(m))\n\tfor k := range m {\n\t\tkeys = append(keys, k)\n\t}\n\tsort.Strings(keys)\n\treturn keys\n}\n\nfunc main() {\n\ttexts := []string{\n\t\t\"go go gopher\",\n\t\t\"gopher runs go\",\n\t\t\"go test\",\n\t}\n\n\tserial := make(map[string]int)\n\tfor _, t := range texts {\n\t\tmerge(serial, countWords(t))\n\t}\n\n\tparallel := CountParallel(texts, 3)\n\n\t// 并发结果必须与串行完全一致。\n\tfmt.Println(\"parallel matches serial:\", sameCounts(serial, parallel))\n\n\tfor _, k := range sortedKeys(parallel) {\n\t\tfmt.Printf(\"%-8s %d\\n\", k, parallel[k])\n\t}\n}\n\nfunc sameCounts(a, b map[string]int) bool {\n\tif len(a) != len(b) {\n\t\treturn false\n\t}\n\tfor k, v := range a {\n\t\tif b[k] != v {\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}\n",
+    "expectedOutput": "parallel matches serial: true\ngo       4\ngopher   2\nruns     1\ntest     1",
+    "templateType": "go"
+  }
+}
