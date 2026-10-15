@@ -42,10 +42,12 @@ void main() {
   });
 
   test('Go slice loads through the real shared parser', () {
-    final goTutorials =
-        catalog.tutorials.where((t) => t.type.toLowerCase() == 'go').toList();
-    final goExamples =
-        catalog.examples.where((e) => e.type.toLowerCase() == 'go').toList();
+    final goTutorials = catalog.tutorials
+        .where((t) => t.type.toLowerCase() == 'go')
+        .toList();
+    final goExamples = catalog.examples
+        .where((e) => e.type.toLowerCase() == 'go')
+        .toList();
     expect(goTutorials, isNotEmpty, reason: 'no Go tutorials parsed');
     expect(goExamples, isNotEmpty, reason: 'no Go examples parsed');
     // Every parsed Go entry must have an explicit id/language/type (no
@@ -68,10 +70,14 @@ void main() {
     expect(examples.map((e) => e.id), catalog.examples.map((e) => e.id));
     for (var i = 0; i < tutorials.length; i++) {
       expect(tutorials[i].title, catalog.tutorials[i].title);
-      expect(tutorials[i].lessons.first.explain,
-          catalog.tutorials[i].lessons.first.explain);
-      expect(tutorials[i].lessons.first.code,
-          catalog.tutorials[i].lessons.first.code);
+      expect(
+        tutorials[i].lessons.first.explain,
+        catalog.tutorials[i].lessons.first.explain,
+      );
+      expect(
+        tutorials[i].lessons.first.code,
+        catalog.tutorials[i].lessons.first.code,
+      );
       expect(examples[i].code, catalog.examples[i].code);
     }
   });
@@ -168,8 +174,7 @@ void main() {
   });
 
   test('Go tutorial/example count reaches 120/120', () {
-    final goTutorials =
-        catalog.tutorials.where((t) => t.type == 'go').length;
+    final goTutorials = catalog.tutorials.where((t) => t.type == 'go').length;
     final goExamples = catalog.examples.where((e) => e.type == 'go').length;
     // Final gate (R1/AC1): both must be exactly 120. Never skipped; an
     // incomplete slice must fail loudly, not pass green.
@@ -223,7 +228,9 @@ void main() {
 
 String _topicIdFor(String aggregateId) {
   // Aggregate ids are go-tutorial-NNN / go-example-NNN; classify keys are TNNN.
-  final match = RegExp(r'^(?:go-tutorial|go-example)-(\d{3})$').firstMatch(aggregateId);
+  final match = RegExp(
+    r'^(?:go-tutorial|go-example)-(\d{3})$',
+  ).firstMatch(aggregateId);
   if (match == null) return aggregateId;
   return 'T${match.group(1)}';
 }

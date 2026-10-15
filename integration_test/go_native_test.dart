@@ -146,13 +146,11 @@ func main() { fmt.Println("main2", message()) }
       // Go delegate installed, exactly as both terminal surfaces do. This
       // exercises the embedded interpreter through the FFI boundary rather than
       // calling GoProgramRunner directly.
-      final project = await Directory.systemTemp.createTemp(
-        'qfli_go_term_',
-      );
+      final project = await Directory.systemTemp.createTemp('qfli_go_term_');
       try {
-        await File(
-          p.join(project.path, 'helper.go'),
-        ).writeAsString('package main\nfunc message() string { return "term" }\n');
+        await File(p.join(project.path, 'helper.go')).writeAsString(
+          'package main\nfunc message() string { return "term" }\n',
+        );
         await File(p.join(project.path, 'main.go')).writeAsString(
           'package main\nimport "fmt"\n'
           'func main() { fmt.Println("terminal", message()) }\n',

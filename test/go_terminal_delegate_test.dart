@@ -22,8 +22,7 @@ import 'package:qfli_studio_core/terminal/shell/sandbox_shell_backend.dart';
 /// toolchain and interpreter were already wired for the Run button. These tests
 /// pin the wiring at the delegate boundary, plus the honest desktop/mobile
 /// capability split and the two terminal contexts that read the profile field.
-final String _sdk =
-    Platform.environment['QFLI_GO_TEST_EXECUTABLE'] ?? 'go';
+final String _sdk = Platform.environment['QFLI_GO_TEST_EXECUTABLE'] ?? 'go';
 final bool _sdkAvailable = () {
   try {
     return Process.runSync(_sdk, ['version']).exitCode == 0;
@@ -76,144 +75,118 @@ void main() {
       );
     });
 
-    test(
-      'go version 走真实工具链并透出帮助/版本',
-      () async {
-        final capture = backend();
-        addTearDown(capture.shutdown);
-        expect(await delegate.handle(capture, 'go version'), isTrue);
-        expect(capture.exitCode, 0);
-        expect(capture.lines.join('\n'), contains('go version'));
-      },
-      skip: !_sdkAvailable,
-    );
+    test('go version 走真实工具链并透出帮助/版本', () async {
+      final capture = backend();
+      addTearDown(capture.shutdown);
+      expect(await delegate.handle(capture, 'go version'), isTrue);
+      expect(capture.exitCode, 0);
+      expect(capture.lines.join('\n'), contains('go version'));
+    }, skip: !_sdkAvailable);
 
-    test(
-      '裸 go 转发到真实 SDK（保留真实退出码与帮助）',
-      () async {
-        final capture = backend();
-        addTearDown(capture.shutdown);
-        expect(await delegate.handle(capture, 'go'), isTrue);
-        // Go itself exits 2 and prints usage; the delegate must not fabricate a
-        // different status or an empty success.
-        expect(capture.exitCode, isNot(0));
-        expect(capture.lines, isNotEmpty);
-      },
-      skip: !_sdkAvailable,
-    );
+    test('裸 go 转发到真实 SDK（保留真实退出码与帮助）', () async {
+      final capture = backend();
+      addTearDown(capture.shutdown);
+      expect(await delegate.handle(capture, 'go'), isTrue);
+      // Go itself exits 2 and prints usage; the delegate must not fabricate a
+      // different status or an empty success.
+      expect(capture.exitCode, isNot(0));
+      expect(capture.lines, isNotEmpty);
+    }, skip: !_sdkAvailable);
 
-    test(
-      'go help 与 go env 是真实命令，不是空实现',
-      () async {
-        final capture = backend();
-        addTearDown(capture.shutdown);
-        expect(await delegate.handle(capture, 'go help'), isTrue);
-        expect(capture.exitCode, 0);
-        expect(capture.lines.join('\n'), contains('Go is a tool'));
-      },
-      skip: !_sdkAvailable,
-    );
+    test('go help 与 go env 是真实命令，不是空实现', () async {
+      final capture = backend();
+      addTearDown(capture.shutdown);
+      expect(await delegate.handle(capture, 'go help'), isTrue);
+      expect(capture.exitCode, 0);
+      expect(capture.lines.join('\n'), contains('Go is a tool'));
+    }, skip: !_sdkAvailable);
 
-    test(
-      'go run 选中文件与多文件包都产出预期输出',
-      () async {
-        write('go.mod', 'module example.com/qfli/term\n\ngo 1.27.0\n');
-        write('src/helper.go', 'package main\nfunc message() string { return "ready" }\n');
-        write(
-          'src/main.go',
-          'package main\nimport "fmt"\nfunc main() { fmt.Println(message()) }\n',
-        );
+    test('go run 选中文件与多文件包都产出预期输出', () async {
+      write('go.mod', 'module example.com/qfli/term\n\ngo 1.27.0\n');
+      write(
+        'src/helper.go',
+        'package main\nfunc message() string { return "ready" }\n',
+      );
+      write(
+        'src/main.go',
+        'package main\nimport "fmt"\nfunc main() { fmt.Println(message()) }\n',
+      );
 
-        // Multi-file package: `go run .` in the source directory keeps the
-        // helper, exactly as Go itself resolves it.
-        final packageRun = _CapturingBackend(p.join(project.path, 'src'));
-        addTearDown(packageRun.shutdown);
-        expect(await delegate.handle(packageRun, 'go run .'), isTrue);
-        expect(packageRun.exitCode, 0, reason: packageRun.lines.join('\n'));
-        expect(packageRun.lines, contains('ready'));
+      // Multi-file package: `go run .` in the source directory keeps the
+      // helper, exactly as Go itself resolves it.
+      final packageRun = _CapturingBackend(p.join(project.path, 'src'));
+      addTearDown(packageRun.shutdown);
+      expect(await delegate.handle(packageRun, 'go run .'), isTrue);
+      expect(packageRun.exitCode, 0, reason: packageRun.lines.join('\n'));
+      expect(packageRun.lines, contains('ready'));
 
-        // Single-file mode compiles only the named file, matching Go's own
-        // behavior; the terminal must not silently add the helper.
-        write(
-          'solo/main.go',
-          'package main\nimport "fmt"\nfunc main() { fmt.Println("solo") }\n',
-        );
-        final soloRun = _CapturingBackend(p.join(project.path, 'solo'));
-        addTearDown(soloRun.shutdown);
-        expect(await delegate.handle(soloRun, 'go run main.go'), isTrue);
-        expect(soloRun.exitCode, 0, reason: soloRun.lines.join('\n'));
-        expect(soloRun.lines, contains('solo'));
-      },
-      skip: !_sdkAvailable,
-    );
+      // Single-file mode compiles only the named file, matching Go's own
+      // behavior; the terminal must not silently add the helper.
+      write(
+        'solo/main.go',
+        'package main\nimport "fmt"\nfunc main() { fmt.Println("solo") }\n',
+      );
+      final soloRun = _CapturingBackend(p.join(project.path, 'solo'));
+      addTearDown(soloRun.shutdown);
+      expect(await delegate.handle(soloRun, 'go run main.go'), isTrue);
+      expect(soloRun.exitCode, 0, reason: soloRun.lines.join('\n'));
+      expect(soloRun.lines, contains('solo'));
+    }, skip: !_sdkAvailable);
 
-    test(
-      'go run . 忠实报告两个 main 的真实编译错误',
-      () async {
-        // The editor Run button applies an overlay to select one entry; the
-        // terminal is a faithful `go` prompt, so the real duplicate-main error
-        // must surface instead of being hidden.
-        write('go.mod', 'module example.com/qfli/dup\n\ngo 1.27.0\n');
-        write('src/main.go', 'package main\nfunc main() {}\n');
-        write('src/main2.go', 'package main\nfunc main() {}\n');
-        final capture = _CapturingBackend(p.join(project.path, 'src'));
-        addTearDown(capture.shutdown);
-        expect(await delegate.handle(capture, 'go run .'), isTrue);
-        expect(capture.exitCode, isNot(0));
-        expect(capture.lines.join('\n'), contains('redeclared'));
-      },
-      skip: !_sdkAvailable,
-    );
+    test('go run . 忠实报告两个 main 的真实编译错误', () async {
+      // The editor Run button applies an overlay to select one entry; the
+      // terminal is a faithful `go` prompt, so the real duplicate-main error
+      // must surface instead of being hidden.
+      write('go.mod', 'module example.com/qfli/dup\n\ngo 1.27.0\n');
+      write('src/main.go', 'package main\nfunc main() {}\n');
+      write('src/main2.go', 'package main\nfunc main() {}\n');
+      final capture = _CapturingBackend(p.join(project.path, 'src'));
+      addTearDown(capture.shutdown);
+      expect(await delegate.handle(capture, 'go run .'), isTrue);
+      expect(capture.exitCode, isNot(0));
+      expect(capture.lines.join('\n'), contains('redeclared'));
+    }, skip: !_sdkAvailable);
 
-    test(
-      'go run 失败时保留真实编译诊断',
-      () async {
-        write('src/main.go', 'package main\nfunc main() { unknown() }\n');
-        final capture = backend();
-        addTearDown(capture.shutdown);
-        expect(await delegate.handle(capture, 'go run src/main.go'), isTrue);
-        expect(capture.exitCode, isNot(0));
-        expect(capture.lines.join('\n'), contains('undefined: unknown'));
-      },
-      skip: !_sdkAvailable,
-    );
+    test('go run 失败时保留真实编译诊断', () async {
+      write('src/main.go', 'package main\nfunc main() { unknown() }\n');
+      final capture = backend();
+      addTearDown(capture.shutdown);
+      expect(await delegate.handle(capture, 'go run src/main.go'), isTrue);
+      expect(capture.exitCode, isNot(0));
+      expect(capture.lines.join('\n'), contains('undefined: unknown'));
+    }, skip: !_sdkAvailable);
 
-    test(
-      'go test/vet/fmt 在桌面端真实可用',
-      () async {
-        write('go.mod', 'module example.com/qfli/term\n\ngo 1.27.0\n');
-        write('src/main.go', 'package main\nfunc main() {}\n');
-        write(
-          'src/helper.go',
-          'package main\nfunc message() string { return "ready" }\n',
-        );
-        write(
-          'src/helper_test.go',
-          'package main\nimport "testing"\n'
-              'func TestMessage(t *testing.T) { if message() != "ready" { t.Fatal("x") } }\n',
-        );
-        final capture = backend();
-        addTearDown(capture.shutdown);
-        expect(await delegate.handle(capture, 'go test ./...'), isTrue);
-        expect(capture.exitCode, 0, reason: capture.lines.join('\n'));
-        expect(capture.lines.join('\n'), contains('ok'));
-      },
-      skip: !_sdkAvailable,
-    );
+    test('go test/vet/fmt 在桌面端真实可用', () async {
+      write('go.mod', 'module example.com/qfli/term\n\ngo 1.27.0\n');
+      write('src/main.go', 'package main\nfunc main() {}\n');
+      write(
+        'src/helper.go',
+        'package main\nfunc message() string { return "ready" }\n',
+      );
+      write(
+        'src/helper_test.go',
+        'package main\nimport "testing"\n'
+            'func TestMessage(t *testing.T) { if message() != "ready" { t.Fatal("x") } }\n',
+      );
+      final capture = backend();
+      addTearDown(capture.shutdown);
+      expect(await delegate.handle(capture, 'go test ./...'), isTrue);
+      expect(capture.exitCode, 0, reason: capture.lines.join('\n'));
+      expect(capture.lines.join('\n'), contains('ok'));
+    }, skip: !_sdkAvailable);
 
-    test(
-      'go 命令在沙盒 cd 后的目录执行',
-      () async {
-        write('nested/main.go', 'package main\nimport "fmt"\nfunc main() { fmt.Println("nested") }\n');
-        final capture = backend();
-        addTearDown(capture.shutdown);
-        await capture.execute('cd nested');
-        expect(await delegate.handle(capture, 'go run main.go'), isTrue);
-        expect(capture.exitCode, 0, reason: capture.lines.join('\n'));
-        expect(capture.lines, contains('nested'));
-      },
-      skip: !_sdkAvailable,
-    );
+    test('go 命令在沙盒 cd 后的目录执行', () async {
+      write(
+        'nested/main.go',
+        'package main\nimport "fmt"\nfunc main() { fmt.Println("nested") }\n',
+      );
+      final capture = backend();
+      addTearDown(capture.shutdown);
+      await capture.execute('cd nested');
+      expect(await delegate.handle(capture, 'go run main.go'), isTrue);
+      expect(capture.exitCode, 0, reason: capture.lines.join('\n'));
+      expect(capture.lines, contains('nested'));
+    }, skip: !_sdkAvailable);
 
     test('取消运行会停止进程并返回非零状态', () async {
       write(
@@ -258,63 +231,51 @@ void main() {
       expect(capture.lines, isEmpty);
     });
 
-    test(
-      '绝对路径操作数可直接运行',
-      () async {
-        write(
-          'abs/main.go',
-          'package main\nimport "fmt"\nfunc main() { fmt.Println("absolute") }\n',
-        );
-        final capture = backend();
-        addTearDown(capture.shutdown);
-        final absolute = p.join(project.path, 'abs', 'main.go');
-        expect(await delegate.handle(capture, 'go run $absolute'), isTrue);
-        expect(capture.exitCode, 0, reason: capture.lines.join('\n'));
-        expect(capture.lines, contains('absolute'));
-      },
-      skip: !_sdkAvailable,
-    );
+    test('绝对路径操作数可直接运行', () async {
+      write(
+        'abs/main.go',
+        'package main\nimport "fmt"\nfunc main() { fmt.Println("absolute") }\n',
+      );
+      final capture = backend();
+      addTearDown(capture.shutdown);
+      final absolute = p.join(project.path, 'abs', 'main.go');
+      expect(await delegate.handle(capture, 'go run $absolute'), isTrue);
+      expect(capture.exitCode, 0, reason: capture.lines.join('\n'));
+      expect(capture.lines, contains('absolute'));
+    }, skip: !_sdkAvailable);
 
-    test(
-      '带空格与中文的项目路径与操作数正常执行',
-      () async {
-        // Non-ASCII and spaced paths must survive tokenization (quoted operand),
-        // absolute-path resolution and the real SDK invocation.
-        write(
-          '中文 目录/main.go',
-          'package main\nimport "fmt"\nfunc main() { fmt.Println("unicode"); fmt.Println("中文输出") }\n',
-        );
-        final dir = p.join(project.path, '中文 目录');
-        final capture = _CapturingBackend(dir);
-        addTearDown(capture.shutdown);
-        expect(await delegate.handle(capture, 'go run "main.go"'), isTrue);
-        expect(capture.exitCode, 0, reason: capture.lines.join('\n'));
-        expect(capture.lines, containsAllInOrder(['unicode', '中文输出']));
-      },
-      skip: !_sdkAvailable,
-    );
+    test('带空格与中文的项目路径与操作数正常执行', () async {
+      // Non-ASCII and spaced paths must survive tokenization (quoted operand),
+      // absolute-path resolution and the real SDK invocation.
+      write(
+        '中文 目录/main.go',
+        'package main\nimport "fmt"\nfunc main() { fmt.Println("unicode"); fmt.Println("中文输出") }\n',
+      );
+      final dir = p.join(project.path, '中文 目录');
+      final capture = _CapturingBackend(dir);
+      addTearDown(capture.shutdown);
+      expect(await delegate.handle(capture, 'go run "main.go"'), isTrue);
+      expect(capture.exitCode, 0, reason: capture.lines.join('\n'));
+      expect(capture.lines, containsAllInOrder(['unicode', '中文输出']));
+    }, skip: !_sdkAvailable);
 
-    test(
-      '目录操作数按入口解析运行多文件包',
-      () async {
-        write('go.mod', 'module example.com/qfli/dir\n\ngo 1.27.0\n');
-        write(
-          'pkg/helper.go',
-          'package main\nfunc message() string { return "dir-ok" }\n',
-        );
-        write(
-          'pkg/main.go',
-          'package main\nimport "fmt"\nfunc main() { fmt.Println(message()) }\n',
-        );
-        // `go run pkg` resolves the package directory and keeps its helper.
-        final capture = backend();
-        addTearDown(capture.shutdown);
-        expect(await delegate.handle(capture, 'go run ./pkg'), isTrue);
-        expect(capture.exitCode, 0, reason: capture.lines.join('\n'));
-        expect(capture.lines, contains('dir-ok'));
-      },
-      skip: !_sdkAvailable,
-    );
+    test('目录操作数按入口解析运行多文件包', () async {
+      write('go.mod', 'module example.com/qfli/dir\n\ngo 1.27.0\n');
+      write(
+        'pkg/helper.go',
+        'package main\nfunc message() string { return "dir-ok" }\n',
+      );
+      write(
+        'pkg/main.go',
+        'package main\nimport "fmt"\nfunc main() { fmt.Println(message()) }\n',
+      );
+      // `go run pkg` resolves the package directory and keeps its helper.
+      final capture = backend();
+      addTearDown(capture.shutdown);
+      expect(await delegate.handle(capture, 'go run ./pkg'), isTrue);
+      expect(capture.exitCode, 0, reason: capture.lines.join('\n'));
+      expect(capture.lines, contains('dir-ok'));
+    }, skip: !_sdkAvailable);
   });
 
   group('不支持的平台', () {
@@ -361,10 +322,7 @@ void main() {
           kProgramNotRunExitCode,
           reason: '$command must report not-run',
         );
-        expect(
-          capture.lines.join('\n'),
-          contains('内置解释器只支持 go run'),
-        );
+        expect(capture.lines.join('\n'), contains('内置解释器只支持 go run'));
       }
     });
 
@@ -405,10 +363,7 @@ void main() {
       final confined = _CapturingBackend(p.join(project.path, 'inner'));
       Directory(p.join(project.path, 'inner')).createSync(recursive: true);
       addTearDown(confined.shutdown);
-      expect(
-        await delegate.handle(confined, 'go run ../outside.go'),
-        isTrue,
-      );
+      expect(await delegate.handle(confined, 'go run ../outside.go'), isTrue);
       expect(confined.exitCode, kProgramNotRunExitCode);
       expect(confined.lines.join('\n'), contains('不能越出沙盒目录'));
     });
@@ -548,7 +503,9 @@ Future<void> _mountStandalone(WidgetTester tester, ProjectStore store) async {
       () => Future<void>.delayed(const Duration(milliseconds: 20)),
     );
   });
-  await tester.pumpWidget(MaterialApp(home: TerminaxTerminalPage(store: store)));
+  await tester.pumpWidget(
+    MaterialApp(home: TerminaxTerminalPage(store: store)),
+  );
   await tester.pump();
 }
 

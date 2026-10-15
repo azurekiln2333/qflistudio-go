@@ -116,9 +116,7 @@ void main() {
 
   testWidgets('the Go tools tab has no network tool card', (tester) async {
     await tester.pumpWidget(
-      _app(
-        FunctionsTab(store: ProjectStore(), onOpenTerminal: () {}),
-      ),
+      _app(FunctionsTab(store: ProjectStore(), onOpenTerminal: () {})),
     );
     await _settle(tester);
 
@@ -251,10 +249,7 @@ void main() {
         );
         await _settle(tester);
 
-        await tester.drag(
-          find.byType(ListView).first,
-          const Offset(0, 360),
-        );
+        await tester.drag(find.byType(ListView).first, const Offset(0, 360));
         await _settle(tester);
 
         // The offline product must not call the account endpoint even though a
@@ -292,10 +287,7 @@ void main() {
         );
         await _settle(tester);
 
-        await tester.drag(
-          find.byType(ListView).first,
-          const Offset(0, 360),
-        );
+        await tester.drag(find.byType(ListView).first, const Offset(0, 360));
         await _settle(tester);
 
         expect(fixture.auth.refreshCalls, greaterThan(0));
@@ -322,10 +314,7 @@ void main() {
       );
       await _settle(tester);
       // An auth change also reaches the refresh path.
-      await tester.runAsync(() => fixture.auth.signIn(
-        'test-token',
-        _user,
-      ));
+      await tester.runAsync(() => fixture.auth.signIn('test-token', _user));
       await _settle(tester);
       await _drainIo(tester);
 
@@ -419,10 +408,9 @@ class _CountingHttpClient implements HttpClient {
   }
 
   @override
-  dynamic noSuchMethod(Invocation invocation) =>
-      throw UnsupportedError(
-        'Unexpected HttpClient member: ${invocation.memberName}',
-      );
+  dynamic noSuchMethod(Invocation invocation) => throw UnsupportedError(
+    'Unexpected HttpClient member: ${invocation.memberName}',
+  );
 }
 
 Widget _app(Widget home) => MaterialApp(
@@ -495,9 +483,9 @@ class _Fixture {
     final projectDirectory = Directory(p.join(directory.path, 'go-project'))
       ..createSync();
     if (withGoSource) {
-      File(p.join(projectDirectory.path, 'main.go')).writeAsStringSync(
-        'package main\n\nfunc main() { println("hi") }\n',
-      );
+      File(
+        p.join(projectDirectory.path, 'main.go'),
+      ).writeAsStringSync('package main\n\nfunc main() { println("hi") }\n');
     }
     final project = Project.create(
       name: 'go project',

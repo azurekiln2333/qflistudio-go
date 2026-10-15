@@ -89,3 +89,21 @@ coordinator-owned gates and are not inferred from this source review.
   The corrected integration file is ready for its coordinator-owned device run.
 - Final reviewer source freeze: `integration_test/go_native_test.dart` and this
   report are handed back to the coordinator for verification and commit.
+
+## Canonical formatting follow-up
+
+Coordinator authorized only canonical formatting of
+`lib/go_terminal_delegate.dart`, `test/go_curriculum_content_test.dart`,
+`test/go_offline_profile_test.dart`, `test/go_terminal_delegate_test.dart`, and
+`integration_test/go_native_test.dart`. Applied the pinned Dart 3.11.5 formatter
+at `D:/ProgramFiles/flutter_ohos/bin/cache/dart-sdk/bin/dart.exe` and inspected
+the complete before/after unified diff. Changes are line wrapping, indentation,
+and formatter-managed trailing commas; no expression, assertion, string literal,
+fixture source code, or runtime behavior changed.
+
+- Whole-tree format gate: `dart format --output=none --set-exit-if-changed lib
+  test integration_test` exited 0: `Formatted 17 files (0 changed)`.
+- `flutter analyze --no-pub` with those five explicit paths exited 0:
+  `No issues found!` (2.0s).
+- No tests were added or rerun for formatting. No pub, build, device, or Git
+  operation was performed. All five files and this report are frozen again.

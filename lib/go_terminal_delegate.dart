@@ -202,9 +202,7 @@ class GoTerminalDelegate {
         await backend.runStreams(
           title: 'go run $operand',
           stdout: const Stream<String>.empty(),
-          stderr: Stream<String>.value(
-            '目录 $operand 中没有可运行的 Go 入口（未找到入口文件）。',
-          ),
+          stderr: Stream<String>.value('目录 $operand 中没有可运行的 Go 入口（未找到入口文件）。'),
           exitCode: Future<int>.value(kProgramNotRunExitCode),
         );
         return true;
