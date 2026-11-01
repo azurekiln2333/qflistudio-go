@@ -9,3 +9,31 @@
 7. Archive independently proven children. Complete the umbrella only when every requirement for every applicable product is proven, otherwise keep the precise remaining work in the ledger.
 
 Dependency order: common models before adapters; Go/native repairs before full curriculum target runs; final shared revision before final all-product suites; actual target before OHOS execution claims. Parent implementation plan supplies commands, gates and recovery rules.
+
+## Commit sweep
+
+Swept 201 uncommitted paths on feat/go-offline-ide, grouped by theme.
+
+| Commit | Theme |
+| --- | --- |
+| `893ba6c` feat(runtime): add analysis, debugging and project environments | native/go_runtime |
+| `47edbcc` feat(ide): add Go analysis, debugger and tools to the offline IDE | lib + tests |
+| `bad80a7` feat(curriculum): expand the Go course samples and topics | tool/go_curriculum + assets |
+| `866f67e` build(platform): link the Go runtime on every target | .so libs, platform build files, icons |
+| `39635b7` test(integration): accept the Go IDE on a real device | integration_test |
+| `248bacd` docs(task): archive the Go IDE research and acceptance notes | task dirs, LICENSE, scripts |
+
+Tracked binaries committed, with sizes:
+
+- android jniLibs: arm64-v8a 20.39 MB, armeabi-v7a 20.52 MB, x86_64 21.92 MB
+- ohos entry/libs: arm64-v8a 20.44 MB, x86_64 21.99 MB
+- ohos icons: app_icon.png and icon.png, 0.43 MB each
+
+Skipped, and why:
+
+- 26 *.log files and 3 *.pyc files under the task research
+  directories. Logs and bytecode are build and run output.
+- 16 *.bin files under c580-go-20261026-controls and
+  go-native-next-20261026-01. They are captured stdout and stderr from
+  a test run, not source. They remain staged, not committed.
+
