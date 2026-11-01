@@ -1,14 +1,15 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T081 原子操作 sync/atomic。
 //
 // 对于简单的计数/标志，atomic 提供无锁的原子读改写，避免锁开销。
 // 本示例用 atomic.Int64 在多个 goroutine 中并发自增，最终值确定。
 //
-// test-package 工程例子，不能一键导入。完整结构：
+// test-package 工程例子，导入时附带辅助文件。原始结构：
 //   atomiccount/
 //   ├── go.mod          // module atomiccount\n\ngo 1.27
 //   └── atomic_test.go  // 本文件
 // 运行：go test ./...  /  go test -race ./...
-// 移动端 Yaegi 对 sync/atomic 未实测，desktop only。
+// 选中测试入口执行原子计数断言；普通测试通过不等于完成 race 检测。
 package atomiccount
 
 import (

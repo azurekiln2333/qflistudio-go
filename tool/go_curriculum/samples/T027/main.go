@@ -18,7 +18,10 @@ func fib(n int) int {
 
 func main() {
 	for i := 0; i < 7; i++ {
-		fmt.Print(fib(i), " ")
+		if i > 0 {
+			fmt.Print(" ")
+		}
+		fmt.Print(fib(i))
 	}
 	fmt.Println()
 }

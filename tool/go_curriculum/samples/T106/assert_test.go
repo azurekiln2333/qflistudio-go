@@ -1,13 +1,14 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T106 断言与辅助函数、t.Helper。
 //
 // 把重复的断言逻辑抽成 helper，并在 helper 里调用 t.Helper()，
 // 这样失败时报告的行号指向调用者而不是 helper 内部，定位更快。
 //
-// test-package 工程例子，不能一键导入。完整结构：
+// test-package 工程例子，导入时附带辅助文件。原始结构：
 //   asserthlp/
 //   ├── go.mod         // module asserthlp\n\ngo 1.27
 //   └── assert_test.go // 本文件
-// 运行：go test ./...   desktop only。
+// 运行：go test ./...；也可选中测试入口运行。
 package asserthlp
 
 import (

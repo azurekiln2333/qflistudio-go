@@ -1,9 +1,10 @@
+// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。
 // T070 代码生成与 go:generate 边界。
 //
 // go:generate 是注释里的约定指令：运行 `go generate` 时执行其中的命令来生成源码。
 // 它不是 go build 的一部分，必须显式运行；移动端 Yaegi 也不执行它。
 //
-// 本例是一个完整的多文件工程（module-project，不能一键导入）：
+// 本例是一个完整的多文件工程（module-project，导入时附带辅助文件）：
 //   T070/
 //   ├── go.mod            // module qfli.example/t070  (go 1.21)
 //   ├── day.go            // type Day + 常量枚举

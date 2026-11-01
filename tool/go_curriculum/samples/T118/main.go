@@ -1,9 +1,10 @@
+// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。
 // T118 综合项目一：命令行待办清单（CLI + JSON 持久化）。
 //
 // 整合：命令分发、JSON 持久化、错误处理。待办项存为 JSON 文件，
 // 增/删/列/完成操作后落盘，重载后状态一致。
 //
-// module-project 工程例子，不能一键导入。完整结构：
+// module-project 工程例子，导入时附带辅助文件。原始结构：
 //   todoapp/
 //   ├── go.mod        // module todoapp\n\ngo 1.27
 //   ├── main.go       // 本文件：CLI 入口
@@ -13,7 +14,7 @@
 //   go run . add "learn go"
 //   go run . list
 //   go test ./...
-// desktop only（文件系统 + go test）。
+// 普通入口演示文件操作，选中 store_test.go 运行相应测试。
 package main
 
 import (

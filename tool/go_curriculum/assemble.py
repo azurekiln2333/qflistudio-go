@@ -38,6 +38,7 @@ TOPIC_RE = re.compile(r"^T(\d{3})$")
 TOOL_DIR = Path(__file__).resolve().parent
 DEFAULT_TOPICS = TOOL_DIR / "topics"
 DEFAULT_OUT = TOOL_DIR / "content" / "go"
+DEFAULT_SAMPLES = TOOL_DIR / "samples"
 
 TUTORIAL_KEYS = {
     "id", "language", "type", "locale", "level", "title", "summary",
@@ -162,7 +163,45 @@ def collect(topics_dir: Path) -> list[dict]:
     return topics
 
 
-def to_tutorial_entry(topic: dict) -> dict:
+def imported_entry_file(topic: dict) -> str:
+    """The real Go template imports its selected source under src/."""
+    return "src/snippet_test.go" if topic["importKind"] == "test-package" else "src/main.go"
+
+
+def support_fixtures(topic: dict, samples_dir: Path = DEFAULT_SAMPLES) -> dict[str, str]:
+    """Keep displayed source separate while importing its complete project.
+
+    Same-package helpers and data follow the selected source into src/.
+    Module metadata and imported subpackage trees retain module-root paths.
+    Bytes survive JSON encoding unchanged, including line endings.
+    """
+    sample = samples_dir / topic["id"]
+    source = topic["tutorial"]["code"]
+    files = {p.relative_to(sample).as_posix(): p.read_bytes().decode("utf-8")
+             for p in sorted(sample.rglob("*")) if p.is_file()}
+    matching = [name for name, code in files.items() if name.endswith(".go") and code == source]
+    if len(matching) != 1:
+        raise TopicError(f"{topic['id']}: displayed tutorial must match exactly one canonical Go source")
+    selected = matching[0]
+    if "/" in selected:
+        raise TopicError(f"{topic['id']}: nested displayed source needs an explicit import mapping")
+    package_trees = {name.split("/", 1)[0] for name in files if "/" in name and name.endswith(".go")}
+    fixtures = {}
+    for name, code in files.items():
+        if name == selected:
+            continue
+        # Imported subpackages must still match paths relative to go.mod.
+        # Other files belong to the displayed package: runtime relative reads
+        # and go:embed both resolve from its new src/ directory.
+        root_relative = name in ("go.mod", "go.sum") or name.split("/", 1)[0] in package_trees
+        target = name if root_relative else f"src/{name}"
+        if target == imported_entry_file(topic) or target in fixtures:
+            raise TopicError(f"{topic['id']}: imported fixture collides with selected source: {target}")
+        fixtures[target] = code
+    return fixtures
+
+
+def to_tutorial_entry(topic: dict, samples_dir: Path = DEFAULT_SAMPLES) -> dict:
     """Pack a topic's flat tutorial fields into the real aggregate shape.
 
     The shared contract stores teaching fields inside ``lessons[]``; a topic has
@@ -183,6 +222,7 @@ def to_tutorial_entry(topic: dict) -> dict:
         "prerequisites": list(tutorial["prerequisites"]),
         "pitfalls": list(tutorial["pitfalls"]),
         "exercises": [dict(e) for e in tutorial["exercises"]],
+        "inputFixtures": support_fixtures(topic, samples_dir),
     }
     return {
         "id": entry_id,
@@ -200,7 +240,7 @@ def to_tutorial_entry(topic: dict) -> dict:
     }
 
 
-def to_example_entry(topic: dict) -> dict:
+def to_example_entry(topic: dict, samples_dir: Path = DEFAULT_SAMPLES) -> dict:
     example = topic["example"]
     return {
         "id": example["id"],
@@ -217,6 +257,7 @@ def to_example_entry(topic: dict) -> dict:
         "code": example["code"],
         "expectedOutput": example["expectedOutput"],
         "templateType": example["templateType"],
+        "inputFixtures": support_fixtures(topic, samples_dir),
     }
 
 
@@ -224,6 +265,8 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--topics-dir", type=Path, default=DEFAULT_TOPICS)
     parser.add_argument("--out", type=Path, default=DEFAULT_OUT)
+    parser.add_argument("--samples-dir", type=Path, default=DEFAULT_SAMPLES)
+    parser.add_argument("--app-out", type=Path, help="also write product-owned {schemaVersion, entries} catalogs")
     args = parser.parse_args(argv)
 
     try:
@@ -232,8 +275,12 @@ def main(argv: list[str]) -> int:
         print(f"ASSEMBLE FAIL: {error}")
         return 1
 
-    tutorials = [to_tutorial_entry(t) for t in topics]
-    examples = [to_example_entry(t) for t in topics]
+    try:
+        tutorials = [to_tutorial_entry(t, args.samples_dir) for t in topics]
+        examples = [to_example_entry(t, args.samples_dir) for t in topics]
+    except (TopicError, UnicodeDecodeError) as error:
+        print(f"ASSEMBLE FAIL: {error}")
+        return 1
     classify = [
         {
             "id": t["id"],
@@ -250,6 +297,10 @@ def main(argv: list[str]) -> int:
     _dump(args.out / "tutorials.json", tutorials)
     _dump(args.out / "examples.json", examples)
     _dump(args.out.parent / "classify.json", classify)
+    if args.app_out:
+        args.app_out.mkdir(parents=True, exist_ok=True)
+        _dump(args.app_out / "tutorials.json", {"schemaVersion": 1, "entries": tutorials})
+        _dump(args.app_out / "examples.json", {"schemaVersion": 1, "entries": examples})
     print(f"ASSEMBLE OK: {len(tutorials)} tutorials, {len(examples)} examples "
           f"from {len(topics)} topics")
     return 0

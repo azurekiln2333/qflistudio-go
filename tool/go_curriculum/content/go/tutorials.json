@@ -44,7 +44,10 @@
             "hint": "go run 会先编译再执行；gofmt -l 只列出需要格式化的文件，不修改。",
             "answer": "样例输出 hello, go 与 toolchain ready 两行；gofmt -l 无输出说明已格式化；go vet 无输出说明无可疑代码。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t001\n\ngo 1.21\n"
+        }
       }
     ]
   },
@@ -91,7 +94,10 @@
             "hint": "go run 会先编译，编译错误在运行前就会显示。",
             "answer": "正常输出 hello, qfli；改成 Main 后报 function main is undeclared in the main package。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t002\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -138,7 +144,10 @@
             "hint": "string 的零值是空串，bool 的零值是 false。",
             "answer": "打印 name=\"\" 与 ok=false，因为字符串和布尔的零值分别是空串和 false。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t003\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -185,7 +194,10 @@
             "hint": "127 是 int8 的上界，127+1 作为常量表达式会溢出。",
             "answer": "将 128 赋给 int8 会在编译期报 constant 128 overflows int8，说明 Go 在编译期就检查常量范围。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t004\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -232,7 +244,10 @@
             "hint": "iota 每行递增 1，_ 也占用一个 iota 值。",
             "answer": "插入 _ 后，其后的枚举值会整体后移 1，说明 iota 按行计数，未命名的行同样递增。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t005\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -279,7 +294,10 @@
             "hint": "窄化转换会保留低 32 位，符号位按目标类型解释。",
             "answer": "1<<40 转 int32 后为 0，因为低 32 位全为 0；说明窄化是截断而非饱和。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t006\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -328,7 +346,10 @@
             "hint": "UTF-8 中一个中文字符通常占 3 个字节。",
             "answer": "len 统计字节数，RuneCountInString 统计 Unicode 码点个数；中文每字 3 字节，所以字节数更大。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t007\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -373,7 +394,10 @@
             "hint": "%+v 会显示字段名。",
             "answer": "%v 显示 {3 4 5}，%+v 显示 {X:3 Y:4 Z:5}。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t008\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -420,7 +444,10 @@
             "hint": "strings.Fields 按任意空白分词，空行不计词。",
             "answer": "三行分别为若干词时，lines=3，words 等于所有行词数之和；空行 contributes 0。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t009\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -467,7 +494,10 @@
             "hint": "12 的二进制是 1100。",
             "answer": "12>>2=3（右移两位得 11），12&3=0（1100 & 0011 = 0000）。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t010\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -514,7 +544,10 @@
             "hint": "按 10 分段的 v 值调整判断顺序。",
             "answer": "增加 v >= 6 之前的低分分支后，50 分落到不及格档；运行输出随之改变。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t011\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -559,7 +592,10 @@
             "hint": "无表达式 switch 的 case 从上到下匹配第一个为真的条件。",
             "answer": "加入 case n < 1000: return \"hundreds\" 后，99 仍落入 small、100..999 落入 hundreds。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t012\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -606,7 +642,10 @@
             "hint": "在 case float64: 里用 fmt.Sprintf(\"float:%.2f\", x)。",
             "answer": "3.14 由 unknown 变为 float:3.14，其余分支不变。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t013\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -653,7 +692,10 @@
             "hint": "break 会立刻结束整个循环。",
             "answer": "sum 变为 1+2=3，因为 i==3 时直接跳出，不再累加 4、5。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t014\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -703,7 +745,10 @@
             "hint": "用 sort.Strings 对键切片排序。",
             "answer": "排序后输出稳定为 a 再 b，验证 map 顺序本身不确定、有序输出需自行排序。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t015\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -750,7 +795,10 @@
             "hint": "找不到时循环自然结束，found 保持 false。",
             "answer": "目标缺失时走 not found；外层循环完整跑完但不再有匹配。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t016\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -797,7 +845,10 @@
             "hint": "在循环前加对 len(items)==0 的检查并设置 err 后 goto cleanup。",
             "answer": "两处错误共用 cleanup 收尾，说明 goto 在集中清理时能减少重复代码。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t017\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -844,7 +895,10 @@
             "hint": "长度是类型的一部分，字面量与声明都要一致。",
             "answer": "声明与字面量都必须改为 [4]int，否则类型不匹配编译失败。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t018\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -893,7 +947,10 @@
             "hint": "容量决定第几次 append 触发重新分配。",
             "answer": "初始 cap=3 时前三次 append 不扩容，第 4 次才扩容，变化点整体后移。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t019\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -942,7 +999,10 @@
             "hint": "三索引切片把容量限制为 3-1=2，append 必须重新分配。",
             "answer": "限制容量后 append 触发扩容、写入新数组，base 不再被覆盖。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t020\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -989,7 +1049,10 @@
             "hint": "三索引切片把容量限制为 0，append 必然重新分配。",
             "answer": "得到 [5 6]；s[:0:0] 容量为 0，append 会分配新数组，避免覆盖仍在遍历的源元素。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t021\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1036,7 +1099,10 @@
             "hint": "先用计数 map，再遍历过滤。",
             "answer": "counts[w]++ 累加后用 if v>1 过滤输出。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t022\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1083,7 +1149,10 @@
             "hint": "min, max 作为命名返回，遍历后 return。",
             "answer": "func minmax(s []int) (min, max int) 初始化后遍历比较，裸 return 返回两值。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t023\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1130,7 +1199,10 @@
             "hint": "变参在函数内是切片，用 len 取个数。",
             "answer": "count(1,2,3) 与 count(values...) 都返回 3。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t024\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1177,7 +1249,10 @@
             "hint": "参数是 []int 和 func(int) bool。",
             "answer": "遍历判断 pred(v) 为真则 append，返回新切片。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t025\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1224,7 +1299,10 @@
             "hint": "返回 func(int) int 捕获 n。",
             "answer": "add5:=makeAdder(5); add5(1)==6，而另一个 add10 不受影响，说明各自捕获独立。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t026\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1255,7 +1333,7 @@
           "map 缓存"
         ],
         "explain": "递归把问题拆成同类子问题，斐波那契是经典例子：fib(n)=fib(n-1)+fib(n-2)，基准情形 n<2 直接返回 n。朴素递归会重复计算同一子问题，复杂度指数级。\n\n记忆化用一个 map 缓存已算出的结果：进入函数先查缓存，命中即返回；否则算出后写入。样例用包级 memo，使结果在多次顶层调用间也复用。代价是缓存会占用内存且需注意并发安全（本样例单协程执行）。\n\n本样例打印 fib(0..6)。",
-        "code": "package main\n\nimport \"fmt\"\n\nvar memo = map[int]int{}\n\nfunc fib(n int) int {\n\tif n < 2 {\n\t\treturn n\n\t}\n\tif v, ok := memo[n]; ok {\n\t\treturn v\n\t}\n\tv := fib(n-1) + fib(n-2)\n\tmemo[n] = v\n\treturn v\n}\n\nfunc main() {\n\tfor i := 0; i < 7; i++ {\n\t\tfmt.Print(fib(i), \" \")\n\t}\n\tfmt.Println()\n}\n",
+        "code": "package main\n\nimport \"fmt\"\n\nvar memo = map[int]int{}\n\nfunc fib(n int) int {\n\tif n < 2 {\n\t\treturn n\n\t}\n\tif v, ok := memo[n]; ok {\n\t\treturn v\n\t}\n\tv := fib(n-1) + fib(n-2)\n\tmemo[n] = v\n\treturn v\n}\n\nfunc main() {\n\tfor i := 0; i < 7; i++ {\n\t\tif i > 0 {\n\t\t\tfmt.Print(\" \")\n\t\t}\n\t\tfmt.Print(fib(i))\n\t}\n\tfmt.Println()\n}\n",
         "output": "0 1 1 2 3 5 8",
         "objective": "能写出递归函数，并用 map 缓存消除重复子问题。",
         "prerequisites": [
@@ -1272,7 +1350,10 @@
             "hint": "局部缓存只在单次顶层调用内复用。",
             "answer": "局部缓存仍能在一条递归树内复用子结果，但跨顶层调用不复用；要跨调用复用需函数级或包级缓存。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t027\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1319,7 +1400,10 @@
             "hint": "defer 后进先出。",
             "answer": "实际打印 3、2、1，因为最后注册的先执行。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t028\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1368,7 +1452,10 @@
             "hint": "通过临时变量交换 *a 与 *b。",
             "answer": "swap(&x,&y) 后 x、y 互换，说明指针参数能修改调用方变量。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t029\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1416,7 +1503,10 @@
             "hint": "修改 s[i] 而非 s=...。",
             "answer": "调用方切片元素全部加一，因为修改的是共享底层数组。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t030\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1463,7 +1553,10 @@
             "hint": "p := new(person); p.Name = \"X\"。",
             "answer": "new 返回指向零值结构体的指针，字段可写并打印出设置后的值。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t031\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1510,7 +1603,10 @@
             "hint": "比较函数改为 people[i].Age > people[j].Age。",
             "answer": "输出按年龄从大到小，同岁不再按姓名排序。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t032\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1557,7 +1653,10 @@
             "hint": "用 SearchInts 返回的下标与长度比较。",
             "answer": "SearchInts 返回 2（6 的位置）；若返回 4 等于长度则说明不存在。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t033\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1604,7 +1703,10 @@
             "hint": "key 用 w[0]，再对键排序。",
             "answer": "分组后收集键、排序、逐键打印，输出确定且每组含对应词。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t034\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1651,7 +1753,10 @@
             "hint": "在 FieldsFunc 的谓词里补上 r == ':'。",
             "answer": "更多片段被切出，parts 数量增加，Join 结果中相应位置变为 | 连接。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t035\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1698,7 +1803,10 @@
             "hint": "循环里调用 b.WriteString。",
             "answer": "Builder 复用同一底层缓冲、按需增长，避免每步复制整串，因此接近 O(n)。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t036\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1745,7 +1853,10 @@
             "hint": "未写的字段取零值。",
             "answer": "Email 打印为空串，因为 string 的零值是空串。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t037\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1792,7 +1903,10 @@
             "hint": "外层字段优先。",
             "answer": "d.ID 返回外层字段值，d.base.ID 返回内层值，说明外层遮蔽内层。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t038\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1839,7 +1953,10 @@
             "hint": "指针接收者方法仅 *T 满足接口，T 不满足。",
             "answer": "改成指针接收者后，只有 *counter 满足含该方法的接口，counter 值不再满足。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t039\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1879,7 +1996,7 @@
         "pitfalls": [
           "混淆绑定时机：方法值 r.area 在取值时绑定接收者副本，之后即使 r 变化也调用原副本；方法表达式则每次传入当前接收者。",
           "对指针接收者方法取值需要可寻址接收者：对不可寻址的临时值调用指针接收者方法会编译报错。",
-          "平台限制：方法表达式（T.method; g(recv)）在当前项目移动端 Yaegi 解释器下会 panic（reflect: Call with too many input arguments），本主题仅桌面官方 Go 可运行；移动端请使用方法值（recv.method）形式。"
+          "方法表达式的第一个显式参数是接收者；把它当成已绑定接收者的方法值调用会造成参数不匹配。"
         ],
         "exercises": [
           {
@@ -1887,7 +2004,10 @@
             "hint": "g := rect.area; g(r)。",
             "answer": "g(r) 与 r.area() 结果一致，说明方法表达式把接收者变成普通首个参数。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t040\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -1936,7 +2056,8 @@
             "hint": "用海伦公式或简单底×高/2；周长三边之和。",
             "answer": "定义 Triangle 并实现两方法，append 进 []Shape 后统一 describe。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -1985,7 +2106,8 @@
             "hint": "用 v, ok := s.(OtherInterface)。",
             "answer": "if o, ok := s.(Other); ok { o.Method() }。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2034,7 +2156,8 @@
             "hint": "在 switch 中直接 case []string、case map[string]int。",
             "answer": "新增两个 case 返回相应描述。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2083,7 +2206,8 @@
             "hint": "用接口嵌入把 Reader 与 fmt.Stringer 组合。",
             "answer": "type ReadStringer interface { Reader; String() string }。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2132,7 +2256,8 @@
             "hint": "Error() 里调用 e.Field 的 String()。",
             "answer": "func (e *ValidationError) Error() string { return \"invalid \"+e.Field }。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2181,7 +2306,8 @@
             "hint": "Less 先比 Name，再比 Age。",
             "answer": "type ByName []Person；Less 比较 Name 后比较 Age。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2224,7 +2350,7 @@
         "pitfalls": [
           "用类型分支代替多态：新增策略要改 switch，违背开闭原则。",
           "装饰器无限嵌套：注意装饰链深度与调用开销。",
-          "平台限制：接口赋值在移动端 Yaegi 下会 panic（reflect.Set 错误），仅桌面官方 Go 可运行（保持 desktop-only）。"
+          "把策略重新赋给接口变量只会替换该变量保存的实现；其他已构造的装饰器仍持有原先的依赖。"
         ],
         "exercises": [
           {
@@ -2232,7 +2358,8 @@
             "hint": "策略实现 Pricing；装饰器实现 Job 并在内部调用 inner.Run()。",
             "answer": "PercentOff 返回 base*(100-p)/100；装饰器在调用前后追加。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2282,7 +2409,8 @@
             "hint": "方法开头 if p == nil { return \"\" }。",
             "answer": "func (p *Person) Greet() string { if p == nil { return \"\" }; return \"hi \"+p.Name }。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2331,7 +2459,8 @@
             "hint": "用 math.Sqrt；负数返回 fmt.Errorf。",
             "answer": "if x<0 { return 0, fmt.Errorf(\"negative\") }; return math.Sqrt(x), nil。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2382,7 +2511,8 @@
             "hint": "var ErrConflict = errors.New(\"conflict\")；包装用 %w。",
             "answer": "errors.Is(fmt.Errorf(\"save: %w\", ErrConflict), ErrConflict) == true。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2431,7 +2561,8 @@
             "hint": "每层用 fmt.Errorf(\"op: %w\", err)。",
             "answer": "for e:=err; e!=nil; e=errors.Unwrap(e) { print(e) }；errors.Is(err, errBase)。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2473,7 +2604,7 @@
         "pitfalls": [
           "用 Is 匹配具体类型：Is 比较值/身份，不是类型，应改用 As。",
           "As 的目标是指针的指针：传 &pe 而非 pe。",
-          "平台限制：errors.As 在移动端 Yaegi 下会 panic（*target 类型错误），仅桌面官方 Go 可运行（保持 desktop-only）。"
+          "errors.As 的目标必须是非空指针，并且所指类型应实现 error 或为接口；不满足要求会 panic。"
         ],
         "exercises": [
           {
@@ -2481,7 +2612,8 @@
             "hint": "var e *HTTPError; errors.As(err, &e)。",
             "answer": "if errors.As(err,&e) { switch e.Code { ... } }。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2523,7 +2655,7 @@
         "pitfalls": [
           "实现 Unwrap 返回 nil 之外的东西却期望 Is 命中：链会断。",
           "错误类型用值接收者但存了指针字段：注意一致性。",
-          "平台限制：自定义错误 + errors.As/Unwrap 在移动端 Yaegi 下会 panic，仅桌面官方 Go 可运行（保持 desktop-only）。"
+          "Error、Unwrap、Is 和 As 的方法签名必须准确；名称相同但签名不同的方法不会参与错误链协议。"
         ],
         "exercises": [
           {
@@ -2531,7 +2663,8 @@
             "hint": "在 Error() 里格式化 duration。",
             "answer": "Error() 返回 fmt.Sprintf(\"query %q failed after %s: %v\", ...)。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2581,7 +2714,8 @@
             "hint": "defer + recover 包裹索引访问。",
             "answer": "defer 中 recover 后设置命名返回值 err；访问 s[i] 触发越界时被捕获。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2631,7 +2765,8 @@
             "hint": "用命名返回值 count，在 defer 中累加。",
             "answer": "func process(...) (count int, err error) { defer func(){ ... count++ }() }。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2680,7 +2815,8 @@
             "hint": "fmt.Errorf(\"loadConfig %s: %w\", key, err)。",
             "answer": "链变为 start: loadConfig db.dsn: not found，errors.Is 仍命中哨兵。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2729,7 +2865,8 @@
             "hint": "边界处 log.Error 后返回整理过的错误。",
             "answer": "log.Errorf(...) 一次；return fmt.Errorf(\"操作失败\")。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2779,7 +2916,8 @@
             "hint": "统计 mu.Unwrap() 长度或单独计数。",
             "answer": "failed := len(mu.Unwrap())；断言 failed == expectedFails。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -2811,8 +2949,8 @@
           "init",
           "初始化顺序"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。包把代码分组；导出（大写）标识符可被其他包访问，小写仅包内可见。init 函数与包级变量初始化在包被导入时自动执行，顺序遵循：先按声明顺序初始化包级变量，再执行 init；跨包时先完成被依赖包。示例在同一文件内演示包级变量初始化与 init 早于 main。真实工程是多包结构（config/util 子包）。",
-        "code": "// T059 包、导出规则与初始化顺序。\n//\n// 包把代码分组；导出（大写）标识符可被其他包访问，小写仅包内可见。\n// init 函数与包级变量初始化在包被导入时按依赖顺序自动执行。\n//\n// 完整多文件多包工程（module-project，不能一键导入）：\n//   T059/\n//   ├── go.mod              // module qfli.example/t059  (go 1.21)\n//   ├── main.go             // 本文件：程序入口\n//   ├── internal/config/config.go  // 包 config：包级变量 + init\n//   └── internal/util/util.go      // 包 util：导出/非导出演示\n//\n// 运行（官方 SDK）：go run .\n//\n// 为在单文件内演示同一机制，这里用本包内的包级变量初始化与 init，\n// 并注释说明真实的跨包结构。\npackage main\n\nimport \"fmt\"\n\n// 包级变量按声明顺序初始化。\nvar a = 1\nvar b = a + 1 // 依赖 a\n\n// exported 大写导出；unexported 小写仅本包可见。\nconst exported = \"visible outside package\"\nconst unexported = \"visible only inside package\"\n\n// init 在 main 之前执行；多个 init 按文件/声明顺序执行。\nfunc init() {\n\tfmt.Println(\"init: package config loaded, a =\", a)\n}\n\nfunc main() {\n\tfmt.Println(\"a =\", a, \"b =\", b)\n\tfmt.Println(\"exported:\", exported)\n\tfmt.Println(\"unexported:\", unexported)\n\n\t// 真实工程里，config 包的 init 会先于本 main 包执行（导入依赖顺序）。\n\tfmt.Println(\"init runs before main; across packages it follows import order\")\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\n包把代码分组；导出（大写）标识符可被其他包访问，小写仅包内可见。init 函数与包级变量初始化在包被导入时自动执行，顺序遵循：先按声明顺序初始化包级变量，再执行 init；跨包时先完成被依赖包。示例在同一文件内演示包级变量初始化与 init 早于 main。真实工程是多包结构（config/util 子包）。",
+        "code": "// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。\n// T059 包、导出规则与初始化顺序。\n//\n// 包把代码分组；导出（大写）标识符可被其他包访问，小写仅包内可见。\n// init 函数与包级变量初始化在包被导入时按依赖顺序自动执行。\n//\n// 完整多文件多包工程（module-project，导入时附带辅助文件）：\n//   T059/\n//   ├── go.mod              // module qfli.example/t059  (go 1.21)\n//   ├── main.go             // 本文件：程序入口\n//   ├── internal/config/config.go  // 包 config：包级变量 + init\n//   └── internal/util/util.go      // 包 util：导出/非导出演示\n//\n// 运行（官方 SDK）：go run .\n//\n// 为在单文件内演示同一机制，这里用本包内的包级变量初始化与 init，\n// 并注释说明真实的跨包结构。\npackage main\n\nimport \"fmt\"\n\n// 包级变量按声明顺序初始化。\nvar a = 1\nvar b = a + 1 // 依赖 a\n\n// exported 大写导出；unexported 小写仅本包可见。\nconst exported = \"visible outside package\"\nconst unexported = \"visible only inside package\"\n\n// init 在 main 之前执行；多个 init 按文件/声明顺序执行。\nfunc init() {\n\tfmt.Println(\"init: package config loaded, a =\", a)\n}\n\nfunc main() {\n\tfmt.Println(\"a =\", a, \"b =\", b)\n\tfmt.Println(\"exported:\", exported)\n\tfmt.Println(\"unexported:\", unexported)\n\n\t// 真实工程里，config 包的 init 会先于本 main 包执行（导入依赖顺序）。\n\tfmt.Println(\"init runs before main; across packages it follows import order\")\n}\n",
         "output": "init: package config loaded, a = 1\na = 1 b = 2\nexported: visible outside package\nunexported: visible only inside package\ninit runs before main; across packages it follows import order",
         "objective": "能说明导出（大写）与非导出（小写）规则，以及 init 与包级变量的执行顺序。",
         "prerequisites": [
@@ -2828,7 +2966,10 @@
             "hint": "小写标识符无法从其他包访问。",
             "answer": "util.Add 可调用；util.helper 会编译报错 undefined。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t059\n\ngo 1.21"
+        }
       }
     ]
   },
@@ -2860,8 +3001,8 @@
           "replace",
           "离线"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。go.mod 声明模块路径与 Go 版本，并记录依赖及版本；go.sum 记录校验和。示例在完全离线、无第三方依赖的前提下，用本地 replace 指向同仓目录来演示模块依赖解析，并内联语义化版本比较以展示版本选择。真实工程是“主模块 + lib 子模块”的多模块结构。",
-        "code": "// T060 Go Modules：go.mod 与依赖版本。\n//\n// go.mod 声明模块路径与 Go 版本，并记录依赖及版本；go.sum 记录校验和。\n// 本例演示“本地替换（replace）”——在完全离线、无第三方依赖的前提下，\n// 用 replace 指向同仓本地目录来演示模块依赖解析。\n//\n// 完整多模块工程（module-project，不能一键导入）：\n//   T060/\n//   ├── go.mod        // module qfli.example/t060; replace qfli.example/lib => ./lib\n//   ├── main.go       // 本文件：导入 lib 包\n//   └── lib/\n//       ├── go.mod    // module qfli.example/lib  (go 1.21)\n//       └── lib.go    // 提供 Greeting()\n//\n// 运行（官方 SDK，离线）：go run .\n//\n// 为在单文件内演示“模块版本/依赖”的解析结果，这里内联一个语义化版本比较，\n// 并注明确切的 go.mod 结构与命令。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Version 是简化语义化版本。\ntype Version struct{ Major, Minor, Patch int }\n\nfunc parse(s string) Version {\n\ts = strings.TrimPrefix(s, \"v\")\n\tvar v Version\n\tfmt.Sscanf(s, \"%d.%d.%d\", &v.Major, &v.Minor, &v.Patch)\n\treturn v\n}\n\nfunc compare(a, b Version) int {\n\tswitch {\n\tcase a.Major != b.Major:\n\t\treturn a.Major - b.Major\n\tcase a.Minor != b.Minor:\n\t\treturn a.Minor - b.Minor\n\tdefault:\n\t\treturn a.Patch - b.Patch\n\t}\n}\n\nfunc main() {\n\t// 模拟 replace + require 的解析：本地 replace 的模块版本仍按声明参与选择。\n\trequire := []string{\"v0.1.0\", \"v0.1.2\", \"v0.1.1\"}\n\tbest := parse(require[0])\n\tfor _, r := range require[1:] {\n\t\tif v := parse(r); compare(v, best) > 0 {\n\t\t\tbest = v\n\t\t}\n\t}\n\tfmt.Printf(\"selected local module version: v%d.%d.%d\\n\", best.Major, best.Minor, best.Patch)\n\n\tfmt.Println(\"go.mod:\")\n\tfmt.Println(\"  module qfli.example/t060\")\n\tfmt.Println(\"  go 1.21\")\n\tfmt.Println(\"  require qfli.example/lib v0.1.2\")\n\tfmt.Println(\"  replace qfli.example/lib => ./lib\")\n\tfmt.Println(\"run: go run .  (no network; resolved via local replace)\")\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\ngo.mod 声明模块路径与 Go 版本，并记录依赖及版本；go.sum 记录校验和。示例在完全离线、无第三方依赖的前提下，用本地 replace 指向同仓目录来演示模块依赖解析，并内联语义化版本比较以展示版本选择。真实工程是“主模块 + lib 子模块”的多模块结构。",
+        "code": "// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。\n// T060 Go Modules：go.mod 与依赖版本。\n//\n// go.mod 声明模块路径与 Go 版本，并记录依赖及版本；go.sum 记录校验和。\n// 本例演示“本地替换（replace）”——在完全离线、无第三方依赖的前提下，\n// 用 replace 指向同仓本地目录来演示模块依赖解析。\n//\n// 完整多模块工程（module-project，导入时附带辅助文件）：\n//   T060/\n//   ├── go.mod        // module qfli.example/t060; replace qfli.example/lib => ./lib\n//   ├── main.go       // 本文件：导入 lib 包\n//   └── lib/\n//       ├── go.mod    // module qfli.example/lib  (go 1.21)\n//       └── lib.go    // 提供 Greeting()\n//\n// 运行（官方 SDK，离线）：go run .\n//\n// 为在单文件内演示“模块版本/依赖”的解析结果，这里内联一个语义化版本比较，\n// 并注明确切的 go.mod 结构与命令。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\n// Version 是简化语义化版本。\ntype Version struct{ Major, Minor, Patch int }\n\nfunc parse(s string) Version {\n\ts = strings.TrimPrefix(s, \"v\")\n\tvar v Version\n\tfmt.Sscanf(s, \"%d.%d.%d\", &v.Major, &v.Minor, &v.Patch)\n\treturn v\n}\n\nfunc compare(a, b Version) int {\n\tswitch {\n\tcase a.Major != b.Major:\n\t\treturn a.Major - b.Major\n\tcase a.Minor != b.Minor:\n\t\treturn a.Minor - b.Minor\n\tdefault:\n\t\treturn a.Patch - b.Patch\n\t}\n}\n\nfunc main() {\n\t// 模拟 replace + require 的解析：本地 replace 的模块版本仍按声明参与选择。\n\trequire := []string{\"v0.1.0\", \"v0.1.2\", \"v0.1.1\"}\n\tbest := parse(require[0])\n\tfor _, r := range require[1:] {\n\t\tif v := parse(r); compare(v, best) > 0 {\n\t\t\tbest = v\n\t\t}\n\t}\n\tfmt.Printf(\"selected local module version: v%d.%d.%d\\n\", best.Major, best.Minor, best.Patch)\n\n\tfmt.Println(\"go.mod:\")\n\tfmt.Println(\"  module qfli.example/t060\")\n\tfmt.Println(\"  go 1.21\")\n\tfmt.Println(\"  require qfli.example/lib v0.1.2\")\n\tfmt.Println(\"  replace qfli.example/lib => ./lib\")\n\tfmt.Println(\"run: go run .  (no network; resolved via local replace)\")\n}\n",
         "output": "selected local module version: v0.1.2\ngo.mod:\n  module qfli.example/t060\n  go 1.21\n  require qfli.example/lib v0.1.2\n  replace qfli.example/lib => ./lib\nrun: go run .  (no network; resolved via local replace)",
         "objective": "能初始化模块并理解 require/replace，在离线环境下用本地 replace 解析依赖。",
         "prerequisites": [
@@ -2877,7 +3018,10 @@
             "hint": "在 go.mod 写 replace qfli.example/lib => ./lib。",
             "answer": "lib/go.mod 声明 module qfli.example/lib；main import 并调用，go run . 正常。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t060\n\ngo 1.21"
+        }
       }
     ]
   },
@@ -2907,7 +3051,7 @@
           "可见性",
           "导出规则"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。Go 的可见性由标识符首字母决定：大写导出、小写不导出，这比很多语言的 public/private 关键字更简单，但粒度是“包”级。internal 规则再进一步：任何路径中含有 internal 的目录，其包只能被以该 internal 目录父目录为根的树内代码导入。于是 internal/ 成为“模块私有”的约定手段——外部模块即使知道 import 路径，编译器也会拒绝。需要强调的是，它是编译期约束，不是运行时安全边界；能拿到源码或二进制的人仍可读代码。示例本身在单文件内演示导出/非导出差异，并在注释中给出完整的 cmd/ 与 internal/secret/ 目录结构；因为真实的 internal 规则需要子目录，故标记为 module-project。",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\nGo 的可见性由标识符首字母决定：大写导出、小写不导出，这比很多语言的 public/private 关键字更简单，但粒度是“包”级。internal 规则再进一步：任何路径中含有 internal 的目录，其包只能被以该 internal 目录父目录为根的树内代码导入。于是 internal/ 成为“模块私有”的约定手段——外部模块即使知道 import 路径，编译器也会拒绝。需要强调的是，它是编译期约束，不是运行时安全边界；能拿到源码或二进制的人仍可读代码。示例本身在单文件内演示导出/非导出差异，并在注释中给出完整的 cmd/ 与 internal/secret/ 目录结构；因为真实的 internal 规则需要子目录，故标记为 module-project。",
         "code": "// T061 internal 包与可见性：演示 Go 如何用 internal 目录限制包被外部导入。\n//\n// 本文件本身是可直接 `go run` 的单文件程序；它演示 internal 规则时，\n// 同时说明一个完整的多文件工程结构（见教程文本）：\n//\n//\tmodule demo\n//\t├── main.go            // 导入 demo/internal/secret（合法：同一 module 内）\n//\t├── internal/secret/secret.go   // 包 secret，只有 demo 模块内可导入\n//\t└── external/main.go    // 若放在另一个 module，导入 internal 会被编译器拒绝\n//\n// 这里我们只保留 main 程序，用一段注释与可运行逻辑说明可见性规则：\n// 大写标识符导出，小写不导出；internal 目录进一步把包限制在模块内。\npackage main\n\nimport \"fmt\"\n\n// Exported 以大写字母开头，导出到本包之外可见。\nconst Exported = \"visible outside package\"\n\n// unexported 以小写字母开头，仅本包内可见。\nconst unexported = \"visible only inside package\"\n\nfunc main() {\n\tfmt.Println(\"exported constant:\", Exported)\n\tfmt.Println(\"unexported constant:\", unexported)\n\n\t// 在同一文件内可以访问 unexported；若把这一行放进另一个包，编译会失败：\n\t//   ./other/main.go: undefined: main.unexported\n\tfmt.Println(\"internal rule: a package under an internal/ directory may only\")\n\tfmt.Println(\"be imported by code in the directory tree rooted at internal's parent.\")\n}\n",
         "output": "exported constant: visible outside package\nunexported constant: visible only inside package\ninternal rule: a package under an internal/ directory may only\nbe imported by code in the directory tree rooted at internal's parent.",
         "objective": "能说明导出（大写）与非导出（小写）标识符的可见范围，并能用 internal/ 目录把包限制在模块内。",
@@ -2924,7 +3068,10 @@
             "hint": "内部包只能被以 internal 父目录为根的目录树内的代码导入。",
             "answer": "cmd/main.go 导入 demo/internal/secret 成功；另一个 module 导入 demo/internal/secret 时报 'use of internal package not allowed'。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t061\n\ngo 1.21"
+        }
       }
     ]
   },
@@ -2956,8 +3103,8 @@
           "约束",
           "cmp.Ordered"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。没有泛型时，同一算法要为每种类型复制一份，或在 interface{} 上做断言而丢失类型安全。类型参数 [T cmp.Ordered] 表示 T 可以是任何满足 cmp.Ordered 的类型；cmp.Ordered 是一个预声明的约束，涵盖所有可用 <、> 比较的内置类型与字符串。函数体里因此可以直接写 a < b。编译器在调用点用实际类型实例化：Min(3,7) 实例化为 int 版本，Min(\"pear\",\"apple\") 实例化为 string 版本，各自是独立的静态代码，因而没有装箱与断言开销。泛型属于 Go 的静态编译特性，本项目移动端的 Yaegi 解释器未实测支持，故标记 desktop only，不得声称移动端可运行。",
-        "code": "// T062 泛型一：类型参数与约束。\n//\n// Min/Max 在没有泛型时要为每种类型各写一份（或在 interface{} 上做断言），\n// 泛型用 [T cmp.Ordered] 表达\"T 必须可比较大小\"，一份代码服务多种类型。\n// 注意：泛型属于 Go 1.18+ 的静态编译特性，本项目的移动端 Yaegi 解释器\n// 未实测支持，因此本主题标记为 desktop only。\npackage main\n\nimport (\n\t\"cmp\"\n\t\"fmt\"\n)\n\n// Min 返回 a、b 中较小者。T 被约束为 cmp.Ordered，\n// 因此可以在函数体内直接使用 < 比较。\nfunc Min[T cmp.Ordered](a, b T) T {\n\tif a < b {\n\t\treturn a\n\t}\n\treturn b\n}\n\n// Max 同理返回较大者。编译器会为每个实际类型参数实例化一份机器码。\nfunc Max[T cmp.Ordered](a, b T) T {\n\tif a > b {\n\t\treturn a\n\t}\n\treturn b\n}\n\nfunc main() {\n\tfmt.Println(\"Min[int](3, 7) =\", Min(3, 7))\n\tfmt.Println(\"Max[int](3, 7) =\", Max(3, 7))\n\n\t// 字符串也满足 cmp.Ordered（按字典序比较）。\n\tfmt.Println(\"Min[string](\\\"pear\\\", \\\"apple\\\") =\", Min(\"pear\", \"apple\"))\n\n\t// 浮点同样适用；没有为 float64 再写一份代码。\n\tfmt.Println(\"Max[float64](2.5, 1.5) =\", Max(2.5, 1.5))\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\n没有泛型时，同一算法要为每种类型复制一份，或在 interface{} 上做断言而丢失类型安全。类型参数 [T cmp.Ordered] 表示 T 可以是任何满足 cmp.Ordered 的类型；cmp.Ordered 是标准库 cmp 包提供的约束，涵盖所有可用 <、> 比较的内置类型与字符串。函数体里因此可以直接写 a < b。编译器在调用点用实际类型实例化：Min(3,7) 实例化为 int 版本，Min(\"pear\",\"apple\") 实例化为 string 版本，各自是独立的静态代码，因而没有装箱与断言开销。类型参数及约束要求 Go 1.18+；本例使用的标准库 cmp 包要求 Go 1.21+。",
+        "code": "// T062 泛型一：类型参数与约束。\n//\n// Min/Max 在没有泛型时要为每种类型各写一份（或在 interface{} 上做断言），\n// 泛型用 [T cmp.Ordered] 表达\"T 必须可比较大小\"，一份代码服务多种类型。\n// 类型参数需要 Go 1.18+；本例的标准库 cmp 包需要 Go 1.21+。\npackage main\n\nimport (\n\t\"cmp\"\n\t\"fmt\"\n)\n\n// Min 返回 a、b 中较小者。T 被约束为 cmp.Ordered，\n// 因此可以在函数体内直接使用 < 比较。\nfunc Min[T cmp.Ordered](a, b T) T {\n\tif a < b {\n\t\treturn a\n\t}\n\treturn b\n}\n\n// Max 同理返回较大者。编译器会为每个实际类型参数实例化一份机器码。\nfunc Max[T cmp.Ordered](a, b T) T {\n\tif a > b {\n\t\treturn a\n\t}\n\treturn b\n}\n\nfunc main() {\n\tfmt.Println(\"Min[int](3, 7) =\", Min(3, 7))\n\tfmt.Println(\"Max[int](3, 7) =\", Max(3, 7))\n\n\t// 字符串也满足 cmp.Ordered（按字典序比较）。\n\tfmt.Println(\"Min[string](\\\"pear\\\", \\\"apple\\\") =\", Min(\"pear\", \"apple\"))\n\n\t// 浮点同样适用；没有为 float64 再写一份代码。\n\tfmt.Println(\"Max[float64](2.5, 1.5) =\", Max(2.5, 1.5))\n}\n",
         "output": "Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string](\"pear\", \"apple\") = apple\nMax[float64](2.5, 1.5) = 2.5",
         "objective": "能声明带类型参数的函数并为其指定约束，说明泛型在编译期如何实例化。",
         "prerequisites": [
@@ -2967,7 +3114,7 @@
         "pitfalls": [
           "把任何类型都塞进 any：失去 < 比较能力，编译失败；应使用 cmp.Ordered 之类的约束。",
           "以为泛型有运行期类型信息：Go 泛型在编译期为每个实例化类型生成代码，运行期没有“泛型擦除”这回事。",
-          "忘记泛型需要 Go 1.18+，且本项目移动端 Yaegi 未实测支持——本主题标记为 desktop only。"
+          "泛型语法需要 Go 1.18+，本例的标准库 cmp 包需要 Go 1.21+；使用旧工具链会失败。"
         ],
         "exercises": [
           {
@@ -2975,7 +3122,10 @@
             "hint": "同一约束函数体里可以反复使用 < 比较。",
             "answer": "func Min3[T cmp.Ordered](a, b, c T) T { return Min(a, Min(b, c)) }；SliceMin 循环取小。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t062\n\ngo 1.21"
+        }
       }
     ]
   },
@@ -3007,8 +3157,8 @@
           "~ 底层类型",
           "泛型"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。自定义约束本质是一个只含类型集合的 interface。`~int` 里的波浪号表示“底层类型为 int 的任意命名类型”，因此 `type Celsius float64` 也满足 `~float64`。`|` 是集合并，把多个候选类型合并成一个约束。这样 Sum 就能同时服务 int、int64、float64 以及它们的命名类型，而仍然保有编译期检查——传入一个 []bool 会直接编译失败。与 T062 用现成约束不同，本例重点在“如何自己写约束”，这也是设计可复用泛型库的关键。desktop only，理由同 T062。",
-        "code": "// T063 泛型二：自定义约束与联合类型。\n//\n// 约束不仅能用一个现成的接口（如 cmp.Ordered），还能自己定义：\n//   type Number interface { ~int | ~float64 }\n// 其中 ~int 表示\"底层类型是 int 的任意命名类型\"，| 是类型并集。\n// Sum 因此可以同时接受整数和浮点，且仍然保有编译期类型检查。\n// 泛型 = desktop only（移动端 Yaegi 未实测）。\npackage main\n\nimport \"fmt\"\n\n// Number 是一个自定义约束：允许底层类型为 int、int64 或 float64 的任意类型。\ntype Number interface {\n\t~int | ~int64 | ~float64\n}\n\n// Sum 把切片里所有元素相加。因为 T 满足 Number，可以直接用 + 运算。\nfunc Sum[T Number](values []T) T {\n\tvar total T // 零值：数值类型为 0\n\tfor _, v := range values {\n\t\ttotal += v\n\t}\n\treturn total\n}\n\n// Celsius 是一个\"底层类型为 float64\"的命名类型，它同样满足 Number，\n// 这就是 ~ 的作用：不要求类型本身叫 float64，只要底层是 float64。\ntype Celsius float64\n\nfunc main() {\n\tfmt.Println(\"Sum([]int{1,2,3}) =\", Sum([]int{1, 2, 3}))\n\tfmt.Println(\"Sum([]int64{10,20,30}) =\", Sum([]int64{10, 20, 30}))\n\tfmt.Println(\"Sum([]float64{1.5,2.5}) =\", Sum([]float64{1.5, 2.5}))\n\n\ttemps := []Celsius{20.5, 19.5, 21.0}\n\tfmt.Println(\"Sum([]Celsius{...}) =\", Sum(temps))\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\n自定义约束本质是一个只含类型集合的 interface。`~int` 里的波浪号表示“底层类型为 int 的任意命名类型”，因此 `type Celsius float64` 也满足 `~float64`。`|` 是集合并，把多个候选类型合并成一个约束。这样 Sum 就能同时服务 int、int64、float64 以及它们的命名类型，而仍然保有编译期检查——传入一个 []bool 会直接编译失败。与 T062 用现成约束不同，本例重点在“如何自己写约束”，这也是设计可复用泛型库的关键。类型集合约束用于类型参数，不能作为普通运行时接口值的类型。",
+        "code": "// T063 泛型二：自定义约束与联合类型。\n//\n// 约束不仅能用一个现成的接口（如 cmp.Ordered），还能自己定义：\n//   type Number interface { ~int | ~float64 }\n// 其中 ~int 表示\"底层类型是 int 的任意命名类型\"，| 是类型并集。\n// Sum 因此可以同时接受整数和浮点，且仍然保有编译期类型检查。\n// 类型参数与约束需要 Go 1.18+。\npackage main\n\nimport \"fmt\"\n\n// Number 是一个自定义约束：允许底层类型为 int、int64 或 float64 的任意类型。\ntype Number interface {\n\t~int | ~int64 | ~float64\n}\n\n// Sum 把切片里所有元素相加。因为 T 满足 Number，可以直接用 + 运算。\nfunc Sum[T Number](values []T) T {\n\tvar total T // 零值：数值类型为 0\n\tfor _, v := range values {\n\t\ttotal += v\n\t}\n\treturn total\n}\n\n// Celsius 是一个\"底层类型为 float64\"的命名类型，它同样满足 Number，\n// 这就是 ~ 的作用：不要求类型本身叫 float64，只要底层是 float64。\ntype Celsius float64\n\nfunc main() {\n\tfmt.Println(\"Sum([]int{1,2,3}) =\", Sum([]int{1, 2, 3}))\n\tfmt.Println(\"Sum([]int64{10,20,30}) =\", Sum([]int64{10, 20, 30}))\n\tfmt.Println(\"Sum([]float64{1.5,2.5}) =\", Sum([]float64{1.5, 2.5}))\n\n\ttemps := []Celsius{20.5, 19.5, 21.0}\n\tfmt.Println(\"Sum([]Celsius{...}) =\", Sum(temps))\n}\n",
         "output": "Sum([]int{1,2,3}) = 6\nSum([]int64{10,20,30}) = 60\nSum([]float64{1.5,2.5}) = 4\nSum([]Celsius{...}) = 61",
         "objective": "能定义形如 `~int | ~float64` 的联合约束，并用它让泛型函数接受命名类型。",
         "prerequisites": [
@@ -3025,7 +3175,10 @@
             "hint": "求和后用 float64(total) / float64(len(xs))。",
             "answer": "type Integer interface{ ~int | ~int64 }；Average 内部先 Sum 再转 float64 相除。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t063\n\ngo 1.21"
+        }
       }
     ]
   },
@@ -3057,8 +3210,8 @@
           "方法",
           "LIFO"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。泛型不仅用于函数，也能定义类型：Stack[T] 中的 T 是元素类型，字段 items 的类型因此写成 []T。方法接收者写 *Stack[T]，让方法体里的 T 与方法绑定的类型参数一致。用 Stack[int] 与 Stack[string] 分别实例化，得到两份独立、类型安全的实现——不会有 interface{} 断言，也不会混入错误类型。本例还演示 Pop 用逗号-ok 报告空栈。泛型类型同样是编译期特性，desktop only。",
-        "code": "// T064 泛型三：泛型类型（容器）。\n//\n// 泛型不仅能用于函数，也能定义带类型参数的类型。Stack[T] 用切片存元素，\n// 压栈/弹栈/判空都由同一份代码实现，实例化 Stack[int]、Stack[string] 都行。\n// 泛型 = desktop only（移动端 Yaegi 未实测）。\npackage main\n\nimport \"fmt\"\n\n// Stack 是一个后进先出（LIFO）栈。类型参数 T 是元素类型。\ntype Stack[T any] struct {\n\titems []T\n}\n\n// Push 把元素压入栈顶。\nfunc (s *Stack[T]) Push(v T) {\n\ts.items = append(s.items, v)\n}\n\n// Pop 弹出栈顶元素。第二个返回值表示是否成功（空栈时 ok=false）。\nfunc (s *Stack[T]) Pop() (T, bool) {\n\tvar zero T\n\tif len(s.items) == 0 {\n\t\treturn zero, false\n\t}\n\tlast := len(s.items) - 1\n\tv := s.items[last]\n\ts.items = s.items[:last]\n\treturn v, true\n}\n\n// Len 返回当前元素个数。\nfunc (s *Stack[T]) Len() int { return len(s.items) }\n\nfunc main() {\n\tvar ints Stack[int]\n\tints.Push(1)\n\tints.Push(2)\n\tints.Push(3)\n\n\tfor ints.Len() > 0 {\n\t\tv, _ := ints.Pop()\n\t\tfmt.Println(\"popped int:\", v)\n\t}\n\t_, ok := ints.Pop()\n\tfmt.Println(\"pop empty stack ok =\", ok)\n\n\tvar words Stack[string]\n\twords.Push(\"go\")\n\twords.Push(\"generics\")\n\tw, _ := words.Pop()\n\tfmt.Println(\"popped string:\", w)\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\n泛型不仅用于函数，也能定义类型：Stack[T] 中的 T 是元素类型，字段 items 的类型因此写成 []T。方法接收者写 *Stack[T]，让方法体里的 T 与方法绑定的类型参数一致。用 Stack[int] 与 Stack[string] 分别实例化，得到两份独立、类型安全的实现——不会有 interface{} 断言，也不会混入错误类型。本例还演示 Pop 用逗号-ok 报告空栈。泛型类型的每次使用都要提供或推断具体类型参数。",
+        "code": "// T064 泛型三：泛型类型（容器）。\n//\n// 泛型不仅能用于函数，也能定义带类型参数的类型。Stack[T] 用切片存元素，\n// 压栈/弹栈/判空都由同一份代码实现，实例化 Stack[int]、Stack[string] 都行。\n// 类型参数与约束需要 Go 1.18+。\npackage main\n\nimport \"fmt\"\n\n// Stack 是一个后进先出（LIFO）栈。类型参数 T 是元素类型。\ntype Stack[T any] struct {\n\titems []T\n}\n\n// Push 把元素压入栈顶。\nfunc (s *Stack[T]) Push(v T) {\n\ts.items = append(s.items, v)\n}\n\n// Pop 弹出栈顶元素。第二个返回值表示是否成功（空栈时 ok=false）。\nfunc (s *Stack[T]) Pop() (T, bool) {\n\tvar zero T\n\tif len(s.items) == 0 {\n\t\treturn zero, false\n\t}\n\tlast := len(s.items) - 1\n\tv := s.items[last]\n\ts.items = s.items[:last]\n\treturn v, true\n}\n\n// Len 返回当前元素个数。\nfunc (s *Stack[T]) Len() int { return len(s.items) }\n\nfunc main() {\n\tvar ints Stack[int]\n\tints.Push(1)\n\tints.Push(2)\n\tints.Push(3)\n\n\tfor ints.Len() > 0 {\n\t\tv, _ := ints.Pop()\n\t\tfmt.Println(\"popped int:\", v)\n\t}\n\t_, ok := ints.Pop()\n\tfmt.Println(\"pop empty stack ok =\", ok)\n\n\tvar words Stack[string]\n\twords.Push(\"go\")\n\twords.Push(\"generics\")\n\tw, _ := words.Pop()\n\tfmt.Println(\"popped string:\", w)\n}\n",
         "output": "popped int: 3\npopped int: 2\npopped int: 1\npop empty stack ok = false\npopped string: generics",
         "objective": "能定义带类型参数的类型并为它编写方法，理解泛型类型如何实例化。",
         "prerequisites": [
@@ -3075,7 +3228,10 @@
             "hint": "Peek 与 Pop 类似但不改 items；PushAll 可先 append slice 再展开。",
             "answer": "Peek 返回最后一个元素与 ok；PushAll 用 s.items = append(s.items, vs...)。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t064\n\ngo 1.21"
+        }
       }
     ]
   },
@@ -3107,8 +3263,8 @@
           "多态",
           "选型"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。泛型与接口解决的是不同问题。泛型适合“同一套算法服务一组已知、可约束的类型”，优点是编译期安全检查、无装箱/断言开销。接口适合“运行期多态”，例如一个集合里同时放不同类型、或允许第三方插件新增实现。本例用同一求和需求展示两者：SumGeneric[T] 靠约束直接相加；SumInterface 靠 Value() 方法取数值。运行结果相同，选型取决于你是想要静态类型安全与性能，还是运行期扩展性。二者并非互斥——实际代码常在接口边界内使用泛型容器。",
-        "code": "// T065 泛型与接口的选型对比。\n//\n// 同一道题——\"对一组元素求和\"——用两种方式实现：\n//   1) 泛型函数 SumGeneric[T]：编译期特化，无装箱、无断言，但约束必须能表达运算。\n//   2) 接口 summable：运行期多态，能容纳异构实现，但有类型断言/装箱开销。\n// 运行结果相同；差别在\"类型安全与性能\"和\"扩展性\"之间的取舍。\n// 泛型 = desktop only（移动端 Yaegi 未实测）。\npackage main\n\nimport \"fmt\"\n\n// —— 方案一：泛型 ——\ntype Number interface{ ~int | ~float64 }\n\nfunc SumGeneric[T Number](xs []T) T {\n\tvar total T\n\tfor _, x := range xs {\n\t\ttotal += x\n\t}\n\treturn total\n}\n\n// —— 方案二：接口 ——\n// Summable 是任何能自报数值的类型的接口。\ntype Summable interface {\n\tValue() float64\n}\n\n// SumInterface 通过接口方法求和，返回 float64。\nfunc SumInterface(xs []Summable) float64 {\n\tvar total float64\n\tfor _, x := range xs {\n\t\ttotal += x.Value()\n\t}\n\treturn total\n}\n\n// Money 是一个实现了 Summable 的具体类型。\ntype Money float64\n\nfunc (m Money) Value() float64 { return float64(m) }\n\nfunc main() {\n\tnums := []int{1, 2, 3, 4}\n\tfmt.Println(\"generic Sum[int] =\", SumGeneric(nums))\n\tfmt.Println(\"generic Sum[float64] =\", SumGeneric([]float64{1.5, 2.5}))\n\n\tsums := []Summable{Money(1.5), Money(2.5), Money(3.0)}\n\tfmt.Println(\"interface sum =\", SumInterface(sums))\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\n泛型与接口解决的是不同问题。泛型适合“同一套算法服务一组已知、可约束的类型”，优点是编译期安全检查、无装箱/断言开销。接口适合“运行期多态”，例如一个集合里同时放不同类型、或允许第三方插件新增实现。本例用同一求和需求展示两者：SumGeneric[T] 靠约束直接相加；SumInterface 靠 Value() 方法取数值。运行结果相同，选型取决于你是想要静态类型安全与性能，还是运行期扩展性。二者并非互斥——实际代码常在接口边界内使用泛型容器。",
+        "code": "// T065 泛型与接口的选型对比。\n//\n// 同一道题——\"对一组元素求和\"——用两种方式实现：\n//   1) 泛型函数 SumGeneric[T]：编译期特化，无装箱、无断言，但约束必须能表达运算。\n//   2) 接口 summable：运行期多态，能容纳异构实现，但有类型断言/装箱开销。\n// 运行结果相同；差别在\"类型安全与性能\"和\"扩展性\"之间的取舍。\n// 类型参数与约束需要 Go 1.18+。\npackage main\n\nimport \"fmt\"\n\n// —— 方案一：泛型 ——\ntype Number interface{ ~int | ~float64 }\n\nfunc SumGeneric[T Number](xs []T) T {\n\tvar total T\n\tfor _, x := range xs {\n\t\ttotal += x\n\t}\n\treturn total\n}\n\n// —— 方案二：接口 ——\n// Summable 是任何能自报数值的类型的接口。\ntype Summable interface {\n\tValue() float64\n}\n\n// SumInterface 通过接口方法求和，返回 float64。\nfunc SumInterface(xs []Summable) float64 {\n\tvar total float64\n\tfor _, x := range xs {\n\t\ttotal += x.Value()\n\t}\n\treturn total\n}\n\n// Money 是一个实现了 Summable 的具体类型。\ntype Money float64\n\nfunc (m Money) Value() float64 { return float64(m) }\n\nfunc main() {\n\tnums := []int{1, 2, 3, 4}\n\tfmt.Println(\"generic Sum[int] =\", SumGeneric(nums))\n\tfmt.Println(\"generic Sum[float64] =\", SumGeneric([]float64{1.5, 2.5}))\n\n\tsums := []Summable{Money(1.5), Money(2.5), Money(3.0)}\n\tfmt.Println(\"interface sum =\", SumInterface(sums))\n}\n",
         "output": "generic Sum[int] = 10\ngeneric Sum[float64] = 4\ninterface sum = 7",
         "objective": "能根据“是否需要跨类型复用运算”与“是否需要运行期异构”选择泛型还是接口。",
         "prerequisites": [
@@ -3125,7 +3281,10 @@
             "hint": "泛型要求编译期已知类型集；接口允许运行期新实现。",
             "answer": "接口方案更适合运行期扩展新类型；泛型方案类型更安全、无断言开销。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t065\n\ngo 1.21"
+        }
       }
     ]
   },
@@ -3175,7 +3334,8 @@
             "hint": "接口方法签名如 NextID() int。",
             "answer": "定义 IDGen 接口，fixedIDGen 每次返回预置序列；Greeter 同时注入 Clock 与 IDGen。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -3225,7 +3385,8 @@
             "hint": "只需新增一个返回 Option 的函数，NewServer 签名不变。",
             "answer": "func WithTLS(on bool) Option { return func(s *Server){ s.TLS = on } }，现有调用零改动。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -3257,8 +3418,8 @@
           "依赖解析",
           "可复现构建"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。语义化版本用 major.minor.patch 表达兼容性：major 变更表示破坏性改动，minor 增加向后兼容的新功能，patch 为向后兼容的修复。Go 的最小版本选择（MVS）在解析依赖时，对所有约束取“满足全部要求的最小可行版本”。这与很多包管理器“取最新”不同，好处是升级只在你显式要求时发生，构建因此可复现。本例用 Version 类型与 Compare 实现语义化版本比较，再对一组要求求 MVS，并对照“取最大”的差异。工程上是 module-project：真实 MVS 由 go 命令在 go.mod/go.sum 上完成，本例用纯逻辑演示其规则。",
-        "code": "// T068 语义化版本与最小版本选择（MVS）。\n//\n// 本示例演示\"最小版本选择\"的决策逻辑，不联网：给定若干依赖对版本的要求，\n// 计算最终选中的版本——Go 的选择规则是\"满足所有要求的最小可行版本\"，\n// 而不是\"取最大\"或\"取最新\"。这保证构建可复现。\n//\n// 完整工程结构（module-project，不能一键导入）：\n//   demo/\n//   ├── go.mod                // module demo\\n\\ngo 1.27\n//   ├── main.go               // 本文件\n//   ├── internal/version/     // 语义化版本解析\n//   │   └── version.go\n//   └── internal/mvs/mvs.go   // MVS 计算\n// 运行：go run .\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\n// Version 是解析后的语义化版本 major.minor.patch。\ntype Version struct {\n\tMajor, Minor, Patch int\n}\n\n// Parse 解析 \"1.2.3\" 形式的版本字符串。\nfunc Parse(s string) (Version, error) {\n\ts = strings.TrimPrefix(s, \"v\")\n\tparts := strings.Split(s, \".\")\n\tif len(parts) != 3 {\n\t\treturn Version{}, fmt.Errorf(\"invalid version %q\", s)\n\t}\n\tnums := make([]int, 3)\n\tfor i, p := range parts {\n\t\tn, err := strconv.Atoi(p)\n\t\tif err != nil {\n\t\t\treturn Version{}, fmt.Errorf(\"invalid version %q: %w\", s, err)\n\t\t}\n\t\tnums[i] = n\n\t}\n\treturn Version{nums[0], nums[1], nums[2]}, nil\n}\n\n// String 输出规范化的 v1.2.3 形式。\nfunc (v Version) String() string { return fmt.Sprintf(\"v%d.%d.%d\", v.Major, v.Minor, v.Patch) }\n\n// Compare 按语义化版本规则比较：-1 小于，0 相等，1 大于。\nfunc (v Version) Compare(o Version) int {\n\tswitch {\n\tcase v.Major != o.Major:\n\t\treturn sign(v.Major - o.Major)\n\tcase v.Minor != o.Minor:\n\t\treturn sign(v.Minor - o.Minor)\n\tdefault:\n\t\treturn sign(v.Patch - o.Patch)\n\t}\n}\n\nfunc sign(n int) int {\n\tif n < 0 {\n\t\treturn -1\n\t}\n\tif n > 0 {\n\t\treturn 1\n\t}\n\treturn 0\n}\n\n// SelectMVS 返回满足所有约束的最小版本。\n// constraints 是\"每个依赖方要求的版本\"列表。\nfunc SelectMVS(constraints []Version) (Version, error) {\n\tif len(constraints) == 0 {\n\t\treturn Version{}, fmt.Errorf(\"no constraints\")\n\t}\n\tsorted := append([]Version(nil), constraints...)\n\tsort.Slice(sorted, func(i, j int) bool { return sorted[i].Compare(sorted[j]) < 0 })\n\t// 最小可行版本 = 所有下界中的最大者（因为每个版本都是它的下界）。\n\tbest := sorted[0]\n\tfor _, v := range sorted[1:] {\n\t\tif v.Compare(best) > 0 {\n\t\t\tbest = v\n\t\t}\n\t}\n\treturn best, nil\n}\n\nfunc main() {\n\t// 三个依赖方分别要求不同版本；MVS 选中满足全部要求的最小版本。\n\traw := []string{\"v1.2.0\", \"v1.5.3\", \"v1.4.9\"}\n\tvar cs []Version\n\tfor _, r := range raw {\n\t\tv, err := Parse(r)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tcs = append(cs, v)\n\t}\n\tselected, err := SelectMVS(cs)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"constraints:\", strings.Join(raw, \", \"))\n\tfmt.Println(\"selected (MVS) =\", selected)\n\n\t// 对比：如果错误地\"取最新/最大\"，结果会不同，从而破坏最小依赖原则。\n\tmaxV := cs[0]\n\tfor _, v := range cs[1:] {\n\t\tif v.Compare(maxV) > 0 {\n\t\t\tmaxV = v\n\t\t}\n\t}\n\tif maxV == selected {\n\t\tfmt.Println(\"此时最大版本恰好等于最小可行版本\")\n\t}\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\n语义化版本用 major.minor.patch 表达兼容性：major 变更表示破坏性改动，minor 增加向后兼容的新功能，patch 为向后兼容的修复。Go 的最小版本选择（MVS）在解析依赖时，对所有约束取“满足全部要求的最小可行版本”。这与很多包管理器“取最新”不同，好处是升级只在你显式要求时发生，构建因此可复现。本例用 Version 类型与 Compare 实现语义化版本比较，再对一组要求求 MVS，并对照“取最大”的差异。工程上是 module-project：真实 MVS 由 go 命令在 go.mod/go.sum 上完成，本例用纯逻辑演示其规则。",
+        "code": "// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。\n// T068 语义化版本与最小版本选择（MVS）。\n//\n// 本示例演示\"最小版本选择\"的决策逻辑，不联网：给定若干依赖对版本的要求，\n// 计算最终选中的版本——Go 的选择规则是\"满足所有要求的最小可行版本\"，\n// 而不是\"取最大\"或\"取最新\"。这保证构建可复现。\n//\n// 完整工程结构（module-project，导入时附带辅助文件）：\n//   demo/\n//   ├── go.mod                // module demo\\n\\ngo 1.27\n//   ├── main.go               // 本文件\n//   ├── internal/version/     // 语义化版本解析\n//   │   └── version.go\n//   └── internal/mvs/mvs.go   // MVS 计算\n// 运行：go run .\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\n// Version 是解析后的语义化版本 major.minor.patch。\ntype Version struct {\n\tMajor, Minor, Patch int\n}\n\n// Parse 解析 \"1.2.3\" 形式的版本字符串。\nfunc Parse(s string) (Version, error) {\n\ts = strings.TrimPrefix(s, \"v\")\n\tparts := strings.Split(s, \".\")\n\tif len(parts) != 3 {\n\t\treturn Version{}, fmt.Errorf(\"invalid version %q\", s)\n\t}\n\tnums := make([]int, 3)\n\tfor i, p := range parts {\n\t\tn, err := strconv.Atoi(p)\n\t\tif err != nil {\n\t\t\treturn Version{}, fmt.Errorf(\"invalid version %q: %w\", s, err)\n\t\t}\n\t\tnums[i] = n\n\t}\n\treturn Version{nums[0], nums[1], nums[2]}, nil\n}\n\n// String 输出规范化的 v1.2.3 形式。\nfunc (v Version) String() string { return fmt.Sprintf(\"v%d.%d.%d\", v.Major, v.Minor, v.Patch) }\n\n// Compare 按语义化版本规则比较：-1 小于，0 相等，1 大于。\nfunc (v Version) Compare(o Version) int {\n\tswitch {\n\tcase v.Major != o.Major:\n\t\treturn sign(v.Major - o.Major)\n\tcase v.Minor != o.Minor:\n\t\treturn sign(v.Minor - o.Minor)\n\tdefault:\n\t\treturn sign(v.Patch - o.Patch)\n\t}\n}\n\nfunc sign(n int) int {\n\tif n < 0 {\n\t\treturn -1\n\t}\n\tif n > 0 {\n\t\treturn 1\n\t}\n\treturn 0\n}\n\n// SelectMVS 返回满足所有约束的最小版本。\n// constraints 是\"每个依赖方要求的版本\"列表。\nfunc SelectMVS(constraints []Version) (Version, error) {\n\tif len(constraints) == 0 {\n\t\treturn Version{}, fmt.Errorf(\"no constraints\")\n\t}\n\tsorted := append([]Version(nil), constraints...)\n\tsort.Slice(sorted, func(i, j int) bool { return sorted[i].Compare(sorted[j]) < 0 })\n\t// 最小可行版本 = 所有下界中的最大者（因为每个版本都是它的下界）。\n\tbest := sorted[0]\n\tfor _, v := range sorted[1:] {\n\t\tif v.Compare(best) > 0 {\n\t\t\tbest = v\n\t\t}\n\t}\n\treturn best, nil\n}\n\nfunc main() {\n\t// 三个依赖方分别要求不同版本；MVS 选中满足全部要求的最小版本。\n\traw := []string{\"v1.2.0\", \"v1.5.3\", \"v1.4.9\"}\n\tvar cs []Version\n\tfor _, r := range raw {\n\t\tv, err := Parse(r)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tcs = append(cs, v)\n\t}\n\tselected, err := SelectMVS(cs)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"constraints:\", strings.Join(raw, \", \"))\n\tfmt.Println(\"selected (MVS) =\", selected)\n\n\t// 对比：如果错误地\"取最新/最大\"，结果会不同，从而破坏最小依赖原则。\n\tmaxV := cs[0]\n\tfor _, v := range cs[1:] {\n\t\tif v.Compare(maxV) > 0 {\n\t\t\tmaxV = v\n\t\t}\n\t}\n\tif maxV == selected {\n\t\tfmt.Println(\"此时最大版本恰好等于最小可行版本\")\n\t}\n}\n",
         "output": "constraints: v1.2.0, v1.5.3, v1.4.9\nselected (MVS) = v1.5.3\n此时最大版本恰好等于最小可行版本",
         "objective": "能说明语义化版本 major/minor/patch 的含义，并解释 MVS 为何能保证可复现构建。",
         "prerequisites": [
@@ -3275,7 +3436,10 @@
             "hint": "先按 major 分组，若出现两个不同 major 则返回错误。",
             "answer": "按 Major 分组；若组数大于 1 返回 error 说明需要不同的模块路径。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t068\n\ngo 1.21"
+        }
       }
     ]
   },
@@ -3307,8 +3471,8 @@
           "多平台",
           "GOOS"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、impl_default.go、impl_special.go、main.go。运行命令：go run .。构建标签与文件后缀都参与“哪些文件进入本次编译”的决定。文件后缀（_windows.go、_linux_amd64.go）由工具链按 GOOS/GOARCH 自动选择，简单直观；//go:build 行可表达更复杂条件，如 -tags special 或 !release。二者都在编译期生效，未选中的文件根本不参与编译，因此可以安全地在不同平台使用不同依赖。本例由 implName/specialImplName 两个函数演示标签切换，并刻意不打印 runtime.GOOS/GOARCH（那会随平台变化，破坏确定输出）。完整的标签切换需在多文件工程里用 `go run .` 与 `go run -tags special .` 对照验证。",
-        "code": "// T069 构建标签与多平台文件后缀。\n//\n// 用 //go:build 标签与 _GOOS 文件后缀在编译期选择平台相关实现。\n//\n// 完整多文件工程（module-project，不能一键导入）：\n//   T069/\n//   ├── go.mod            // module qfli.example/t069  (go 1.21)\n//   ├── main.go           // 本文件：打印选中的实现\n//   ├── impl_default.go   // //go:build !special\n//   └── impl_special.go   // //go:build special\n//\n// 运行（官方 SDK）：\n//   go run .              // 默认实现\n//   go run -tags special .// special 实现\n//\n// 为了输出跨平台确定，这里只打印由构建标签选择的实现名，\n// 不打印 runtime.GOOS/GOARCH（那会随平台变化）。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// implName 由构建标签在编译期决定来源于哪个文件：\n\t//   include -tags special 时来自 impl_special.go，否则来自 impl_default.go。\n\tfmt.Println(\"selected impl =\", implName())\n\tfmt.Println(\"with -tags special impl =\", specialImplName())\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\n构建标签与文件后缀都参与“哪些文件进入本次编译”的决定。文件后缀（_windows.go、_linux_amd64.go）由工具链按 GOOS/GOARCH 自动选择，简单直观；//go:build 行可表达更复杂条件，如 -tags special 或 !release。二者都在编译期生效，未选中的文件根本不参与编译，因此可以安全地在不同平台使用不同依赖。本例由 implName/specialImplName 两个函数演示标签切换，并刻意不打印 runtime.GOOS/GOARCH（那会随平台变化，破坏确定输出）。完整的标签切换需在多文件工程里用 `go run .` 与 `go run -tags special .` 对照验证。",
+        "code": "// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。\n// T069 构建标签与多平台文件后缀。\n//\n// 用 //go:build 标签与 _GOOS 文件后缀在编译期选择平台相关实现。\n//\n// 完整多文件工程（module-project，导入时附带辅助文件）：\n//   T069/\n//   ├── go.mod            // module qfli.example/t069  (go 1.21)\n//   ├── main.go           // 本文件：打印选中的实现\n//   ├── impl_default.go   // //go:build !special\n//   └── impl_special.go   // //go:build special\n//\n// 运行（官方 SDK）：\n//   go run .              // 默认实现\n//   go run -tags special .// special 实现\n//\n// 为了输出跨平台确定，这里只打印由构建标签选择的实现名，\n// 不打印 runtime.GOOS/GOARCH（那会随平台变化）。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// implName 由构建标签在编译期决定来源于哪个文件：\n\t//   include -tags special 时来自 impl_special.go，否则来自 impl_default.go。\n\tfmt.Println(\"selected impl =\", implName())\n\tfmt.Println(\"with -tags special impl =\", specialImplName())\n}\n",
         "output": "selected impl = default\nwith -tags special impl = special",
         "objective": "能用构建约束与文件后缀为不同平台/特性集提供互斥实现。",
         "prerequisites": [
@@ -3324,7 +3488,12 @@
             "hint": "文件名后缀 _windows.go/_linux.go 会自动按 GOOS 生效。",
             "answer": "两个文件各定义 func platformName() string；GOOS=windows/linux 交叉编译各自生效，且无需 //go:build。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t069\n\ngo 1.21",
+          "src/impl_default.go": "//go:build !special\n\npackage main\n\n// implName 默认实现（未加 -tags special 时选中本文件）。\nfunc implName() string { return \"default\" }\n\n// specialImplName 演示另一条标签分支的取值，便于单次运行对照。\nfunc specialImplName() string { return \"special\" }\n",
+          "src/impl_special.go": "//go:build special\n\npackage main\n\n// implName 在 -tags special 时选中本文件，返回 special。\nfunc implName() string { return \"special\" }\n\n// specialImplName 与默认实现同名，保证 main.go 两种构建下都能编译。\nfunc specialImplName() string { return \"special\" }\n"
+        }
       }
     ]
   },
@@ -3356,8 +3525,8 @@
           "Stringer",
           "枚举"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：day.go、day_string.go、gen_main.go、go.mod、main.go。运行命令：go run .。//go:generate 是一条普通注释里的约定指令：运行 go generate 时，Go 执行注释中的命令来生成源码（典型是 stringer 为枚举生成 String()）。它是显式的开发步骤，不参与 go build，也不会在别人 clone 后自动跑，因此生成结果通常要一并提交。本例不依赖外部生成器，而是手写“生成器会产出的那张表”（dayNames）并实现 String()，从而在不联网、不装工具的前提下理解生成的本质与边界（越界回退）。真实工程是 module-project：需要 day.go + 生成文件 + go.mod，并用 go generate 触发生成。",
-        "code": "// T070 代码生成与 go:generate 边界。\n//\n// go:generate 是注释里的约定指令：运行 `go generate` 时执行其中的命令来生成源码。\n// 它不是 go build 的一部分，必须显式运行；移动端 Yaegi 也不执行它。\n//\n// 本例是一个完整的多文件工程（module-project，不能一键导入）：\n//   T070/\n//   ├── go.mod            // module qfli.example/t070  (go 1.21)\n//   ├── day.go            // type Day + 常量枚举\n//   ├── day_string.go     // 本文件：由生成器产出/维护的 String() 与名字表\n//   ├── gen_main.go       // 一个本地生成器（//go:build ignore），不参与常规构建\n//   └── main.go           // 使用方\n//\n// 运行（官方 SDK）：\n//   go run .            // 使用现成的 day_string.go\n//   go generate ./...   // 重新运行 day.go 顶部 //go:generate 指定的生成器\n//                       // 生成器写回 day_string.go（内容与现有一致）\n//\n// 说明：day_string.go 是“生成物”，这里同样提交进仓库，因为它必须随源码可用。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// 有了 String()，打印 Day 得到名字而不是数字。\n\tfmt.Println(\"Monday  =>\", Monday)\n\tfmt.Println(\"Tuesday =>\", Tuesday)\n\n\t// 越界值走回退分支。\n\tout := Day(99)\n\tfmt.Println(\"Day(99) =>\", out)\n\n\tfmt.Println(\"note: `go generate ./...` reruns the generator for day_string.go;\")\n\tfmt.Println(\"      it is not part of `go build` and is desktop only here.\")\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\n//go:generate 是一条普通注释里的约定指令：运行 go generate 时，Go 执行注释中的命令来生成源码（典型是 stringer 为枚举生成 String()）。它是显式的开发步骤，不参与 go build，也不会在别人 clone 后自动跑，因此生成结果通常要一并提交。本例不依赖外部生成器，而是手写“生成器会产出的那张表”（dayNames）并实现 String()，从而在不联网、不装工具的前提下理解生成的本质与边界（越界回退）。真实工程是 module-project：需要 day.go + 生成文件 + go.mod，并用 go generate 触发生成。",
+        "code": "// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。\n// T070 代码生成与 go:generate 边界。\n//\n// go:generate 是注释里的约定指令：运行 `go generate` 时执行其中的命令来生成源码。\n// 它不是 go build 的一部分，必须显式运行；移动端 Yaegi 也不执行它。\n//\n// 本例是一个完整的多文件工程（module-project，导入时附带辅助文件）：\n//   T070/\n//   ├── go.mod            // module qfli.example/t070  (go 1.21)\n//   ├── day.go            // type Day + 常量枚举\n//   ├── day_string.go     // 本文件：由生成器产出/维护的 String() 与名字表\n//   ├── gen_main.go       // 一个本地生成器（//go:build ignore），不参与常规构建\n//   └── main.go           // 使用方\n//\n// 运行（官方 SDK）：\n//   go run .            // 使用现成的 day_string.go\n//   go generate ./...   // 重新运行 day.go 顶部 //go:generate 指定的生成器\n//                       // 生成器写回 day_string.go（内容与现有一致）\n//\n// 说明：day_string.go 是“生成物”，这里同样提交进仓库，因为它必须随源码可用。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// 有了 String()，打印 Day 得到名字而不是数字。\n\tfmt.Println(\"Monday  =>\", Monday)\n\tfmt.Println(\"Tuesday =>\", Tuesday)\n\n\t// 越界值走回退分支。\n\tout := Day(99)\n\tfmt.Println(\"Day(99) =>\", out)\n\n\tfmt.Println(\"note: `go generate ./...` reruns the generator for day_string.go;\")\n\tfmt.Println(\"      it is not part of `go build` and is desktop only here.\")\n}\n",
         "output": "Monday  => Monday\nTuesday => Tuesday\nDay(99) => Day(99)\nnote: `go generate ./...` reruns the generator for day_string.go;\n      it is not part of `go build` and is desktop only here.",
         "objective": "能说明 go:generate 不参与 go build、需要显式运行，并写出等价的 String() 实现。",
         "prerequisites": [
@@ -3367,7 +3536,7 @@
         "pitfalls": [
           "以为 go build 会自动运行生成器：不会，必须显式 go generate。",
           "生成文件忘了提交或忘了重新生成：CI 会因为源码缺失或过期而失败。",
-          "移动端 Yaegi 不执行 go:generate——本主题 desktop only。"
+          "运行程序不会自动运行生成器；内置运行器使用已存在的生成源码，重新生成需使用官方工具链。"
         ],
         "exercises": [
           {
@@ -3375,7 +3544,13 @@
             "hint": "回退格式 Day(N)。",
             "answer": "dayNames 索引越界时返回 fmt.Sprintf(\"Day(%d)\", int(d))。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "src/day.go": "//go:generate go run gen_main.go\n\npackage main\n\n// Day 是枚举类型；枚举值顺序即编号。\ntype Day int\n\nconst (\n\tMonday Day = iota\n\tTuesday\n\tWednesday\n)\n",
+          "src/day_string.go": "// Code generated by gen_main.go; DO NOT EDIT.\n\npackage main\n\nimport \"fmt\"\n\nvar _dayNames = [...]string{\n\t0: \"Monday\",\n\t1: \"Tuesday\",\n\t2: \"Wednesday\",\n}\n\nfunc (d Day) String() string {\n\tif d < 0 || int(d) >= len(_dayNames) {\n\t\treturn fmt.Sprintf(\"Day(%d)\", int(d))\n\t}\n\treturn _dayNames[d]\n}\n",
+          "src/gen_main.go": "//go:build ignore\n\n// This program is a local code generator for T070. It is excluded from normal\n// builds via the \"ignore\" build tag and is executed by `go generate`.\n//\n// It regenerates day_string.go from the enum defined in day.go, mirroring what\n// `stringer -type=Day` would emit. Run via: go generate ./...  then  go run .\npackage main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"os\"\n)\n\n// enum values must stay in sync with day.go.\nvar days = []string{\"Monday\", \"Tuesday\", \"Wednesday\"}\n\nfunc main() {\n\tvar b bytes.Buffer\n\tb.WriteString(\"// Code generated by gen_main.go; DO NOT EDIT.\\n\\n\")\n\tb.WriteString(\"package main\\n\\n\")\n\tb.WriteString(\"import \\\"fmt\\\"\\n\\n\")\n\tfmt.Fprintf(&b, \"var _dayNames = [...]string{\\n\")\n\tfor i, name := range days {\n\t\tfmt.Fprintf(&b, \"\\t%d: %q,\\n\", i, name)\n\t}\n\tb.WriteString(\"}\\n\\n\")\n\tb.WriteString(\"func (d Day) String() string {\\n\")\n\tb.WriteString(\"\\tif d < 0 || int(d) >= len(_dayNames) {\\n\")\n\tb.WriteString(\"\\t\\treturn fmt.Sprintf(\\\"Day(%d)\\\", int(d))\\n\")\n\tb.WriteString(\"\\t}\\n\")\n\tb.WriteString(\"\\treturn _dayNames[d]\\n\")\n\tb.WriteString(\"}\\n\")\n\n\tif err := os.WriteFile(\"day_string.go\", b.Bytes(), 0o644); err != nil {\n\t\tfmt.Fprintln(os.Stderr, \"write failed:\", err)\n\t\tos.Exit(1)\n\t}\n\tfmt.Println(\"generated day_string.go\")\n}\n",
+          "go.mod": "module qfli.example/t070\n\ngo 1.21"
+        }
       }
     ]
   },
@@ -3424,7 +3599,8 @@
             "hint": "用索引写入 results 切片，避免竞争；最后 sort。",
             "answer": "results[id] = id*id，wg.Wait 后排序并打印。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -3473,7 +3649,8 @@
             "hint": "两个 channel 轮流收发可避免死锁。",
             "answer": "ping 与 pong 各持一个 channel，循环交替发送与接收。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -3522,7 +3699,8 @@
             "hint": "每次发送后打印 len(ch)。",
             "answer": "容量 3 时前三次发送成功、第四次 select default 分支。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -3571,7 +3749,8 @@
             "hint": "range 中 break 不会读取剩余值，但 channel 需被关闭以免泄漏生产者。",
             "answer": "range 中判断偶数后 break；生产者发送方 close，不会被阻塞。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -3621,7 +3800,8 @@
             "hint": "超时分支返回错误，数据分支返回值。",
             "answer": "select { case v := <-ch: return v,nil; case <-time.After(d): return 0,errTimeout }"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -3670,7 +3850,8 @@
             "hint": "起两个 goroutine 各自转发，再 close 输出。",
             "answer": "输出 channel 由 merge 创建；两个输入各起 goroutine 转发，WaitGroup 后 close(out)。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -3702,9 +3883,9 @@
           "临界区",
           "go test -race"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：counter_test.go、go.mod。运行命令：go test ./...。多个 goroutine 对同一变量做 += 是读-改-写三步，可能交错导致丢失更新。Mutex 把临界区串行化：Lock 后同一时刻只有一个 goroutine 在区内。示例用 100 个 goroutine 各加 100 次，断言最终精确为 10000；这种“最终值必须精确”的断言是并发正确性的确定性判据，不依赖顺序或时间。这是 test-package 工程例子：go.mod + *_test.go，用 go test 运行；官方 Go 还可用 go test -race 检测竞争（本项目环境无 C 工具链，-race 需 CGO，故仅作为文档命令）。移动端 Yaegi 不支持 go test/-race，desktop only。",
-        "code": "// T077 sync.Mutex 与临界区保护。\n//\n// 多个 goroutine 并发对同一变量做 += 会产生数据竞争（race）：读-改-写三步\n// 可能交错，导致丢失更新。Mutex 把这段临界区串行化，使结果确定。\n//\n// 这是一个 test-package 工程例子，不能一键导入。完整结构：\n//   racecounter/\n//   ├── go.mod          // module racecounter\\n\\ngo 1.27\n//   └── counter_test.go // 本文件（含被测逻辑与测试）\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -race ./...   // 官方 Go 独有，用于证明无数据竞争\n//\n// 移动端 Yaegi 不支持 go test/-race，故本主题 desktop only。\npackage racecounter\n\nimport (\n\t\"sync\"\n\t\"testing\"\n)\n\n// Counter 是被 Mutex 保护的计数器。\ntype Counter struct {\n\tmu sync.Mutex\n\tn  int\n}\n\n// Inc 在锁内完成读-改-写，避免竞争。\nfunc (c *Counter) Inc() {\n\tc.mu.Lock()\n\tdefer c.mu.Unlock()\n\tc.n++\n}\n\n// Value 也在锁内读取，保证看到一致的值。\nfunc (c *Counter) Value() int {\n\tc.mu.Lock()\n\tdefer c.mu.Unlock()\n\treturn c.n\n}\n\n// BadCounter 故意不加锁，用于对照（仅在文档中说明，不在测试里运行以免污染 -race）。\ntype BadCounter struct{ n int }\n\nfunc (c *BadCounter) Inc() { c.n++ }\n\nfunc TestCounterConcurrentIncrement(t *testing.T) {\n\tconst goroutines = 100\n\tconst perGoroutine = 100\n\tconst want = goroutines * perGoroutine\n\n\tvar c Counter\n\tvar wg sync.WaitGroup\n\twg.Add(goroutines)\n\tfor i := 0; i < goroutines; i++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tfor j := 0; j < perGoroutine; j++ {\n\t\t\t\tc.Inc()\n\t\t\t}\n\t\t}()\n\t}\n\twg.Wait()\n\n\t// 确定性断言：最终计数必须精确等于期望值。\n\tif got := c.Value(); got != want {\n\t\tt.Fatalf(\"counter = %d, want %d\", got, want)\n\t}\n}\n\nfunc TestCounterSequential(t *testing.T) {\n\tvar c Counter\n\tfor i := 0; i < 5; i++ {\n\t\tc.Inc()\n\t}\n\tif got := c.Value(); got != 5 {\n\t\tt.Fatalf(\"counter = %d, want 5\", got)\n\t}\n}\n",
-        "output": "ok  \tqfli.example/t077\t0.003s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\n多个 goroutine 对同一变量做 += 是读-改-写三步，可能交错导致丢失更新。Mutex 把临界区串行化：Lock 后同一时刻只有一个 goroutine 在区内。示例用 100 个 goroutine 各加 100 次，断言最终精确为 10000；这种“最终值必须精确”的断言是并发正确性的确定性判据，不依赖顺序或时间。这是 test-package 工程例子：go.mod + *_test.go，用 go test 运行；桌面官方工具链在具备相应平台和 C 工具链条件时，还可用 go test -race 检测竞争。普通测试通过不等于完成 race 检测。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T077 sync.Mutex 与临界区保护。\n//\n// 多个 goroutine 并发对同一变量做 += 会产生数据竞争（race）：读-改-写三步\n// 可能交错，导致丢失更新。Mutex 把这段临界区串行化，使结果确定。\n//\n// 这是一个 test-package 工程例子，导入时附带辅助文件。原始结构：\n//   racecounter/\n//   ├── go.mod          // module racecounter\\n\\ngo 1.27\n//   └── counter_test.go // 本文件（含被测逻辑与测试）\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -race ./...   // 官方 Go 独有，用于证明无数据竞争\n//\n// 选中测试入口运行测试；-race 检测另需具备相应条件的官方工具链。\npackage racecounter\n\nimport (\n\t\"sync\"\n\t\"testing\"\n)\n\n// Counter 是被 Mutex 保护的计数器。\ntype Counter struct {\n\tmu sync.Mutex\n\tn  int\n}\n\n// Inc 在锁内完成读-改-写，避免竞争。\nfunc (c *Counter) Inc() {\n\tc.mu.Lock()\n\tdefer c.mu.Unlock()\n\tc.n++\n}\n\n// Value 也在锁内读取，保证看到一致的值。\nfunc (c *Counter) Value() int {\n\tc.mu.Lock()\n\tdefer c.mu.Unlock()\n\treturn c.n\n}\n\n// BadCounter 故意不加锁，用于对照（仅在文档中说明，不在测试里运行以免污染 -race）。\ntype BadCounter struct{ n int }\n\nfunc (c *BadCounter) Inc() { c.n++ }\n\nfunc TestCounterConcurrentIncrement(t *testing.T) {\n\tconst goroutines = 100\n\tconst perGoroutine = 100\n\tconst want = goroutines * perGoroutine\n\n\tvar c Counter\n\tvar wg sync.WaitGroup\n\twg.Add(goroutines)\n\tfor i := 0; i < goroutines; i++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tfor j := 0; j < perGoroutine; j++ {\n\t\t\t\tc.Inc()\n\t\t\t}\n\t\t}()\n\t}\n\twg.Wait()\n\n\t// 确定性断言：最终计数必须精确等于期望值。\n\tif got := c.Value(); got != want {\n\t\tt.Fatalf(\"counter = %d, want %d\", got, want)\n\t}\n}\n\nfunc TestCounterSequential(t *testing.T) {\n\tvar c Counter\n\tfor i := 0; i < 5; i++ {\n\t\tc.Inc()\n\t}\n\tif got := c.Value(); got != 5 {\n\t\tt.Fatalf(\"counter = %d, want 5\", got)\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能定位读-改-写临界区并用 sync.Mutex 保护，说明 -race 的作用。",
         "prerequisites": [
           "T071 goroutine 基础与启动",
@@ -3720,7 +3901,10 @@
             "hint": "Add 在锁内执行 c.n += n。",
             "answer": "func (c *Counter) Add(n int){ c.mu.Lock(); defer c.mu.Unlock(); c.n += n }"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module racecounter\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -3752,9 +3936,9 @@
           "并发映射",
           "go test -race"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：config_test.go、go.mod。运行命令：go test ./...。RWMutex 区分读锁与写锁：RWMutex.RLock 允许多个读者并发，写者用 Lock 独占。因此读多写少时吞吐更高。示例用 20 个写者写入不同键、50 个读者并发读取，并断言每个键都能读回正确值——这是确定性判据。test-package：go.mod + *_test.go，go test 运行。注意 RLock 区不能修改共享数据，否则破坏语义。移动端 Yaegi 未实测，desktop only。",
-        "code": "// T078 sync.RWMutex 读写分离。\n//\n// 读多写少的场景下，用 RWMutex 允许多个读并发进行，只有写才独占。\n// 本示例维护一个配置映射：读操作可并发，写操作互斥，最终值确定。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   rwconfig/\n//   ├── go.mod         // module rwconfig\\n\\ngo 1.27\n//   └── config_test.go // 本文件\n// 运行：go test ./...  /  go test -race ./...\n// 移动端 Yaegi 不支持 go test/-race，desktop only。\npackage rwconfig\n\nimport (\n\t\"strconv\"\n\t\"sync\"\n\t\"testing\"\n)\n\n// Config 是并发安全的键值配置。\ntype Config struct {\n\tmu sync.RWMutex\n\tm  map[string]string\n}\n\n// NewConfig 建立空配置。\nfunc NewConfig() *Config { return &Config{m: make(map[string]string)} }\n\n// Set 写操作：独占锁。\nfunc (c *Config) Set(k, v string) {\n\tc.mu.Lock()\n\tdefer c.mu.Unlock()\n\tc.m[k] = v\n}\n\n// Get 读操作：共享锁，多读可并发。\nfunc (c *Config) Get(k string) (string, bool) {\n\tc.mu.RLock()\n\tdefer c.mu.RUnlock()\n\tv, ok := c.m[k]\n\treturn v, ok\n}\n\nfunc TestConfigConcurrentReadWrite(t *testing.T) {\n\tc := NewConfig()\n\tvar wg sync.WaitGroup\n\n\t// 若干写者写入互不相同的键。\n\tconst writers = 20\n\twg.Add(writers)\n\tfor i := 0; i < writers; i++ {\n\t\tgo func(i int) {\n\t\t\tdefer wg.Done()\n\t\t\tc.Set(\"k\"+strconv.Itoa(i), strconv.Itoa(i))\n\t\t}(i)\n\t}\n\twg.Wait()\n\n\t// 若干读者并发读取；确定性断言：每个键都能读回正确值。\n\tconst readers = 50\n\twg.Add(readers)\n\terrs := make(chan string, readers)\n\tfor i := 0; i < readers; i++ {\n\t\tgo func(i int) {\n\t\t\tdefer wg.Done()\n\t\t\tkey := \"k\" + strconv.Itoa(i%writers)\n\t\t\tv, ok := c.Get(key)\n\t\t\tif !ok || v != strconv.Itoa(i%writers) {\n\t\t\t\terrs <- \"bad value for \" + key\n\t\t\t}\n\t\t}(i)\n\t}\n\twg.Wait()\n\tclose(errs)\n\n\tfor e := range errs {\n\t\tt.Fatal(e)\n\t}\n}\n",
-        "output": "ok  \tqfli.example/t078\t0.003s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\nRWMutex 区分读锁与写锁：RWMutex.RLock 允许多个读者并发，写者用 Lock 独占。因此读多写少时吞吐更高。示例用 20 个写者写入不同键、50 个读者并发读取，并断言每个键都能读回正确值——这是确定性判据。test-package：go.mod + *_test.go，go test 运行。注意 RLock 区不能修改共享数据，否则破坏语义。测试入口直接运行这些确定性断言；race 检测另用具备相应条件的官方工具链。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T078 sync.RWMutex 读写分离。\n//\n// 读多写少的场景下，用 RWMutex 允许多个读并发进行，只有写才独占。\n// 本示例维护一个配置映射：读操作可并发，写操作互斥，最终值确定。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   rwconfig/\n//   ├── go.mod         // module rwconfig\\n\\ngo 1.27\n//   └── config_test.go // 本文件\n// 运行：go test ./...  /  go test -race ./...\n// 选中测试入口运行测试；-race 检测另需具备相应条件的官方工具链。\npackage rwconfig\n\nimport (\n\t\"strconv\"\n\t\"sync\"\n\t\"testing\"\n)\n\n// Config 是并发安全的键值配置。\ntype Config struct {\n\tmu sync.RWMutex\n\tm  map[string]string\n}\n\n// NewConfig 建立空配置。\nfunc NewConfig() *Config { return &Config{m: make(map[string]string)} }\n\n// Set 写操作：独占锁。\nfunc (c *Config) Set(k, v string) {\n\tc.mu.Lock()\n\tdefer c.mu.Unlock()\n\tc.m[k] = v\n}\n\n// Get 读操作：共享锁，多读可并发。\nfunc (c *Config) Get(k string) (string, bool) {\n\tc.mu.RLock()\n\tdefer c.mu.RUnlock()\n\tv, ok := c.m[k]\n\treturn v, ok\n}\n\nfunc TestConfigConcurrentReadWrite(t *testing.T) {\n\tc := NewConfig()\n\tvar wg sync.WaitGroup\n\n\t// 若干写者写入互不相同的键。\n\tconst writers = 20\n\twg.Add(writers)\n\tfor i := 0; i < writers; i++ {\n\t\tgo func(i int) {\n\t\t\tdefer wg.Done()\n\t\t\tc.Set(\"k\"+strconv.Itoa(i), strconv.Itoa(i))\n\t\t}(i)\n\t}\n\twg.Wait()\n\n\t// 若干读者并发读取；确定性断言：每个键都能读回正确值。\n\tconst readers = 50\n\twg.Add(readers)\n\terrs := make(chan string, readers)\n\tfor i := 0; i < readers; i++ {\n\t\tgo func(i int) {\n\t\t\tdefer wg.Done()\n\t\t\tkey := \"k\" + strconv.Itoa(i%writers)\n\t\t\tv, ok := c.Get(key)\n\t\t\tif !ok || v != strconv.Itoa(i%writers) {\n\t\t\t\terrs <- \"bad value for \" + key\n\t\t\t}\n\t\t}(i)\n\t}\n\twg.Wait()\n\tclose(errs)\n\n\tfor e := range errs {\n\t\tt.Fatal(e)\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能根据读写比例选择 RWMutex，并说明 RLock/RUnlock 与 Lock/Unlock 的区别。",
         "prerequisites": [
           "T077 sync.Mutex 与临界区保护",
@@ -3770,7 +3954,10 @@
             "hint": "Keys 用 RLock；返回前排序。",
             "answer": "func (c *Config) Keys() []string { c.mu.RLock(); defer c.mu.RUnlock(); ... sort.Strings(ks); return ks }"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module rwconfig\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -3819,7 +4006,8 @@
             "hint": "Once.Do 内赋值给包级变量；并发调用只首次执行。",
             "answer": "var once sync.Once; var cfg *Config; once.Do(func(){ cfg = load() })。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -3851,9 +4039,9 @@
           "分配",
           "benchmark"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、pool_test.go。运行命令：go test -bench . -run '^$' ./...。sync.Pool 缓存可复用对象，减少高频分配压力。示例用 Pool 缓存 bytes.Buffer：Get 取出、Reset 清空、用完 Put 放回。关键是 Reset——复用对象必须清掉旧内容。Pool 的对象可能被 GC 随时回收，所以它只是“临时缓冲池”，不能当持久缓存。验证策略：功能测试用确定性“内容正确”断言（两次复用结果都对）；benchmark 只要求能跑出 ns/op，不作为通过条件（数值随机器变化）。test-package：go.mod + *_test.go，移动端不支持 bench，desktop only。",
-        "code": "// T080 sync.Pool 与临时对象复用。\n//\n// sync.Pool 缓存可复用对象，减少高频分配的压力。注意：Pool 中的对象可能被\n// GC 随时回收，因此不能用于持久状态，只能当\"临时缓冲池\"。\n//\n// 这是一个 test-package / benchmark 工程例子，不能一键导入。完整结构：\n//   poolbench/\n//   ├── go.mod        // module poolbench\\n\\ngo 1.27\n//   └── pool_test.go  // 本文件\n// 运行（官方 SDK）：\n//   go test ./...                      // 功能测试（确定性）\n//   go test -bench . -benchmem ./...   // 只看分配指标，不作为通过条件\n//\n// 断言策略：功能测试用确定性\"内容正确\"断言；benchmark 只要求能跑出 ns/op。\n// 移动端不支持 bench，desktop only。\npackage poolbench\n\nimport (\n\t\"bytes\"\n\t\"sync\"\n\t\"testing\"\n)\n\nvar bufPool = sync.Pool{\n\tNew: func() any { return new(bytes.Buffer) },\n}\n\n// render 用池中的 Buffer 组装字符串，用完重置并放回。\nfunc render(parts []string) string {\n\tbuf := bufPool.Get().(*bytes.Buffer)\n\tbuf.Reset()\n\tdefer bufPool.Put(buf)\n\tfor _, p := range parts {\n\t\tbuf.WriteString(p)\n\t}\n\treturn buf.String()\n}\n\n// renderNoPool 不使用池，每次新建 Buffer，作为对照。\nfunc renderNoPool(parts []string) string {\n\tvar buf bytes.Buffer\n\tfor _, p := range parts {\n\t\tbuf.WriteString(p)\n\t}\n\treturn buf.String()\n}\n\nfunc TestRenderCorrect(t *testing.T) {\n\tparts := []string{\"go\", \"-\", \"pool\"}\n\tif got, want := render(parts), \"go-pool\"; got != want {\n\t\tt.Fatalf(\"render = %q, want %q\", got, want)\n\t}\n\t// 复用一个池对象多次，结果必须仍然正确（证明 Reset 有效）。\n\tif got := render([]string{\"a\", \"b\"}); got != \"ab\" {\n\t\tt.Fatalf(\"second render = %q, want %q\", got, \"ab\")\n\t}\n}\n\nfunc TestRenderNoPoolMatches(t *testing.T) {\n\tparts := []string{\"x\", \"y\", \"z\"}\n\tif render(parts) != renderNoPool(parts) {\n\t\tt.Fatal(\"pooled and unpooled results differ\")\n\t}\n}\n\nfunc BenchmarkRenderPool(b *testing.B) {\n\tparts := []string{\"go\", \"-\", \"pool\", \"-\", \"bench\"}\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = render(parts)\n\t}\n}\n\nfunc BenchmarkRenderNoPool(b *testing.B) {\n\tparts := []string{\"go\", \"-\", \"pool\", \"-\", \"bench\"}\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = renderNoPool(parts)\n\t}\n}\n",
-        "output": "BenchmarkRenderPool-2    \t26144017\t43.59 ns/op\t16 B/op\t1 allocs/op\nBenchmarkRenderNoPool-2  \t23817556\t49.87 ns/op\t80 B/op\t2 allocs/op",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\nsync.Pool 缓存可复用对象，减少高频分配压力。示例用 Pool 缓存 bytes.Buffer：Get 取出、Reset 清空、用完 Put 放回。关键是 Reset——复用对象必须清掉旧内容。Pool 的对象可能被 GC 随时回收，所以它只是“临时缓冲池”，不能当持久缓存。验证策略：功能测试用确定性“内容正确”断言（两次复用结果都对）；benchmark 要求实际执行循环，不把耗时数值作为通过条件（数值随机器变化）。test-package：go.mod + *_test.go，内置运行器执行有界基准循环；需要自动校准与可比较的性能报告时使用官方工具链。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T080 sync.Pool 与临时对象复用。\n//\n// sync.Pool 缓存可复用对象，减少高频分配的压力。注意：Pool 中的对象可能被\n// GC 随时回收，因此不能用于持久状态，只能当\"临时缓冲池\"。\n//\n// 这是一个 test-package / benchmark 工程例子，导入时附带辅助文件。原始结构：\n//   poolbench/\n//   ├── go.mod        // module poolbench\\n\\ngo 1.27\n//   └── pool_test.go  // 本文件\n// 运行（官方 SDK）：\n//   go test ./...                      // 功能测试（确定性）\n//   go test -bench . -benchmem ./...   // 只看分配指标，不作为通过条件\n//\n// 断言策略：功能测试用确定性\"内容正确\"断言；benchmark 只要求能跑出 ns/op。\n// 内置运行器执行有界基准循环；性能测量与比较使用官方工具链。\npackage poolbench\n\nimport (\n\t\"bytes\"\n\t\"sync\"\n\t\"testing\"\n)\n\nvar bufPool = sync.Pool{\n\tNew: func() any { return new(bytes.Buffer) },\n}\n\n// render 用池中的 Buffer 组装字符串，用完重置并放回。\nfunc render(parts []string) string {\n\tbuf := bufPool.Get().(*bytes.Buffer)\n\tbuf.Reset()\n\tdefer bufPool.Put(buf)\n\tfor _, p := range parts {\n\t\tbuf.WriteString(p)\n\t}\n\treturn buf.String()\n}\n\n// renderNoPool 不使用池，每次新建 Buffer，作为对照。\nfunc renderNoPool(parts []string) string {\n\tvar buf bytes.Buffer\n\tfor _, p := range parts {\n\t\tbuf.WriteString(p)\n\t}\n\treturn buf.String()\n}\n\nfunc TestRenderCorrect(t *testing.T) {\n\tparts := []string{\"go\", \"-\", \"pool\"}\n\tif got, want := render(parts), \"go-pool\"; got != want {\n\t\tt.Fatalf(\"render = %q, want %q\", got, want)\n\t}\n\t// 复用一个池对象多次，结果必须仍然正确（证明 Reset 有效）。\n\tif got := render([]string{\"a\", \"b\"}); got != \"ab\" {\n\t\tt.Fatalf(\"second render = %q, want %q\", got, \"ab\")\n\t}\n}\n\nfunc TestRenderNoPoolMatches(t *testing.T) {\n\tparts := []string{\"x\", \"y\", \"z\"}\n\tif render(parts) != renderNoPool(parts) {\n\t\tt.Fatal(\"pooled and unpooled results differ\")\n\t}\n}\n\nfunc BenchmarkRenderPool(b *testing.B) {\n\tparts := []string{\"go\", \"-\", \"pool\", \"-\", \"bench\"}\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = render(parts)\n\t}\n}\n\nfunc BenchmarkRenderNoPool(b *testing.B) {\n\tparts := []string{\"go\", \"-\", \"pool\", \"-\", \"bench\"}\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = renderNoPool(parts)\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能用 sync.Pool 缓存可复用对象，并说明其对象可能被 GC 回收、不可存持久状态。",
         "prerequisites": [
           "T036 字符串构造：strings.Builder 与字节缓冲",
@@ -3869,7 +4057,10 @@
             "hint": "Get 类型断言为 *[]byte，Put 前切片归零。",
             "answer": "定义 pool 的 New 返回 new([]byte)；Get 后 (*b) = (*b)[:0]。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module poolbench\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -3901,9 +4092,9 @@
           "CAS",
           "并发计数"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：atomic_test.go、go.mod。运行命令：go test ./...。对简单的计数/标志，原子操作无需加锁即可保证读改写不可分割，通常比 Mutex 更轻。示例用 atomic.Int64 在 64 个 goroutine 中并发自增，断言最终精确为 64000；这是确定性判据。CompareAndSwap(old,new) 只在当前值等于 old 时才写入 new，是实现无锁算法的基础。test-package：go.mod + *_test.go，go test 运行，desktop only（移动端未实测）。",
-        "code": "// T081 原子操作 sync/atomic。\n//\n// 对于简单的计数/标志，atomic 提供无锁的原子读改写，避免锁开销。\n// 本示例用 atomic.Int64 在多个 goroutine 中并发自增，最终值确定。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   atomiccount/\n//   ├── go.mod          // module atomiccount\\n\\ngo 1.27\n//   └── atomic_test.go  // 本文件\n// 运行：go test ./...  /  go test -race ./...\n// 移动端 Yaegi 对 sync/atomic 未实测，desktop only。\npackage atomiccount\n\nimport (\n\t\"sync\"\n\t\"sync/atomic\"\n\t\"testing\"\n)\n\n// Counter 用原子量计数。\ntype Counter struct{ n atomic.Int64 }\n\n// Inc 原子自增。\nfunc (c *Counter) Inc() { c.n.Add(1) }\n\n// Value 原子读取。\nfunc (c *Counter) Value() int64 { return c.n.Load() }\n\nfunc TestAtomicConcurrentIncrement(t *testing.T) {\n\tconst goroutines = 64\n\tconst per = 1000\n\tconst want = goroutines * per\n\n\tvar c Counter\n\tvar wg sync.WaitGroup\n\twg.Add(goroutines)\n\tfor i := 0; i < goroutines; i++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tfor j := 0; j < per; j++ {\n\t\t\t\tc.Inc()\n\t\t\t}\n\t\t}()\n\t}\n\twg.Wait()\n\n\t// 确定性断言：无锁自增也必须得到精确的总数。\n\tif got := c.Value(); got != want {\n\t\tt.Fatalf(\"value = %d, want %d\", got, want)\n\t}\n}\n\nfunc TestAtomicCompareAndSwap(t *testing.T) {\n\tvar n atomic.Int64\n\tn.Store(5)\n\t// 只有当当前值等于 5 时才替换为 9。\n\tswapped := n.CompareAndSwap(5, 9)\n\tif !swapped || n.Load() != 9 {\n\t\tt.Fatalf(\"CAS failed: swapped=%v value=%d\", swapped, n.Load())\n\t}\n\t// 当前值已是 9，用 5 作为旧值会失败。\n\tif n.CompareAndSwap(5, 100) {\n\t\tt.Fatal(\"unexpected CAS success\")\n\t}\n}\n",
-        "output": "ok  \tqfli.example/t081\t0.004s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\n对简单的计数/标志，原子操作无需加锁即可保证读改写不可分割，通常比 Mutex 更轻。示例用 atomic.Int64 在 64 个 goroutine 中并发自增，断言最终精确为 64000；这是确定性判据。CompareAndSwap(old,new) 只在当前值等于 old 时才写入 new，是实现无锁算法的基础。test-package：go.mod + *_test.go，选中测试入口运行，或使用官方工具链 go test。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T081 原子操作 sync/atomic。\n//\n// 对于简单的计数/标志，atomic 提供无锁的原子读改写，避免锁开销。\n// 本示例用 atomic.Int64 在多个 goroutine 中并发自增，最终值确定。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   atomiccount/\n//   ├── go.mod          // module atomiccount\\n\\ngo 1.27\n//   └── atomic_test.go  // 本文件\n// 运行：go test ./...  /  go test -race ./...\n// 选中测试入口执行原子计数断言；普通测试通过不等于完成 race 检测。\npackage atomiccount\n\nimport (\n\t\"sync\"\n\t\"sync/atomic\"\n\t\"testing\"\n)\n\n// Counter 用原子量计数。\ntype Counter struct{ n atomic.Int64 }\n\n// Inc 原子自增。\nfunc (c *Counter) Inc() { c.n.Add(1) }\n\n// Value 原子读取。\nfunc (c *Counter) Value() int64 { return c.n.Load() }\n\nfunc TestAtomicConcurrentIncrement(t *testing.T) {\n\tconst goroutines = 64\n\tconst per = 1000\n\tconst want = goroutines * per\n\n\tvar c Counter\n\tvar wg sync.WaitGroup\n\twg.Add(goroutines)\n\tfor i := 0; i < goroutines; i++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tfor j := 0; j < per; j++ {\n\t\t\t\tc.Inc()\n\t\t\t}\n\t\t}()\n\t}\n\twg.Wait()\n\n\t// 确定性断言：无锁自增也必须得到精确的总数。\n\tif got := c.Value(); got != want {\n\t\tt.Fatalf(\"value = %d, want %d\", got, want)\n\t}\n}\n\nfunc TestAtomicCompareAndSwap(t *testing.T) {\n\tvar n atomic.Int64\n\tn.Store(5)\n\t// 只有当当前值等于 5 时才替换为 9。\n\tswapped := n.CompareAndSwap(5, 9)\n\tif !swapped || n.Load() != 9 {\n\t\tt.Fatalf(\"CAS failed: swapped=%v value=%d\", swapped, n.Load())\n\t}\n\t// 当前值已是 9，用 5 作为旧值会失败。\n\tif n.CompareAndSwap(5, 100) {\n\t\tt.Fatal(\"unexpected CAS success\")\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能用 atomic.Int64 做无锁计数，并解释 CompareAndSwap 的语义。",
         "prerequisites": [
           "T077 sync.Mutex 与临界区保护"
@@ -3918,7 +4109,10 @@
             "hint": "用 atomic.Bool 的 CompareAndSwap(false,true)。",
             "answer": "var done atomic.Bool; if done.CompareAndSwap(false,true){ init() }"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module atomiccount\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -3967,7 +4161,8 @@
             "hint": "select { case <-ctx.Done(): ...; default: ... }",
             "answer": "循环内 select 监听 ctx.Done()，收到后 close(done) 并 return。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4017,7 +4212,10 @@
             "hint": "用 context.WithTimeout 生成 ctx，传给 http.NewRequestWithContext。",
             "answer": "ctx, cancel := context.WithTimeout(parent, d); defer cancel(); req.WithContext(ctx)。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module qfli.example/t083\n\ngo 1.21\r\n"
+        }
       }
     ]
   },
@@ -4067,7 +4265,8 @@
             "hint": "用一个受 Mutex 保护的 []error 或错误 channel。",
             "answer": "增加 errors 切片 + Mutex，worker 出错 append；最后排序去重打印。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4117,7 +4316,8 @@
             "hint": "包装一个 io.Reader，Read 后对读到的 n 个字节做大写转换。",
             "answer": "Read 委托底层后 for i:=0;i<n;i++ { p[i]=toUpper(p[i]) }。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4149,7 +4349,7 @@
           "Close",
           "临时目录"
         ],
-        "explain": "文件读写是 IO 的常见场景。示例先用 os.MkdirTemp 建立隔离的临时目录并 defer RemoveAll，避免污染工作目录；再用 os.Create 写入内容，随后 Close——Close 不仅释放句柄，也保证缓冲数据落盘。读回用 os.ReadFile 一次性读入，并用 os.Stat 校验字节数，作为确定性断言。这些习惯（隔离目录、及时关闭、校验结果）是可重复、可测试文件操作的基础。移动端文件系统能力未实测，标 Yaegi*（待实测），默认 desktop。",
+        "explain": "文件读写是 IO 的常见场景。示例先用 os.MkdirTemp 建立隔离的临时目录并 defer RemoveAll，避免污染工作目录；再用 os.Create 写入内容，随后 Close——Close 不仅释放句柄，也保证缓冲数据落盘。读回用 os.ReadFile 一次性读入，并用 os.Stat 校验字节数，作为确定性断言。这些习惯（隔离目录、及时关闭、校验结果）是可重复、可测试文件操作的基础。文件操作应限定到应用可写目录，并处理权限与 I/O 错误。",
         "code": "// T086 文件读写：os.Open/Create 与缓冲。\n//\n// 本示例在系统临时目录里创建文件，写入内容后读回，最后清理。\n// 使用 os.CreateTemp 得到唯一路径，避免污染工作目录；\n// 关键习惯：写后 Close 才能保证数据落盘，读前也用 defer Close。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n)\n\nfunc main() {\n\tdir, err := os.MkdirTemp(\"\", \"qfli-t086-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\t// defer 保证函数退出时清理整个临时目录。\n\tdefer os.RemoveAll(dir)\n\n\tpath := filepath.Join(dir, \"notes.txt\")\n\n\t// 写入：os.Create 会截断或新建文件。\n\tf, err := os.Create(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tcontent := \"line one\\nline two\\n\"\n\tif _, err := f.WriteString(content); err != nil {\n\t\tf.Close()\n\t\tpanic(err)\n\t}\n\t// Close 必须在再次打开前调用，否则缓冲/句柄状态不一致。\n\tif err := f.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\n\t// 读取：os.ReadFile 一次性读入。\n\tdata, err := os.ReadFile(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"read back:\")\n\tfmt.Print(string(data))\n\n\t// 校验字节数，作为确定性断言。\n\tinfo, _ := os.Stat(path)\n\tfmt.Println(\"size matches:\", int(info.Size()) == len(content))\n}\n",
         "output": "read back:\nline one\nline two\nsize matches: true",
         "objective": "能正确打开/写入/关闭并读回文件，说明写后 Close 的必要性。",
@@ -4166,7 +4366,8 @@
             "hint": "用 os.OpenFile 带 os.O_APPEND。",
             "answer": "os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o644)。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4215,7 +4416,8 @@
             "hint": "对每行再用 strings.Fields 分词。",
             "answer": "for lineScan.Scan() { n := len(strings.Fields(lineScan.Text())); ... }"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4247,7 +4449,7 @@
           "排序",
           "目录"
         ],
-        "explain": "os.ReadDir 返回目录条目切片，并保证按文件名排序，因此遍历输出天然确定——这是构建可复现输出的关键。每个 DirEntry 可通过 Info() 拿到 FileInfo（大小、模式等），IsDir() 判断是否为目录。示例在临时目录建两个文件和一个子目录，然后列出并按“名字 + 类型 + 大小”打印，输出稳定。移动端目录访问能力未实测，标 Yaegi*（待实测），默认 desktop。",
+        "explain": "os.ReadDir 返回目录条目切片，并保证按文件名排序，因此遍历输出天然确定——这是构建可复现输出的关键。每个 DirEntry 可通过 Info() 拿到 FileInfo（大小、模式等），IsDir() 判断是否为目录。示例在临时目录建两个文件和一个子目录，然后列出并按“名字 + 类型 + 大小”打印，输出稳定。目录操作仍须检查访问权限及每次 I/O 的错误。",
         "code": "// T088 目录遍历与文件信息。\n//\n// os.ReadDir 返回目录条目并按文件名排序，因此输出天然确定。\n// 用 FileInfo 可拿到名称、大小、是否为目录等元数据。\n//\n// 注意：目录条目的 Size() 是**文件系统相关**的值（Linux 上常见 4096，\n// Windows 上常见 0），不能作为确定性输出。因此本示例对目录只打印类型，\n// 只对普通文件打印大小——这样跨平台输出一致。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n)\n\nfunc main() {\n\tdir, err := os.MkdirTemp(\"\", \"qfli-t088-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(dir)\n\n\t// 建两个文件和一个子目录，用于演示“是否目录”的判断。\n\tmustWrite(filepath.Join(dir, \"alpha.txt\"), \"a\")\n\tmustWrite(filepath.Join(dir, \"beta.txt\"), \"bb\")\n\tif err := os.Mkdir(filepath.Join(dir, \"sub\"), 0o755); err != nil {\n\t\tpanic(err)\n\t}\n\n\tentries, err := os.ReadDir(dir)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\t// ReadDir 已按名字排序：alpha.txt, beta.txt, sub。\n\tfor _, e := range entries {\n\t\tif e.IsDir() {\n\t\t\t// 目录不打印易变的 size。\n\t\t\tfmt.Printf(\"%-10s dir\\n\", e.Name())\n\t\t\tcontinue\n\t\t}\n\t\tinfo, err := e.Info()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%-10s file size=%d\\n\", e.Name(), info.Size())\n\t}\n}\n\nfunc mustWrite(path, content string) {\n\tif err := os.WriteFile(path, []byte(content), 0o644); err != nil {\n\t\tpanic(err)\n\t}\n}\n",
         "output": "alpha.txt  file size=1\nbeta.txt   file size=2\nsub        dir",
         "objective": "能用 os.ReadDir 遍历目录并判断条目是否为目录、读取大小等元数据。",
@@ -4264,7 +4466,8 @@
             "hint": "先 ReadDir 过滤后缀，再按 Info().Size() 排序。",
             "answer": "过滤 strings.HasSuffix(name,\".txt\")，收集 (name,size) 后排序输出。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4313,7 +4516,8 @@
             "hint": "切片字段也要导出并带 tag。",
             "answer": "加 Scores []int `json:\"scores\"`；重新 Marshal/Unmarshal 比较。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4362,7 +4566,8 @@
             "hint": "自定义 MarshalJSON 或改字段为 string。",
             "answer": "改字段为 string 并赋 RFC3339 值，或实现 MarshalJSON 定制输出。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4411,7 +4616,8 @@
             "hint": "json.NewEncoder(w).Encode(e) 每次写一个 JSON 值。",
             "answer": "循环 Encode 到 buffer，再 NewDecoder 循环 Decode 直到 EOF。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4460,7 +4666,8 @@
             "hint": "time.Parse(time.RFC3339, s)，再 .Unix()。",
             "answer": "t,_ := time.Parse(time.RFC3339, s); fmt.Println(t.Unix())。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4492,7 +4699,7 @@
           "单调时钟",
           "确定性断言"
         ],
-        "explain": "Timer 触发一次（一次 C 接收），Ticker 周期性触发。二者基于单调时钟，不受系统墙钟调整影响。示例先等 Timer 触发一次，再用 Ticker 计数到 3 后停止，并用 select+default 探测停止后不再触发。对时间类示例，断言只针对“触发了几次/是否触发”，绝不比较真实耗时，否则机器快慢会让结果不稳定。最后用 time.Since 展示耗时非负——这是可与时间相关的最小确定性断言。桌面与移动端差异需实测，本主题默认 desktop。",
+        "explain": "Timer 触发一次（一次 C 接收），Ticker 周期性触发。二者基于单调时钟，不受系统墙钟调整影响。示例先等 Timer 触发一次，再用 Ticker 计数到 3 后停止，并用 select+default 探测停止后不再触发。对时间类示例，断言只针对“触发了几次/是否触发”，绝不比较真实耗时，否则机器快慢会让结果不稳定。最后用 time.Since 展示耗时非负——这是可与时间相关的最小确定性断言。避免把调度延迟和真实耗时作为跨平台固定输出。",
         "code": "// T093 时间二：定时器、Ticker 与单调时钟。\n//\n// time.Timer 触发一次；time.Ticker 周期性触发。二者都基于单调时钟，\n// 不受系统墙钟调整影响。本示例只断言\"触发的次数\"，不比较实际耗时，\n// 因此输出确定、可离线验证。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc main() {\n\t// Timer：一次性。等待其通道被触发。\n\ttimer := time.NewTimer(1 * time.Millisecond)\n\t<-timer.C\n\tfmt.Println(\"timer fired once\")\n\n\t// Ticker：周期性。计数到 3 次后停止。\n\tticker := time.NewTicker(1 * time.Millisecond)\n\tdefer ticker.Stop()\n\n\tcount := 0\n\tfor range ticker.C {\n\t\tcount++\n\t\tif count == 3 {\n\t\t\tbreak\n\t\t}\n\t}\n\tfmt.Println(\"ticker fired count:\", count)\n\n\t// 停止后的 Ticker 不再触发（用 select+default 非阻塞探测，结果确定）。\n\tticker.Stop()\n\tselect {\n\tcase <-ticker.C:\n\t\tfmt.Println(\"unexpected tick after stop\")\n\tdefault:\n\t\tfmt.Println(\"no tick after stop\")\n\t}\n\n\t// 演示 Now 的单调性：两次调用取差值为正（不断言具体数值）。\n\tstart := time.Now()\n\telapsed := time.Since(start)\n\tfmt.Println(\"elapsed is non-negative:\", elapsed >= 0)\n}\n",
         "output": "timer fired once\nticker fired count: 3\nno tick after stop\nelapsed is non-negative: true",
         "objective": "能用 Timer/Ticker 实现定时任务，并说明为何不能把耗时作为断言。",
@@ -4510,7 +4717,8 @@
             "hint": "for range ticker.C 计数，达到目标 break 后 Stop。",
             "answer": "计数到 5 break；defer ticker.Stop()。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4559,7 +4767,8 @@
             "hint": "用 (\\w+)=(\\w+) 配合 FindAllStringSubmatch。",
             "answer": "re.FindAllStringSubmatch(\"a=1;b=2\", -1) 返回二维切片，逐个打印 m[1],m[2]。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4608,7 +4817,8 @@
             "hint": "回调里对首字符 ToUpper，拼接剩余。",
             "answer": "re.ReplaceAllStringFunc(s, func(w string) string { return strings.ToUpper(w[:1])+w[1:] })。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4640,7 +4850,7 @@
           "range",
           "if"
         ],
-        "explain": "text/template 用 {{.Field}} 引用数据字段，{{range}} 遍历切片，{{if}}/{{else}} 做条件分支。模板在解析时用 Must 包装以便在模板语法错误时快速失败，执行时再检查 Execute 的错误。示例渲染一份“库存清单”：表头用占位符、条目用 range、库存状态用 if。输出末尾的换行由模板控制，因此断言包含尾随换行。模板适合生成配置、报告、邮件等结构化文本。移动端模板能力未实测，标 Yaegi*（待实测），默认 desktop。",
+        "explain": "text/template 用 {{.Field}} 引用数据字段，{{range}} 遍历切片，{{if}}/{{else}} 做条件分支。模板在解析时用 Must 包装以便在模板语法错误时快速失败，执行时再检查 Execute 的错误。示例渲染一份“库存清单”：表头用占位符、条目用 range、库存状态用 if。输出末尾的换行由模板控制，因此断言包含尾随换行。模板适合生成配置、报告、邮件等结构化文本。执行失败时目标可能已经写入部分文本，需要完整成功结果时先渲染到缓冲区。",
         "code": "// T096 文本模板 text/template。\n//\n// text/template 用 {{.Field}} 占位符渲染结构化数据。模板可包含\n// 条件 {{if}}、循环 {{range}}。本示例把渲染结果写入 bytes.Buffer，\n// 再统一打印——不直接依赖 os.Stdout 捕获，输出因此确定、易测试。\npackage main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"text/template\"\n)\n\nfunc main() {\n\tconst tpl = `Inventory for {{.Owner}}:\n{{range .Items}}- {{.Name}} x{{.Qty}} ({{if .InStock}}in stock{{else}}out of stock{{end}})\n{{end}}Total lines: {{len .Items}}`\n\n\tdata := struct {\n\t\tOwner string\n\t\tItems []struct {\n\t\t\tName    string\n\t\t\tQty     int\n\t\t\tInStock bool\n\t\t}\n\t}{\n\t\tOwner: \"warehouse-a\",\n\t\tItems: []struct {\n\t\t\tName    string\n\t\t\tQty     int\n\t\t\tInStock bool\n\t\t}{\n\t\t\t{\"bolt\", 100, true},\n\t\t\t{\"nut\", 0, false},\n\t\t},\n\t}\n\n\tt := template.Must(template.New(\"inv\").Parse(tpl))\n\n\t// 渲染到内存缓冲，再打印，避免依赖底层 stdout 的捕获方式。\n\tvar buf bytes.Buffer\n\tif err := t.Execute(&buf, data); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(buf.String())\n}\n",
         "output": "Inventory for warehouse-a:\n- bolt x100 (in stock)\n- nut x0 (out of stock)\nTotal lines: 2",
         "objective": "能用 text/template 定义模板并渲染结构体数据，理解 {{.}}/{{range}}/{{if}}。",
@@ -4650,7 +4860,7 @@
         "pitfalls": [
           "模板里访问未导出字段：模板无法读取，执行会报错。",
           "忘记检查 Execute 的错误：写目标失败（如管道关闭）会被忽略。",
-          "平台限制：本主题在移动端 Yaegi 解释器下 text/template 输出为空，仅桌面官方 Go 可运行（保持 desktop-only）。"
+          "Execute 失败前可能已写入部分内容；需要完整输出时先写缓冲区，成功后再提交。"
         ],
         "exercises": [
           {
@@ -4658,7 +4868,8 @@
             "hint": "可在模板里用变量，或在数据里预先算好 Total。",
             "answer": "在数据结构里加 Total，模板写 Total: {{.Total}}。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4709,7 +4920,8 @@
             "hint": "strings.Split 后逐个 Atoi，遇 err 立即返回。",
             "answer": "for _, p := range parts { n, err := strconv.Atoi(strings.TrimSpace(p)); if err != nil { return nil, err } ... }"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4758,7 +4970,8 @@
             "hint": "用 sha256.New() 反复 Write 后 Sum(nil)。",
             "answer": "h:=sha256.New(); io.Copy(h, f); sum:=h.Sum(nil)。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -4790,9 +5003,9 @@
           "httptest",
           "响应体"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：client_test.go、go.mod。运行命令：go test ./...。net/http 的客户端核心是 http.Client 与 http.Get/Do。响应体 resp.Body 是 io.ReadCloser，读完必须 Close 以便连接复用。示例用 net/http/httptest.NewServer 起一个本地服务器，完全离线；测试断言状态码 200 与响应体内容。这是 test-package 工程例子（go.mod + *_test.go），用 go test 运行；移动端 net 能力未实测，标 Yaegi*（待实测），默认 desktop。用 httptest 而非真实服务，满足“离线、确定”的硬约束。",
-        "code": "// T099 net/http 客户端：GET 与响应处理。\n//\n// http.Client 发起请求、读取响应。为避免联网，本示例用\n// net/http/httptest 起一个本地测试服务器，Client 请求它并读取 body。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpclient/\n//   ├── go.mod        // module httpclient\\n\\ngo 1.27\n//   └── client_test.go // 本文件\n// 运行（官方 SDK）：go test ./...\n// 移动端 Yaegi 对 net 未实测，desktop only。\npackage httpclient\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\nfunc TestClientGet(t *testing.T) {\n\t// 本地测试服务器，不访问外网。\n\tsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.Method != http.MethodGet {\n\t\t\tt.Errorf(\"method = %s, want GET\", r.Method)\n\t\t}\n\t\tw.WriteHeader(http.StatusOK)\n\t\t_, _ = io.WriteString(w, \"hello from server\")\n\t}))\n\tdefer srv.Close()\n\n\tresp, err := http.Get(srv.URL)\n\tif err != nil {\n\t\tt.Fatalf(\"GET failed: %v\", err)\n\t}\n\tdefer resp.Body.Close()\n\n\tif resp.StatusCode != http.StatusOK {\n\t\tt.Fatalf(\"status = %d, want 200\", resp.StatusCode)\n\t}\n\tbody, err := io.ReadAll(resp.Body)\n\tif err != nil {\n\t\tt.Fatalf(\"read body: %v\", err)\n\t}\n\tif string(body) != \"hello from server\" {\n\t\tt.Fatalf(\"body = %q\", string(body))\n\t}\n}\n",
-        "output": "ok  \tqfli.example/t099\t0.006s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\nnet/http 的客户端核心是 http.Client 与 http.Get/Do。响应体 resp.Body 是 io.ReadCloser，读完必须 Close 以便连接复用。示例用 net/http/httptest.NewServer 起一个本地服务器，完全离线；测试断言状态码 200 与响应体内容。这是 test-package 工程例子（go.mod + *_test.go），用 go test 运行；测试只使用本机回环服务，不依赖外部网络。用 httptest 而非真实服务，满足“离线、确定”的硬约束。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T099 net/http 客户端：GET 与响应处理。\n//\n// http.Client 发起请求、读取响应。为避免联网，本示例用\n// net/http/httptest 起一个本地测试服务器，Client 请求它并读取 body。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   httpclient/\n//   ├── go.mod        // module httpclient\\n\\ngo 1.27\n//   └── client_test.go // 本文件\n// 运行（官方 SDK）：go test ./...\n// 测试使用回环服务，不依赖外部网络。\npackage httpclient\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\nfunc TestClientGet(t *testing.T) {\n\t// 本地测试服务器，不访问外网。\n\tsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.Method != http.MethodGet {\n\t\t\tt.Errorf(\"method = %s, want GET\", r.Method)\n\t\t}\n\t\tw.WriteHeader(http.StatusOK)\n\t\t_, _ = io.WriteString(w, \"hello from server\")\n\t}))\n\tdefer srv.Close()\n\n\tresp, err := http.Get(srv.URL)\n\tif err != nil {\n\t\tt.Fatalf(\"GET failed: %v\", err)\n\t}\n\tdefer resp.Body.Close()\n\n\tif resp.StatusCode != http.StatusOK {\n\t\tt.Fatalf(\"status = %d, want 200\", resp.StatusCode)\n\t}\n\tbody, err := io.ReadAll(resp.Body)\n\tif err != nil {\n\t\tt.Fatalf(\"read body: %v\", err)\n\t}\n\tif string(body) != \"hello from server\" {\n\t\tt.Fatalf(\"body = %q\", string(body))\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能用 http.Client 发起请求、读取响应体，并用 httptest 离线测试。",
         "prerequisites": [
           "T085 io.Reader / io.Writer 抽象"
@@ -4807,7 +5020,10 @@
             "hint": "在 handler 里检查 r.Method；客户端检查 resp.StatusCode。",
             "answer": "handler 用 t.Errorf 校验方法；客户端 if resp.StatusCode != 200 { ... }。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module httpclient\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -4839,9 +5055,9 @@
           "httptest",
           "路由"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、server_test.go。运行命令：go test ./...。http.ServeMux 把路径前缀映射到 Handler。http.HandlerFunc 让普通函数满足 Handler 接口。示例把路由抽成 NewMux() 返回 *ServeMux，测试时用 httptest.NewRequest 构造请求、httptest.NewRecorder 捕获响应，直接调用 mux.ServeHTTP——完全离线、不占端口、结果确定。断言路径 /hello 与 /bye 的状态码与响应体。test-package 工程例子，go test 运行，desktop only（移动端 net 未实测）。",
-        "code": "// T100 net/http 服务端：Handler 与路由。\n//\n// http.ServeMux 把路径映射到 Handler。用 httptest.NewRecorder 可以在不\n// 真正监听端口的情况下直接调用 Handler 并检查响应，因此测试离线且确定。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpserver/\n//   ├── go.mod         // module httpserver\\n\\ngo 1.27\n//   └── server_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage httpserver\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// NewMux 构造路由表，便于测试直接复用。\nfunc NewMux() *http.ServeMux {\n\tmux := http.NewServeMux()\n\tmux.HandleFunc(\"/hello\", func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = io.WriteString(w, \"hello\")\n\t})\n\tmux.HandleFunc(\"/bye\", func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = io.WriteString(w, \"bye\")\n\t})\n\treturn mux\n}\n\nfunc TestRoutes(t *testing.T) {\n\tmux := NewMux()\n\tcases := []struct {\n\t\tpath string\n\t\twant string\n\t}{\n\t\t{\"/hello\", \"hello\"},\n\t\t{\"/bye\", \"bye\"},\n\t}\n\tfor _, c := range cases {\n\t\treq := httptest.NewRequest(http.MethodGet, c.path, nil)\n\t\trec := httptest.NewRecorder()\n\t\tmux.ServeHTTP(rec, req)\n\t\tif rec.Code != http.StatusOK {\n\t\t\tt.Fatalf(\"%s status = %d\", c.path, rec.Code)\n\t\t}\n\t\tif got := rec.Body.String(); got != c.want {\n\t\t\tt.Fatalf(\"%s body = %q, want %q\", c.path, got, c.want)\n\t\t}\n\t}\n}\n",
-        "output": "ok  \tqfli.example/t100\t0.003s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\nhttp.ServeMux 把路径前缀映射到 Handler。http.HandlerFunc 让普通函数满足 Handler 接口。示例把路由抽成 NewMux() 返回 *ServeMux，测试时用 httptest.NewRequest 构造请求、httptest.NewRecorder 捕获响应，直接调用 mux.ServeHTTP——完全离线、不占端口、结果确定。断言路径 /hello 与 /bye 的状态码与响应体。test-package 工程例子，go test 运行，可选中测试入口执行这些离线断言。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T100 net/http 服务端：Handler 与路由。\n//\n// http.ServeMux 把路径映射到 Handler。用 httptest.NewRecorder 可以在不\n// 真正监听端口的情况下直接调用 Handler 并检查响应，因此测试离线且确定。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   httpserver/\n//   ├── go.mod         // module httpserver\\n\\ngo 1.27\n//   └── server_test.go // 本文件\n// 运行：go test ./...；也可选中测试入口运行。\npackage httpserver\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// NewMux 构造路由表，便于测试直接复用。\nfunc NewMux() *http.ServeMux {\n\tmux := http.NewServeMux()\n\tmux.HandleFunc(\"/hello\", func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = io.WriteString(w, \"hello\")\n\t})\n\tmux.HandleFunc(\"/bye\", func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = io.WriteString(w, \"bye\")\n\t})\n\treturn mux\n}\n\nfunc TestRoutes(t *testing.T) {\n\tmux := NewMux()\n\tcases := []struct {\n\t\tpath string\n\t\twant string\n\t}{\n\t\t{\"/hello\", \"hello\"},\n\t\t{\"/bye\", \"bye\"},\n\t}\n\tfor _, c := range cases {\n\t\treq := httptest.NewRequest(http.MethodGet, c.path, nil)\n\t\trec := httptest.NewRecorder()\n\t\tmux.ServeHTTP(rec, req)\n\t\tif rec.Code != http.StatusOK {\n\t\t\tt.Fatalf(\"%s status = %d\", c.path, rec.Code)\n\t\t}\n\t\tif got := rec.Body.String(); got != c.want {\n\t\t\tt.Fatalf(\"%s body = %q, want %q\", c.path, got, c.want)\n\t\t}\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能用 ServeMux 注册路由并用 httptest 检查响应，无需真正监听端口。",
         "prerequisites": [
           "T099 net/http 客户端：GET 与响应处理"
@@ -4856,7 +5072,10 @@
             "hint": "r.URL.Query().Get(\"name\")。",
             "answer": "mux.HandleFunc(\"/echo\", func(w,r){ io.WriteString(w, r.URL.Query().Get(\"name\")) })。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module httpserver\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -4888,9 +5107,9 @@
           "状态码",
           "405"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、method_test.go。运行命令：go test ./...。Handler 可以读取请求的 Method 与 Header 并据此分支。写响应时状态码要在写 body 前用 WriteHeader 设定（一旦写入 body 就不能再改状态码）。示例的 handler 只接受 POST，否则返回 405 Method Not Allowed 并设置 Allow 头告知允许方法；成功时回显 X-Token 到 X-Echo 并返回 201。测试分别覆盖 POST 成功与 GET 被拒两条路径，断言状态码与响应头，确定性验证。test-package，go test 运行，desktop only。",
-        "code": "// T101 请求与响应：Method、Header、状态码。\n//\n// Handler 可读取 r.Method / r.Header 并据此分支；用 w.WriteHeader 设置\n// 状态码。方法不匹配时返回 405 Method Not Allowed 是常见约定。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpmethod/\n//   ├── go.mod         // module httpmethod\\n\\ngo 1.27\n//   └── method_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage httpmethod\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// handler 只接受 POST；其他方法返回 405 并带 Allow 头。\nfunc handler(w http.ResponseWriter, r *http.Request) {\n\tif r.Method != http.MethodPost {\n\t\tw.Header().Set(\"Allow\", http.MethodPost)\n\t\tw.WriteHeader(http.StatusMethodNotAllowed)\n\t\treturn\n\t}\n\t// 回显自定义头。\n\tw.Header().Set(\"X-Echo\", r.Header.Get(\"X-Token\"))\n\tw.WriteHeader(http.StatusCreated)\n\t_, _ = io.WriteString(w, \"created\")\n}\n\nfunc TestMethodRouting(t *testing.T) {\n\t// POST：应 201。\n\tpost := httptest.NewRequest(http.MethodPost, \"/\", nil)\n\tpost.Header.Set(\"X-Token\", \"abc\")\n\tpostRec := httptest.NewRecorder()\n\thandler(postRec, post)\n\tif postRec.Code != http.StatusCreated {\n\t\tt.Fatalf(\"POST status = %d, want 201\", postRec.Code)\n\t}\n\tif got := postRec.Header().Get(\"X-Echo\"); got != \"abc\" {\n\t\tt.Fatalf(\"X-Echo = %q, want abc\", got)\n\t}\n\n\t// GET：应 405 且带 Allow 头。\n\tget := httptest.NewRequest(http.MethodGet, \"/\", nil)\n\tgetRec := httptest.NewRecorder()\n\thandler(getRec, get)\n\tif getRec.Code != http.StatusMethodNotAllowed {\n\t\tt.Fatalf(\"GET status = %d, want 405\", getRec.Code)\n\t}\n\tif got := getRec.Header().Get(\"Allow\"); got != http.MethodPost {\n\t\tt.Fatalf(\"Allow = %q, want POST\", got)\n\t}\n}\n",
-        "output": "ok  \tqfli.example/t101\t0.003s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\nHandler 可以读取请求的 Method 与 Header 并据此分支。写响应时状态码要在写 body 前用 WriteHeader 设定（一旦写入 body 就不能再改状态码）。示例的 handler 只接受 POST，否则返回 405 Method Not Allowed 并设置 Allow 头告知允许方法；成功时回显 X-Token 到 X-Echo 并返回 201。测试分别覆盖 POST 成功与 GET 被拒两条路径，断言状态码与响应头，确定性验证。test-package，go test 运行。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T101 请求与响应：Method、Header、状态码。\n//\n// Handler 可读取 r.Method / r.Header 并据此分支；用 w.WriteHeader 设置\n// 状态码。方法不匹配时返回 405 Method Not Allowed 是常见约定。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   httpmethod/\n//   ├── go.mod         // module httpmethod\\n\\ngo 1.27\n//   └── method_test.go // 本文件\n// 运行：go test ./...；也可选中测试入口运行。\npackage httpmethod\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// handler 只接受 POST；其他方法返回 405 并带 Allow 头。\nfunc handler(w http.ResponseWriter, r *http.Request) {\n\tif r.Method != http.MethodPost {\n\t\tw.Header().Set(\"Allow\", http.MethodPost)\n\t\tw.WriteHeader(http.StatusMethodNotAllowed)\n\t\treturn\n\t}\n\t// 回显自定义头。\n\tw.Header().Set(\"X-Echo\", r.Header.Get(\"X-Token\"))\n\tw.WriteHeader(http.StatusCreated)\n\t_, _ = io.WriteString(w, \"created\")\n}\n\nfunc TestMethodRouting(t *testing.T) {\n\t// POST：应 201。\n\tpost := httptest.NewRequest(http.MethodPost, \"/\", nil)\n\tpost.Header.Set(\"X-Token\", \"abc\")\n\tpostRec := httptest.NewRecorder()\n\thandler(postRec, post)\n\tif postRec.Code != http.StatusCreated {\n\t\tt.Fatalf(\"POST status = %d, want 201\", postRec.Code)\n\t}\n\tif got := postRec.Header().Get(\"X-Echo\"); got != \"abc\" {\n\t\tt.Fatalf(\"X-Echo = %q, want abc\", got)\n\t}\n\n\t// GET：应 405 且带 Allow 头。\n\tget := httptest.NewRequest(http.MethodGet, \"/\", nil)\n\tgetRec := httptest.NewRecorder()\n\thandler(getRec, get)\n\tif getRec.Code != http.StatusMethodNotAllowed {\n\t\tt.Fatalf(\"GET status = %d, want 405\", getRec.Code)\n\t}\n\tif got := getRec.Header().Get(\"Allow\"); got != http.MethodPost {\n\t\tt.Fatalf(\"Allow = %q, want POST\", got)\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能按 r.Method 分支处理、用 w.Header 设置响应头、返回恰当状态码。",
         "prerequisites": [
           "T100 net/http 服务端：Handler 与路由"
@@ -4905,7 +5124,10 @@
             "hint": "方法不符返回 405 并设 Allow: PUT。",
             "answer": "if r.Method != http.MethodPut { w.Header().Set(\"Allow\", \"PUT\"); w.WriteHeader(405); return }; w.WriteHeader(204)。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module httpmethod\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -4937,9 +5159,9 @@
           "错误约定",
           "Content-Type"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：api_test.go、go.mod。运行命令：go test ./...。一个稳定的 JSON API 应统一响应外壳：成功返回 data，失败返回 error，并始终设置 Content-Type: application/json。示例的 Envelope 用 omitempty 让 data 与 error 互斥出现。测试覆盖两条路径：带 name 参数返回 200 且 data 正确；不带 name 返回 400 且只有 error、无 data。这种“同结构成功/失败”便于客户端统一解析。用 httptest 保证离线与确定。test-package，go test 运行，desktop only。",
-        "code": "// T102 JSON API 与错误响应约定。\n//\n// 一个 JSON API 应统一响应结构：成功返回数据，失败返回错误码与消息，\n// 并设置 Content-Type: application/json。本示例用统一 envelope 输出，\n// 并测试正常与错误两条路径。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpjson/\n//   ├── go.mod      // module httpjson\\n\\ngo 1.27\n//   └── api_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage httpjson\n\nimport (\n\t\"encoding/json\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// Envelope 是所有响应的统一外壳。\ntype Envelope struct {\n\tOK    bool   `json:\"ok\"`\n\tData  any    `json:\"data,omitempty\"`\n\tError string `json:\"error,omitempty\"`\n}\n\n// handler 依赖查询参数 name：有则成功，无则错误。\nfunc handler(w http.ResponseWriter, r *http.Request) {\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tname := r.URL.Query().Get(\"name\")\n\tif name == \"\" {\n\t\tw.WriteHeader(http.StatusBadRequest)\n\t\t_ = json.NewEncoder(w).Encode(Envelope{OK: false, Error: \"name is required\"})\n\t\treturn\n\t}\n\t_ = json.NewEncoder(w).Encode(Envelope{OK: true, Data: map[string]string{\"name\": name}})\n}\n\nfunc TestJSONAPI(t *testing.T) {\n\t// 成功路径。\n\tokReq := httptest.NewRequest(http.MethodGet, \"/?name=alice\", nil)\n\tokRec := httptest.NewRecorder()\n\thandler(okRec, okReq)\n\tif okRec.Code != http.StatusOK {\n\t\tt.Fatalf(\"status = %d, want 200\", okRec.Code)\n\t}\n\tif ct := okRec.Header().Get(\"Content-Type\"); ct != \"application/json\" {\n\t\tt.Fatalf(\"content-type = %q\", ct)\n\t}\n\tvar okEnv Envelope\n\tif err := json.Unmarshal(okRec.Body.Bytes(), &okEnv); err != nil {\n\t\tt.Fatalf(\"decode: %v\", err)\n\t}\n\tif !okEnv.OK {\n\t\tt.Fatalf(\"ok = false, want true\")\n\t}\n\n\t// 错误路径。\n\tbadReq := httptest.NewRequest(http.MethodGet, \"/\", nil)\n\tbadRec := httptest.NewRecorder()\n\thandler(badRec, badReq)\n\tif badRec.Code != http.StatusBadRequest {\n\t\tt.Fatalf(\"status = %d, want 400\", badRec.Code)\n\t}\n\tvar badEnv Envelope\n\tif err := json.Unmarshal(badRec.Body.Bytes(), &badEnv); err != nil {\n\t\tt.Fatalf(\"decode: %v\", err)\n\t}\n\tif badEnv.OK || badEnv.Error == \"\" {\n\t\tt.Fatalf(\"error envelope = %+v\", badEnv)\n\t}\n\tvar raw map[string]json.RawMessage\n\t_ = json.Unmarshal(badRec.Body.Bytes(), &raw)\n\tif _, present := raw[\"data\"]; present {\n\t\tt.Fatal(\"error response must not include data\")\n\t}\n}\n",
-        "output": "ok  \tqfli.example/t102\t0.003s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\n一个稳定的 JSON API 应统一响应外壳：成功返回 data，失败返回 error，并始终设置 Content-Type: application/json。示例的 Envelope 用 omitempty 让 data 与 error 互斥出现。测试覆盖两条路径：带 name 参数返回 200 且 data 正确；不带 name 返回 400 且只有 error、无 data。这种“同结构成功/失败”便于客户端统一解析。用 httptest 保证离线与确定。test-package，go test 运行。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T102 JSON API 与错误响应约定。\n//\n// 一个 JSON API 应统一响应结构：成功返回数据，失败返回错误码与消息，\n// 并设置 Content-Type: application/json。本示例用统一 envelope 输出，\n// 并测试正常与错误两条路径。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   httpjson/\n//   ├── go.mod      // module httpjson\\n\\ngo 1.27\n//   └── api_test.go // 本文件\n// 运行：go test ./...；也可选中测试入口运行。\npackage httpjson\n\nimport (\n\t\"encoding/json\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// Envelope 是所有响应的统一外壳。\ntype Envelope struct {\n\tOK    bool   `json:\"ok\"`\n\tData  any    `json:\"data,omitempty\"`\n\tError string `json:\"error,omitempty\"`\n}\n\n// handler 依赖查询参数 name：有则成功，无则错误。\nfunc handler(w http.ResponseWriter, r *http.Request) {\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tname := r.URL.Query().Get(\"name\")\n\tif name == \"\" {\n\t\tw.WriteHeader(http.StatusBadRequest)\n\t\t_ = json.NewEncoder(w).Encode(Envelope{OK: false, Error: \"name is required\"})\n\t\treturn\n\t}\n\t_ = json.NewEncoder(w).Encode(Envelope{OK: true, Data: map[string]string{\"name\": name}})\n}\n\nfunc TestJSONAPI(t *testing.T) {\n\t// 成功路径。\n\tokReq := httptest.NewRequest(http.MethodGet, \"/?name=alice\", nil)\n\tokRec := httptest.NewRecorder()\n\thandler(okRec, okReq)\n\tif okRec.Code != http.StatusOK {\n\t\tt.Fatalf(\"status = %d, want 200\", okRec.Code)\n\t}\n\tif ct := okRec.Header().Get(\"Content-Type\"); ct != \"application/json\" {\n\t\tt.Fatalf(\"content-type = %q\", ct)\n\t}\n\tvar okEnv Envelope\n\tif err := json.Unmarshal(okRec.Body.Bytes(), &okEnv); err != nil {\n\t\tt.Fatalf(\"decode: %v\", err)\n\t}\n\tif !okEnv.OK {\n\t\tt.Fatalf(\"ok = false, want true\")\n\t}\n\n\t// 错误路径。\n\tbadReq := httptest.NewRequest(http.MethodGet, \"/\", nil)\n\tbadRec := httptest.NewRecorder()\n\thandler(badRec, badReq)\n\tif badRec.Code != http.StatusBadRequest {\n\t\tt.Fatalf(\"status = %d, want 400\", badRec.Code)\n\t}\n\tvar badEnv Envelope\n\tif err := json.Unmarshal(badRec.Body.Bytes(), &badEnv); err != nil {\n\t\tt.Fatalf(\"decode: %v\", err)\n\t}\n\tif badEnv.OK || badEnv.Error == \"\" {\n\t\tt.Fatalf(\"error envelope = %+v\", badEnv)\n\t}\n\tvar raw map[string]json.RawMessage\n\t_ = json.Unmarshal(badRec.Body.Bytes(), &raw)\n\tif _, present := raw[\"data\"]; present {\n\t\tt.Fatal(\"error response must not include data\")\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能设计统一 JSON 响应结构并设置 Content-Type，区分成功与错误响应。",
         "prerequisites": [
           "T089 JSON 一：Marshal/Unmarshal 基础",
@@ -4955,7 +5177,10 @@
             "hint": "扩展 Envelope 增加 code；测试断言错误路径含 code 而无 data。",
             "answer": "Envelope{OK,Data,Error,Code}；错误路径只填 OK/Error/Code。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module httpjson\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -4987,9 +5212,9 @@
           "recover",
           "链式组合"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、mw_test.go。运行命令：go test ./...。中间件是“接收 Handler、返回 Handler”的函数，可在调用前后插入逻辑（日志、恢复、鉴权）。chain 按顺序包裹：chain(h, a, b) 等价于 a(b(h))，因此 a 是最外层、最先执行。示例用日志中间件记录方法+路径、用 recover 中间件捕获 panic 并返回 500，然后断言：正常请求体正确、panic 请求状态码为 500、日志恰好两条且顺序确定。这展示了中间件链的可组合性与可测试性。test-package，go test 运行，desktop only。",
-        "code": "// T103 中间件：日志、恢复与链式组合。\n//\n// 中间件是\"接收一个 Handler、返回一个 Handler\"的函数，可在调用前后插入\n// 逻辑（日志、恢复、鉴权）。多个中间件可链式包裹。本示例用中间件记录\n// 请求方法并统计调用次数，用 httptest 断言链路确实被经过。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httpmw/\n//   ├── go.mod     // module httpmw\\n\\ngo 1.27\n//   └── mw_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage httpmw\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// Middleware 是标准中间件签名。\ntype Middleware func(http.Handler) http.Handler\n\n// logging 记录每个经过的请求方法。\nfunc logging(log *[]string) Middleware {\n\treturn func(next http.Handler) http.Handler {\n\t\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t\t*log = append(*log, r.Method+\" \"+r.URL.Path)\n\t\t\tnext.ServeHTTP(w, r)\n\t\t})\n\t}\n}\n\n// recoverer 捕获 panic，返回 500，保证链路不崩。\nfunc recoverer(next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tdefer func() {\n\t\t\tif rec := recover(); rec != nil {\n\t\t\t\tw.WriteHeader(http.StatusInternalServerError)\n\t\t\t}\n\t\t}()\n\t\tnext.ServeHTTP(w, r)\n\t})\n}\n\n// chain 按顺序包裹：chain(h, a, b) == a(b(h))。\nfunc chain(h http.Handler, mws ...Middleware) http.Handler {\n\tfor i := len(mws) - 1; i >= 0; i-- {\n\t\th = mws[i](h)\n\t}\n\treturn h\n}\n\nfunc TestMiddlewareChain(t *testing.T) {\n\tvar log []string\n\n\tfinal := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.URL.Path == \"/boom\" {\n\t\t\tpanic(\"boom\")\n\t\t}\n\t\t_, _ = io.WriteString(w, \"ok\")\n\t})\n\th := chain(final, logging(&log), recoverer)\n\n\t// 正常请求。\n\trec := httptest.NewRecorder()\n\th.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, \"/ok\", nil))\n\tif rec.Body.String() != \"ok\" {\n\t\tt.Fatalf(\"body = %q, want ok\", rec.Body.String())\n\t}\n\n\t// panic 请求：recoverer 应返回 500。\n\trec2 := httptest.NewRecorder()\n\th.ServeHTTP(rec2, httptest.NewRequest(http.MethodGet, \"/boom\", nil))\n\tif rec2.Code != http.StatusInternalServerError {\n\t\tt.Fatalf(\"panic status = %d, want 500\", rec2.Code)\n\t}\n\n\t// 日志中间件应记录两次，且顺序确定。\n\tif len(log) != 2 || log[0] != \"GET /ok\" || log[1] != \"GET /boom\" {\n\t\tt.Fatalf(\"log = %v\", log)\n\t}\n}\n",
-        "output": "ok  \tqfli.example/t103\t0.003s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\n中间件是“接收 Handler、返回 Handler”的函数，可在调用前后插入逻辑（日志、恢复、鉴权）。chain 按顺序包裹：chain(h, a, b) 等价于 a(b(h))，因此 a 是最外层、最先执行。示例用日志中间件记录方法+路径、用 recover 中间件捕获 panic 并返回 500，然后断言：正常请求体正确、panic 请求状态码为 500、日志恰好两条且顺序确定。这展示了中间件链的可组合性与可测试性。test-package，go test 运行。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T103 中间件：日志、恢复与链式组合。\n//\n// 中间件是\"接收一个 Handler、返回一个 Handler\"的函数，可在调用前后插入\n// 逻辑（日志、恢复、鉴权）。多个中间件可链式包裹。本示例用中间件记录\n// 请求方法并统计调用次数，用 httptest 断言链路确实被经过。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   httpmw/\n//   ├── go.mod     // module httpmw\\n\\ngo 1.27\n//   └── mw_test.go // 本文件\n// 运行：go test ./...；也可选中测试入口运行。\npackage httpmw\n\nimport (\n\t\"io\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n)\n\n// Middleware 是标准中间件签名。\ntype Middleware func(http.Handler) http.Handler\n\n// logging 记录每个经过的请求方法。\nfunc logging(log *[]string) Middleware {\n\treturn func(next http.Handler) http.Handler {\n\t\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t\t*log = append(*log, r.Method+\" \"+r.URL.Path)\n\t\t\tnext.ServeHTTP(w, r)\n\t\t})\n\t}\n}\n\n// recoverer 捕获 panic，返回 500，保证链路不崩。\nfunc recoverer(next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tdefer func() {\n\t\t\tif rec := recover(); rec != nil {\n\t\t\t\tw.WriteHeader(http.StatusInternalServerError)\n\t\t\t}\n\t\t}()\n\t\tnext.ServeHTTP(w, r)\n\t})\n}\n\n// chain 按顺序包裹：chain(h, a, b) == a(b(h))。\nfunc chain(h http.Handler, mws ...Middleware) http.Handler {\n\tfor i := len(mws) - 1; i >= 0; i-- {\n\t\th = mws[i](h)\n\t}\n\treturn h\n}\n\nfunc TestMiddlewareChain(t *testing.T) {\n\tvar log []string\n\n\tfinal := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.URL.Path == \"/boom\" {\n\t\t\tpanic(\"boom\")\n\t\t}\n\t\t_, _ = io.WriteString(w, \"ok\")\n\t})\n\th := chain(final, logging(&log), recoverer)\n\n\t// 正常请求。\n\trec := httptest.NewRecorder()\n\th.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, \"/ok\", nil))\n\tif rec.Body.String() != \"ok\" {\n\t\tt.Fatalf(\"body = %q, want ok\", rec.Body.String())\n\t}\n\n\t// panic 请求：recoverer 应返回 500。\n\trec2 := httptest.NewRecorder()\n\th.ServeHTTP(rec2, httptest.NewRequest(http.MethodGet, \"/boom\", nil))\n\tif rec2.Code != http.StatusInternalServerError {\n\t\tt.Fatalf(\"panic status = %d, want 500\", rec2.Code)\n\t}\n\n\t// 日志中间件应记录两次，且顺序确定。\n\tif len(log) != 2 || log[0] != \"GET /ok\" || log[1] != \"GET /boom\" {\n\t\tt.Fatalf(\"log = %v\", log)\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能编写 Middleware 函数并组合成链，用 recover 中间件防止 panic 中断服务。",
         "prerequisites": [
           "T100 net/http 服务端：Handler 与路由",
@@ -5005,7 +5230,10 @@
             "hint": "在中间件里检查 r.Header.Get(\"X-Token\")。",
             "answer": "若为空则 w.WriteHeader(401) 并 return，否则 next.ServeHTTP。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module httpmw\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -5037,9 +5265,9 @@
           "Shutdown",
           "确定性断言"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、timeout_test.go。运行命令：go test ./...。生产环境的 HTTP 需要超时与优雅关闭。示例用 httptest 起一个“慢于客户端超时”的服务器，客户端 Client.Timeout 很短，断言必然返回超时错误——只判断“是否超时”，不比较精确耗时。再用 Server.Shutdown(ctx) 做优雅关闭，等待在途请求结束后释放监听，断言关闭调用无错误。这两个主题（超时、关闭）涉及监听，移动端未实测，标 Go only/desktop；测试用 httptest 保证离线。test-package，go test 运行。",
-        "code": "// T104 超时、重试与优雅关闭。\n//\n// http.Server 应设置超时避免慢连接耗尽资源；优雅关闭用\n// Server.Shutdown(ctx) 等待在途请求结束。本示例用 httptest 服务器 +\n// 带 Client.Timeout 的客户端演示超时，并用 Shutdown 演示优雅关闭。\n// 断言只看\"是否超时/是否成功关闭\"，不比较具体耗时。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   httptimeout/\n//   ├── go.mod            // module httptimeout\\n\\ngo 1.27\n//   └── timeout_test.go   // 本文件\n// 运行：go test ./...   desktop only（涉及监听/关闭）。\npackage httptimeout\n\nimport (\n\t\"context\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n\t\"time\"\n)\n\nfunc TestClientTimeout(t *testing.T) {\n\t// 服务器故意慢于客户端超时。\n\tsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\ttime.Sleep(50 * time.Millisecond)\n\t\t_, _ = w.Write([]byte(\"late\"))\n\t}))\n\tdefer srv.Close()\n\n\tclient := &http.Client{Timeout: 5 * time.Millisecond}\n\t_, err := client.Get(srv.URL)\n\t// 断言：必然超时（错误来自 Client.Timeout），不比较精确耗时。\n\tif err == nil {\n\t\tt.Fatal(\"expected timeout error, got nil\")\n\t}\n}\n\nfunc TestGracefulShutdown(t *testing.T) {\n\tsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = w.Write([]byte(\"ok\"))\n\t}))\n\n\t// 正常请求成功。\n\tresp, err := http.Get(srv.URL)\n\tif err != nil {\n\t\tt.Fatalf(\"GET: %v\", err)\n\t}\n\tresp.Body.Close()\n\n\t// 优雅关闭：给一个确定的短超时；断言关闭调用无错误。\n\tctx, cancel := context.WithTimeout(context.Background(), time.Second)\n\tdefer cancel()\n\tif err := srv.Config.Shutdown(ctx); err != nil {\n\t\tt.Fatalf(\"shutdown: %v\", err)\n\t}\n\tsrv.Close()\n}\n",
-        "output": "ok  \tqfli.example/t104\t0.058s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\n生产环境的 HTTP 需要超时与优雅关闭。示例用 httptest 起一个“慢于客户端超时”的服务器，客户端 Client.Timeout 很短，断言必然返回超时错误——只判断“是否超时”，不比较精确耗时。再用 Server.Shutdown(ctx) 做优雅关闭，等待在途请求结束后释放监听，断言关闭调用无错误。这两个主题（超时、关闭）涉及监听，移动端未实测，标 Go only/desktop；测试用 httptest 保证离线。test-package，go test 运行。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T104 超时、重试与优雅关闭。\n//\n// http.Server 应设置超时避免慢连接耗尽资源；优雅关闭用\n// Server.Shutdown(ctx) 等待在途请求结束。本示例用 httptest 服务器 +\n// 带 Client.Timeout 的客户端演示超时，并用 Shutdown 演示优雅关闭。\n// 断言只看\"是否超时/是否成功关闭\"，不比较具体耗时。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   httptimeout/\n//   ├── go.mod            // module httptimeout\\n\\ngo 1.27\n//   └── timeout_test.go   // 本文件\n// 运行：go test ./...；也可选中测试入口运行。\npackage httptimeout\n\nimport (\n\t\"context\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n\t\"time\"\n)\n\nfunc TestClientTimeout(t *testing.T) {\n\t// 服务器故意慢于客户端超时。\n\tsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\ttime.Sleep(50 * time.Millisecond)\n\t\t_, _ = w.Write([]byte(\"late\"))\n\t}))\n\tdefer srv.Close()\n\n\tclient := &http.Client{Timeout: 5 * time.Millisecond}\n\t_, err := client.Get(srv.URL)\n\t// 断言：必然超时（错误来自 Client.Timeout），不比较精确耗时。\n\tif err == nil {\n\t\tt.Fatal(\"expected timeout error, got nil\")\n\t}\n}\n\nfunc TestGracefulShutdown(t *testing.T) {\n\tsrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t_, _ = w.Write([]byte(\"ok\"))\n\t}))\n\n\t// 正常请求成功。\n\tresp, err := http.Get(srv.URL)\n\tif err != nil {\n\t\tt.Fatalf(\"GET: %v\", err)\n\t}\n\tresp.Body.Close()\n\n\t// 优雅关闭：给一个确定的短超时；断言关闭调用无错误。\n\tctx, cancel := context.WithTimeout(context.Background(), time.Second)\n\tdefer cancel()\n\tif err := srv.Config.Shutdown(ctx); err != nil {\n\t\tt.Fatalf(\"shutdown: %v\", err)\n\t}\n\tsrv.Close()\n}\n",
+        "output": "PASS",
         "objective": "能为 http.Client 设置超时、用 Server.Shutdown 优雅停机，并避免用耗时作断言。",
         "prerequisites": [
           "T099 net/http 客户端：GET 与响应处理",
@@ -5055,7 +5283,10 @@
             "hint": "循环调用，失败则 sleep 递增，统计尝试次数。",
             "answer": "for attempt := 0; attempt < max; attempt++ { ...; if err==nil { break }; time.Sleep(backoff) }。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module httptimeout\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -5087,9 +5318,9 @@
           "子测试",
           "测试"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：calc_test.go、go.mod。运行命令：go test ./...。表驱动测试把多组输入/期望放进一个切片，循环用 t.Run 建成子测试。好处：新增用例只加一行数据、子测试可单独运行（go test -run TestAdd/positive）、失败定位到具体子测试。示例为 Add 写了四组用例覆盖正数、含零、负数、正负抵消。这是最基础也最常用的 Go 测试写法。test-package 工程例子（go.mod + *_test.go），用官方 SDK 的 go test 运行；移动端不执行 go test，desktop only。",
-        "code": "// T105 表驱动测试与子测试。\n//\n// 表驱动测试把多组输入/期望写进一个切片，循环用 t.Run 建成子测试。\n// 这样新增用例只需加一行数据，且每个子测试可单独运行、单独报错。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   tabletest/\n//   ├── go.mod       // module tabletest\\n\\ngo 1.27\n//   └── calc_test.go // 本文件（含被测逻辑与测试）\n// 运行：go test ./...   /   go test -run TestAdd ./...\n// desktop only（移动端不执行 go test）。\npackage tabletest\n\nimport \"testing\"\n\n// Add 是被测函数。\nfunc Add(a, b int) int { return a + b }\n\nfunc TestAdd(t *testing.T) {\n\tcases := []struct {\n\t\tname string\n\t\ta, b int\n\t\twant int\n\t}{\n\t\t{\"positive\", 2, 3, 5},\n\t\t{\"with zero\", 0, 7, 7},\n\t\t{\"negative\", -2, -3, -5},\n\t\t{\"mixed\", -4, 4, 0},\n\t}\n\tfor _, c := range cases {\n\t\t// t.Run 为每组数据建立独立子测试，名字唯一。\n\t\tt.Run(c.name, func(t *testing.T) {\n\t\t\tif got := Add(c.a, c.b); got != c.want {\n\t\t\t\tt.Fatalf(\"Add(%d,%d) = %d, want %d\", c.a, c.b, got, c.want)\n\t\t\t}\n\t\t})\n\t}\n}\n",
-        "output": "ok  \tqfli.example/t105\t0.002s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\n表驱动测试把多组输入/期望放进一个切片，循环用 t.Run 建成子测试。好处：新增用例只加一行数据、子测试可单独运行（go test -run TestAdd/positive）、失败定位到具体子测试。示例为 Add 写了四组用例覆盖正数、含零、负数、正负抵消。这是最基础也最常用的 Go 测试写法。test-package 工程例子（go.mod + *_test.go），选中测试入口运行；桌面官方工具链也可使用 go test。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T105 表驱动测试与子测试。\n//\n// 表驱动测试把多组输入/期望写进一个切片，循环用 t.Run 建成子测试。\n// 这样新增用例只需加一行数据，且每个子测试可单独运行、单独报错。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   tabletest/\n//   ├── go.mod       // module tabletest\\n\\ngo 1.27\n//   └── calc_test.go // 本文件（含被测逻辑与测试）\n// 运行：go test ./...   /   go test -run TestAdd ./...\n// 选中测试入口执行断言，或使用桌面官方工具链 go test。\npackage tabletest\n\nimport \"testing\"\n\n// Add 是被测函数。\nfunc Add(a, b int) int { return a + b }\n\nfunc TestAdd(t *testing.T) {\n\tcases := []struct {\n\t\tname string\n\t\ta, b int\n\t\twant int\n\t}{\n\t\t{\"positive\", 2, 3, 5},\n\t\t{\"with zero\", 0, 7, 7},\n\t\t{\"negative\", -2, -3, -5},\n\t\t{\"mixed\", -4, 4, 0},\n\t}\n\tfor _, c := range cases {\n\t\t// t.Run 为每组数据建立独立子测试，名字唯一。\n\t\tt.Run(c.name, func(t *testing.T) {\n\t\t\tif got := Add(c.a, c.b); got != c.want {\n\t\t\t\tt.Fatalf(\"Add(%d,%d) = %d, want %d\", c.a, c.b, got, c.want)\n\t\t\t}\n\t\t})\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能编写表驱动测试并用 t.Run 组织子测试，理解子测试的独立性。",
         "prerequisites": [
           "T023 函数签名、多返回值与命名返回"
@@ -5104,7 +5335,10 @@
             "hint": "表里每行 {name,a,b,want}。",
             "answer": "cases := []struct{...}{...}; for _, c := range cases { t.Run(c.name, func(t *testing.T){ ... }) }。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module tabletest\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -5136,9 +5370,9 @@
           "失败定位",
           "测试"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：assert_test.go、go.mod。运行命令：go test ./...。测试里常有重复的断言逻辑，抽成 helper 能减少样板。但 helper 内部失败若不调用 t.Helper()，报错行号会指向 helper 自身，而不是真正出错的调用点，调试成本高。t.Helper() 标记“这个函数是测试辅助”，使 t.Fatalf/Errorf 报告调用者的位置。示例提供 equalInt 与 assertTrue 两个 helper，并在 TestParseLen 中复用，验证失败定位正确。test-package，go test 运行，desktop only。",
-        "code": "// T106 断言与辅助函数、t.Helper。\n//\n// 把重复的断言逻辑抽成 helper，并在 helper 里调用 t.Helper()，\n// 这样失败时报告的行号指向调用者而不是 helper 内部，定位更快。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   asserthlp/\n//   ├── go.mod         // module asserthlp\\n\\ngo 1.27\n//   └── assert_test.go // 本文件\n// 运行：go test ./...   desktop only。\npackage asserthlp\n\nimport (\n\t\"strconv\"\n\t\"testing\"\n)\n\n// equalInt 是断言 helper：t.Helper() 让失败堆栈指向调用处。\nfunc equalInt(t *testing.T, got, want int) {\n\tt.Helper()\n\tif got != want {\n\t\tt.Fatalf(\"got %d, want %d\", got, want)\n\t}\n}\n\n// assertTrue 是布尔断言 helper，单独存在以免混用类型。\nfunc assertTrue(t *testing.T, cond bool, msg string) {\n\tt.Helper()\n\tif !cond {\n\t\tt.Fatal(msg)\n\t}\n}\n\n// ParseLen 返回字符串长度（作为被测函数）。\nfunc ParseLen(s string) int { return len(s) }\n\nfunc TestParseLen(t *testing.T) {\n\tequalInt(t, ParseLen(\"go\"), 2)\n\tequalInt(t, ParseLen(\"\"), 0)\n\n\t// 用 helper 验证 strconv 往返，证明 helper 可复用。\n\tn, err := strconv.Atoi(\"123\")\n\tassertTrue(t, err == nil, \"Atoi error\")\n\tequalInt(t, n, 123)\n}\n",
-        "output": "ok  \tqfli.example/t106\t0.002s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\n测试里常有重复的断言逻辑，抽成 helper 能减少样板。但 helper 内部失败若不调用 t.Helper()，报错行号会指向 helper 自身，而不是真正出错的调用点，调试成本高。t.Helper() 标记“这个函数是测试辅助”，使 t.Fatalf/Errorf 报告调用者的位置。示例提供 equalInt 与 assertTrue 两个 helper，并在 TestParseLen 中复用，验证失败定位正确。test-package，go test 运行。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T106 断言与辅助函数、t.Helper。\n//\n// 把重复的断言逻辑抽成 helper，并在 helper 里调用 t.Helper()，\n// 这样失败时报告的行号指向调用者而不是 helper 内部，定位更快。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   asserthlp/\n//   ├── go.mod         // module asserthlp\\n\\ngo 1.27\n//   └── assert_test.go // 本文件\n// 运行：go test ./...；也可选中测试入口运行。\npackage asserthlp\n\nimport (\n\t\"strconv\"\n\t\"testing\"\n)\n\n// equalInt 是断言 helper：t.Helper() 让失败堆栈指向调用处。\nfunc equalInt(t *testing.T, got, want int) {\n\tt.Helper()\n\tif got != want {\n\t\tt.Fatalf(\"got %d, want %d\", got, want)\n\t}\n}\n\n// assertTrue 是布尔断言 helper，单独存在以免混用类型。\nfunc assertTrue(t *testing.T, cond bool, msg string) {\n\tt.Helper()\n\tif !cond {\n\t\tt.Fatal(msg)\n\t}\n}\n\n// ParseLen 返回字符串长度（作为被测函数）。\nfunc ParseLen(s string) int { return len(s) }\n\nfunc TestParseLen(t *testing.T) {\n\tequalInt(t, ParseLen(\"go\"), 2)\n\tequalInt(t, ParseLen(\"\"), 0)\n\n\t// 用 helper 验证 strconv 往返，证明 helper 可复用。\n\tn, err := strconv.Atoi(\"123\")\n\tassertTrue(t, err == nil, \"Atoi error\")\n\tequalInt(t, n, 123)\n}\n",
+        "output": "PASS",
         "objective": "能编写断言 helper 并用 t.Helper 保持失败定位在调用者而非 helper 内部。",
         "prerequisites": [
           "T105 表驱动测试与子测试"
@@ -5153,7 +5387,10 @@
             "hint": "先比长度再逐元素比较。",
             "answer": "func equalSlice(t *testing.T, got, want []int){ t.Helper(); if len(got)!=len(want){t.Fatalf(...)}; for i:=range got{...} }。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module asserthlp\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -5185,9 +5422,9 @@
           "隔离",
           "清理"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：fixture_test.go、go.mod。运行命令：go test ./...。文件系统测试需要隔离与清理。t.TempDir() 返回一个测试专属、测试结束由框架自动删除的目录，多个测试各得其所、互不干扰。t.Cleanup(fn) 注册结束回调，即使测试失败也会运行，适合关闭句柄、回滚状态等。示例在 TempDir 内读写文件并断言内容，另一个测试验证 TempDir 初始为空。用框架提供的夹具而非手工清理，能显著减少测试间污染与残留。test-package，go test 运行，desktop only。",
-        "code": "// T107 测试夹具：t.TempDir、t.Cleanup。\n//\n// t.TempDir() 为每个测试提供独立、自动清理的临时目录；\n// t.Cleanup(fn) 注册测试结束时执行的清理，即使测试失败也会运行。\n// 二者让涉及文件系统的测试隔离且无残留。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   fixturetest/\n//   ├── go.mod         // module fixturetest\\n\\ngo 1.27\n//   └── fixture_test.go // 本文件\n// 运行：go test ./...   desktop only（文件系统）。\npackage fixturetest\n\nimport (\n\t\"os\"\n\t\"path/filepath\"\n\t\"testing\"\n)\n\nfunc TestWriteAndReadFixture(t *testing.T) {\n\tdir := t.TempDir() // 每个测试独享，测试结束自动删除\n\n\t// 注册清理：验证确实执行（演示 t.Cleanup 语义）。\n\tcleaned := false\n\tt.Cleanup(func() { cleaned = true })\n\n\tpath := filepath.Join(dir, \"data.txt\")\n\tif err := os.WriteFile(path, []byte(\"hello\"), 0o644); err != nil {\n\t\tt.Fatalf(\"write: %v\", err)\n\t}\n\tgot, err := os.ReadFile(path)\n\tif err != nil {\n\t\tt.Fatalf(\"read: %v\", err)\n\t}\n\tif string(got) != \"hello\" {\n\t\tt.Fatalf(\"content = %q, want hello\", string(got))\n\t}\n\t// 同一测试内 cleaned 仍为 false（Cleanup 在测试返回后才跑）。\n\tif cleaned {\n\t\tt.Fatal(\"cleanup ran too early\")\n\t}\n}\n\nfunc TestTempDirIsolated(t *testing.T) {\n\t// 第二个测试拿到不同的临时目录，互不影响。\n\tdir := t.TempDir()\n\tentries, err := os.ReadDir(dir)\n\tif err != nil {\n\t\tt.Fatalf(\"readdir: %v\", err)\n\t}\n\tif len(entries) != 0 {\n\t\tt.Fatalf(\"expected empty temp dir, got %d entries\", len(entries))\n\t}\n}\n",
-        "output": "ok  \tqfli.example/t107\t0.002s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\n文件系统测试需要隔离与清理。t.TempDir() 返回一个测试专属、测试结束由框架自动删除的目录，多个测试各得其所、互不干扰。t.Cleanup(fn) 注册结束回调，即使测试失败也会运行，适合关闭句柄、回滚状态等。示例在 TempDir 内读写文件并断言内容，另一个测试验证 TempDir 初始为空。用框架提供的夹具而非手工清理，能显著减少测试间污染与残留。test-package，go test 运行。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T107 测试夹具：t.TempDir、t.Cleanup。\n//\n// t.TempDir() 为每个测试提供独立、自动清理的临时目录；\n// t.Cleanup(fn) 注册测试结束时执行的清理，即使测试失败也会运行。\n// 二者让涉及文件系统的测试隔离且无残留。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   fixturetest/\n//   ├── go.mod         // module fixturetest\\n\\ngo 1.27\n//   └── fixture_test.go // 本文件\n// 运行：go test ./...；也可选中测试入口运行。\npackage fixturetest\n\nimport (\n\t\"os\"\n\t\"path/filepath\"\n\t\"testing\"\n)\n\nfunc TestWriteAndReadFixture(t *testing.T) {\n\tdir := t.TempDir() // 每个测试独享，测试结束自动删除\n\n\t// 注册清理：验证确实执行（演示 t.Cleanup 语义）。\n\tcleaned := false\n\tt.Cleanup(func() { cleaned = true })\n\n\tpath := filepath.Join(dir, \"data.txt\")\n\tif err := os.WriteFile(path, []byte(\"hello\"), 0o644); err != nil {\n\t\tt.Fatalf(\"write: %v\", err)\n\t}\n\tgot, err := os.ReadFile(path)\n\tif err != nil {\n\t\tt.Fatalf(\"read: %v\", err)\n\t}\n\tif string(got) != \"hello\" {\n\t\tt.Fatalf(\"content = %q, want hello\", string(got))\n\t}\n\t// 同一测试内 cleaned 仍为 false（Cleanup 在测试返回后才跑）。\n\tif cleaned {\n\t\tt.Fatal(\"cleanup ran too early\")\n\t}\n}\n\nfunc TestTempDirIsolated(t *testing.T) {\n\t// 第二个测试拿到不同的临时目录，互不影响。\n\tdir := t.TempDir()\n\tentries, err := os.ReadDir(dir)\n\tif err != nil {\n\t\tt.Fatalf(\"readdir: %v\", err)\n\t}\n\tif len(entries) != 0 {\n\t\tt.Fatalf(\"expected empty temp dir, got %d entries\", len(entries))\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能用 t.TempDir 与 t.Cleanup 编写隔离且自动清理的文件系统测试。",
         "prerequisites": [
           "T086 文件读写：os.Open/Create 与缓冲",
@@ -5203,7 +5440,10 @@
             "hint": "Cleanup 在测试返回后执行，无法断言“清空后”。可断言文件在测试内存在。",
             "answer": "测试内断言三文件存在；依赖框架自动清理临时目录。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module fixturetest\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -5235,9 +5475,9 @@
           "RunParallel",
           "确定性"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：bench_test.go、go.mod。运行命令：go test -bench . -run '^$' ./...。基准函数 BenchmarkXxx(*testing.B) 由框架自动调整 b.N 以获得稳定测量，输出 ns/op、allocs/op 等指标。b.RunParallel 用多个 goroutine 并行施压，适合测量并发路径。关键约定：基准数值随机器与负载变化，因此本课程不作为通过条件；验证只要求“基准能运行并报出指标”（bench-exists）。示例提供串行与并行两个基准，并有功能测试保证逻辑正确。test-package，移动端不支持 bench，desktop only。",
-        "code": "// T108 基准测试与 b.RunParallel。\n//\n// 基准测试函数名形如 BenchmarkXxx(*testing.B)，b.N 由框架自动调整以获得\n// 稳定测量。b.RunParallel 用多个 goroutine 并行施压，适合测量并发路径。\n// 断言策略：只要求基准能运行并报出指标（ns/op），不把数值作为通过条件。\n//\n// test-package / benchmark 工程例子，不能一键导入。完整结构：\n//   benchparallel/\n//   ├── go.mod         // module benchparallel\\n\\ngo 1.27\n//   └── bench_test.go  // 本文件\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -bench . -benchmem ./...\n// 移动端不支持 bench，desktop only。\npackage benchparallel\n\nimport (\n\t\"sync/atomic\"\n\t\"testing\"\n)\n\n// sumTo 是串行基准的被测逻辑。\nfunc sumTo(n int) int {\n\ttotal := 0\n\tfor i := 1; i <= n; i++ {\n\t\ttotal += i\n\t}\n\treturn total\n}\n\nfunc BenchmarkSum(b *testing.B) {\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = sumTo(1000)\n\t}\n}\n\nfunc BenchmarkSumParallel(b *testing.B) {\n\tvar counter atomic.Int64\n\tb.ReportAllocs()\n\tb.RunParallel(func(pb *testing.PB) {\n\t\t// 每个并行工作者拿到各自的一部分迭代。\n\t\tfor pb.Next() {\n\t\t\tcounter.Add(int64(sumTo(100)))\n\t\t}\n\t})\n\t// 消费 counter，避免被优化掉。\n\tif counter.Load() < 0 {\n\t\tb.Fatal(\"negative\")\n\t}\n}\n\nfunc TestSumTo(t *testing.T) {\n\tif got := sumTo(10); got != 55 {\n\t\tt.Fatalf(\"sumTo(10) = %d, want 55\", got)\n\t}\n}\n",
-        "output": "BenchmarkSum-2          \t7809880\t170.8 ns/op\t0 B/op\t0 allocs/op\nBenchmarkSumParallel-2  \t35680834\t29.04 ns/op\t0 B/op\t0 allocs/op",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\n基准函数 BenchmarkXxx(*testing.B) 由框架自动调整 b.N 以获得稳定测量，输出 ns/op、allocs/op 等指标。b.RunParallel 用多个 goroutine 并行施压，适合测量并发路径。关键约定：基准数值随机器与负载变化，因此本课程不作为通过条件；验证要求实际执行基准循环（bench-exists），不能只匹配一行成功文字。示例提供串行与并行两个基准，并有功能测试保证逻辑正确。test-package，内置运行器执行有界基准循环；自动校准和性能指标比较使用官方工具链。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T108 基准测试与 b.RunParallel。\n//\n// 基准测试函数名形如 BenchmarkXxx(*testing.B)，b.N 由框架自动调整以获得\n// 稳定测量。b.RunParallel 用多个 goroutine 并行施压，适合测量并发路径。\n// 断言策略：只要求基准能运行并报出指标（ns/op），不把数值作为通过条件。\n//\n// test-package / benchmark 工程例子，导入时附带辅助文件。原始结构：\n//   benchparallel/\n//   ├── go.mod         // module benchparallel\\n\\ngo 1.27\n//   └── bench_test.go  // 本文件\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -bench . -benchmem ./...\n// 内置运行器执行有界基准循环；性能测量与比较使用官方工具链。\npackage benchparallel\n\nimport (\n\t\"sync/atomic\"\n\t\"testing\"\n)\n\n// sumTo 是串行基准的被测逻辑。\nfunc sumTo(n int) int {\n\ttotal := 0\n\tfor i := 1; i <= n; i++ {\n\t\ttotal += i\n\t}\n\treturn total\n}\n\nfunc BenchmarkSum(b *testing.B) {\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = sumTo(1000)\n\t}\n}\n\nfunc BenchmarkSumParallel(b *testing.B) {\n\tvar counter atomic.Int64\n\tb.ReportAllocs()\n\tb.RunParallel(func(pb *testing.PB) {\n\t\t// 每个并行工作者拿到各自的一部分迭代。\n\t\tfor pb.Next() {\n\t\t\tcounter.Add(int64(sumTo(100)))\n\t\t}\n\t})\n\t// 消费 counter，避免被优化掉。\n\tif counter.Load() < 0 {\n\t\tb.Fatal(\"negative\")\n\t}\n}\n\nfunc TestSumTo(t *testing.T) {\n\tif got := sumTo(10); got != 55 {\n\t\tt.Fatalf(\"sumTo(10) = %d, want 55\", got)\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能编写 BenchmarkXxx 与 b.RunParallel，说明 b.N 的作用与基准结果的读法。",
         "prerequisites": [
           "T105 表驱动测试与子测试",
@@ -5253,7 +5493,10 @@
             "hint": "RunParallel 里用 pb.Next() 控制迭代。",
             "answer": "b.RunParallel(func(pb *testing.PB){ for pb.Next() { ... } })。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module benchparallel\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -5285,9 +5528,9 @@
           "coverprofile",
           "测试组织"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：calc.go、calc_test.go、go.mod。运行命令：go test ./...。Go 的测试与被测代码通常同包，允许放在同一目录的多个文件里：calc.go 放逻辑，calc_test.go 放测试。go test -coverprofile 生成覆盖率文件，go tool cover 可查看函数/行级覆盖。示例的 Classify 有三个分支，表驱动测试逐一覆盖。要强调：覆盖率是“是否执行到”的指标，不能替代语义断言——高覆盖率仍可能漏掉错误逻辑。test-package 工程例子（go.mod + calc.go + calc_test.go），go test 运行，desktop only。",
-        "code": "// T109 覆盖率与测试组织。\n//\n// go test -coverprofile 生成覆盖率文件，go tool cover 可生成 HTML 报告。\n// 本文件既演示如何组织多个测试文件共享同一包（见目录结构说明），\n// 又通过一条断言确保关键分支都被覆盖到。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   covertest/\n//   ├── go.mod        // module covertest\\n\\ngo 1.27\n//   ├── calc.go       // 被测逻辑\n//   └── calc_test.go  // 本文件\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -coverprofile=cover.out ./... && go tool cover -func=cover.out\n// desktop only。\npackage covertest\n\nimport \"testing\"\n\n// Classify 定义在 calc.go（同包另一文件），此处只做测试，\n// 演示同一包内多文件如何组织。\nfunc TestClassifyAllBranches(t *testing.T) {\n\tcases := map[int]string{-1: \"negative\", 0: \"zero\", 1: \"positive\"}\n\tfor in, want := range cases {\n\t\tif got := Classify(in); got != want {\n\t\t\tt.Errorf(\"Classify(%d) = %q, want %q\", in, got, want)\n\t\t}\n\t}\n}\n",
-        "output": "ok  \tqfli.example/t109\t0.002s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\nGo 的测试与被测代码通常同包，允许放在同一目录的多个文件里：calc.go 放逻辑，calc_test.go 放测试。go test -coverprofile 生成覆盖率文件，go tool cover 可查看函数/行级覆盖。示例的 Classify 有三个分支，表驱动测试逐一覆盖。要强调：覆盖率是“是否执行到”的指标，不能替代语义断言——高覆盖率仍可能漏掉错误逻辑。test-package 工程例子（go.mod + calc.go + calc_test.go），go test 运行。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T109 覆盖率与测试组织。\n//\n// go test -coverprofile 生成覆盖率文件，go tool cover 可生成 HTML 报告。\n// 本文件既演示如何组织多个测试文件共享同一包（见目录结构说明），\n// 又通过一条断言确保关键分支都被覆盖到。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   covertest/\n//   ├── go.mod        // module covertest\\n\\ngo 1.27\n//   ├── calc.go       // 被测逻辑\n//   └── calc_test.go  // 本文件\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -coverprofile=cover.out ./... && go tool cover -func=cover.out\n// 测试入口执行断言；覆盖率报告使用桌面官方工具链。\npackage covertest\n\nimport \"testing\"\n\n// Classify 定义在 calc.go（同包另一文件），此处只做测试，\n// 演示同一包内多文件如何组织。\nfunc TestClassifyAllBranches(t *testing.T) {\n\tcases := map[int]string{-1: \"negative\", 0: \"zero\", 1: \"positive\"}\n\tfor in, want := range cases {\n\t\tif got := Classify(in); got != want {\n\t\t\tt.Errorf(\"Classify(%d) = %q, want %q\", in, got, want)\n\t\t}\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能组织同包多文件并生成覆盖率报告，理解 coverprofile 的用途。",
         "prerequisites": [
           "T059 包、导出规则与初始化顺序",
@@ -5303,7 +5546,11 @@
             "hint": "go tool cover -func=cover.out 查看函数级覆盖率。",
             "answer": "go test -coverprofile=cover.out .; go tool cover -func=cover.out。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "src/calc.go": "// Classify 按符号对整数分类。此文件与 calc_test.go 同属 covertest 包，\n// 演示\"同一包内多个文件\"如何组织测试。\npackage covertest\n\n// Classify 返回 negative / zero / positive。\nfunc Classify(n int) string {\n\tswitch {\n\tcase n < 0:\n\t\treturn \"negative\"\n\tcase n == 0:\n\t\treturn \"zero\"\n\tdefault:\n\t\treturn \"positive\"\n\t}\n}\n",
+          "go.mod": "module covertest\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -5335,9 +5582,9 @@
           "不变量",
           "边界"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：fuzz_test.go、go.mod。运行命令：go test ./...。Fuzz 测试（Go 1.18+）用 f.Fuzz 提供随机输入寻找边界缺陷，并最小化复现用例。示例的 ParsePort 只接受 1..65535，fuzz target 声明不变量：“要么解析失败，要么结果在范围内”，从而暴露越界。为让常规 go test 确定可复现，只运行种子语料（f.Add 提供的用例）；真正随机穷举需显式 go test -fuzz 并限制时长。test-package，移动端不支持 fuzz，desktop only。",
-        "code": "// T110 Fuzz 测试发现边界缺陷。\n//\n// Fuzz 测试（Go 1.18+）用 f.Fuzz 提供随机输入，穷举边界并最小化复现用例。\n// 本示例的 ParsePort 只接受 1..65535；fuzz target 断言\"要么解析成功且在\n// 范围内，要么返回错误\"，从而暴露越界。为避免运行时长不确定，\n// 常规 go test 只跑种子语料（确定性），fuzz 模式需显式 -fuzz。\n//\n// test-package / fuzz 工程例子，不能一键导入。完整结构：\n//   fuzztest/\n//   ├── go.mod       // module fuzztest\\n\\ngo 1.27\n//   └── fuzz_test.go // 本文件\n// 运行（官方 SDK）：\n//   go test ./...             // 只跑种子\n//   go test -fuzz FuzzParsePort -fuzztime 10s ./...\n// desktop only（移动端不支持 fuzz）。\npackage fuzztest\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"testing\"\n)\n\n// ParsePort 解析端口并校验范围。\nfunc ParsePort(s string) (int, error) {\n\tn, err := strconv.Atoi(s)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\tif n < 1 || n > 65535 {\n\t\treturn 0, fmt.Errorf(\"port %d out of range\", n)\n\t}\n\treturn n, nil\n}\n\nfunc TestParsePortSeeds(t *testing.T) {\n\tcases := []struct {\n\t\tin      string\n\t\twantErr bool\n\t}{\n\t\t{\"80\", false},\n\t\t{\"65535\", false},\n\t\t{\"0\", true},\n\t\t{\"65536\", true},\n\t\t{\"abc\", true},\n\t}\n\tfor _, c := range cases {\n\t\t_, err := ParsePort(c.in)\n\t\tif (err != nil) != c.wantErr {\n\t\t\tt.Fatalf(\"ParsePort(%q) err=%v, wantErr=%v\", c.in, err, c.wantErr)\n\t\t}\n\t}\n}\n\n// FuzzParsePort 断言不变量：成功则必在 [1,65535]，否则必有错误。\nfunc FuzzParsePort(f *testing.F) {\n\tf.Add(\"80\")\n\tf.Add(\"0\")\n\tf.Add(\"65536\")\n\tf.Add(\"not-a-number\")\n\tf.Fuzz(func(t *testing.T, s string) {\n\t\tn, err := ParsePort(s)\n\t\tif err == nil && (n < 1 || n > 65535) {\n\t\t\tt.Fatalf(\"ParsePort(%q) = %d with nil error, out of range\", s, n)\n\t\t}\n\t})\n}\n",
-        "output": "ok  \tqfli.example/t110\t0.002s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\nFuzz 测试（Go 1.18+）用 f.Fuzz 提供随机输入寻找边界缺陷，并最小化复现用例。示例的 ParsePort 只接受 1..65535，fuzz target 声明不变量：“要么解析失败，要么结果在范围内”，从而暴露越界。为让常规 go test 确定可复现，只运行种子语料（f.Add 提供的用例）；真正随机穷举需显式 go test -fuzz 并限制时长。test-package，内置运行器只执行已登记的种子；持续生成输入与最小化使用官方工具链。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T110 Fuzz 测试发现边界缺陷。\n//\n// Fuzz 测试（Go 1.18+）用 f.Fuzz 提供随机输入，穷举边界并最小化复现用例。\n// 本示例的 ParsePort 只接受 1..65535；fuzz target 断言\"要么解析成功且在\n// 范围内，要么返回错误\"，从而暴露越界。为避免运行时长不确定，\n// 常规 go test 只跑种子语料（确定性），fuzz 模式需显式 -fuzz。\n//\n// test-package / fuzz 工程例子，导入时附带辅助文件。原始结构：\n//   fuzztest/\n//   ├── go.mod       // module fuzztest\\n\\ngo 1.27\n//   └── fuzz_test.go // 本文件\n// 运行（官方 SDK）：\n//   go test ./...             // 只跑种子\n//   go test -fuzz FuzzParsePort -fuzztime 10s ./...\n// 内置运行器执行已登记种子；持续 fuzz 搜索使用桌面官方工具链。\npackage fuzztest\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"testing\"\n)\n\n// ParsePort 解析端口并校验范围。\nfunc ParsePort(s string) (int, error) {\n\tn, err := strconv.Atoi(s)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\tif n < 1 || n > 65535 {\n\t\treturn 0, fmt.Errorf(\"port %d out of range\", n)\n\t}\n\treturn n, nil\n}\n\nfunc TestParsePortSeeds(t *testing.T) {\n\tcases := []struct {\n\t\tin      string\n\t\twantErr bool\n\t}{\n\t\t{\"80\", false},\n\t\t{\"65535\", false},\n\t\t{\"0\", true},\n\t\t{\"65536\", true},\n\t\t{\"abc\", true},\n\t}\n\tfor _, c := range cases {\n\t\t_, err := ParsePort(c.in)\n\t\tif (err != nil) != c.wantErr {\n\t\t\tt.Fatalf(\"ParsePort(%q) err=%v, wantErr=%v\", c.in, err, c.wantErr)\n\t\t}\n\t}\n}\n\n// FuzzParsePort 断言不变量：成功则必在 [1,65535]，否则必有错误。\nfunc FuzzParsePort(f *testing.F) {\n\tf.Add(\"80\")\n\tf.Add(\"0\")\n\tf.Add(\"65536\")\n\tf.Add(\"not-a-number\")\n\tf.Fuzz(func(t *testing.T, s string) {\n\t\tn, err := ParsePort(s)\n\t\tif err == nil && (n < 1 || n > 65535) {\n\t\t\tt.Fatalf(\"ParsePort(%q) = %d with nil error, out of range\", s, n)\n\t\t}\n\t})\n}\n",
+        "output": "PASS",
         "objective": "能编写 fuzz target 并声明不变量，理解常规测试只跑种子、-fuzz 才随机穷举。",
         "prerequisites": [
           "T105 表驱动测试与子测试",
@@ -5353,7 +5600,10 @@
             "hint": "在 f.Fuzz 内做往返断言。",
             "answer": "n,err:=ParsePort(s); if err==nil { m,_:=ParsePort(strconv.Itoa(n)); if m!=n { t.Fatal } }。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module fuzztest\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -5385,9 +5635,9 @@
           "依赖替换",
           "隔离测试"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、stub_test.go。运行命令：go test ./...。当被测逻辑依赖外部系统（数据库、网络）时，把它抽象成接口，生产注入真实实现，测试注入桩。桩用 map 提供确定数据、可配置返回错误，于是测试无需外部系统即可覆盖成功、键缺失、后端故障三类路径。示例的 Service 依赖 Store 接口，桩 stubStore 演示三种场景，并用 errors.Is 校验哨兵错误透传。这种方式让测试快速、确定、可离线运行。test-package，go test 运行，desktop only。",
-        "code": "// T111 接口打桩与依赖替换测试。\n//\n// 被测逻辑依赖一个接口（如存储）。生产用真实实现，测试注入\"桩\"（stub）\n// 以隔离外部依赖、制造确定结果。这样测试不需要数据库/网络，且能覆盖\n// 错误分支。\n//\n// test-package 工程例子，不能一键导入。完整结构：\n//   stubtest/\n//   ├── go.mod       // module stubtest\\n\\ngo 1.27\n//   └── stub_test.go // 本文件\n// 运行：go test ./...   desktop only（go test）。\npackage stubtest\n\nimport (\n\t\"errors\"\n\t\"testing\"\n)\n\n// Store 是被依赖的接口。\ntype Store interface {\n\tGet(key string) (string, error)\n}\n\n// Service 通过接口使用 Store。\ntype Service struct{ store Store }\n\n// Lookup 读取 key 并在缺失时返回统一错误。\nfunc (s *Service) Lookup(key string) (string, error) {\n\tv, err := s.store.Get(key)\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\treturn v, nil\n}\n\n// stubStore 是测试桩：用 map 提供确定数据，并可配置返回错误。\ntype stubStore struct {\n\tdata map[string]string\n\terr  error\n}\n\nfunc (s stubStore) Get(key string) (string, error) {\n\tif s.err != nil {\n\t\treturn \"\", s.err\n\t}\n\tv, ok := s.data[key]\n\tif !ok {\n\t\treturn \"\", errors.New(\"not found\")\n\t}\n\treturn v, nil\n}\n\nfunc TestLookupSuccess(t *testing.T) {\n\tsvc := &Service{store: stubStore{data: map[string]string{\"a\": \"1\"}}}\n\tv, err := svc.Lookup(\"a\")\n\tif err != nil || v != \"1\" {\n\t\tt.Fatalf(\"Lookup(a) = %q,%v\", v, err)\n\t}\n}\n\nfunc TestLookupNotFound(t *testing.T) {\n\tsvc := &Service{store: stubStore{data: map[string]string{}}}\n\tif _, err := svc.Lookup(\"missing\"); err == nil {\n\t\tt.Fatal(\"expected error for missing key\")\n\t}\n}\n\nfunc TestLookupStoreFailure(t *testing.T) {\n\tsentinel := errors.New(\"backend down\")\n\tsvc := &Service{store: stubStore{err: sentinel}}\n\t_, err := svc.Lookup(\"a\")\n\tif !errors.Is(err, sentinel) {\n\t\tt.Fatalf(\"err = %v, want sentinel\", err)\n\t}\n}\n",
-        "output": "ok  \tqfli.example/t111\t0.002s",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\n当被测逻辑依赖外部系统（数据库、网络）时，把它抽象成接口，生产注入真实实现，测试注入桩。桩用 map 提供确定数据、可配置返回错误，于是测试无需外部系统即可覆盖成功、键缺失、后端故障三类路径。示例的 Service 依赖 Store 接口，桩 stubStore 演示三种场景，并用 errors.Is 校验哨兵错误透传。这种方式让测试快速、确定、可离线运行。test-package，go test 运行。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T111 接口打桩与依赖替换测试。\n//\n// 被测逻辑依赖一个接口（如存储）。生产用真实实现，测试注入\"桩\"（stub）\n// 以隔离外部依赖、制造确定结果。这样测试不需要数据库/网络，且能覆盖\n// 错误分支。\n//\n// test-package 工程例子，导入时附带辅助文件。原始结构：\n//   stubtest/\n//   ├── go.mod       // module stubtest\\n\\ngo 1.27\n//   └── stub_test.go // 本文件\n// 运行：go test ./...；也可选中测试入口运行。\npackage stubtest\n\nimport (\n\t\"errors\"\n\t\"testing\"\n)\n\n// Store 是被依赖的接口。\ntype Store interface {\n\tGet(key string) (string, error)\n}\n\n// Service 通过接口使用 Store。\ntype Service struct{ store Store }\n\n// Lookup 读取 key 并在缺失时返回统一错误。\nfunc (s *Service) Lookup(key string) (string, error) {\n\tv, err := s.store.Get(key)\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\treturn v, nil\n}\n\n// stubStore 是测试桩：用 map 提供确定数据，并可配置返回错误。\ntype stubStore struct {\n\tdata map[string]string\n\terr  error\n}\n\nfunc (s stubStore) Get(key string) (string, error) {\n\tif s.err != nil {\n\t\treturn \"\", s.err\n\t}\n\tv, ok := s.data[key]\n\tif !ok {\n\t\treturn \"\", errors.New(\"not found\")\n\t}\n\treturn v, nil\n}\n\nfunc TestLookupSuccess(t *testing.T) {\n\tsvc := &Service{store: stubStore{data: map[string]string{\"a\": \"1\"}}}\n\tv, err := svc.Lookup(\"a\")\n\tif err != nil || v != \"1\" {\n\t\tt.Fatalf(\"Lookup(a) = %q,%v\", v, err)\n\t}\n}\n\nfunc TestLookupNotFound(t *testing.T) {\n\tsvc := &Service{store: stubStore{data: map[string]string{}}}\n\tif _, err := svc.Lookup(\"missing\"); err == nil {\n\t\tt.Fatal(\"expected error for missing key\")\n\t}\n}\n\nfunc TestLookupStoreFailure(t *testing.T) {\n\tsentinel := errors.New(\"backend down\")\n\tsvc := &Service{store: stubStore{err: sentinel}}\n\t_, err := svc.Lookup(\"a\")\n\tif !errors.Is(err, sentinel) {\n\t\tt.Fatalf(\"err = %v, want sentinel\", err)\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能用接口 + 桩实现隔离被测逻辑，并覆盖成功、缺失、后端故障三类路径。",
         "prerequisites": [
           "T066 依赖注入：显式传递优于全局",
@@ -5403,7 +5653,10 @@
             "hint": "桩加 delErr 字段控制返回。",
             "answer": "Delete 调用 store.Delete；桩按配置返回 nil 或 sentinel 错误。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module stubtest\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -5435,8 +5688,8 @@
           "gcflags -m",
           "性能"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。Go 编译器做逃逸分析，决定变量分配在栈还是堆。若变量地址逃出函数（被返回、存入接口、被长期闭包捕获），就分配到堆。用 go build -gcflags=-m 可查看报告。示例给出三种典型写法：按值返回小结构体（常栈分配）、返回局部变量指针（逃逸到堆）、存入 any 接口（通常逃逸）。理解这些差异有助于在性能敏感处减少堆分配、降低 GC 压力。module-project 工程例子（go.mod + main.go），用 go run 运行并可用 -gcflags=-m 观察；desktop only。",
-        "code": "// T112 内存分配与逃逸分析。\n//\n// 编译器决定一个变量分配在栈还是堆上。若变量\"逃逸\"到函数外（被返回、\n// 存入接口、被闭包长期捕获等），就分配到堆。用\n//   go build -gcflags=-m\n// 可查看逃逸报告。本示例给出可对比的两种写法。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   escapeanalyze/\n//   ├── go.mod   // module escapeanalyze\\n\\ngo 1.27\n//   └── main.go  // 本文件\n// 运行（官方 SDK）：\n//   go run .\n//   go build -gcflags=-m .    // 查看逃逸报告\n// desktop only。\npackage main\n\nimport \"fmt\"\n\n// Point 是小的值类型。\ntype Point struct{ X, Y int }\n\n// makeValue 按值返回：调用方拿到副本。\nfunc makeValue() Point {\n\tp := Point{1, 2} // 可能留在栈上\n\treturn p\n}\n\n// makePointer 返回指针：p 逃逸到堆。\nfunc makePointer() *Point {\n\tp := Point{3, 4} // 逃逸：地址被返回\n\treturn &p\n}\n\n// makeInterface 存入接口：通常逃逸（接口值在堆上）。\nfunc makeInterface() any {\n\tp := Point{5, 6}\n\treturn p\n}\n\nfunc main() {\n\tv := makeValue()\n\tfmt.Println(\"value:\", v.X, v.Y)\n\n\tp := makePointer()\n\tfmt.Println(\"pointer:\", p.X, p.Y)\n\n\tvar a any = makeInterface()\n\tfmt.Println(\"interface:\", a)\n\n\tfmt.Println(\"hint: `go build -gcflags=-m .` shows which variables escape to the heap\")\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\nGo 编译器做逃逸分析，决定变量分配在栈还是堆。若变量地址逃出函数（被返回、存入接口、被长期闭包捕获），就分配到堆。用 go build -gcflags=-m 可查看报告。示例给出三种典型写法：按值返回小结构体（常栈分配）、返回局部变量指针（逃逸到堆）、存入 any 接口（通常逃逸）。理解这些差异有助于在性能敏感处减少堆分配、降低 GC 压力。module-project 工程例子（go.mod + main.go），普通入口展示程序结果；逃逸分析报告使用官方工具链的 -gcflags=-m。",
+        "code": "// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。\n// T112 内存分配与逃逸分析。\n//\n// 编译器决定一个变量分配在栈还是堆上。若变量\"逃逸\"到函数外（被返回、\n// 存入接口、被闭包长期捕获等），就分配到堆。用\n//   go build -gcflags=-m\n// 可查看逃逸报告。本示例给出可对比的两种写法。\n//\n// module-project 工程例子，导入时附带辅助文件。原始结构：\n//   escapeanalyze/\n//   ├── go.mod   // module escapeanalyze\\n\\ngo 1.27\n//   └── main.go  // 本文件\n// 运行（官方 SDK）：\n//   go run .\n//   go build -gcflags=-m .    // 查看逃逸报告\n// 普通入口展示结果；逃逸分析报告使用桌面官方工具链。\npackage main\n\nimport \"fmt\"\n\n// Point 是小的值类型。\ntype Point struct{ X, Y int }\n\n// makeValue 按值返回：调用方拿到副本。\nfunc makeValue() Point {\n\tp := Point{1, 2} // 可能留在栈上\n\treturn p\n}\n\n// makePointer 返回指针：p 逃逸到堆。\nfunc makePointer() *Point {\n\tp := Point{3, 4} // 逃逸：地址被返回\n\treturn &p\n}\n\n// makeInterface 存入接口：通常逃逸（接口值在堆上）。\nfunc makeInterface() any {\n\tp := Point{5, 6}\n\treturn p\n}\n\nfunc main() {\n\tv := makeValue()\n\tfmt.Println(\"value:\", v.X, v.Y)\n\n\tp := makePointer()\n\tfmt.Println(\"pointer:\", p.X, p.Y)\n\n\tvar a any = makeInterface()\n\tfmt.Println(\"interface:\", a)\n\n\tfmt.Println(\"hint: `go build -gcflags=-m .` shows which variables escape to the heap\")\n}\n",
         "output": "value: 1 2\npointer: 3 4\ninterface: {5 6}\nhint: `go build -gcflags=-m .` shows which variables escape to the heap",
         "objective": "能用 gcflags=-m 判断变量是否逃逸，并据此减少堆分配。",
         "prerequisites": [
@@ -5453,7 +5706,10 @@
             "hint": "地址被返回或存入接口的会逃逸。",
             "answer": "makePointer 的 p 逃逸（&p 返回）；makeInterface 的 p 逃逸（装箱进 any）；makeValue 的 p 可能不逃逸。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module escapeanalyze\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -5485,8 +5741,8 @@
           "内存 profile",
           "热点"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go、pprof_test.go。运行命令：go run .。pprof 是 Go 的剖析工具。最简单的方式是在测试里采集：go test -bench . -cpuprofile=cpu.out 生成 CPU 剖面，go tool pprof cpu.out 进入交互式分析（top 看热点、list 看源码行）。示例提供一个 CPU 热点函数 hot 并打印确定结果，同时在注释中给出采集命令。剖析是性能优化的起点：先测量热点，再针对性优化，避免凭直觉改代码。module-project，go test 采集 + go run 演示；desktop only（移动端无 pprof 工具链）。",
-        "code": "// T113 剖析：pprof CPU 与内存。\n//\n// runtime/pprof 可在程序内采集 CPU/内存剖面；更常用的是在测试里\n// `go test -cpuprofile`/`-memprofile` 生成文件，再用 go tool pprof 分析。\n// 本示例提供一段可被 profile 的热点函数，并打印如何采集。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   pprofdemo/\n//   ├── go.mod              // module pprofdemo\\n\\ngo 1.27\n//   ├── main.go             // 本文件\n//   └── pprof_test.go       // 基准，供 -cpuprofile 采集\n// 运行（官方 SDK）：\n//   go test -bench . -cpuprofile=cpu.out .\n//   go tool pprof cpu.out\n// desktop only。\npackage main\n\nimport \"fmt\"\n\n// hot 是一个 CPU 热点：反复做整数运算。\nfunc hot(n int) int {\n\ttotal := 0\n\tfor i := 0; i < n; i++ {\n\t\ttotal += i % 7\n\t}\n\treturn total\n}\n\nfunc main() {\n\t// 运行热点并打印确定结果。\n\tfmt.Println(\"hot(1000) =\", hot(1000))\n\tfmt.Println(\"profile with: go test -bench . -cpuprofile=cpu.out .\")\n\tfmt.Println(\"then: go tool pprof cpu.out\")\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\npprof 是 Go 的剖析工具。最简单的方式是在测试里采集：go test -bench . -cpuprofile=cpu.out 生成 CPU 剖面，go tool pprof cpu.out 进入交互式分析（top 看热点、list 看源码行）。示例提供一个 CPU 热点函数 hot 并打印确定结果，同时在注释中给出采集命令。剖析是性能优化的起点：先测量热点，再针对性优化，避免凭直觉改代码。module-project，普通入口演示结果；CPU 采集与交互式 pprof 分析使用桌面官方工具链。",
+        "code": "// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。\n// T113 剖析：pprof CPU 与内存。\n//\n// runtime/pprof 可在程序内采集 CPU/内存剖面；更常用的是在测试里\n// `go test -cpuprofile`/`-memprofile` 生成文件，再用 go tool pprof 分析。\n// 本示例提供一段可被 profile 的热点函数，并打印如何采集。\n//\n// module-project 工程例子，导入时附带辅助文件。原始结构：\n//   pprofdemo/\n//   ├── go.mod              // module pprofdemo\\n\\ngo 1.27\n//   ├── main.go             // 本文件\n//   └── pprof_test.go       // 基准，供 -cpuprofile 采集\n// 运行（官方 SDK）：\n//   go test -bench . -cpuprofile=cpu.out .\n//   go tool pprof cpu.out\n// 普通入口展示结果；剖析采集与 pprof 分析使用桌面官方工具链。\npackage main\n\nimport \"fmt\"\n\n// hot 是一个 CPU 热点：反复做整数运算。\nfunc hot(n int) int {\n\ttotal := 0\n\tfor i := 0; i < n; i++ {\n\t\ttotal += i % 7\n\t}\n\treturn total\n}\n\nfunc main() {\n\t// 运行热点并打印确定结果。\n\tfmt.Println(\"hot(1000) =\", hot(1000))\n\tfmt.Println(\"profile with: go test -bench . -cpuprofile=cpu.out .\")\n\tfmt.Println(\"then: go tool pprof cpu.out\")\n}\n",
         "output": "hot(1000) = 2997\nprofile with: go test -bench . -cpuprofile=cpu.out .\nthen: go tool pprof cpu.out",
         "objective": "能采集 CPU profile 并用 pprof 定位热点函数。",
         "prerequisites": [
@@ -5503,7 +5759,11 @@
             "hint": "go tool pprof -top cpu.out。",
             "answer": "go test -bench . -cpuprofile=cpu.out .; go tool pprof -top cpu.out。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module pprofdemo\n\ngo 1.27\n",
+          "src/pprof_test.go": "// pprof_test.go 为 T113 提供一个可采样的基准，供 CPU/内存剖面采集：\n//   go test -bench . -cpuprofile=cpu.out .\n//   go tool pprof cpu.out\npackage main\n\nimport \"testing\"\n\nfunc BenchmarkHot(b *testing.B) {\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = hot(1000)\n\t}\n}\n"
+        }
       }
     ]
   },
@@ -5535,9 +5795,9 @@
           "分配",
           "benchmark"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、patterns_test.go。运行命令：go test -bench . -run '^$' ./...。常见优化范式：一是预分配，make([]int, 0, n) 避免 append 反复扩容；二是用 strings.Builder 拼接字符串，避免每次 + 都产生新字符串；三是复用缓冲（见 T080 Pool）。示例对比预分配与不预分配、Builder 与 + 拼接，功能上结果等价（用确定性等价断言验证），性能差异用基准展示——但基准数值不作通过条件。这类优化在热路径上能显著减少分配与 GC。test-package，bench 需官方 SDK，desktop only。",
-        "code": "// T114 性能优化范式：预分配、批处理、零拷贝。\n//\n// 常见优化：用预分配切片（make([]T, 0, n)）避免反复扩容；\n// 用 strings.Builder 拼接避免多次分配；用复用缓冲避免重复分配。\n// 断言策略：功能等价断言（输出正确）+ 基准只作参考，不作通过条件。\n//\n// test-package / benchmark 工程例子，不能一键导入。完整结构：\n//   perfpatterns/\n//   ├── go.mod           // module perfpatterns\\n\\ngo 1.27\n//   └── patterns_test.go // 本文件\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -bench . -benchmem ./...\n// desktop only。\npackage perfpatterns\n\nimport (\n\t\"strings\"\n\t\"testing\"\n)\n\n// appendNoPrealloc 不预分配，靠 append 扩容。\nfunc appendNoPrealloc(n int) []int {\n\tvar s []int\n\tfor i := 0; i < n; i++ {\n\t\ts = append(s, i)\n\t}\n\treturn s\n}\n\n// appendPrealloc 预分配容量，减少扩容次数。\nfunc appendPrealloc(n int) []int {\n\ts := make([]int, 0, n)\n\tfor i := 0; i < n; i++ {\n\t\ts = append(s, i)\n\t}\n\treturn s\n}\n\n// joinConcat 用 + 拼接。\nfunc joinConcat(parts []string) string {\n\tout := \"\"\n\tfor _, p := range parts {\n\t\tout += p\n\t}\n\treturn out\n}\n\n// joinBuilder 用 strings.Builder 拼接。\nfunc joinBuilder(parts []string) string {\n\tvar b strings.Builder\n\tfor _, p := range parts {\n\t\tb.WriteString(p)\n\t}\n\treturn b.String()\n}\n\nfunc TestEquivalence(t *testing.T) {\n\ta := appendNoPrealloc(10)\n\tb := appendPrealloc(10)\n\tif len(a) != len(b) {\n\t\tt.Fatalf(\"lengths differ: %d vs %d\", len(a), len(b))\n\t}\n\tfor i := range a {\n\t\tif a[i] != b[i] {\n\t\t\tt.Fatalf(\"element %d differs\", i)\n\t\t}\n\t}\n\tparts := []string{\"a\", \"b\", \"c\"}\n\tif joinConcat(parts) != joinBuilder(parts) {\n\t\tt.Fatal(\"join results differ\")\n\t}\n}\n\nfunc BenchmarkAppendNoPrealloc(b *testing.B) {\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = appendNoPrealloc(256)\n\t}\n}\n\nfunc BenchmarkAppendPrealloc(b *testing.B) {\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = appendPrealloc(256)\n\t}\n}\n",
-        "output": "BenchmarkAppendNoPrealloc-2  \t1000000\t1093 ns/op\t4088 B/op\t9 allocs/op\nBenchmarkAppendPrealloc-2    \t11728428\t103.5 ns/op\t0 B/op\t0 allocs/op",
+        "explain": "导入时默认入口为 src/snippet_test.go，同包辅助源码和数据一并保存，模块文件保留根目录。选中测试入口运行会执行该包的测试、基准及已登记 fuzz seed，断言失败返回非零状态。内置运行器不提供完整 Go SDK 的持续模糊搜索、race 检测、覆盖率或性能剖析；相应命令使用桌面官方工具链。源码注释展示原始工程布局。\n\n常见优化范式：一是预分配，make([]int, 0, n) 避免 append 反复扩容；二是用 strings.Builder 拼接字符串，避免每次 + 都产生新字符串；三是复用缓冲（见 T080 Pool）。示例对比预分配与不预分配、Builder 与 + 拼接，功能上结果等价（用确定性等价断言验证），性能差异用基准展示——但基准数值不作通过条件。这类优化在热路径上能显著减少分配与 GC。test-package，内置运行器可执行有界基准循环；性能测量与比较使用官方工具链。",
+        "code": "// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。\n// T114 性能优化范式：预分配、批处理、零拷贝。\n//\n// 常见优化：用预分配切片（make([]T, 0, n)）避免反复扩容；\n// 用 strings.Builder 拼接避免多次分配；用复用缓冲避免重复分配。\n// 断言策略：功能等价断言（输出正确）+ 基准只作参考，不作通过条件。\n//\n// test-package / benchmark 工程例子，导入时附带辅助文件。原始结构：\n//   perfpatterns/\n//   ├── go.mod           // module perfpatterns\\n\\ngo 1.27\n//   └── patterns_test.go // 本文件\n// 运行（官方 SDK）：\n//   go test ./...\n//   go test -bench . -benchmem ./...\n// 内置运行器执行有界基准循环；性能测量与比较使用官方工具链。\npackage perfpatterns\n\nimport (\n\t\"strings\"\n\t\"testing\"\n)\n\n// appendNoPrealloc 不预分配，靠 append 扩容。\nfunc appendNoPrealloc(n int) []int {\n\tvar s []int\n\tfor i := 0; i < n; i++ {\n\t\ts = append(s, i)\n\t}\n\treturn s\n}\n\n// appendPrealloc 预分配容量，减少扩容次数。\nfunc appendPrealloc(n int) []int {\n\ts := make([]int, 0, n)\n\tfor i := 0; i < n; i++ {\n\t\ts = append(s, i)\n\t}\n\treturn s\n}\n\n// joinConcat 用 + 拼接。\nfunc joinConcat(parts []string) string {\n\tout := \"\"\n\tfor _, p := range parts {\n\t\tout += p\n\t}\n\treturn out\n}\n\n// joinBuilder 用 strings.Builder 拼接。\nfunc joinBuilder(parts []string) string {\n\tvar b strings.Builder\n\tfor _, p := range parts {\n\t\tb.WriteString(p)\n\t}\n\treturn b.String()\n}\n\nfunc TestEquivalence(t *testing.T) {\n\ta := appendNoPrealloc(10)\n\tb := appendPrealloc(10)\n\tif len(a) != len(b) {\n\t\tt.Fatalf(\"lengths differ: %d vs %d\", len(a), len(b))\n\t}\n\tfor i := range a {\n\t\tif a[i] != b[i] {\n\t\t\tt.Fatalf(\"element %d differs\", i)\n\t\t}\n\t}\n\tparts := []string{\"a\", \"b\", \"c\"}\n\tif joinConcat(parts) != joinBuilder(parts) {\n\t\tt.Fatal(\"join results differ\")\n\t}\n}\n\nfunc BenchmarkAppendNoPrealloc(b *testing.B) {\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = appendNoPrealloc(256)\n\t}\n}\n\nfunc BenchmarkAppendPrealloc(b *testing.B) {\n\tb.ReportAllocs()\n\tfor i := 0; i < b.N; i++ {\n\t\t_ = appendPrealloc(256)\n\t}\n}\n",
+        "output": "PASS",
         "objective": "能用 make([]T,0,n) 预分配、用 strings.Builder 拼接来减少分配次数。",
         "prerequisites": [
           "T036 字符串构造：strings.Builder 与字节缓冲",
@@ -5553,7 +5813,10 @@
             "hint": "b.ReportAllocs()。",
             "answer": "BenchmarkAppendNoPrealloc 与 BenchmarkAppendPrealloc 各 b.ReportAllocs() 后循环。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module perfpatterns\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -5585,8 +5848,8 @@
           "规范",
           "静态检查"
         ],
-        "explain": "gofmt 是 Go 的官方格式化器：-l 列出不合规文件，-d 显示差异，-w 直接改写。go vet 检查可疑构造，如 Printf 动词与参数不匹配、锁值拷贝、无用标签等。二者随工具链提供，是无需第三方依赖的静态检查基线。示例本身格式规范、Printf 参数匹配，可作为“干净”的检查对象，并打印运行命令。single-file 示例可被 CodeSnippet 导入；静态检查需官方 SDK，移动端不提供，desktop only。",
-        "code": "// T115 静态检查与工程规范：vet 与 gofmt 基线。\n//\n// gofmt 统一格式（-l 列出不合规文件，-d 显示 diff）；\n// go vet 检查可疑构造（如 Printf 参数不匹配、无用的锁拷贝）。\n// 二者是标准库工具链自带的静态检查基线，不依赖第三方。\n//\n// single-file 示例：本文件本身可由 CodeSnippet 导入；同时用作\n// `gofmt`/`go vet` 的检查对象。\n//\n// 运行（官方 SDK）：\n//   gofmt -l .\n//   go vet ./...\n// desktop only（移动端不提供这些工具）。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// 正确格式：注意切片字面量对齐由 gofmt 统一。\n\tnums := []int{1, 2, 3}\n\ttotal := 0\n\tfor _, n := range nums {\n\t\ttotal += n\n\t}\n\tfmt.Println(\"total:\", total)\n\n\t// 演示 vet 会关注的正确写法：Printf 动词与参数类型匹配。\n\tname := \"gopher\"\n\tfmt.Printf(\"hello, %s (%d items)\\n\", name, len(nums))\n\n\tfmt.Println(\"run: `gofmt -l .` and `go vet ./...`\")\n}\n",
+        "explain": "gofmt 是 Go 的官方格式化器：-l 列出不合规文件，-d 显示差异，-w 直接改写。go vet 检查可疑构造，如 Printf 动词与参数不匹配、锁值拷贝、无用标签等。二者随工具链提供，是无需第三方依赖的静态检查基线。示例本身格式规范、Printf 参数匹配，可作为“干净”的检查对象，并打印运行命令。单文件示例可直接导入运行。编辑器的格式化操作可在内置运行器完成；本课列出的 gofmt 与 go vet 命令使用官方工具链。",
+        "code": "// T115 静态检查与工程规范：vet 与 gofmt 基线。\n//\n// gofmt 统一格式（-l 列出不合规文件，-d 显示 diff）；\n// go vet 检查可疑构造（如 Printf 参数不匹配、无用的锁拷贝）。\n// 二者是标准库工具链自带的静态检查基线，不依赖第三方。\n//\n// single-file 示例：本文件本身可由 CodeSnippet 导入；同时用作\n// `gofmt`/`go vet` 的检查对象。\n//\n// 运行（官方 SDK）：\n//   gofmt -l .\n//   go vet ./...\n// 下列命令使用官方工具链；单文件程序可直接导入运行。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\t// 正确格式：注意切片字面量对齐由 gofmt 统一。\n\tnums := []int{1, 2, 3}\n\ttotal := 0\n\tfor _, n := range nums {\n\t\ttotal += n\n\t}\n\tfmt.Println(\"total:\", total)\n\n\t// 演示 vet 会关注的正确写法：Printf 动词与参数类型匹配。\n\tname := \"gopher\"\n\tfmt.Printf(\"hello, %s (%d items)\\n\", name, len(nums))\n\n\tfmt.Println(\"run: `gofmt -l .` and `go vet ./...`\")\n}\n",
         "output": "total: 6\nhello, gopher (3 items)\nrun: `gofmt -l .` and `go vet ./...`",
         "objective": "能用 gofmt -l/-d 与 go vet 保持代码风格与正确性。",
         "prerequisites": [
@@ -5602,7 +5865,8 @@
             "hint": "gofmt -w 自动修复格式。",
             "answer": "gofmt -l 应无输出；go vet 应无告警。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -5634,7 +5898,7 @@
           "级别",
           "go1.21"
         ],
-        "explain": "log/slog（Go 1.21+）提供结构化日志：字段以 key=value 形式输出，可被机器检索。Text handler 输出人类可读行，JSON handler 输出单行 JSON。可设级别（Info/Warn/Error）过滤低级别日志。为使示例输出确定，用 ReplaceAttr 去掉默认的 time 属性——日志时间依赖运行时刻，不能作为固定输出。示例演示 Info/Warn 结构化字段、Debug 被过滤、以及 JSON handler 的 Error 输出。移动端 slog 支持未实测，标 Yaegi*（待实测），默认 desktop。",
+        "explain": "log/slog（Go 1.21+）提供结构化日志：字段以 key=value 形式输出，可被机器检索。Text handler 输出人类可读行，JSON handler 输出单行 JSON。可设级别（Info/Warn/Error）过滤低级别日志。为使示例输出确定，用 ReplaceAttr 去掉默认的 time 属性——日志时间依赖运行时刻，不能作为固定输出。示例演示 Info/Warn 结构化字段、Debug 被过滤、以及 JSON handler 的 Error 输出。处理器输出位置应显式指定，测试时写入可核对的缓冲区。",
         "code": "// T116 日志与可观测性基线：log/slog。\n//\n// log/slog（Go 1.21+）提供结构化日志：键值对可被机器检索。\n// 可设置级别（Info/Warn/Error），并选择 Text 或 JSON handler。\n//\n// 为让输出确定且可被任何运行环境捕获，本示例把日志写入 bytes.Buffer\n// （而非直接写 os.Stdout），并用 ReplaceAttr 去掉默认的时间戳字段——\n// 日志时间依赖运行时刻，不能作为固定输出。\npackage main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"log/slog\"\n)\n\n// dropTime 删除 slog 默认的 time 属性，使输出与运行时刻无关。\nfunc dropTime(_ []string, a slog.Attr) slog.Attr {\n\tif a.Key == slog.TimeKey {\n\t\treturn slog.Attr{} // 空 Attr 会被忽略\n\t}\n\treturn a\n}\n\nfunc main() {\n\tvar buf bytes.Buffer\n\topts := &slog.HandlerOptions{Level: slog.LevelInfo, ReplaceAttr: dropTime}\n\n\t// Text handler，级别 Info；输出写入内存缓冲。\n\tlogger := slog.New(slog.NewTextHandler(&buf, opts))\n\n\tlogger.Info(\"server starting\", \"addr\", \"127.0.0.1:8080\", \"pid\", 1)\n\tlogger.With(\"component\", \"db\").Warn(\"slow query\", \"ms\", 120)\n\tlogger.Debug(\"this is filtered out\") // 低于 Info，被过滤\n\n\t// JSON handler，级别 Error；同一缓冲区继续追加。\n\tjsonLogger := slog.New(slog.NewJSONHandler(&buf, &slog.HandlerOptions{\n\t\tLevel:       slog.LevelError,\n\t\tReplaceAttr: dropTime,\n\t}))\n\tjsonLogger.Error(\"failed to connect\", \"host\", \"db1\")\n\n\tlogger.Info(\"shutdown complete\")\n\n\t// 一次性打印全部结构化日志，输出确定。\n\tfmt.Print(buf.String())\n}\n",
         "output": "level=INFO msg=\"server starting\" addr=127.0.0.1:8080 pid=1\nlevel=WARN msg=\"slow query\" component=db ms=120\n{\"level\":\"ERROR\",\"msg\":\"failed to connect\",\"host\":\"db1\"}\nlevel=INFO msg=\"shutdown complete\"",
         "objective": "能用 slog 记录结构化字段、设置级别，并理解 Text/JSON handler 的差异。",
@@ -5644,7 +5908,7 @@
         "pitfalls": [
           "log/slog 需要 Go 1.21+：低版本不可用。",
           "默认 Text handler 带时间戳：会破坏确定性；示例用 ReplaceAttr 去掉 time 字段。",
-          "平台限制：本主题在移动端 Yaegi 解释器下 log/slog 输出为空，仅桌面官方 Go 可运行（保持 desktop-only）。"
+          "处理器写入哪个目标取决于构造参数；测试中显式传入缓冲区，避免混淆标准输出和标准错误。"
         ],
         "exercises": [
           {
@@ -5652,7 +5916,8 @@
             "hint": "HandlerOptions{Level: slog.LevelWarn}。",
             "answer": "级别设为 Warn 后 Info 不输出，只有 Warn/Error 出现。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -5701,7 +5966,8 @@
             "hint": "用 fs.Bool 与 getenv 合并。",
             "answer": "level := fs.Bool(\"verbose\", getenv(\"APP_VERBOSE\")==\"1\", ...)。"
           }
-        ]
+        ],
+        "inputFixtures": {}
       }
     ]
   },
@@ -5733,8 +5999,8 @@
           "原子写",
           "错误处理"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go、store_test.go。运行命令：go run .。这是第一个综合项目，整合多项技能：用 Item/Store 建模、用 encoding/json 持久化、用“写临时文件再 Rename”实现原子保存、用错误返回处理文件不存在与解码失败。main 演示一轮增/改/存/重载并打印，store_test.go 做端到端断言（保存后重载状态一致、对不存在 id 报错）。module-project 工程例子：go.mod + main.go + store_test.go，用 go run 与 go test 验证；涉及文件系统，desktop only。",
-        "code": "// T118 综合项目一：命令行待办清单（CLI + JSON 持久化）。\n//\n// 整合：命令分发、JSON 持久化、错误处理。待办项存为 JSON 文件，\n// 增/删/列/完成操作后落盘，重载后状态一致。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   todoapp/\n//   ├── go.mod        // module todoapp\\n\\ngo 1.27\n//   ├── main.go       // 本文件：CLI 入口\n//   ├── store.go      // 文件存储\n//   └── store_test.go // 端到端测试\n// 运行（官方 SDK）：\n//   go run . add \"learn go\"\n//   go run . list\n//   go test ./...\n// desktop only（文件系统 + go test）。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"sort\"\n)\n\n// Item 是一条待办。\ntype Item struct {\n\tID   int    `json:\"id\"`\n\tText string `json:\"text\"`\n\tDone bool   `json:\"done\"`\n}\n\n// Store 是待办存储。\ntype Store struct {\n\tpath  string\n\titems []Item\n}\n\n// Load 从文件加载；文件不存在时返回空存储。\nfunc Load(path string) (*Store, error) {\n\ts := &Store{path: path}\n\tdata, err := os.ReadFile(path)\n\tif os.IsNotExist(err) {\n\t\treturn s, nil\n\t}\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\tif err := json.Unmarshal(data, &s.items); err != nil {\n\t\treturn nil, fmt.Errorf(\"decode %s: %w\", path, err)\n\t}\n\treturn s, nil\n}\n\n// Save 原子落盘：先写临时文件再改名，避免半写状态。\nfunc (s *Store) Save() error {\n\tif err := os.MkdirAll(filepath.Dir(s.path), 0o755); err != nil {\n\t\treturn err\n\t}\n\tdata, err := json.MarshalIndent(s.items, \"\", \"  \")\n\tif err != nil {\n\t\treturn err\n\t}\n\ttmp := s.path + \".tmp\"\n\tif err := os.WriteFile(tmp, data, 0o644); err != nil {\n\t\treturn err\n\t}\n\treturn os.Rename(tmp, s.path)\n}\n\n// Add 追加一条并返回其 id。\nfunc (s *Store) Add(text string) int {\n\tid := 1\n\tfor _, it := range s.items {\n\t\tif it.ID >= id {\n\t\t\tid = it.ID + 1\n\t\t}\n\t}\n\ts.items = append(s.items, Item{ID: id, Text: text})\n\treturn id\n}\n\n// Complete 标记完成；找不到返回错误。\nfunc (s *Store) Complete(id int) error {\n\tfor i := range s.items {\n\t\tif s.items[i].ID == id {\n\t\t\ts.items[i].Done = true\n\t\t\treturn nil\n\t\t}\n\t}\n\treturn fmt.Errorf(\"item %d not found\", id)\n}\n\n// Items 返回按 id 排序的副本，保证输出确定。\nfunc (s *Store) Items() []Item {\n\tout := append([]Item(nil), s.items...)\n\tsort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })\n\treturn out\n}\n\nfunc main() {\n\t// 演示：用临时目录中的固定文件完成一轮增改查并重载。\n\tdir, err := os.MkdirTemp(\"\", \"qfli-t118-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(dir)\n\tpath := filepath.Join(dir, \"todo.json\")\n\n\tst, err := Load(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tst.Add(\"learn go\")\n\tst.Add(\"write tests\")\n\tif err := st.Complete(1); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := st.Save(); err != nil {\n\t\tpanic(err)\n\t}\n\n\t// 重载并打印，证明持久化一致。\n\treloaded, err := Load(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, it := range reloaded.Items() {\n\t\tstatus := \"todo\"\n\t\tif it.Done {\n\t\t\tstatus = \"done\"\n\t\t}\n\t\tfmt.Printf(\"%d [%s] %s\\n\", it.ID, status, it.Text)\n\t}\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\n这是第一个综合项目，整合多项技能：用 Item/Store 建模、用 encoding/json 持久化、用“写临时文件再 Rename”实现原子保存、用错误返回处理文件不存在与解码失败。main 演示一轮增/改/存/重载并打印，store_test.go 做端到端断言（保存后重载状态一致、对不存在 id 报错）。module-project 工程例子：go.mod + main.go + store_test.go，用 go run 与 go test 验证；普通入口运行存储示范，选中 store_test.go 可运行端到端测试。",
+        "code": "// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。\n// T118 综合项目一：命令行待办清单（CLI + JSON 持久化）。\n//\n// 整合：命令分发、JSON 持久化、错误处理。待办项存为 JSON 文件，\n// 增/删/列/完成操作后落盘，重载后状态一致。\n//\n// module-project 工程例子，导入时附带辅助文件。原始结构：\n//   todoapp/\n//   ├── go.mod        // module todoapp\\n\\ngo 1.27\n//   ├── main.go       // 本文件：CLI 入口\n//   ├── store.go      // 文件存储\n//   └── store_test.go // 端到端测试\n// 运行（官方 SDK）：\n//   go run . add \"learn go\"\n//   go run . list\n//   go test ./...\n// 普通入口演示文件操作，选中 store_test.go 运行相应测试。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"sort\"\n)\n\n// Item 是一条待办。\ntype Item struct {\n\tID   int    `json:\"id\"`\n\tText string `json:\"text\"`\n\tDone bool   `json:\"done\"`\n}\n\n// Store 是待办存储。\ntype Store struct {\n\tpath  string\n\titems []Item\n}\n\n// Load 从文件加载；文件不存在时返回空存储。\nfunc Load(path string) (*Store, error) {\n\ts := &Store{path: path}\n\tdata, err := os.ReadFile(path)\n\tif os.IsNotExist(err) {\n\t\treturn s, nil\n\t}\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\tif err := json.Unmarshal(data, &s.items); err != nil {\n\t\treturn nil, fmt.Errorf(\"decode %s: %w\", path, err)\n\t}\n\treturn s, nil\n}\n\n// Save 原子落盘：先写临时文件再改名，避免半写状态。\nfunc (s *Store) Save() error {\n\tif err := os.MkdirAll(filepath.Dir(s.path), 0o755); err != nil {\n\t\treturn err\n\t}\n\tdata, err := json.MarshalIndent(s.items, \"\", \"  \")\n\tif err != nil {\n\t\treturn err\n\t}\n\ttmp := s.path + \".tmp\"\n\tif err := os.WriteFile(tmp, data, 0o644); err != nil {\n\t\treturn err\n\t}\n\treturn os.Rename(tmp, s.path)\n}\n\n// Add 追加一条并返回其 id。\nfunc (s *Store) Add(text string) int {\n\tid := 1\n\tfor _, it := range s.items {\n\t\tif it.ID >= id {\n\t\t\tid = it.ID + 1\n\t\t}\n\t}\n\ts.items = append(s.items, Item{ID: id, Text: text})\n\treturn id\n}\n\n// Complete 标记完成；找不到返回错误。\nfunc (s *Store) Complete(id int) error {\n\tfor i := range s.items {\n\t\tif s.items[i].ID == id {\n\t\t\ts.items[i].Done = true\n\t\t\treturn nil\n\t\t}\n\t}\n\treturn fmt.Errorf(\"item %d not found\", id)\n}\n\n// Items 返回按 id 排序的副本，保证输出确定。\nfunc (s *Store) Items() []Item {\n\tout := append([]Item(nil), s.items...)\n\tsort.Slice(out, func(i, j int) bool { return out[i].ID < out[j].ID })\n\treturn out\n}\n\nfunc main() {\n\t// 演示：用临时目录中的固定文件完成一轮增改查并重载。\n\tdir, err := os.MkdirTemp(\"\", \"qfli-t118-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(dir)\n\tpath := filepath.Join(dir, \"todo.json\")\n\n\tst, err := Load(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tst.Add(\"learn go\")\n\tst.Add(\"write tests\")\n\tif err := st.Complete(1); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := st.Save(); err != nil {\n\t\tpanic(err)\n\t}\n\n\t// 重载并打印，证明持久化一致。\n\treloaded, err := Load(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, it := range reloaded.Items() {\n\t\tstatus := \"todo\"\n\t\tif it.Done {\n\t\t\tstatus = \"done\"\n\t\t}\n\t\tfmt.Printf(\"%d [%s] %s\\n\", it.ID, status, it.Text)\n\t}\n}\n",
         "output": "1 [done] learn go\n2 [todo] write tests",
         "objective": "能整合参数解析、JSON 编解码与文件持久化，实现增/改/查并保证重载一致。",
         "prerequisites": [
@@ -5752,7 +6018,11 @@
             "hint": "按 id 过滤切片后保存。",
             "answer": "Delete(id) 过滤 items；测试删除后重载断言行数减一。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "go.mod": "module todoapp\n\ngo 1.27\n",
+          "src/store_test.go": "// store_test.go 是 T118 的端到端测试：增/改/存/重载后状态一致。\n// 与 main.go、store.go 同属 todoapp 包。\npackage main\n\nimport (\n\t\"path/filepath\"\n\t\"testing\"\n)\n\nfunc TestAddCompleteReload(t *testing.T) {\n\tdir := t.TempDir()\n\tpath := filepath.Join(dir, \"todo.json\")\n\n\tst, err := Load(path)\n\tif err != nil {\n\t\tt.Fatalf(\"load: %v\", err)\n\t}\n\tif got := st.Add(\"a\"); got != 1 {\n\t\tt.Fatalf(\"first id = %d, want 1\", got)\n\t}\n\tif got := st.Add(\"b\"); got != 2 {\n\t\tt.Fatalf(\"second id = %d, want 2\", got)\n\t}\n\tif err := st.Complete(1); err != nil {\n\t\tt.Fatalf(\"complete: %v\", err)\n\t}\n\tif err := st.Save(); err != nil {\n\t\tt.Fatalf(\"save: %v\", err)\n\t}\n\n\t// 重载：状态必须与保存前一致。\n\treloaded, err := Load(path)\n\tif err != nil {\n\t\tt.Fatalf(\"reload: %v\", err)\n\t}\n\titems := reloaded.Items()\n\tif len(items) != 2 {\n\t\tt.Fatalf(\"items = %d, want 2\", len(items))\n\t}\n\tif !items[0].Done || items[1].Done {\n\t\tt.Fatalf(\"done flags wrong: %+v\", items)\n\t}\n\n\t// 完成不存在的 id 应报错。\n\tif err := reloaded.Complete(99); err == nil {\n\t\tt.Fatal(\"expected error for missing id\")\n\t}\n}\n"
+        }
       }
     ]
   },
@@ -5784,8 +6054,8 @@
           "结果聚合",
           "确定性"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：freq_test.go、go.mod、main.go。运行命令：go run .。这是并发综合项目：CountParallel 用固定 worker 从任务 channel 取文本、各自统计局部词频，主流程合并。关键设计是“局部计数 + 合并”，避免多 worker 写同一 map 的竞争；输出前对键排序，保证与 worker 完成顺序无关。main 打印“并发是否等于串行”并列出排序词频；freq_test.go 对 1..4 个 worker 逐一断言与串行一致，并验证排序确定性。module-project，go run + go test；并发+文件，desktop only。",
-        "code": "// T119 综合项目二：并发词频统计器（worker pool + IO）。\n//\n// 整合：worker pool、文件/字符串 IO、结果聚合。多个 worker 并发统计\n// 若干文本的词频，最后按词排序输出，因此结果与串行一致且确定。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   wordfreq/\n//   ├── go.mod          // module wordfreq\\n\\ngo 1.27\n//   ├── main.go         // 本文件\n//   └── freq_test.go    // 端到端测试（含串行/并发一致性）\n// 运行（官方 SDK）：\n//   go run .\n//   go test ./...\n// desktop only（并发 + 文件）。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n\t\"sync\"\n)\n\n// countWords 串行统计一段文本的词频。\nfunc countWords(text string) map[string]int {\n\tcounts := make(map[string]int)\n\tfor _, w := range strings.Fields(strings.ToLower(text)) {\n\t\tcounts[w]++\n\t}\n\treturn counts\n}\n\n// merge 把一个局部计数并入全局计数。\nfunc merge(dst, src map[string]int) {\n\tfor k, v := range src {\n\t\tdst[k] += v\n\t}\n}\n\n// CountParallel 用 workers 个 goroutine 并发统计多段文本。\nfunc CountParallel(texts []string, workers int) map[string]int {\n\tif workers < 1 {\n\t\tworkers = 1\n\t}\n\tjobs := make(chan string)\n\tpartials := make(chan map[string]int)\n\n\tvar wg sync.WaitGroup\n\twg.Add(workers)\n\tfor i := 0; i < workers; i++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tfor text := range jobs {\n\t\t\t\tpartials <- countWords(text)\n\t\t\t}\n\t\t}()\n\t}\n\n\tgo func() {\n\t\tfor _, t := range texts {\n\t\t\tjobs <- t\n\t\t}\n\t\tclose(jobs)\n\t}()\n\n\tgo func() {\n\t\twg.Wait()\n\t\tclose(partials)\n\t}()\n\n\ttotal := make(map[string]int)\n\tfor p := range partials {\n\t\tmerge(total, p)\n\t}\n\treturn total\n}\n\n// sortedKeys 返回排序后的键，保证输出确定。\nfunc sortedKeys(m map[string]int) []string {\n\tkeys := make([]string, 0, len(m))\n\tfor k := range m {\n\t\tkeys = append(keys, k)\n\t}\n\tsort.Strings(keys)\n\treturn keys\n}\n\nfunc main() {\n\ttexts := []string{\n\t\t\"go go gopher\",\n\t\t\"gopher runs go\",\n\t\t\"go test\",\n\t}\n\n\tserial := make(map[string]int)\n\tfor _, t := range texts {\n\t\tmerge(serial, countWords(t))\n\t}\n\n\tparallel := CountParallel(texts, 3)\n\n\t// 并发结果必须与串行完全一致。\n\tfmt.Println(\"parallel matches serial:\", sameCounts(serial, parallel))\n\n\tfor _, k := range sortedKeys(parallel) {\n\t\tfmt.Printf(\"%-8s %d\\n\", k, parallel[k])\n\t}\n}\n\nfunc sameCounts(a, b map[string]int) bool {\n\tif len(a) != len(b) {\n\t\treturn false\n\t}\n\tfor k, v := range a {\n\t\tif b[k] != v {\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\n这是并发综合项目：CountParallel 用固定 worker 从任务 channel 取文本、各自统计局部词频，主流程合并。关键设计是“局部计数 + 合并”，避免多 worker 写同一 map 的竞争；输出前对键排序，保证与 worker 完成顺序无关。main 打印“并发是否等于串行”并列出排序词频；freq_test.go 对 1..4 个 worker 逐一断言与串行一致，并验证排序确定性。module-project，go run + go test；普通入口展示词频，选中 freq_test.go 运行并发一致性测试。",
+        "code": "// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。\n// T119 综合项目二：并发词频统计器（worker pool + IO）。\n//\n// 整合：worker pool、文件/字符串 IO、结果聚合。多个 worker 并发统计\n// 若干文本的词频，最后按词排序输出，因此结果与串行一致且确定。\n//\n// module-project 工程例子，导入时附带辅助文件。原始结构：\n//   wordfreq/\n//   ├── go.mod          // module wordfreq\\n\\ngo 1.27\n//   ├── main.go         // 本文件\n//   └── freq_test.go    // 端到端测试（含串行/并发一致性）\n// 运行（官方 SDK）：\n//   go run .\n//   go test ./...\n// 普通入口演示词频，选中 freq_test.go 运行相应测试。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n\t\"sync\"\n)\n\n// countWords 串行统计一段文本的词频。\nfunc countWords(text string) map[string]int {\n\tcounts := make(map[string]int)\n\tfor _, w := range strings.Fields(strings.ToLower(text)) {\n\t\tcounts[w]++\n\t}\n\treturn counts\n}\n\n// merge 把一个局部计数并入全局计数。\nfunc merge(dst, src map[string]int) {\n\tfor k, v := range src {\n\t\tdst[k] += v\n\t}\n}\n\n// CountParallel 用 workers 个 goroutine 并发统计多段文本。\nfunc CountParallel(texts []string, workers int) map[string]int {\n\tif workers < 1 {\n\t\tworkers = 1\n\t}\n\tjobs := make(chan string)\n\tpartials := make(chan map[string]int)\n\n\tvar wg sync.WaitGroup\n\twg.Add(workers)\n\tfor i := 0; i < workers; i++ {\n\t\tgo func() {\n\t\t\tdefer wg.Done()\n\t\t\tfor text := range jobs {\n\t\t\t\tpartials <- countWords(text)\n\t\t\t}\n\t\t}()\n\t}\n\n\tgo func() {\n\t\tfor _, t := range texts {\n\t\t\tjobs <- t\n\t\t}\n\t\tclose(jobs)\n\t}()\n\n\tgo func() {\n\t\twg.Wait()\n\t\tclose(partials)\n\t}()\n\n\ttotal := make(map[string]int)\n\tfor p := range partials {\n\t\tmerge(total, p)\n\t}\n\treturn total\n}\n\n// sortedKeys 返回排序后的键，保证输出确定。\nfunc sortedKeys(m map[string]int) []string {\n\tkeys := make([]string, 0, len(m))\n\tfor k := range m {\n\t\tkeys = append(keys, k)\n\t}\n\tsort.Strings(keys)\n\treturn keys\n}\n\nfunc main() {\n\ttexts := []string{\n\t\t\"go go gopher\",\n\t\t\"gopher runs go\",\n\t\t\"go test\",\n\t}\n\n\tserial := make(map[string]int)\n\tfor _, t := range texts {\n\t\tmerge(serial, countWords(t))\n\t}\n\n\tparallel := CountParallel(texts, 3)\n\n\t// 并发结果必须与串行完全一致。\n\tfmt.Println(\"parallel matches serial:\", sameCounts(serial, parallel))\n\n\tfor _, k := range sortedKeys(parallel) {\n\t\tfmt.Printf(\"%-8s %d\\n\", k, parallel[k])\n\t}\n}\n\nfunc sameCounts(a, b map[string]int) bool {\n\tif len(a) != len(b) {\n\t\treturn false\n\t}\n\tfor k, v := range a {\n\t\tif b[k] != v {\n\t\t\treturn false\n\t\t}\n\t}\n\treturn true\n}\n",
         "output": "parallel matches serial: true\ngo       4\ngopher   2\nruns     1\ntest     1",
         "objective": "能整合并发、IO 与结果聚合，保证并发结果与串行完全一致。",
         "prerequisites": [
@@ -5802,7 +6072,11 @@
             "hint": "读文件得 []string 后交给 CountParallel。",
             "answer": "读取每个文件内容进切片；CountParallel 后与串行 sameCounts 比较。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "src/freq_test.go": "// freq_test.go 是 T119 的端到端测试：并发统计必须与串行一致。\npackage main\n\nimport \"testing\"\n\nfunc TestParallelMatchesSerial(t *testing.T) {\n\ttexts := []string{\n\t\t\"a b c\",\n\t\t\"b c d\",\n\t\t\"c d e\",\n\t\t\"a a a\",\n\t}\n\tserial := make(map[string]int)\n\tfor _, tx := range texts {\n\t\tmerge(serial, countWords(tx))\n\t}\n\tfor workers := 1; workers <= 4; workers++ {\n\t\tgot := CountParallel(texts, workers)\n\t\tif !sameCounts(serial, got) {\n\t\t\tt.Fatalf(\"workers=%d: parallel %v != serial %v\", workers, got, serial)\n\t\t}\n\t}\n}\n\nfunc TestSortedKeysDeterministic(t *testing.T) {\n\tm := map[string]int{\"b\": 1, \"a\": 2, \"c\": 3}\n\tkeys := sortedKeys(m)\n\twant := []string{\"a\", \"b\", \"c\"}\n\tfor i := range want {\n\t\tif keys[i] != want[i] {\n\t\t\tt.Fatalf(\"keys = %v, want %v\", keys, want)\n\t\t}\n\t}\n}\n",
+          "go.mod": "module wordfreq\n\ngo 1.27\n"
+        }
       }
     ]
   },
@@ -5834,8 +6108,8 @@
           "中间件",
           "httptest"
         ],
-        "explain": "本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：api_test.go、go.mod、main.go。运行命令：go run .。这是 HTTP 综合项目：NewHandler 组装路由与日志中间件；/health 返回 ok，/api/time 用注入的 now 返回固定时间（因此响应确定），非 GET 返回 405；main 说明监听配置但不真正占端口，api_test.go 用 httptest 覆盖正常、错误、方法不符三条路径并断言中间件日志。整合了 net/http、JSON、中间件、超时与测试。module-project，go run + go test；涉及 net/监听，desktop only。",
-        "code": "// T120 综合项目三：极简 HTTP 服务（JSON API + 中间件 + 测试）。\n//\n// 整合：net/http 路由、JSON 响应、中间件、超时设置与 httptest 测试。\n// 服务提供 /health 与 /api/time；中间件记录请求。\n//\n// module-project 工程例子，不能一键导入。完整结构：\n//   miniapi/\n//   ├── go.mod       // module miniapi\\n\\ngo 1.27\n//   ├── main.go      // 本文件：路由、中间件、服务器配置\n//   └── api_test.go  // httptest 端到端测试（真正断言的地方）\n// 运行（官方 SDK）：\n//   go test ./...     // 主要验证方式（httptest，离线）\n//   go run .          // 构造 handler 并说明如何监听\n// desktop only（net 监听 + go test）。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"net/http\"\n\t\"time\"\n)\n\n// response 是统一响应结构。\ntype response struct {\n\tStatus string `json:\"status\"`\n\tValue  string `json:\"value,omitempty\"`\n\tError  string `json:\"error,omitempty\"`\n}\n\n// logging 中间件：记录方法与路径到切片（便于测试断言）。\nfunc logging(log *[]string, next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t*log = append(*log, r.Method+\" \"+r.URL.Path)\n\t\tnext.ServeHTTP(w, r)\n\t})\n}\n\n// NewHandler 构造路由与中间件链。now 注入固定时间以保证响应确定。\nfunc NewHandler(now func() time.Time, log *[]string) http.Handler {\n\tmux := http.NewServeMux()\n\n\tmux.HandleFunc(\"/health\", func(w http.ResponseWriter, r *http.Request) {\n\t\twriteJSON(w, http.StatusOK, response{Status: \"ok\"})\n\t})\n\n\tmux.HandleFunc(\"/api/time\", func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.Method != http.MethodGet {\n\t\t\twriteJSON(w, http.StatusMethodNotAllowed, response{Status: \"error\", Error: \"GET only\"})\n\t\t\treturn\n\t\t}\n\t\twriteJSON(w, http.StatusOK, response{\n\t\t\tStatus: \"ok\",\n\t\t\tValue:  now().Format(time.RFC3339),\n\t\t})\n\t})\n\n\treturn logging(log, mux)\n}\n\nfunc writeJSON(w http.ResponseWriter, code int, v response) {\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tw.WriteHeader(code)\n\t_ = json.NewEncoder(w).Encode(v)\n}\n\nfunc main() {\n\tfixed := func() time.Time { return time.Date(2026, 10, 12, 14, 0, 0, 0, time.UTC) }\n\tvar log []string\n\n\tsrv := &http.Server{\n\t\tAddr:         \"127.0.0.1:8080\",\n\t\tHandler:      NewHandler(fixed, &log),\n\t\tReadTimeout:  5 * time.Second,\n\t\tWriteTimeout: 5 * time.Second,\n\t}\n\t// main 只说明如何启动；真正的响应断言在 api_test.go 中用 httptest 完成，\n\t// 因此这里不真正 ListenAndServe，避免示例依赖固定端口。\n\t_ = srv\n\tfmt.Println(\"routes: /health, /api/time\")\n\tfmt.Println(\"verify with: go test ./...\")\n}\n",
+        "explain": "导入到编辑器或新项目时会同时保存辅助文件。所示入口与同包辅助源码、数据位于 src/；go.mod、go.sum 和被导入子包的完整目录树保留模块根路径。运行从所选入口所在目录开始。源码注释展示原始工程布局；构建标签、生成器、覆盖率和剖析命令按各自工具链能力使用。\n\n这是 HTTP 综合项目：NewHandler 组装路由与日志中间件；/health 返回 ok，/api/time 用注入的 now 返回固定时间（因此响应确定），非 GET 返回 405；main 说明监听配置但不真正占端口，api_test.go 用 httptest 覆盖正常、错误、方法不符三条路径并断言中间件日志。整合了 net/http、JSON、中间件、超时与测试。module-project，go run + go test；普通入口展示配置，选中 api_test.go 运行无需监听端口的处理器测试。",
+        "code": "// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。\n// T120 综合项目三：极简 HTTP 服务（JSON API + 中间件 + 测试）。\n//\n// 整合：net/http 路由、JSON 响应、中间件、超时设置与 httptest 测试。\n// 服务提供 /health 与 /api/time；中间件记录请求。\n//\n// module-project 工程例子，导入时附带辅助文件。原始结构：\n//   miniapi/\n//   ├── go.mod       // module miniapi\\n\\ngo 1.27\n//   ├── main.go      // 本文件：路由、中间件、服务器配置\n//   └── api_test.go  // httptest 端到端测试（真正断言的地方）\n// 运行（官方 SDK）：\n//   go test ./...     // 主要验证方式（httptest，离线）\n//   go run .          // 构造 handler 并说明如何监听\n// 普通入口演示配置，选中 api_test.go 运行无需监听的处理器测试。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"net/http\"\n\t\"time\"\n)\n\n// response 是统一响应结构。\ntype response struct {\n\tStatus string `json:\"status\"`\n\tValue  string `json:\"value,omitempty\"`\n\tError  string `json:\"error,omitempty\"`\n}\n\n// logging 中间件：记录方法与路径到切片（便于测试断言）。\nfunc logging(log *[]string, next http.Handler) http.Handler {\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\t*log = append(*log, r.Method+\" \"+r.URL.Path)\n\t\tnext.ServeHTTP(w, r)\n\t})\n}\n\n// NewHandler 构造路由与中间件链。now 注入固定时间以保证响应确定。\nfunc NewHandler(now func() time.Time, log *[]string) http.Handler {\n\tmux := http.NewServeMux()\n\n\tmux.HandleFunc(\"/health\", func(w http.ResponseWriter, r *http.Request) {\n\t\twriteJSON(w, http.StatusOK, response{Status: \"ok\"})\n\t})\n\n\tmux.HandleFunc(\"/api/time\", func(w http.ResponseWriter, r *http.Request) {\n\t\tif r.Method != http.MethodGet {\n\t\t\twriteJSON(w, http.StatusMethodNotAllowed, response{Status: \"error\", Error: \"GET only\"})\n\t\t\treturn\n\t\t}\n\t\twriteJSON(w, http.StatusOK, response{\n\t\t\tStatus: \"ok\",\n\t\t\tValue:  now().Format(time.RFC3339),\n\t\t})\n\t})\n\n\treturn logging(log, mux)\n}\n\nfunc writeJSON(w http.ResponseWriter, code int, v response) {\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tw.WriteHeader(code)\n\t_ = json.NewEncoder(w).Encode(v)\n}\n\nfunc main() {\n\tfixed := func() time.Time { return time.Date(2026, 10, 12, 14, 0, 0, 0, time.UTC) }\n\tvar log []string\n\n\tsrv := &http.Server{\n\t\tAddr:         \"127.0.0.1:8080\",\n\t\tHandler:      NewHandler(fixed, &log),\n\t\tReadTimeout:  5 * time.Second,\n\t\tWriteTimeout: 5 * time.Second,\n\t}\n\t// main 只说明如何启动；真正的响应断言在 api_test.go 中用 httptest 完成，\n\t// 因此这里不真正 ListenAndServe，避免示例依赖固定端口。\n\t_ = srv\n\tfmt.Println(\"routes: /health, /api/time\")\n\tfmt.Println(\"verify with: go test ./...\")\n}\n",
         "output": "routes: /health, /api/time\nverify with: go test ./...",
         "objective": "能整合 HTTP 路由、JSON 响应、中间件与超时，并用 httptest 端到端验证。",
         "prerequisites": [
@@ -5853,7 +6127,11 @@
             "hint": "解码请求体到结构体再编码回写。",
             "answer": "json.NewDecoder(r.Body).Decode(&in); json.NewEncoder(w).Encode(in)。"
           }
-        ]
+        ],
+        "inputFixtures": {
+          "src/api_test.go": "// api_test.go 是 T120 的端到端测试：用 httptest 覆盖正常与错误路径，\n// 并断言中间件确实记录了请求，全程离线、确定。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"testing\"\n\t\"time\"\n)\n\nfunc fixedNow() time.Time {\n\treturn time.Date(2026, 10, 12, 14, 0, 0, 0, time.UTC)\n}\n\nfunc TestHealth(t *testing.T) {\n\tvar log []string\n\th := NewHandler(fixedNow, &log)\n\trec := httptest.NewRecorder()\n\th.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, \"/health\", nil))\n\n\tif rec.Code != http.StatusOK {\n\t\tt.Fatalf(\"status = %d, want 200\", rec.Code)\n\t}\n\tif ct := rec.Header().Get(\"Content-Type\"); ct != \"application/json\" {\n\t\tt.Fatalf(\"content-type = %q\", ct)\n\t}\n\tvar r response\n\tif err := json.Unmarshal(rec.Body.Bytes(), &r); err != nil {\n\t\tt.Fatalf(\"decode: %v\", err)\n\t}\n\tif r.Status != \"ok\" {\n\t\tt.Fatalf(\"status field = %q, want ok\", r.Status)\n\t}\n\tif len(log) != 1 || log[0] != \"GET /health\" {\n\t\tt.Fatalf(\"log = %v\", log)\n\t}\n}\n\nfunc TestTimeEndpoint(t *testing.T) {\n\tvar log []string\n\th := NewHandler(fixedNow, &log)\n\trec := httptest.NewRecorder()\n\th.ServeHTTP(rec, httptest.NewRequest(http.MethodGet, \"/api/time\", nil))\n\n\tvar r response\n\tif err := json.Unmarshal(rec.Body.Bytes(), &r); err != nil {\n\t\tt.Fatalf(\"decode: %v\", err)\n\t}\n\tif r.Value != \"2026-10-12T14:00:00Z\" {\n\t\tt.Fatalf(\"value = %q, want fixed time\", r.Value)\n\t}\n}\n\nfunc TestTimeEndpointRejectsPost(t *testing.T) {\n\tvar log []string\n\th := NewHandler(fixedNow, &log)\n\trec := httptest.NewRecorder()\n\th.ServeHTTP(rec, httptest.NewRequest(http.MethodPost, \"/api/time\", nil))\n\n\tif rec.Code != http.StatusMethodNotAllowed {\n\t\tt.Fatalf(\"status = %d, want 405\", rec.Code)\n\t}\n\tvar r response\n\t_ = json.Unmarshal(rec.Body.Bytes(), &r)\n\tif r.Status != \"error\" || r.Error == \"\" {\n\t\tt.Fatalf(\"error response = %+v\", r)\n\t}\n}\n",
+          "go.mod": "module miniapi\n\ngo 1.27\n"
+        }
       }
     ]
   }

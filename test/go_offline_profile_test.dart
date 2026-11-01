@@ -14,6 +14,7 @@ import 'package:qfli_studio_core/pages/home_page.dart';
 import 'package:qfli_studio_core/pages/profile_page.dart';
 import 'package:qfli_studio_core/pages/quick_tools_page.dart';
 import 'package:qfli_studio_core/pages/settings_page.dart';
+import 'package:qfli_studio_core/pages/tools_grid.dart';
 import 'package:qfli_studio_core/services/app_paths.dart';
 import 'package:qfli_studio_core/services/project_templates.dart';
 import 'package:qfli_studio_core/services/studio_profile.dart';
@@ -107,10 +108,15 @@ void main() {
       find.descendant(of: bar, matching: find.text(l10n.allProjects)),
       findsOneWidget,
     );
-    // Exactly the three offline scopes, no cloud tab slot.
+    // Named workspaces are local and independent of cloud/account policy.
+    expect(
+      find.descendant(of: bar, matching: find.text('工作区')),
+      findsOneWidget,
+    );
+    // All, history, favorite and saved workspaces; no cloud tab slot.
     expect(
       find.descendant(of: bar, matching: find.byType(Tab)),
-      findsNWidgets(3),
+      findsNWidgets(4),
     );
   });
 
@@ -120,7 +126,22 @@ void main() {
     );
     await _settle(tester);
 
-    // The shared offline tools are present (real ToolsGrid body).
+    // Inspect every card, including sections not built by the lazy viewport.
+    final grid = tester.widget<ToolsGrid>(find.byType(ToolsGrid));
+    final titles = [
+      for (final section in grid.sections)
+        for (final tool in section.tools) tool.title,
+      for (final tool in commonTools) tool.title,
+    ];
+    expect(titles, contains('Go 格式化'));
+    expect(titles.any((title) => title.contains('HTTP 请求')), isFalse);
+    expect(titles.any((title) => title.contains('本地服务')), isFalse);
+    // The shared offline tools remain reachable below the Go section.
+    await tester.scrollUntilVisible(
+      find.text('JSON 格式化'),
+      300,
+      scrollable: find.byType(Scrollable),
+    );
     expect(find.text('JSON 格式化'), findsOneWidget);
     // Web-only network tools belong to another product and must not appear.
     expect(find.textContaining('HTTP 请求'), findsNothing);

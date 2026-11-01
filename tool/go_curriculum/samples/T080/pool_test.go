@@ -1,9 +1,10 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T080 sync.Pool 与临时对象复用。
 //
 // sync.Pool 缓存可复用对象，减少高频分配的压力。注意：Pool 中的对象可能被
 // GC 随时回收，因此不能用于持久状态，只能当"临时缓冲池"。
 //
-// 这是一个 test-package / benchmark 工程例子，不能一键导入。完整结构：
+// 这是一个 test-package / benchmark 工程例子，导入时附带辅助文件。原始结构：
 //   poolbench/
 //   ├── go.mod        // module poolbench\n\ngo 1.27
 //   └── pool_test.go  // 本文件
@@ -12,7 +13,7 @@
 //   go test -bench . -benchmem ./...   // 只看分配指标，不作为通过条件
 //
 // 断言策略：功能测试用确定性"内容正确"断言；benchmark 只要求能跑出 ns/op。
-// 移动端不支持 bench，desktop only。
+// 内置运行器执行有界基准循环；性能测量与比较使用官方工具链。
 package poolbench
 
 import (

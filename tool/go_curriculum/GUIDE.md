@@ -76,7 +76,7 @@ go run .              # 有 go.mod 时
 
 ### 3.2 测试/基准示例（`test-package`）
 
-含 `*_test.go` 与 `go.mod`，用官方 Go 工具链运行：
+导入会自动保存完整辅助文件；含测试函数的显示源码默认命名为 `snippet_test.go`。应用内运行会执行该目录的测试、真实基准与已登记 fuzz seed。桌面官方 Go 工具链还可执行完整命令：
 
 ```powershell
 cd samples/T105
@@ -90,7 +90,9 @@ go test -fuzz FuzzParsePort -fuzztime 10s ./...   # fuzz（限时！）
 
 ### 3.3 多文件/模块工程（`module-project`）
 
-含 `go.mod` 与多个源文件，按教程给出的命令运行：
+导入会自动保存 `go.mod`、辅助源码和数据文件。显示入口、同包辅助源码及其数据位于项目 `src/`，模块文件和被导入子包的完整目录树保留模块根路径。普通入口可直接运行；桌面工具链也可按教程给出的命令运行：
+
+应用内运行时，文件相对路径从所选入口所在目录解析。导入入口位于 `src/`，其中的 `data/input.txt` 对应 `src/data/input.txt`；模块导入仍从 `go.mod` 规定的模块根解析包路径。
 
 ```powershell
 cd samples/T069
@@ -127,22 +129,21 @@ python tool/go_curriculum/patch.py dry-run
 | `missing go.sum entry` | 依赖校验和缺失 | `go mod tidy`（离线用本地 replace） |
 | `.*output is required` (校验器) | lesson.output 为空 | 每篇 output 必须非空 |
 
-## 5. 桌面/移动平台限制
+## 5. 执行能力与验证证据
 
-课程默认在**桌面官方 Go 工具链**（`native/build/go-sdk-1.27.1`）验证。移动端
-（Android/OHOS/iOS）使用项目内置 Yaegi 解释器，能力受限。**全部 120 课当前
-标记为 `desktop`**（未做设备实测，不做移动端承诺）。
+桌面使用官方 Go SDK；Android/OHOS/iOS 使用本项目编译进应用的解释器。课程入口与辅助文件由同一导入合同生成，审计分别执行教程、示例、规范工程和附带测试，不能用另一个工程的通过代替当前显示代码的执行。
 
-已知移动端 Yaegi 限制（以 `research/mobile-validation.md` 为准）：
+内置测试运行器支持课程使用的 T 测试、子测试、清理、临时目录、真实 `testing.Benchmark` 与 `F.Add` 已登记种子。它明确报告测试、通过、失败、跳过、基准和种子计数；全部跳过不能通过审计。持续 fuzz 搜索、race、TestMain 和完整 SDK 进程级测试工具不在这个内置运行合同内。`go:generate` 与额外构建标签仍需要对应的官方工具链命令。
 
-- 泛型（T062–T065）、`go test`/bench/fuzz/race、多文件/模块、`go:generate`：
-  移动端不支持或未实测，保持 desktop。
-- 方法表达式（T040）、接口赋值（T047）、`errors.As`（T052/T053）：移动端会
-  panic。
-- `text/template`（T096）、`log/slog`（T116）：移动端 stdout 为空（示例已改为
-  渲染到缓冲再打印，官方 Go 可运行）。
-- `%T` 具名类型输出（T008）、目录 size（T088）、context 时序（T083）：跨平台
-  表现不同，示例已改为确定性写法。
+方法表达式、接口字段赋值、源 error 的 Is/As/Unwrap 与身份、具名类型格式化、泛型常量推导已有独立原生回归。旧 `research/mobile-validation.md` 是历史基线，不能用于判断当前二进制。
 
-**切勿**仅凭"同版本 Yaegi"就把任一课标为 mobile-safe；移动端结论必须来自本
-项目 native runtime 的设备实测。
+完整证据入口：
+
+```powershell
+python tool/go_curriculum/assemble.py --app-out assets/curriculum
+python tool/go_curriculum/audit_native.py --backend official
+python tool/go_curriculum/audit_native.py --backend native
+python tool/go_curriculum/audit_native.py --backend inventory --manifest-out assets/curriculum/audit-manifest.json
+```
+
+原生主机报告只证明报告中源哈希对应的主机执行。OHOS 结论需要重建当前应用库、在实际设备运行 `integration_test/go_catalog_test.dart`，并核对所加载库和目录的哈希。设备证据缺失时不把主题改标为 mobile。新增 T121–T280 在原始目录设备门禁通过前保持独立草稿，不加入应用目录。

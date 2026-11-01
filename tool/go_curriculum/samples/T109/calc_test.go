@@ -1,10 +1,11 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T109 覆盖率与测试组织。
 //
 // go test -coverprofile 生成覆盖率文件，go tool cover 可生成 HTML 报告。
 // 本文件既演示如何组织多个测试文件共享同一包（见目录结构说明），
 // 又通过一条断言确保关键分支都被覆盖到。
 //
-// test-package 工程例子，不能一键导入。完整结构：
+// test-package 工程例子，导入时附带辅助文件。原始结构：
 //   covertest/
 //   ├── go.mod        // module covertest\n\ngo 1.27
 //   ├── calc.go       // 被测逻辑
@@ -12,7 +13,7 @@
 // 运行（官方 SDK）：
 //   go test ./...
 //   go test -coverprofile=cover.out ./... && go tool cover -func=cover.out
-// desktop only。
+// 测试入口执行断言；覆盖率报告使用桌面官方工具链。
 package covertest
 
 import "testing"

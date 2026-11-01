@@ -1,10 +1,11 @@
+// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。
 // T113 剖析：pprof CPU 与内存。
 //
 // runtime/pprof 可在程序内采集 CPU/内存剖面；更常用的是在测试里
 // `go test -cpuprofile`/`-memprofile` 生成文件，再用 go tool pprof 分析。
 // 本示例提供一段可被 profile 的热点函数，并打印如何采集。
 //
-// module-project 工程例子，不能一键导入。完整结构：
+// module-project 工程例子，导入时附带辅助文件。原始结构：
 //   pprofdemo/
 //   ├── go.mod              // module pprofdemo\n\ngo 1.27
 //   ├── main.go             // 本文件
@@ -12,7 +13,7 @@
 // 运行（官方 SDK）：
 //   go test -bench . -cpuprofile=cpu.out .
 //   go tool pprof cpu.out
-// desktop only。
+// 普通入口展示结果；剖析采集与 pprof 分析使用桌面官方工具链。
 package main
 
 import "fmt"

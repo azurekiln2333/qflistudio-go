@@ -2,8 +2,7 @@
 //
 // Min/Max 在没有泛型时要为每种类型各写一份（或在 interface{} 上做断言），
 // 泛型用 [T cmp.Ordered] 表达"T 必须可比较大小"，一份代码服务多种类型。
-// 注意：泛型属于 Go 1.18+ 的静态编译特性，本项目的移动端 Yaegi 解释器
-// 未实测支持，因此本主题标记为 desktop only。
+// 类型参数需要 Go 1.18+；本例的标准库 cmp 包需要 Go 1.21+。
 package main
 
 import (

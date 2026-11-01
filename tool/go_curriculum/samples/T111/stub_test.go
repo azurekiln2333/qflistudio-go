@@ -1,14 +1,15 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T111 接口打桩与依赖替换测试。
 //
 // 被测逻辑依赖一个接口（如存储）。生产用真实实现，测试注入"桩"（stub）
 // 以隔离外部依赖、制造确定结果。这样测试不需要数据库/网络，且能覆盖
 // 错误分支。
 //
-// test-package 工程例子，不能一键导入。完整结构：
+// test-package 工程例子，导入时附带辅助文件。原始结构：
 //   stubtest/
 //   ├── go.mod       // module stubtest\n\ngo 1.27
 //   └── stub_test.go // 本文件
-// 运行：go test ./...   desktop only（go test）。
+// 运行：go test ./...；也可选中测试入口运行。
 package stubtest
 
 import (

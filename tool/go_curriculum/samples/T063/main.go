@@ -4,7 +4,7 @@
 //   type Number interface { ~int | ~float64 }
 // 其中 ~int 表示"底层类型是 int 的任意命名类型"，| 是类型并集。
 // Sum 因此可以同时接受整数和浮点，且仍然保有编译期类型检查。
-// 泛型 = desktop only（移动端 Yaegi 未实测）。
+// 类型参数与约束需要 Go 1.18+。
 package main
 
 import "fmt"

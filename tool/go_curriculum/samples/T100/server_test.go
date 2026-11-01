@@ -1,13 +1,14 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T100 net/http 服务端：Handler 与路由。
 //
 // http.ServeMux 把路径映射到 Handler。用 httptest.NewRecorder 可以在不
 // 真正监听端口的情况下直接调用 Handler 并检查响应，因此测试离线且确定。
 //
-// test-package 工程例子，不能一键导入。完整结构：
+// test-package 工程例子，导入时附带辅助文件。原始结构：
 //   httpserver/
 //   ├── go.mod         // module httpserver\n\ngo 1.27
 //   └── server_test.go // 本文件
-// 运行：go test ./...   desktop only。
+// 运行：go test ./...；也可选中测试入口运行。
 package httpserver
 
 import (

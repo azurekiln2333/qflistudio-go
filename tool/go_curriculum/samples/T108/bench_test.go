@@ -1,17 +1,18 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T108 基准测试与 b.RunParallel。
 //
 // 基准测试函数名形如 BenchmarkXxx(*testing.B)，b.N 由框架自动调整以获得
 // 稳定测量。b.RunParallel 用多个 goroutine 并行施压，适合测量并发路径。
 // 断言策略：只要求基准能运行并报出指标（ns/op），不把数值作为通过条件。
 //
-// test-package / benchmark 工程例子，不能一键导入。完整结构：
+// test-package / benchmark 工程例子，导入时附带辅助文件。原始结构：
 //   benchparallel/
 //   ├── go.mod         // module benchparallel\n\ngo 1.27
 //   └── bench_test.go  // 本文件
 // 运行（官方 SDK）：
 //   go test ./...
 //   go test -bench . -benchmem ./...
-// 移动端不支持 bench，desktop only。
+// 内置运行器执行有界基准循环；性能测量与比较使用官方工具链。
 package benchparallel
 
 import (

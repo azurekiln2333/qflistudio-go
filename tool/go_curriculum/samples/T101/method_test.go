@@ -1,13 +1,14 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T101 请求与响应：Method、Header、状态码。
 //
 // Handler 可读取 r.Method / r.Header 并据此分支；用 w.WriteHeader 设置
 // 状态码。方法不匹配时返回 405 Method Not Allowed 是常见约定。
 //
-// test-package 工程例子，不能一键导入。完整结构：
+// test-package 工程例子，导入时附带辅助文件。原始结构：
 //   httpmethod/
 //   ├── go.mod         // module httpmethod\n\ngo 1.27
 //   └── method_test.go // 本文件
-// 运行：go test ./...   desktop only。
+// 运行：go test ./...；也可选中测试入口运行。
 package httpmethod
 
 import (

@@ -1,3 +1,4 @@
+// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。
 // T112 内存分配与逃逸分析。
 //
 // 编译器决定一个变量分配在栈还是堆上。若变量"逃逸"到函数外（被返回、
@@ -5,14 +6,14 @@
 //   go build -gcflags=-m
 // 可查看逃逸报告。本示例给出可对比的两种写法。
 //
-// module-project 工程例子，不能一键导入。完整结构：
+// module-project 工程例子，导入时附带辅助文件。原始结构：
 //   escapeanalyze/
 //   ├── go.mod   // module escapeanalyze\n\ngo 1.27
 //   └── main.go  // 本文件
 // 运行（官方 SDK）：
 //   go run .
 //   go build -gcflags=-m .    // 查看逃逸报告
-// desktop only。
+// 普通入口展示结果；逃逸分析报告使用桌面官方工具链。
 package main
 
 import "fmt"

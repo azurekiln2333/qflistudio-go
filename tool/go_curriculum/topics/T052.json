@@ -34,7 +34,7 @@
     "pitfalls": [
       "用 Is 匹配具体类型：Is 比较值/身份，不是类型，应改用 As。",
       "As 的目标是指针的指针：传 &pe 而非 pe。",
-      "平台限制：errors.As 在移动端 Yaegi 下会 panic（*target 类型错误），仅桌面官方 Go 可运行（保持 desktop-only）。"
+      "errors.As 的目标必须是非空指针，并且所指类型应实现 error 或为接口；不满足要求会 panic。"
     ],
     "exercises": [
       {

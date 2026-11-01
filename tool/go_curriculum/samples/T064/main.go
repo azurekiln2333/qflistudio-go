@@ -2,7 +2,7 @@
 //
 // 泛型不仅能用于函数，也能定义带类型参数的类型。Stack[T] 用切片存元素，
 // 压栈/弹栈/判空都由同一份代码实现，实例化 Stack[int]、Stack[string] 都行。
-// 泛型 = desktop only（移动端 Yaegi 未实测）。
+// 类型参数与约束需要 Go 1.18+。
 package main
 
 import "fmt"

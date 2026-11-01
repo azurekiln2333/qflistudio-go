@@ -1,9 +1,10 @@
+// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。
 // T120 综合项目三：极简 HTTP 服务（JSON API + 中间件 + 测试）。
 //
 // 整合：net/http 路由、JSON 响应、中间件、超时设置与 httptest 测试。
 // 服务提供 /health 与 /api/time；中间件记录请求。
 //
-// module-project 工程例子，不能一键导入。完整结构：
+// module-project 工程例子，导入时附带辅助文件。原始结构：
 //   miniapi/
 //   ├── go.mod       // module miniapi\n\ngo 1.27
 //   ├── main.go      // 本文件：路由、中间件、服务器配置
@@ -11,7 +12,7 @@
 // 运行（官方 SDK）：
 //   go test ./...     // 主要验证方式（httptest，离线）
 //   go run .          // 构造 handler 并说明如何监听
-// desktop only（net 监听 + go test）。
+// 普通入口演示配置，选中 api_test.go 运行无需监听的处理器测试。
 package main
 
 import (

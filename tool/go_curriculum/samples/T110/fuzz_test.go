@@ -1,3 +1,4 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T110 Fuzz 测试发现边界缺陷。
 //
 // Fuzz 测试（Go 1.18+）用 f.Fuzz 提供随机输入，穷举边界并最小化复现用例。
@@ -5,14 +6,14 @@
 // 范围内，要么返回错误"，从而暴露越界。为避免运行时长不确定，
 // 常规 go test 只跑种子语料（确定性），fuzz 模式需显式 -fuzz。
 //
-// test-package / fuzz 工程例子，不能一键导入。完整结构：
+// test-package / fuzz 工程例子，导入时附带辅助文件。原始结构：
 //   fuzztest/
 //   ├── go.mod       // module fuzztest\n\ngo 1.27
 //   └── fuzz_test.go // 本文件
 // 运行（官方 SDK）：
 //   go test ./...             // 只跑种子
 //   go test -fuzz FuzzParsePort -fuzztime 10s ./...
-// desktop only（移动端不支持 fuzz）。
+// 内置运行器执行已登记种子；持续 fuzz 搜索使用桌面官方工具链。
 package fuzztest
 
 import (

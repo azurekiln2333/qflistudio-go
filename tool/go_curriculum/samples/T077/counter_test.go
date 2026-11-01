@@ -1,9 +1,10 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T077 sync.Mutex 与临界区保护。
 //
 // 多个 goroutine 并发对同一变量做 += 会产生数据竞争（race）：读-改-写三步
 // 可能交错，导致丢失更新。Mutex 把这段临界区串行化，使结果确定。
 //
-// 这是一个 test-package 工程例子，不能一键导入。完整结构：
+// 这是一个 test-package 工程例子，导入时附带辅助文件。原始结构：
 //   racecounter/
 //   ├── go.mod          // module racecounter\n\ngo 1.27
 //   └── counter_test.go // 本文件（含被测逻辑与测试）
@@ -11,7 +12,7 @@
 //   go test ./...
 //   go test -race ./...   // 官方 Go 独有，用于证明无数据竞争
 //
-// 移动端 Yaegi 不支持 go test/-race，故本主题 desktop only。
+// 选中测试入口运行测试；-race 检测另需具备相应条件的官方工具链。
 package racecounter
 
 import (

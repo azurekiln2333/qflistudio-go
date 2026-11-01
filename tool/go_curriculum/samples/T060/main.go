@@ -1,10 +1,11 @@
+// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。
 // T060 Go Modules：go.mod 与依赖版本。
 //
 // go.mod 声明模块路径与 Go 版本，并记录依赖及版本；go.sum 记录校验和。
 // 本例演示“本地替换（replace）”——在完全离线、无第三方依赖的前提下，
 // 用 replace 指向同仓本地目录来演示模块依赖解析。
 //
-// 完整多模块工程（module-project，不能一键导入）：
+// 完整多模块工程（module-project，导入时附带辅助文件）：
 //   T060/
 //   ├── go.mod        // module qfli.example/t060; replace qfli.example/lib => ./lib
 //   ├── main.go       // 本文件：导入 lib 包

@@ -1,14 +1,15 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T103 中间件：日志、恢复与链式组合。
 //
 // 中间件是"接收一个 Handler、返回一个 Handler"的函数，可在调用前后插入
 // 逻辑（日志、恢复、鉴权）。多个中间件可链式包裹。本示例用中间件记录
 // 请求方法并统计调用次数，用 httptest 断言链路确实被经过。
 //
-// test-package 工程例子，不能一键导入。完整结构：
+// test-package 工程例子，导入时附带辅助文件。原始结构：
 //   httpmw/
 //   ├── go.mod     // module httpmw\n\ngo 1.27
 //   └── mw_test.go // 本文件
-// 运行：go test ./...   desktop only。
+// 运行：go test ./...；也可选中测试入口运行。
 package httpmw
 
 import (

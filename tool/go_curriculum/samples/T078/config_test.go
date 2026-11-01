@@ -1,14 +1,15 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T078 sync.RWMutex 读写分离。
 //
 // 读多写少的场景下，用 RWMutex 允许多个读并发进行，只有写才独占。
 // 本示例维护一个配置映射：读操作可并发，写操作互斥，最终值确定。
 //
-// test-package 工程例子，不能一键导入。完整结构：
+// test-package 工程例子，导入时附带辅助文件。原始结构：
 //   rwconfig/
 //   ├── go.mod         // module rwconfig\n\ngo 1.27
 //   └── config_test.go // 本文件
 // 运行：go test ./...  /  go test -race ./...
-// 移动端 Yaegi 不支持 go test/-race，desktop only。
+// 选中测试入口运行测试；-race 检测另需具备相应条件的官方工具链。
 package rwconfig
 
 import (

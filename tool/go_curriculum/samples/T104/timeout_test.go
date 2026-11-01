@@ -1,3 +1,4 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T104 超时、重试与优雅关闭。
 //
 // http.Server 应设置超时避免慢连接耗尽资源；优雅关闭用
@@ -5,11 +6,11 @@
 // 带 Client.Timeout 的客户端演示超时，并用 Shutdown 演示优雅关闭。
 // 断言只看"是否超时/是否成功关闭"，不比较具体耗时。
 //
-// test-package 工程例子，不能一键导入。完整结构：
+// test-package 工程例子，导入时附带辅助文件。原始结构：
 //   httptimeout/
 //   ├── go.mod            // module httptimeout\n\ngo 1.27
 //   └── timeout_test.go   // 本文件
-// 运行：go test ./...   desktop only（涉及监听/关闭）。
+// 运行：go test ./...；也可选中测试入口运行。
 package httptimeout
 
 import (

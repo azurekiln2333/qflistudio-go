@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
+import 'package:qfli_go/go_platform.dart';
 import 'package:qfli_go/go_runner.dart';
 import 'package:qfli_studio_core/services/studio_profile.dart';
 
@@ -79,6 +80,132 @@ func TestMessage(t *testing.T) {
     expect(await result.stderr.join(), contains('当前平台'));
     expect(await result.exitCode, kProgramNotRunExitCode);
   });
+
+  test('unavailable runner backend does not launch an SDK fallback', () async {
+    final result = await const GoProgramRunner(
+      backend: GoRuntimeBackend.unavailable,
+      toolchain: GoToolchain(executable: '__must_not_start__'),
+    ).run(projectPath: project.path, entryFile: entry);
+    expect(await result!.stderr.join(), contains('当前平台'));
+    expect(await result.exitCode, kProgramNotRunExitCode);
+  });
+
+  test('selected test entry executes actual SDK package assertions', () async {
+    final testEntry = p.join(project.path, 'src', 'helper_test.go');
+    final runner = GoProgramRunner(toolchain: GoToolchain(executable: sdk));
+    final successful = await runner.run(
+      projectPath: project.path,
+      entryFile: testEntry,
+    );
+    final successfulOutput = successful!.stdout.join('\n');
+    final successfulErrors = successful.stderr.join('\n');
+    expect(successful.title, 'go test helper_test.go');
+    expect(await successful.exitCode, 0, reason: await successfulErrors);
+    expect(await successfulOutput, contains('--- PASS: TestMessage'));
+    File(testEntry).writeAsStringSync(
+      'package main\nimport "testing"\nfunc TestFail(t *testing.T){t.Fatal("real failing assertion")}\n',
+    );
+    final failed = await runner.run(
+      projectPath: project.path,
+      entryFile: testEntry,
+    );
+    final failedOutput = failed!.stdout.join('\n');
+    final failedErrors = failed.stderr.join('\n');
+    expect(await failed.exitCode, 1, reason: await failedErrors);
+    expect(await failedOutput, contains('real failing assertion'));
+  }, skip: !available);
+
+  test(
+    'SDK children use offline resolution and suppress telemetry uploads',
+    () async {
+      final result = await GoToolchain(executable: sdk).runTerminalCommand(
+        workingDirectory: project.path,
+        arguments: [
+          'go',
+          'env',
+          'GOPROXY',
+          'GOSUMDB',
+          'GONOPROXY',
+          'GOVCS',
+          'GOTOOLCHAIN',
+        ],
+      );
+      final output = result!.stdout.toList();
+      final errors = result.stderr.join('\n');
+      expect(await result.exitCode, 0, reason: await errors);
+      expect(await output, ['off', 'off', 'none', '*:off', 'local']);
+
+      File(entry).writeAsStringSync('''package main
+import ("fmt"; "os")
+func main() { fmt.Println(os.Getenv("GO_TELEMETRY_CHILD")) }
+''');
+      final inherited = await runEntry(entry);
+      expect(inherited.$1, 0, reason: inherited.$3);
+      expect(inherited.$2, '2');
+    },
+    skip: !available,
+  );
+
+  test(
+    'completed SDK output survives delayed terminal subscriptions',
+    () async {
+      File(
+        p.join(project.path, 'go.mod'),
+      ).writeAsStringSync('module example.com/qfli/output\n\ngo 1.27.0\n');
+      File(entry).writeAsStringSync('''package main
+import ("fmt"; "os")
+func main() {
+  fmt.Println("完整输出：ready")
+  fmt.Fprintln(os.Stderr, "完整错误：diagnostic")
+}
+''');
+      final toolchain = GoToolchain(executable: sdk);
+      for (final terminal in [false, true]) {
+        final result = terminal
+            ? (await toolchain.runTerminalCommand(
+                workingDirectory: File(entry).parent.path,
+                arguments: ['go', 'run', '.'],
+              ))!
+            : await toolchain.execute(
+                action: GoToolAction.run,
+                projectPath: project.path,
+                entryFile: entry,
+              );
+        // Match a terminal mounting after this short command has already exited.
+        expect(await result.exitCode, 0);
+        expect(await result.stdout.toList(), ['完整输出：ready']);
+        expect(await result.stderr.toList(), ['完整错误：diagnostic']);
+        await result.cancel!();
+      }
+    },
+    skip: !available,
+  );
+
+  test(
+    'network commands and global env writes are rejected before SDK start',
+    () async {
+      const toolchain = GoToolchain(
+        executable: '__must_not_start__',
+        processesSupported: true,
+      );
+      for (final args in <List<String>>[
+        ['get', 'example.invalid/dependency'],
+        ['mod', 'download'],
+        ['env', '-w', 'GOPROXY=direct'],
+        ['-C', project.path, 'env', '-w=GOPROXY=direct'],
+        ['-C=${project.path}', 'env', '-u', 'GOTOOLCHAIN'],
+        ['bug'],
+        ['telemetry', 'on'],
+      ]) {
+        final result = await toolchain.runTerminalCommand(
+          workingDirectory: project.path,
+          arguments: ['go', ...args],
+        );
+        expect(await result!.exitCode, kProgramNotRunExitCode);
+        expect(await result.stderr.join(), contains('离线版本'));
+      }
+    },
+  );
 
   test(
     'entry preparation failures are not reported as missing runtime',
@@ -372,6 +499,139 @@ func main() { fmt.Println("$label", message(), localpkg.Name(), asset) }
       expect(broken.$3, contains('undefined: missingSymbol'));
     },
     skip: !available,
+  );
+
+  test(
+    'SDK cancellation owns nested children for Run and terminal commands',
+    () async {
+      File(
+        p.join(project.path, 'go.mod'),
+      ).writeAsStringSync('module example.com/qfli/lifetime\n\ngo 1.27.0\n');
+      File(entry).writeAsStringSync('''package main
+import (
+  "bufio"
+  "fmt"
+  "net"
+  "os"
+  "os/exec"
+  "os/signal"
+  "syscall"
+)
+func init() {
+  if len(os.Args) > 1 && os.Args[1] == "--owned-child" {
+    signal.Ignore(os.Interrupt, syscall.SIGTERM)
+    listener, err := net.Listen("tcp", "127.0.0.1:0")
+    if err != nil { panic(err) }
+    fmt.Printf("child:%d:%d\\n", os.Getpid(), listener.Addr().(*net.TCPAddr).Port)
+    for {
+      connection, err := listener.Accept()
+      if err != nil { os.Exit(2) }
+      line, _ := bufio.NewReader(connection).ReadString('\\n')
+      connection.Close()
+      if line == "stop\\n" { listener.Close(); os.Exit(0) }
+    }
+  }
+}
+func main() {
+  executable, err := os.Executable()
+  if err != nil { panic(err) }
+  child := exec.Command(executable, "--owned-child")
+  child.Stdout, child.Stderr = os.Stdout, os.Stderr
+  if err := child.Start(); err != nil { panic(err) }
+  fmt.Printf("parent:%d\\n", os.Getpid())
+  if err := child.Wait(); err != nil { os.Exit(3) }
+}
+''');
+      File(
+        p.join(File(entry).parent.path, 'lifetime_test.go'),
+      ).writeAsStringSync('''package main
+import "testing"
+func TestLifetime(t *testing.T) { main() }
+''');
+
+      final toolchain = GoToolchain(executable: sdk);
+      for (final invocation in ['Run', 'terminal run', 'terminal test']) {
+        final result = invocation == 'Run'
+            ? await toolchain.execute(
+                action: GoToolAction.run,
+                projectPath: project.path,
+                entryFile: entry,
+              )
+            : (await toolchain.runTerminalCommand(
+                workingDirectory: File(entry).parent.path,
+                arguments: invocation == 'terminal run'
+                    ? ['go', 'run', '.']
+                    : [
+                        'go',
+                        'test',
+                        '-count=1',
+                        '-v',
+                        '-run=TestLifetime',
+                        '.',
+                      ],
+              ))!;
+        final childReady = Completer<int>();
+        final outputClosed = Completer<void>();
+        final errors = <String>[];
+        final output = result.stdout.listen((line) {
+          if (line.startsWith('child:') && !childReady.isCompleted) {
+            childReady.complete(int.parse(line.split(':').last));
+          }
+        }, onDone: outputClosed.complete);
+        final errorsClosed = result.stderr.forEach(errors.add);
+        int? childPort;
+        try {
+          childPort = await childReady.future.timeout(
+            const Duration(seconds: 20),
+            onTimeout: () => throw TimeoutException(
+              '$invocation did not start the nested child: $errors',
+            ),
+          );
+          await Future.wait([
+            result.cancel!(),
+            result.cancel!(),
+          ]).timeout(const Duration(seconds: 8));
+          expect(await result.exitCode, isNot(0), reason: invocation);
+          await Future.wait([
+            outputClosed.future,
+            errorsClosed,
+          ]).timeout(const Duration(seconds: 3));
+          await expectLater(
+            Socket.connect(
+              InternetAddress.loopbackIPv4,
+              childPort,
+              timeout: const Duration(seconds: 1),
+            ).then((socket) {
+              socket.destroy();
+            }),
+            throwsA(isA<SocketException>()),
+            reason: '$invocation left the nested child listening',
+          );
+        } finally {
+          // A failed cancellation regression must still release this test's
+          // own child. Its private loopback command also lets the parent reap it.
+          if (childPort != null) {
+            try {
+              final socket = await Socket.connect(
+                InternetAddress.loopbackIPv4,
+                childPort,
+                timeout: const Duration(seconds: 1),
+              );
+              socket.write('stop\n');
+              await socket.flush();
+              await socket.close();
+            } on SocketException {
+              // The child already exited as required.
+            }
+          }
+          await result.cancel!();
+          await output.cancel();
+          await errorsClosed;
+        }
+      }
+    },
+    skip: !available,
+    timeout: const Timeout(Duration(minutes: 2)),
   );
 
   test(

@@ -42,7 +42,7 @@
         "answer": "os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o644)。"
       }
     ],
-    "explain": "文件读写是 IO 的常见场景。示例先用 os.MkdirTemp 建立隔离的临时目录并 defer RemoveAll，避免污染工作目录；再用 os.Create 写入内容，随后 Close——Close 不仅释放句柄，也保证缓冲数据落盘。读回用 os.ReadFile 一次性读入，并用 os.Stat 校验字节数，作为确定性断言。这些习惯（隔离目录、及时关闭、校验结果）是可重复、可测试文件操作的基础。移动端文件系统能力未实测，标 Yaegi*（待实测），默认 desktop。",
+    "explain": "文件读写是 IO 的常见场景。示例先用 os.MkdirTemp 建立隔离的临时目录并 defer RemoveAll，避免污染工作目录；再用 os.Create 写入内容，随后 Close——Close 不仅释放句柄，也保证缓冲数据落盘。读回用 os.ReadFile 一次性读入，并用 os.Stat 校验字节数，作为确定性断言。这些习惯（隔离目录、及时关闭、校验结果）是可重复、可测试文件操作的基础。文件操作应限定到应用可写目录，并处理权限与 I/O 错误。",
     "code": "// T086 文件读写：os.Open/Create 与缓冲。\n//\n// 本示例在系统临时目录里创建文件，写入内容后读回，最后清理。\n// 使用 os.CreateTemp 得到唯一路径，避免污染工作目录；\n// 关键习惯：写后 Close 才能保证数据落盘，读前也用 defer Close。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n)\n\nfunc main() {\n\tdir, err := os.MkdirTemp(\"\", \"qfli-t086-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\t// defer 保证函数退出时清理整个临时目录。\n\tdefer os.RemoveAll(dir)\n\n\tpath := filepath.Join(dir, \"notes.txt\")\n\n\t// 写入：os.Create 会截断或新建文件。\n\tf, err := os.Create(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tcontent := \"line one\\nline two\\n\"\n\tif _, err := f.WriteString(content); err != nil {\n\t\tf.Close()\n\t\tpanic(err)\n\t}\n\t// Close 必须在再次打开前调用，否则缓冲/句柄状态不一致。\n\tif err := f.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\n\t// 读取：os.ReadFile 一次性读入。\n\tdata, err := os.ReadFile(path)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"read back:\")\n\tfmt.Print(string(data))\n\n\t// 校验字节数，作为确定性断言。\n\tinfo, _ := os.Stat(path)\n\tfmt.Println(\"size matches:\", int(info.Size()) == len(content))\n}\n",
     "output": "read back:\nline one\nline two\nsize matches: true"
   },

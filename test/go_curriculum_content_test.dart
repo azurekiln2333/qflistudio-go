@@ -3,9 +3,11 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:path/path.dart' as p;
-import 'package:qfli_studio_core/content/asset_content_repository.dart';
+import 'package:qfli_go/go_content_repository.dart';
 import 'package:qfli_studio_core/content/content_repository.dart';
 import 'package:qfli_studio_core/content/content_validator.dart';
+import 'package:qfli_studio_core/content/local_content_adapter.dart';
+import 'package:qfli_studio_core/services/code_import_service.dart';
 
 /// Content-loading / import regression for the Go curriculum slice.
 ///
@@ -60,12 +62,12 @@ void main() {
     }
   });
 
-  test('application asset bundle loads the exact 120/120 Go slice', () async {
-    final loaded = await AssetContentRepository().load();
+  test('product asset bundle loads the complete authored Go slice', () async {
+    final loaded = await GoContentRepository().load();
     final tutorials = loaded.tutorials.where((t) => t.type == 'go').toList();
     final examples = loaded.examples.where((e) => e.type == 'go').toList();
-    expect(tutorials.length, 120);
-    expect(examples.length, 120);
+    expect(tutorials.length, classify.length);
+    expect(examples.length, classify.length);
     expect(tutorials.map((t) => t.id), catalog.tutorials.map((t) => t.id));
     expect(examples.map((e) => e.id), catalog.examples.map((e) => e.id));
     for (var i = 0; i < tutorials.length; i++) {
@@ -79,6 +81,11 @@ void main() {
         catalog.tutorials[i].lessons.first.code,
       );
       expect(examples[i].code, catalog.examples[i].code);
+      expect(examples[i].inputFixtures, catalog.examples[i].inputFixtures);
+      expect(
+        tutorials[i].lessons.first.inputFixtures,
+        catalog.tutorials[i].lessons.first.inputFixtures,
+      );
     }
   });
 
@@ -173,14 +180,100 @@ void main() {
     );
   });
 
-  test('Go tutorial/example count reaches 120/120', () {
+  test('all authored topics and the original 120 remain available', () {
     final goTutorials = catalog.tutorials.where((t) => t.type == 'go').length;
     final goExamples = catalog.examples.where((e) => e.type == 'go').length;
     // Final gate (R1/AC1): both must be exactly 120. Never skipped; an
     // incomplete slice must fail loudly, not pass green.
-    expect(goTutorials, 120, reason: 'Go tutorials: $goTutorials/120');
-    expect(goExamples, 120, reason: 'Go examples: $goExamples/120');
+    expect(goTutorials, classify.length);
+    expect(goExamples, classify.length);
+    expect(classify.length, greaterThanOrEqualTo(120));
+    for (var number = 1; number <= 120; number++) {
+      expect(classify, contains('T${number.toString().padLeft(3, '0')}'));
+    }
   });
+
+  test(
+    'real import maps every displayed source and all support files',
+    () async {
+      final repository = GoContentRepository();
+      final examples = await LocalContentAdapter.loadExamples(
+        repository: repository,
+        language: 'go',
+        productKey: 'goshift',
+      );
+      final tutorial = (await LocalContentAdapter.loadTutorial(
+        repository: repository,
+        language: 'go',
+        displayName: 'Go',
+        productKey: 'goshift',
+      ))!;
+      expect(tutorial.allLessons.length, classify.length);
+      for (final example in examples) {
+        final sourceName = CodeImportService.suggestedFileName(
+          'go',
+          code: example.code,
+        );
+        final entry = 'src/$sourceName';
+        final files = CodeImportService.projectFiles(
+          example: example,
+          entryFile: entry,
+        );
+        expect(files[entry], example.code, reason: example.id);
+        expect(
+          files.length,
+          example.inputFixtures.length + 1,
+          reason: example.id,
+        );
+        final source =
+            jsonDecode(
+                  File(
+                    p.join(root, 'topics', '${_topicIdFor(example.id)}.json'),
+                  ).readAsStringSync(),
+                )
+                as Map<String, dynamic>;
+        final canonical = Directory(
+          p.join(root, 'samples', source['id'] as String),
+        );
+        final tutorialCode = (source['tutorial'] as Map)['code'] as String;
+        final canonicalFiles = canonical
+            .listSync(recursive: true)
+            .whereType<File>()
+            .toList();
+        String relativePath(File file) =>
+            p.relative(file.path, from: canonical.path).replaceAll('\\', '/');
+        final packageTrees = canonicalFiles
+            .map(relativePath)
+            .where((name) => name.contains('/') && name.endsWith('.go'))
+            .map((name) => name.split('/').first)
+            .toSet();
+        for (final file in canonicalFiles) {
+          final relative = relativePath(file);
+          final bytes = file.readAsBytesSync();
+          final text = utf8.decode(bytes);
+          if (relative.endsWith('.go') && text == tutorialCode) continue;
+          final rootRelative =
+              relative == 'go.mod' ||
+              relative == 'go.sum' ||
+              packageTrees.contains(relative.split('/').first);
+          final destination = rootRelative ? relative : 'src/$relative';
+          expect(
+            utf8.encode(files[destination]!),
+            bytes,
+            reason: '${example.id}: $destination',
+          );
+        }
+        final lesson = tutorial.allLessons.firstWhere(
+          (lesson) =>
+              lesson.id == 'go-tutorial-${example.id.split('-').last}-lesson',
+        );
+        expect(lesson.inputFixtures, example.inputFixtures, reason: example.id);
+        if (source['importKind'] == 'test-package') {
+          expect(sourceName, 'snippet_test.go', reason: example.id);
+        }
+      }
+    },
+  );
 
   test('runtime/importKind claims match classify.json', () {
     final issues = <String>[];

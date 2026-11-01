@@ -1,9 +1,10 @@
+// 导入后入口和同包辅助源码位于 src/，模块及子包保留根目录布局。
 // T119 综合项目二：并发词频统计器（worker pool + IO）。
 //
 // 整合：worker pool、文件/字符串 IO、结果聚合。多个 worker 并发统计
 // 若干文本的词频，最后按词排序输出，因此结果与串行一致且确定。
 //
-// module-project 工程例子，不能一键导入。完整结构：
+// module-project 工程例子，导入时附带辅助文件。原始结构：
 //   wordfreq/
 //   ├── go.mod          // module wordfreq\n\ngo 1.27
 //   ├── main.go         // 本文件
@@ -11,7 +12,7 @@
 // 运行（官方 SDK）：
 //   go run .
 //   go test ./...
-// desktop only（并发 + 文件）。
+// 普通入口演示词频，选中 freq_test.go 运行相应测试。
 package main
 
 import (

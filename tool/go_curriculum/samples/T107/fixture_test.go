@@ -1,14 +1,15 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T107 测试夹具：t.TempDir、t.Cleanup。
 //
 // t.TempDir() 为每个测试提供独立、自动清理的临时目录；
 // t.Cleanup(fn) 注册测试结束时执行的清理，即使测试失败也会运行。
 // 二者让涉及文件系统的测试隔离且无残留。
 //
-// test-package 工程例子，不能一键导入。完整结构：
+// test-package 工程例子，导入时附带辅助文件。原始结构：
 //   fixturetest/
 //   ├── go.mod         // module fixturetest\n\ngo 1.27
 //   └── fixture_test.go // 本文件
-// 运行：go test ./...   desktop only（文件系统）。
+// 运行：go test ./...；也可选中测试入口运行。
 package fixturetest
 
 import (

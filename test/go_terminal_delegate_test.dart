@@ -306,10 +306,9 @@ void main() {
       );
     });
 
-    test('go build/test/fmt/vet/mod 明确拒绝而不是空成功', () async {
+    test('go build/fmt/vet/mod 明确拒绝而不是空成功', () async {
       for (final command in <String>[
         'go build .',
-        'go test ./...',
         'go fmt ./...',
         'go vet ./...',
         'go mod tidy',
@@ -325,6 +324,53 @@ void main() {
         expect(capture.lines.join('\n'), contains('内置解释器只支持 go run'));
       }
     });
+
+    test('mobile test flags and recursion are refused honestly', () async {
+      for (final command in [
+        'go test ./...',
+        'go test -race .',
+        'go test -cover .',
+        'go test -fuzz=FuzzX .',
+        'go test -run=TestOne .',
+        'go test -count=2 .',
+      ]) {
+        final capture = backend();
+        addTearDown(capture.shutdown);
+        expect(await delegate.handle(capture, command), isTrue);
+        expect(capture.exitCode, kProgramNotRunExitCode);
+        expect(capture.lines.join('\n'), contains('不支持递归、筛选、race'));
+      }
+    });
+
+    test(
+      'mobile test command runs the actual embedded package engine',
+      () async {
+        write(
+          'pkg/first_test.go',
+          'package checks\nimport "testing"\nfunc TestFirst(t *testing.T){}\n',
+        );
+        write(
+          'pkg/second_test.go',
+          'package checks\nimport "testing"\nfunc TestSecond(t *testing.T){t.Run("child",func(t *testing.T){})}\n',
+        );
+        final actual = GoTerminalDelegate(
+          backend: GoRuntimeBackend.embeddedInterpreter,
+          runner: const GoProgramRunner(
+            backend: GoRuntimeBackend.embeddedInterpreter,
+          ),
+        );
+        final capture = backend();
+        addTearDown(capture.shutdown);
+        expect(
+          await actual.handle(capture, 'go test -v -count=1 ./pkg'),
+          isTrue,
+        );
+        expect(capture.exitCode, 0, reason: capture.lines.join('\n'));
+        expect(capture.lines, contains('--- PASS: TestFirst'));
+        expect(capture.lines, contains('--- PASS: TestSecond/child'));
+      },
+      skip: Platform.environment['QFLI_GO_RUNTIME_LIBRARY'] == null,
+    );
 
     test('go run 带额外参数或模式被拒绝', () async {
       final capture = backend();

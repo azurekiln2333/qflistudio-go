@@ -10,7 +10,7 @@
 // 运行（官方 SDK）：
 //   gofmt -l .
 //   go vet ./...
-// desktop only（移动端不提供这些工具）。
+// 下列命令使用官方工具链；单文件程序可直接导入运行。
 package main
 
 import "fmt"

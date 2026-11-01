@@ -43,7 +43,7 @@
       }
     ],
     "explain": "递归把问题拆成同类子问题，斐波那契是经典例子：fib(n)=fib(n-1)+fib(n-2)，基准情形 n<2 直接返回 n。朴素递归会重复计算同一子问题，复杂度指数级。\n\n记忆化用一个 map 缓存已算出的结果：进入函数先查缓存，命中即返回；否则算出后写入。样例用包级 memo，使结果在多次顶层调用间也复用。代价是缓存会占用内存且需注意并发安全（本样例单协程执行）。\n\n本样例打印 fib(0..6)。",
-    "code": "package main\n\nimport \"fmt\"\n\nvar memo = map[int]int{}\n\nfunc fib(n int) int {\n\tif n < 2 {\n\t\treturn n\n\t}\n\tif v, ok := memo[n]; ok {\n\t\treturn v\n\t}\n\tv := fib(n-1) + fib(n-2)\n\tmemo[n] = v\n\treturn v\n}\n\nfunc main() {\n\tfor i := 0; i < 7; i++ {\n\t\tfmt.Print(fib(i), \" \")\n\t}\n\tfmt.Println()\n}\n",
+    "code": "package main\n\nimport \"fmt\"\n\nvar memo = map[int]int{}\n\nfunc fib(n int) int {\n\tif n < 2 {\n\t\treturn n\n\t}\n\tif v, ok := memo[n]; ok {\n\t\treturn v\n\t}\n\tv := fib(n-1) + fib(n-2)\n\tmemo[n] = v\n\treturn v\n}\n\nfunc main() {\n\tfor i := 0; i < 7; i++ {\n\t\tif i > 0 {\n\t\t\tfmt.Print(\" \")\n\t\t}\n\t\tfmt.Print(fib(i))\n\t}\n\tfmt.Println()\n}\n",
     "output": "0 1 1 2 3 5 8"
   },
   "example": {

@@ -1,17 +1,18 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T114 性能优化范式：预分配、批处理、零拷贝。
 //
 // 常见优化：用预分配切片（make([]T, 0, n)）避免反复扩容；
 // 用 strings.Builder 拼接避免多次分配；用复用缓冲避免重复分配。
 // 断言策略：功能等价断言（输出正确）+ 基准只作参考，不作通过条件。
 //
-// test-package / benchmark 工程例子，不能一键导入。完整结构：
+// test-package / benchmark 工程例子，导入时附带辅助文件。原始结构：
 //   perfpatterns/
 //   ├── go.mod           // module perfpatterns\n\ngo 1.27
 //   └── patterns_test.go // 本文件
 // 运行（官方 SDK）：
 //   go test ./...
 //   go test -bench . -benchmem ./...
-// desktop only。
+// 内置运行器执行有界基准循环；性能测量与比较使用官方工具链。
 package perfpatterns
 
 import (

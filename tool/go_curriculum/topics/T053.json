@@ -34,7 +34,7 @@
     "pitfalls": [
       "实现 Unwrap 返回 nil 之外的东西却期望 Is 命中：链会断。",
       "错误类型用值接收者但存了指针字段：注意一致性。",
-      "平台限制：自定义错误 + errors.As/Unwrap 在移动端 Yaegi 下会 panic，仅桌面官方 Go 可运行（保持 desktop-only）。"
+      "Error、Unwrap、Is 和 As 的方法签名必须准确；名称相同但签名不同的方法不会参与错误链协议。"
     ],
     "exercises": [
       {

@@ -1,14 +1,15 @@
+// 导入后本文件默认为 src/snippet_test.go，同包辅助源码一并保存。
 // T102 JSON API 与错误响应约定。
 //
 // 一个 JSON API 应统一响应结构：成功返回数据，失败返回错误码与消息，
 // 并设置 Content-Type: application/json。本示例用统一 envelope 输出，
 // 并测试正常与错误两条路径。
 //
-// test-package 工程例子，不能一键导入。完整结构：
+// test-package 工程例子，导入时附带辅助文件。原始结构：
 //   httpjson/
 //   ├── go.mod      // module httpjson\n\ngo 1.27
 //   └── api_test.go // 本文件
-// 运行：go test ./...   desktop only。
+// 运行：go test ./...；也可选中测试入口运行。
 package httpjson
 
 import (
