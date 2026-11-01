@@ -1,0 +1,71 @@
+{
+  "id": "T190",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "file perms=rw-r----- dir=false setuid=false\ndirectory perms=rwxr-x--- dir=true setuid=false\nspecial perms=rwxr-xr-x dir=false setuid=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-190",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "文件权限位解释",
+    "summary": "把 FileMode 的读写执行位转换为可读摘要，并单独解释目录与 setuid 标志。",
+    "concepts": [
+      "fs.FileMode",
+      "Perm",
+      "目录位",
+      "特殊模式位"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "把 FileMode 的读写执行位转换为可读摘要，并单独解释目录与 setuid 标志。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "把目录与 setuid 标志当成普通权限低位会产生错误摘要。",
+      "权限元数据不完整决定真实访问结果，平台和 ACL 仍有影响。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加 sticky 标志显示，但保持九位 rwx 文本不变。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "通过 mode&fs.ModeSticky!=0 单独输出 sticky 布尔值；Perm 的九位计算继续只处理普通权限。"
+      }
+    ],
+    "explain": "Perm 只保留最低九个普通权限位，按所有者、组与其他人的 rwx 顺序转成文本。ModeDir 和 ModeSetuid 位于另一组模式标志中，需要独立检查，不能混进九位权限。示例使用内存中的模式值演示解释，不修改真实文件权限；实际访问还会受平台、ACL 和当前身份影响，摘要不是一次访问许可判定。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"io/fs\"\n)\n\nfunc permissions(mode fs.FileMode) string {\n\tresult := []byte(\"---------\")\n\tsymbols := \"rwxrwxrwx\"\n\tfor i := 0; i < 9; i++ {\n\t\tif mode.Perm()&(1<<uint(8-i)) != 0 {\n\t\t\tresult[i] = symbols[i]\n\t\t}\n\t}\n\treturn string(result)\n}\nfunc main() {\n\tfor _, item := range []struct {\n\t\tName string\n\t\tMode fs.FileMode\n\t}{{\"file\", 0640}, {\"directory\", fs.ModeDir | 0750}, {\"special\", fs.ModeSetuid | 0755}} {\n\t\tfmt.Printf(\"%s perms=%s dir=%t setuid=%t\\n\", item.Name, permissions(item.Mode), item.Mode&fs.ModeDir != 0, item.Mode&fs.ModeSetuid != 0)\n\t}\n}\n",
+    "output": "file perms=rw-r----- dir=false setuid=false\ndirectory perms=rwxr-x--- dir=true setuid=false\nspecial perms=rwxr-xr-x dir=false setuid=true"
+  },
+  "example": {
+    "id": "go-example-190",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "文件权限位解释",
+    "summary": "把 FileMode 的读写执行位转换为可读摘要，并单独解释目录与 setuid 标志。",
+    "concepts": [
+      "fs.FileMode",
+      "Perm",
+      "目录位",
+      "特殊模式位"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"io/fs\"\n)\n\nfunc permissions(mode fs.FileMode) string {\n\tresult := []byte(\"---------\")\n\tsymbols := \"rwxrwxrwx\"\n\tfor i := 0; i < 9; i++ {\n\t\tif mode.Perm()&(1<<uint(8-i)) != 0 {\n\t\t\tresult[i] = symbols[i]\n\t\t}\n\t}\n\treturn string(result)\n}\nfunc main() {\n\tfor _, item := range []struct {\n\t\tName string\n\t\tMode fs.FileMode\n\t}{{\"file\", 0640}, {\"directory\", fs.ModeDir | 0750}, {\"special\", fs.ModeSetuid | 0755}} {\n\t\tfmt.Printf(\"%s perms=%s dir=%t setuid=%t\\n\", item.Name, permissions(item.Mode), item.Mode&fs.ModeDir != 0, item.Mode&fs.ModeSetuid != 0)\n\t}\n}\n",
+    "expectedOutput": "file perms=rw-r----- dir=false setuid=false\ndirectory perms=rwxr-x--- dir=true setuid=false\nspecial perms=rwxr-xr-x dir=false setuid=true",
+    "templateType": "go"
+  }
+}

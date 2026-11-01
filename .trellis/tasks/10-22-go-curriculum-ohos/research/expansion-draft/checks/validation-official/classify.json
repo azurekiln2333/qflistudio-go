@@ -1,0 +1,132 @@
+[
+  {
+    "id": "T251",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "name=\"Li Yu\" address=li@example.test\nname=\"\" address=reader@example.test\ninvalid\nlist=2\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T252",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "192.0.2.0 valid=true member=true\n192.0.2.255 valid=true member=true\n192.0.3.1 valid=true member=false\nnot-ip valid=false member=false\nipv6=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T253",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "https://api.example.test/a=true\nhttp://example.test=false\nhttps://user@example.test=false\nhttps://example.test.evil=false\nhttps://evil-example.test=false\nhttps://example.test:8443=false\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T254",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "valid=true\nvalid=false\nvalid=false\nvalid=false\nvalid=false\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T255",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "1.9.0\n2.0.0-alpha.1\n2.0.0-rc.2\n2.0.0-rc.10\n2.0.0\ninvalid=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T256",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "code=79927398713\nvalid=true\ntampered=false\nbad-input=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T257",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "valid=true\nvalid=false\nvalid=false\nvalid=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T258",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "fields=3\nfirst=a;b\nsecond=c\\d\nempty-last=true\ninvalid=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T259",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "nested-valid=true\nmismatch=true byte-offset=5\nunclosed=true byte-offset=3\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T260",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "text=中😀Go runes=4\ninvalid=true\nincomplete=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  }
+]

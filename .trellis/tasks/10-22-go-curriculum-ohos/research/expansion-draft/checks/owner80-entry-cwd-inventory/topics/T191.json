@@ -1,0 +1,71 @@
+{
+  "id": "T191",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "import source=notes.json\nexport limit=3\nparse-error=true captured=true\nunknown=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-191",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "独立 FlagSet 子命令",
+    "summary": "分别解析 import 与 export 子命令，把错误写到私有缓冲并返回而不退出进程。",
+    "concepts": [
+      "flag.FlagSet",
+      "ContinueOnError",
+      "捕获诊断",
+      "子命令"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "分别解析 import 与 export 子命令，把错误写到私有缓冲并返回而不退出进程。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "默认全局 flag 可能退出进程或积累重复定义，不适合可重复嵌入调用。",
+      "参数类型解析成功后仍需验证 source 非空、limit 为正等业务条件。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加 export 的 format 标志，仅允许 json 或 csv。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "在 export 专属 FlagSet 注册字符串，Parse 成功后用 switch 校验允许值，不把未知格式自动改成默认值。"
+      }
+    ],
+    "explain": "每次调用建立独立 FlagSet 并使用 ContinueOnError，避免污染全局标志或让解析错误结束应用。诊断通过 SetOutput 写入 bytes.Buffer，业务结果与错误分开返回。import 要求 source，export 的 limit 必须为正，未知命令与多余位置参数都明确失败。示例传入固定参数切片，只演示解析，不执行导入或启动 shell。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"flag\"\n\t\"fmt\"\n)\n\nfunc execute(arguments []string) (string, string, error) {\n\tif len(arguments) == 0 {\n\t\treturn \"\", \"\", fmt.Errorf(\"missing command\")\n\t}\n\tvar diagnostics bytes.Buffer\n\tflags := flag.NewFlagSet(arguments[0], flag.ContinueOnError)\n\tflags.SetOutput(&diagnostics)\n\tsource := \"\"\n\tlimit := 0\n\tswitch arguments[0] {\n\tcase \"import\":\n\t\tflags.StringVar(&source, \"source\", \"\", \"source file\")\n\tcase \"export\":\n\t\tflags.IntVar(&limit, \"limit\", 10, \"record limit\")\n\tdefault:\n\t\treturn \"\", \"\", fmt.Errorf(\"unknown command\")\n\t}\n\tif err := flags.Parse(arguments[1:]); err != nil {\n\t\treturn \"\", diagnostics.String(), err\n\t}\n\tif flags.NArg() != 0 {\n\t\treturn \"\", diagnostics.String(), fmt.Errorf(\"unexpected positional arguments\")\n\t}\n\tif arguments[0] == \"import\" {\n\t\tif source == \"\" {\n\t\t\treturn \"\", \"\", fmt.Errorf(\"missing source\")\n\t\t}\n\t\treturn \"import source=\" + source, \"\", nil\n\t}\n\tif limit < 1 {\n\t\treturn \"\", \"\", fmt.Errorf(\"invalid limit\")\n\t}\n\treturn fmt.Sprintf(\"export limit=%d\", limit), \"\", nil\n}\nfunc main() {\n\tfor _, arguments := range [][]string{{\"import\", \"-source\", \"notes.json\"}, {\"export\", \"-limit\", \"3\"}} {\n\t\tresult, _, err := execute(arguments)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Println(result)\n\t}\n\t_, diagnostics, err := execute([]string{\"export\", \"-limit\", \"no\"})\n\tfmt.Printf(\"parse-error=%t captured=%t\\n\", err != nil, len(diagnostics) > 0)\n\t_, _, err = execute([]string{\"delete\"})\n\tfmt.Printf(\"unknown=%t\\n\", err != nil)\n}\n",
+    "output": "import source=notes.json\nexport limit=3\nparse-error=true captured=true\nunknown=true"
+  },
+  "example": {
+    "id": "go-example-191",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "独立 FlagSet 子命令",
+    "summary": "分别解析 import 与 export 子命令，把错误写到私有缓冲并返回而不退出进程。",
+    "concepts": [
+      "flag.FlagSet",
+      "ContinueOnError",
+      "捕获诊断",
+      "子命令"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"flag\"\n\t\"fmt\"\n)\n\nfunc execute(arguments []string) (string, string, error) {\n\tif len(arguments) == 0 {\n\t\treturn \"\", \"\", fmt.Errorf(\"missing command\")\n\t}\n\tvar diagnostics bytes.Buffer\n\tflags := flag.NewFlagSet(arguments[0], flag.ContinueOnError)\n\tflags.SetOutput(&diagnostics)\n\tsource := \"\"\n\tlimit := 0\n\tswitch arguments[0] {\n\tcase \"import\":\n\t\tflags.StringVar(&source, \"source\", \"\", \"source file\")\n\tcase \"export\":\n\t\tflags.IntVar(&limit, \"limit\", 10, \"record limit\")\n\tdefault:\n\t\treturn \"\", \"\", fmt.Errorf(\"unknown command\")\n\t}\n\tif err := flags.Parse(arguments[1:]); err != nil {\n\t\treturn \"\", diagnostics.String(), err\n\t}\n\tif flags.NArg() != 0 {\n\t\treturn \"\", diagnostics.String(), fmt.Errorf(\"unexpected positional arguments\")\n\t}\n\tif arguments[0] == \"import\" {\n\t\tif source == \"\" {\n\t\t\treturn \"\", \"\", fmt.Errorf(\"missing source\")\n\t\t}\n\t\treturn \"import source=\" + source, \"\", nil\n\t}\n\tif limit < 1 {\n\t\treturn \"\", \"\", fmt.Errorf(\"invalid limit\")\n\t}\n\treturn fmt.Sprintf(\"export limit=%d\", limit), \"\", nil\n}\nfunc main() {\n\tfor _, arguments := range [][]string{{\"import\", \"-source\", \"notes.json\"}, {\"export\", \"-limit\", \"3\"}} {\n\t\tresult, _, err := execute(arguments)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Println(result)\n\t}\n\t_, diagnostics, err := execute([]string{\"export\", \"-limit\", \"no\"})\n\tfmt.Printf(\"parse-error=%t captured=%t\\n\", err != nil, len(diagnostics) > 0)\n\t_, _, err = execute([]string{\"delete\"})\n\tfmt.Printf(\"unknown=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "import source=notes.json\nexport limit=3\nparse-error=true captured=true\nunknown=true",
+    "templateType": "go"
+  }
+}

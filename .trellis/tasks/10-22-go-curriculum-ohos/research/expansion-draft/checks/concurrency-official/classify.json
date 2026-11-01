@@ -1,0 +1,132 @@
+[
+  {
+    "id": "T231",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "ordered=[4 9 16 25]\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T232",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "completed=6\npeak-bounded=true\nactive=0\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T233",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "loads=1\nmatched=6\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T234",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "ready=3\nresults=[10 20 30]\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T235",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "consumed=[1 4 9]\nstages-exited=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T236",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "invalid=0\nfinal=20:v20\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T237",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "merged=[1 2 3 4]\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T238",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "0:value=8\n1:error=must be positive\n2:error=must be positive\n3:value=14\nfailures=2\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T239",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "first=5\ncancelled-accepted=false\nfinal=7\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T240",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "attempts=1\nerrors=4\nsame=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  }
+]

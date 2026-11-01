@@ -1,0 +1,71 @@
+{
+  "id": "T238",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "0:value=8\n1:error=must be positive\n2:error=must be positive\n3:value=14\nfailures=2\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-238",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "任务结果与错误聚合",
+    "summary": "能并行校验记录，按输入序号汇总成功结果和全部错误。",
+    "concepts": [
+      "sync",
+      "errors",
+      "sort",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能并行校验记录，按输入序号汇总成功结果和全部错误。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "用共享 err 变量在多个协程中赋值会产生竞争并丢失部分错误。",
+      "错误结果中的 Value 不应被当作已验证的有效业务结果。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把错误增加原始输入值与字段名，保持错误顺序稳定。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "使用 fmt.Errorf 包含 index、value 和字段；仍按 Result.Index 排序后统一展示。"
+      }
+    ],
+    "explain": "每个并行任务返回独立 Result，包含输入下标、计算值和错误。收集后按下标排列，成功和全部失败都被报告，而非遇到第一个错误就取消其他验证。结果通道容量足够容纳全部任务，所以等待完成后再收集不会死锁。这样的模式适合需要向用户一次展示整批问题的离线校验。",
+    "code": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\ntype Result struct {\n\tIndex int\n\tValue int\n\tErr   error\n}\n\nfunc main() {\n\tinput := []int{4, -2, 0, 7}\n\tout := make(chan Result, len(input))\n\tvar workers sync.WaitGroup\n\tfor index, value := range input {\n\t\tworkers.Add(1)\n\t\tgo func(index, value int) {\n\t\t\tdefer workers.Done()\n\t\t\tr := Result{Index: index, Value: value * 2}\n\t\t\tif value <= 0 {\n\t\t\t\tr.Err = errors.New(\"must be positive\")\n\t\t\t}\n\t\t\tout <- r\n\t\t}(index, value)\n\t}\n\tworkers.Wait()\n\tclose(out)\n\trows := []Result{}\n\tfor r := range out {\n\t\trows = append(rows, r)\n\t}\n\tsort.Slice(rows, func(i, j int) bool { return rows[i].Index < rows[j].Index })\n\tfailures := 0\n\tfor _, r := range rows {\n\t\tif r.Err != nil {\n\t\t\tfailures++\n\t\t\tfmt.Printf(\"%d:error=%s\\n\", r.Index, r.Err)\n\t\t} else {\n\t\t\tfmt.Printf(\"%d:value=%d\\n\", r.Index, r.Value)\n\t\t}\n\t}\n\tfmt.Printf(\"failures=%d\\n\", failures)\n}\n",
+    "output": "0:value=8\n1:error=must be positive\n2:error=must be positive\n3:value=14\nfailures=2"
+  },
+  "example": {
+    "id": "go-example-238",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "任务结果与错误聚合",
+    "summary": "能并行校验记录，按输入序号汇总成功结果和全部错误。",
+    "concepts": [
+      "sync",
+      "errors",
+      "sort",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\ntype Result struct {\n\tIndex int\n\tValue int\n\tErr   error\n}\n\nfunc main() {\n\tinput := []int{4, -2, 0, 7}\n\tout := make(chan Result, len(input))\n\tvar workers sync.WaitGroup\n\tfor index, value := range input {\n\t\tworkers.Add(1)\n\t\tgo func(index, value int) {\n\t\t\tdefer workers.Done()\n\t\t\tr := Result{Index: index, Value: value * 2}\n\t\t\tif value <= 0 {\n\t\t\t\tr.Err = errors.New(\"must be positive\")\n\t\t\t}\n\t\t\tout <- r\n\t\t}(index, value)\n\t}\n\tworkers.Wait()\n\tclose(out)\n\trows := []Result{}\n\tfor r := range out {\n\t\trows = append(rows, r)\n\t}\n\tsort.Slice(rows, func(i, j int) bool { return rows[i].Index < rows[j].Index })\n\tfailures := 0\n\tfor _, r := range rows {\n\t\tif r.Err != nil {\n\t\t\tfailures++\n\t\t\tfmt.Printf(\"%d:error=%s\\n\", r.Index, r.Err)\n\t\t} else {\n\t\t\tfmt.Printf(\"%d:value=%d\\n\", r.Index, r.Value)\n\t\t}\n\t}\n\tfmt.Printf(\"failures=%d\\n\", failures)\n}\n",
+    "expectedOutput": "0:value=8\n1:error=must be positive\n2:error=must be positive\n3:value=14\nfailures=2",
+    "templateType": "go"
+  }
+}

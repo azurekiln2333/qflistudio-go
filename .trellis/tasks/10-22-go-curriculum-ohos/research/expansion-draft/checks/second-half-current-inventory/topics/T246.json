@@ -1,0 +1,69 @@
+{
+  "id": "T246",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "wire=\"ready\"\nroundtrip=true\ninvalid=true unchanged=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-246",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "枚举文本协议",
+    "summary": "能为状态枚举实现 TextMarshaler/TextUnmarshaler，验证合法与非法值。",
+    "concepts": [
+      "encoding",
+      "encoding/json",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能为状态枚举实现 TextMarshaler/TextUnmarshaler，验证合法与非法值。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "解析失败前先修改接收者，会让调用方收到错误同时丢失先前有效值。",
+      "枚举新增值时要同步编码和解码两个方向，不能只改常量列表。"
+    ],
+    "exercises": [
+      {
+        "prompt": "新增 paused 状态，并增加三种状态的往返检查。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "在两个 switch 中都加入 paused 分支，再遍历全部合法枚举，Marshal 后 Unmarshal 比较原值。"
+      }
+    ],
+    "explain": "文本编解码接口将内部整数枚举转换成稳定字符串协议，JSON 也能使用这些方法。UnmarshalText 先检查输入，再一次性写入接收者，因此坏状态不会破坏原来的 Ready。MarshalText 同样拒绝未知内部枚举，避免把错误整数悄悄输出。对外字符串可长期稳定，内部常量编号则无需成为协议的一部分。",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Status int\n\nconst (\n\tPending Status = iota\n\tReady\n)\n\nfunc (s Status) MarshalText() ([]byte, error) {\n\tswitch s {\n\tcase Pending:\n\t\treturn []byte(\"pending\"), nil\n\tcase Ready:\n\t\treturn []byte(\"ready\"), nil\n\t}\n\treturn nil, fmt.Errorf(\"unknown status\")\n}\nfunc (s *Status) UnmarshalText(text []byte) error {\n\tvar next Status\n\tswitch string(text) {\n\tcase \"pending\":\n\t\tnext = Pending\n\tcase \"ready\":\n\t\tnext = Ready\n\tdefault:\n\t\treturn fmt.Errorf(\"invalid status\")\n\t}\n\t*s = next\n\treturn nil\n}\nfunc main() {\n\twire, err := json.Marshal(Ready)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"wire=%s\\n\", wire)\n\tvar status Status\n\tif err = json.Unmarshal([]byte(`\"ready\"`), &status); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"roundtrip=%t\\n\", status == Ready)\n\terr = json.Unmarshal([]byte(`\"deleted\"`), &status)\n\tfmt.Printf(\"invalid=%t unchanged=%t\\n\", err != nil, status == Ready)\n}\n",
+    "output": "wire=\"ready\"\nroundtrip=true\ninvalid=true unchanged=true"
+  },
+  "example": {
+    "id": "go-example-246",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "枚举文本协议",
+    "summary": "能为状态枚举实现 TextMarshaler/TextUnmarshaler，验证合法与非法值。",
+    "concepts": [
+      "encoding",
+      "encoding/json",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Status int\n\nconst (\n\tPending Status = iota\n\tReady\n)\n\nfunc (s Status) MarshalText() ([]byte, error) {\n\tswitch s {\n\tcase Pending:\n\t\treturn []byte(\"pending\"), nil\n\tcase Ready:\n\t\treturn []byte(\"ready\"), nil\n\t}\n\treturn nil, fmt.Errorf(\"unknown status\")\n}\nfunc (s *Status) UnmarshalText(text []byte) error {\n\tvar next Status\n\tswitch string(text) {\n\tcase \"pending\":\n\t\tnext = Pending\n\tcase \"ready\":\n\t\tnext = Ready\n\tdefault:\n\t\treturn fmt.Errorf(\"invalid status\")\n\t}\n\t*s = next\n\treturn nil\n}\nfunc main() {\n\twire, err := json.Marshal(Ready)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"wire=%s\\n\", wire)\n\tvar status Status\n\tif err = json.Unmarshal([]byte(`\"ready\"`), &status); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"roundtrip=%t\\n\", status == Ready)\n\terr = json.Unmarshal([]byte(`\"deleted\"`), &status)\n\tfmt.Printf(\"invalid=%t unchanged=%t\\n\", err != nil, status == Ready)\n}\n",
+    "expectedOutput": "wire=\"ready\"\nroundtrip=true\ninvalid=true unchanged=true",
+    "templateType": "go"
+  }
+}

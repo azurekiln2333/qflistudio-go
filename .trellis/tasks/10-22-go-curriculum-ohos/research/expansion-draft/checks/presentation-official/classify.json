@@ -1,0 +1,132 @@
+[
+  {
+    "id": "T241",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "pen 2 x 1.39\npad 1 x 0.50\ntotal 3.28\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T242",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "escaped-tags=true\nescaped-quotes=true\nraw-tag-absent=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T243",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "REPORT north: [books=3] [pens=5]\nREPORT south: [books=2]\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T244",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "name=Li role=reader\nmissing-rejected=true\npartial-published=false\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T245",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "{\"name\":\"Li\",\"token\":\"***1234\"}\nmemory-intact=true\nsecret-absent=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T246",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "wire=\"ready\"\nroundtrip=true\ninvalid=true unchanged=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T247",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "|Go | runes=3\n|离线工| runes=3\n|A😀B| runes=3\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T248",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "id=1 value=a\nid=2 value=b\nline=3 invalid\nid=3 value=c\nvalid=3\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T249",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "| name | notes |\n| --- | --- |\n| A\\|B | C:\\\\docs |\n| 中文 | first<br>second |\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T250",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "[--------] 0/8\n[###-----] 3/8\n[########] 8/8\n[--------] 0/8\n[--------] n/a\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  }
+]

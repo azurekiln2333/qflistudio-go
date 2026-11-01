@@ -1,0 +1,500 @@
+[
+  {
+    "id": "go-tutorial-201",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "摘要清单验证",
+    "summary": "能验证两个离线文件的摘要清单，分别报告匹配和被修改文件。",
+    "concepts": [
+      "crypto/sha256",
+      "encoding/hex",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-201-lesson",
+        "title": "摘要清单验证",
+        "summary": "能验证两个离线文件的摘要清单，分别报告匹配和被修改文件。",
+        "concepts": [
+          "crypto/sha256",
+          "encoding/hex",
+          "摘要与密码基础"
+        ],
+        "explain": "清单保存文件名和 SHA256 十六进制摘要，验证阶段重新计算当前内容并与清单比较。a.txt 未改变，b.txt 的内容被替换，因此分别报告匹配与不匹配。先排序文件名再输出，避免 map 遍历顺序影响审计记录。十六进制解码错误说明清单本身也需要格式检查；摘要可检测变化，却不能证明清单来自可信发布者。",
+        "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"encoding/hex\"\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc digest(text string) string {\n\tsum := sha256.Sum256([]byte(text))\n\treturn hex.EncodeToString(sum[:])\n}\nfunc main() {\n\tfiles := map[string]string{\"a.txt\": \"alpha\", \"b.txt\": \"changed\"}\n\tmanifest := map[string]string{\"a.txt\": digest(\"alpha\"), \"b.txt\": digest(\"beta\")}\n\tnames := []string{}\n\tfor name := range manifest {\n\t\tnames = append(names, name)\n\t}\n\tsort.Strings(names)\n\tfor _, name := range names {\n\t\tdata, exists := files[name]\n\t\tfmt.Printf(\"%s exists=%t match=%t\\n\", name, exists, exists && digest(data) == manifest[name])\n\t}\n\t_, err := hex.DecodeString(\"xyz\")\n\tfmt.Printf(\"bad-manifest=%t\\n\", err != nil)\n}\n",
+        "output": "a.txt exists=true match=true\nb.txt exists=true match=false\nbad-manifest=true",
+        "objective": "能验证两个离线文件的摘要清单，分别报告匹配和被修改文件。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "文件不存在和摘要不符是不同问题，不能把空内容当成不存在。",
+          "攻击者若能同时修改文件和清单，普通摘要不能提供身份认证。"
+        ],
+        "exercises": [
+          {
+            "prompt": "增加清单中存在但文件集合中缺失的 c.txt，保持按文件名排序。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "先检查 map 的 exists，再计算摘要；缺失项输出 exists=false、match=false。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-202",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "HMAC 消息认证",
+    "summary": "能为消息生成标签，验证正确消息并拒绝修改后的内容。",
+    "concepts": [
+      "crypto/hmac",
+      "crypto/sha256",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-202-lesson",
+        "title": "HMAC 消息认证",
+        "summary": "能为消息生成标签，验证正确消息并拒绝修改后的内容。",
+        "concepts": [
+          "crypto/hmac",
+          "crypto/sha256",
+          "摘要与密码基础"
+        ],
+        "explain": "HMAC 把共享密钥与消息一起用于认证。发送方计算标签，接收方用相同密钥重新计算，并通过 hmac.Equal 比较。示例分别检验原始账单、改过金额的账单和错误密钥，只有第一种通过。标签不是加密，账单仍可被读取；示例密钥只用于演示，实际密钥应从受控存储取得并定期轮换。",
+        "code": "package main\n\nimport (\n\t\"crypto/hmac\"\n\t\"crypto/sha256\"\n\t\"fmt\"\n)\n\nfunc tag(key, message []byte) []byte {\n\tmac := hmac.New(sha256.New, key)\n\tmac.Write(message)\n\treturn mac.Sum(nil)\n}\nfunc verify(key, message, want []byte) bool { return hmac.Equal(tag(key, message), want) }\nfunc main() {\n\tkey := []byte(\"lesson-only-shared-key\")\n\tmessage := []byte(\"invoice:7:1250\")\n\tsignature := tag(key, message)\n\tfmt.Printf(\"tag-bytes=%d\\nvalid=%t\\ntampered=%t\\nwrong-key=%t\\n\", len(signature), verify(key, message, signature), verify(key, []byte(\"invoice:7:9250\"), signature), verify([]byte(\"other-key\"), message, signature))\n}\n",
+        "output": "tag-bytes=32\nvalid=true\ntampered=false\nwrong-key=false",
+        "objective": "能为消息生成标签，验证正确消息并拒绝修改后的内容。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "直接计算 sha256(key+message) 不能替代标准 HMAC 构造。",
+          "认证通过不阻止旧消息被重放，业务协议还需要序号或唯一请求标识。"
+        ],
+        "exercises": [
+          {
+            "prompt": "把账单序号加入消息并维护已处理序号集合。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "先校验完整消息的 HMAC，再检查序号是否已出现，成功处理后才登记序号。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-203",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "定长令牌比较",
+    "summary": "能先校验长度再比较固定字节令牌，展示错误输入和有效输入。",
+    "concepts": [
+      "crypto/subtle",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-203-lesson",
+        "title": "定长令牌比较",
+        "summary": "能先校验长度再比较固定字节令牌，展示错误输入和有效输入。",
+        "concepts": [
+          "crypto/subtle",
+          "摘要与密码基础"
+        ],
+        "explain": "外部输入先经过十六进制解码，再检查是否符合固定四字节协议，最后比较内容。ConstantTimeCompare 只用于同长度有效字节串；格式和长度拒绝本来就是可见的协议边界。四字节仅便于阅读，不是足够强的生产认证令牌。示例同时覆盖一个正确令牌、末字节修改、长度不足与非十六进制字符。",
+        "code": "package main\n\nimport (\n\t\"crypto/subtle\"\n\t\"encoding/hex\"\n\t\"fmt\"\n)\n\nfunc valid(input string, want []byte) bool {\n\tdecoded, err := hex.DecodeString(input)\n\tif err != nil || len(decoded) != len(want) || len(want) != 4 {\n\t\treturn false\n\t}\n\treturn subtle.ConstantTimeCompare(decoded, want) == 1\n}\nfunc main() {\n\ttoken := []byte{0x21, 0x4a, 0xb0, 0x09}\n\tfor _, input := range []string{\"214ab009\", \"214ab008\", \"21\", \"zzzzzzzz\"} {\n\t\tfmt.Printf(\"%s=%t\\n\", input, valid(input, token))\n\t}\n}\n",
+        "output": "214ab009=true\n214ab008=false\n21=false\nzzzzzzzz=false",
+        "objective": "能先校验长度再比较固定字节令牌，展示错误输入和有效输入。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "常量时间比较不会修复过短、可猜测的令牌设计。",
+          "不同长度输入会提前被拒绝，不能据此宣称整个解析过程都是恒定耗时。"
+        ],
+        "exercises": [
+          {
+            "prompt": "把协议改成 32 字节令牌并增加过长输入测试。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "将长度条件改为 32，使用 crypto/rand 生成令牌；只打印验证结果，不打印真实密钥材料。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-204",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "AES GCM 往返和篡改",
+    "summary": "能每次生成新 nonce，往返验证消息并确认篡改密文会认证失败。",
+    "concepts": [
+      "crypto/aes",
+      "crypto/cipher",
+      "crypto/rand",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-204-lesson",
+        "title": "AES GCM 往返和篡改",
+        "summary": "能每次生成新 nonce，往返验证消息并确认篡改密文会认证失败。",
+        "concepts": [
+          "crypto/aes",
+          "crypto/cipher",
+          "crypto/rand",
+          "摘要与密码基础"
+        ],
+        "explain": "GCM 同时提供加密与认证，Seal 接收 nonce、明文和需要认证但不加密的附加数据。每次运行生成新密钥和 nonce，因此不对随机密文字节作固定断言，只验证往返一致性。翻转认证密文最后一个字节后，Open 返回错误。接收端必须先验证成功，才能使用返回的明文。",
+        "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"crypto/aes\"\n\t\"crypto/cipher\"\n\t\"crypto/rand\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tkey := make([]byte, 32)\n\tif _, err := rand.Read(key); err != nil {\n\t\tpanic(err)\n\t}\n\tblock, err := aes.NewCipher(key)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tgcm, err := cipher.NewGCM(block)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tnonce := make([]byte, gcm.NonceSize())\n\tif _, err := rand.Read(nonce); err != nil {\n\t\tpanic(err)\n\t}\n\tmessage := []byte(\"offline report\")\n\taad := []byte(\"report:v1\")\n\tsealed := gcm.Seal(nil, nonce, message, aad)\n\tplain, err := gcm.Open(nil, nonce, sealed, aad)\n\tfmt.Printf(\"roundtrip=%t\\n\", err == nil && bytes.Equal(plain, message))\n\tsealed[len(sealed)-1] ^= 1\n\t_, err = gcm.Open(nil, nonce, sealed, aad)\n\tfmt.Printf(\"tamper-rejected=%t\\n\", err != nil)\n}\n",
+        "output": "roundtrip=true\ntamper-rejected=true",
+        "objective": "能每次生成新 nonce，往返验证消息并确认篡改密文会认证失败。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "同一密钥下重复使用 nonce 会破坏 GCM 安全性，不能把示例 nonce 改成固定常量。",
+          "附加数据必须在解密时逐字节一致，它不会自动包含在密文中。"
+        ],
+        "exercises": [
+          {
+            "prompt": "保持密文不变，只修改附加数据，再验证认证失败。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "用 report:v2 调用 Open，断言错误非 nil，并且不消费失败返回的明文。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-205",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Ed25519 签名校验",
+    "summary": "能生成临时密钥，签名本地清单并验证原文与篡改文。",
+    "concepts": [
+      "crypto/ed25519",
+      "crypto/rand",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-205-lesson",
+        "title": "Ed25519 签名校验",
+        "summary": "能生成临时密钥，签名本地清单并验证原文与篡改文。",
+        "concepts": [
+          "crypto/ed25519",
+          "crypto/rand",
+          "摘要与密码基础"
+        ],
+        "explain": "签名者保留私钥，验证者只需要公钥。Ed25519.Sign 直接签署清单字节，Verify 同时依赖清单、公钥和签名。示例验证原清单，然后分别修改清单和签名；两种变更都会被拒绝。程序每次使用临时密钥，输出长度与真假结果保持确定。公钥本身仍需通过可信渠道分发。",
+        "code": "package main\n\nimport (\n\t\"crypto/ed25519\"\n\t\"crypto/rand\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tpublic, private, err := ed25519.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tmanifest := []byte(\"files=2;version=3\")\n\tsignature := ed25519.Sign(private, manifest)\n\tfmt.Printf(\"signature-bytes=%d\\nvalid=%t\\nchanged=%t\\n\", len(signature), ed25519.Verify(public, manifest, signature), ed25519.Verify(public, []byte(\"files=9;version=3\"), signature))\n\tsignature[0] ^= 1\n\tfmt.Printf(\"bad-signature=%t\\n\", ed25519.Verify(public, manifest, signature))\n}\n",
+        "output": "signature-bytes=64\nvalid=true\nchanged=false\nbad-signature=false",
+        "objective": "能生成临时密钥，签名本地清单并验证原文与篡改文。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "不能把私钥放进需要公开分发的验证清单。",
+          "两个语义相同但空白不同的 JSON 字节串仍会产生不同签名输入。"
+        ],
+        "exercises": [
+          {
+            "prompt": "再生成一对密钥，用第二个公钥验证第一个私钥生成的签名。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "保留原始清单和签名，只替换 Verify 的 public 参数，结果应为 false。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-206",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "ECDSA 摘要签名",
+    "summary": "能对 SHA256 摘要进行 ASN1 签名与验证，拒绝另一摘要。",
+    "concepts": [
+      "crypto/ecdsa",
+      "crypto/elliptic",
+      "crypto/rand",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-206-lesson",
+        "title": "ECDSA 摘要签名",
+        "summary": "能对 SHA256 摘要进行 ASN1 签名与验证，拒绝另一摘要。",
+        "concepts": [
+          "crypto/ecdsa",
+          "crypto/elliptic",
+          "crypto/rand",
+          "摘要与密码基础"
+        ],
+        "explain": "ECDSA 的这组接口签署摘要而非原始业务文本。程序先用 SHA256 得到固定长度摘要，再使用 P256 临时密钥签署 ASN.1 编码签名。验证阶段对原摘要成功，对另一发布版本的摘要和损坏签名失败。签名长度可能变化，因此只断言认证结果。签署和验证必须约定同一种哈希算法及字节编码。",
+        "code": "package main\n\nimport (\n\t\"crypto/ecdsa\"\n\t\"crypto/elliptic\"\n\t\"crypto/rand\"\n\t\"crypto/sha256\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tkey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdigest := sha256.Sum256([]byte(\"release:42\"))\n\tsignature, err := ecdsa.SignASN1(rand.Reader, key, digest[:])\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tchanged := sha256.Sum256([]byte(\"release:43\"))\n\tfmt.Printf(\"valid=%t\\nchanged=%t\\nmalformed=%t\\n\", ecdsa.VerifyASN1(&key.PublicKey, digest[:], signature), ecdsa.VerifyASN1(&key.PublicKey, changed[:], signature), ecdsa.VerifyASN1(&key.PublicKey, digest[:], []byte{1, 2, 3}))\n}\n",
+        "output": "valid=true\nchanged=false\nmalformed=false",
+        "objective": "能对 SHA256 摘要进行 ASN1 签名与验证，拒绝另一摘要。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "把原始长文本直接当 digest 传入会偏离协议约定。",
+          "手工拼接 r、s 整数不能冒充 ASN.1 签名，需要采用匹配的编码接口。"
+        ],
+        "exercises": [
+          {
+            "prompt": "修改签名中间一个字节后再调用 VerifyASN1。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "复制 signature 到新切片后翻转一个字节，检查返回 false，并保留原签名仍能通过的断言。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-207",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "密钥协商一致性",
+    "summary": "能两方生成临时 P256 密钥，独立推导共享秘密并比较一致性。",
+    "concepts": [
+      "crypto/ecdh",
+      "crypto/rand",
+      "bytes",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-207-lesson",
+        "title": "密钥协商一致性",
+        "summary": "能两方生成临时 P256 密钥，独立推导共享秘密并比较一致性。",
+        "concepts": [
+          "crypto/ecdh",
+          "crypto/rand",
+          "bytes",
+          "摘要与密码基础"
+        ],
+        "explain": "双方各自生成私钥，只交换公钥。Alice 的私钥配 Bob 的公钥、Bob 的私钥配 Alice 的公钥，会得到相同的共享秘密。示例不输出秘密，只检查一致性和长度，并拒绝损坏公钥编码。ECDH 本身不验证对方身份，也不直接完成应用加密；生产协议还需要身份认证与密钥派生。",
+        "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"crypto/ecdh\"\n\t\"crypto/rand\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tcurve := ecdh.P256()\n\talice, err := curve.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tbob, err := curve.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfirst, err := alice.ECDH(bob.PublicKey())\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tsecond, err := bob.ECDH(alice.PublicKey())\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"same=%t\\nsecret-bytes=%d\\n\", bytes.Equal(first, second), len(first))\n\t_, err = curve.NewPublicKey([]byte{1, 2, 3})\n\tfmt.Printf(\"bad-key-rejected=%t\\n\", err != nil)\n}\n",
+        "output": "same=true\nsecret-bytes=32\nbad-key-rejected=true",
+        "objective": "能两方生成临时 P256 密钥，独立推导共享秘密并比较一致性。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "共享秘密不可直接打印到日志或作为公开会话标识。",
+          "没有认证的公钥交换会面临中间人替换，秘密一致并不证明对方身份。"
+        ],
+        "exercises": [
+          {
+            "prompt": "将 Bob 公钥序列化后重新读取，再检查 Alice 推导的秘密是否一致。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "对 bob.PublicKey().Bytes() 调用 curve.NewPublicKey，检查错误后交给 alice.ECDH。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-208",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "公钥 PEM 往返",
+    "summary": "能编码和读取公钥 PEM，检查块类型并验证恢复后的公钥。",
+    "concepts": [
+      "crypto/ed25519",
+      "crypto/x509",
+      "encoding/pem",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-208-lesson",
+        "title": "公钥 PEM 往返",
+        "summary": "能编码和读取公钥 PEM，检查块类型并验证恢复后的公钥。",
+        "concepts": [
+          "crypto/ed25519",
+          "crypto/x509",
+          "encoding/pem",
+          "摘要与密码基础"
+        ],
+        "explain": "PEM 是给 DER 二进制加上类型标签和 Base64 外壳的文本封装。这里先把 Ed25519 公钥编码为 PKIX，再写成 PUBLIC KEY 块；读取时同时验证块类型、尾随数据、DER 格式以及最终公钥具体类型。最后比较恢复后的公钥字节。仅解出 PEM 块并不表示里面的公钥数据一定有效。",
+        "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"crypto/ed25519\"\n\t\"crypto/rand\"\n\t\"crypto/x509\"\n\t\"encoding/pem\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tpublic, _, err := ed25519.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tder, err := x509.MarshalPKIXPublicKey(public)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tencoded := pem.EncodeToMemory(&pem.Block{Type: \"PUBLIC KEY\", Bytes: der})\n\tblock, rest := pem.Decode(encoded)\n\tif block == nil || block.Type != \"PUBLIC KEY\" || len(rest) != 0 {\n\t\tpanic(\"unexpected PEM\")\n\t}\n\tparsed, err := x509.ParsePKIXPublicKey(block.Bytes)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\trestored, ok := parsed.(ed25519.PublicKey)\n\tfmt.Printf(\"block=%s\\nroundtrip=%t\\n\", block.Type, ok && bytes.Equal(public, restored))\n\tbad, _ := pem.Decode([]byte(\"not a PEM block\"))\n\tfmt.Printf(\"invalid-rejected=%t\\n\", bad == nil)\n}\n",
+        "output": "block=PUBLIC KEY\nroundtrip=true\ninvalid-rejected=true",
+        "objective": "能编码和读取公钥 PEM，检查块类型并验证恢复后的公钥。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "PUBLIC KEY 与 PRIVATE KEY 的块内容和读取接口不同，不能只改标签。",
+          "ParsePKIXPublicKey 返回接口值，必须检查类型断言成功再使用。"
+        ],
+        "exercises": [
+          {
+            "prompt": "在一个正确 PEM 后追加另一个块，验证单公钥读取策略会拒绝它。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "检查 pem.Decode 返回的 rest 是否仅含允许的空白；出现第二个块时返回明确错误。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-209",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "CRC32 分片校验",
+    "summary": "能分片更新校验和并与一次性校验对比，演示一个字节变化的检测。",
+    "concepts": [
+      "hash/crc32",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-209-lesson",
+        "title": "CRC32 分片校验",
+        "summary": "能分片更新校验和并与一次性校验对比，演示一个字节变化的检测。",
+        "concepts": [
+          "hash/crc32",
+          "摘要与密码基础"
+        ],
+        "explain": "CRC32.Update 接收此前的校验和，因此可以沿分片连续更新，不需要为校验拼接整份大输入。示例额外拼接一份数据，仅用于与一次性 ChecksumIEEE 对照；改动最后一个字节后再次校验，结果发生变化。空输入的校验值也被明确展示。CRC 适合检测传输错误，不能代替密码学认证。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"hash/crc32\"\n)\n\nfunc main() {\n\tchunks := [][]byte{[]byte(\"sensor:\"), []byte(\"north:\"), []byte(\"21.5\")}\n\trolling := uint32(0)\n\tall := []byte{}\n\tfor _, chunk := range chunks {\n\t\trolling = crc32.Update(rolling, crc32.IEEETable, chunk)\n\t\tall = append(all, chunk...)\n\t}\n\tfmt.Printf(\"same=%t\\n\", rolling == crc32.ChecksumIEEE(all))\n\tall[len(all)-1] ^= 1\n\tfmt.Printf(\"changed=%t\\n\", rolling != crc32.ChecksumIEEE(all))\n\tfmt.Printf(\"empty=%d\\n\", crc32.ChecksumIEEE(nil))\n}\n",
+        "output": "same=true\nchanged=true\nempty=0",
+        "objective": "能分片更新校验和并与一次性校验对比，演示一个字节变化的检测。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "每个分片都从零开始计算再相加，不等于整条流的 CRC。",
+          "不同 CRC 多项式不能混用，编码端和验证端必须约定同一张表。"
+        ],
+        "exercises": [
+          {
+            "prompt": "插入一个空分片，检查最终 CRC 是否改变。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "以原来的 rolling 调用 Update 并传入空切片，结果保持不变，再继续后续分片。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-210",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "流式多摘要",
+    "summary": "能用 MultiWriter 一次消费输入同时计算两类摘要并验证长度与一致性。",
+    "concepts": [
+      "hash",
+      "crypto/sha256",
+      "crypto/sha512",
+      "io",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-210-lesson",
+        "title": "流式多摘要",
+        "summary": "能用 MultiWriter 一次消费输入同时计算两类摘要并验证长度与一致性。",
+        "concepts": [
+          "hash",
+          "crypto/sha256",
+          "crypto/sha512",
+          "io",
+          "摘要与密码基础"
+        ],
+        "explain": "MultiWriter 将每次写入交给两个哈希状态，所以源输入只读一遍即可同时得到 SHA256 和 SHA512。Copy 返回实际消费字节数，Sum(nil) 取出当前摘要而不清空哈希状态。示例核对两个摘要长度，再将流式 SHA256 与一次性计算对照。这种组合可用于离线导出时兼容不同清单格式。",
+        "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"crypto/sha512\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc main() {\n\tinput := \"alpha\\nbeta\\n\"\n\tsmall := sha256.New()\n\tlarge := sha512.New()\n\tcopied, err := io.Copy(io.MultiWriter(small, large), strings.NewReader(input))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\texpected := sha256.Sum256([]byte(input))\n\tfmt.Printf(\"bytes=%d\\nlengths=%d,%d\\nsha256-match=%t\\n\", copied, len(small.Sum(nil)), len(large.Sum(nil)), fmt.Sprintf(\"%x\", small.Sum(nil)) == fmt.Sprintf(\"%x\", expected))\n}\n",
+        "output": "bytes=11\nlengths=32,64\nsha256-match=true",
+        "objective": "能用 MultiWriter 一次消费输入同时计算两类摘要并验证长度与一致性。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "Sum 不会重置状态，复用同一个哈希对象计算新文件前应调用 Reset。",
+          "MultiWriter 中任一目标写入失败会停止当前复制，不能忽略 Copy 的错误。"
+        ],
+        "exercises": [
+          {
+            "prompt": "复制完成后再次调用 Sum，并验证取摘要不会改变其内容。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "保存第一次 Sum 的结果，再调用一次 Sum；比较两份字节并检查长度仍一致。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  }
+]

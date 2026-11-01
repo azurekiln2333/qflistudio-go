@@ -1,0 +1,67 @@
+{
+  "id": "T252",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "192.0.2.0 valid=true member=true\n192.0.2.255 valid=true member=true\n192.0.3.1 valid=true member=false\nnot-ip valid=false member=false\nipv6=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-252",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "IP 与网段归属",
+    "summary": "能解析 IPv4/IPv6 地址与 CIDR，验证边界和非法字符串。",
+    "concepts": [
+      "net",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能解析 IPv4/IPv6 地址与 CIDR，验证边界和非法字符串。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "网段包含首尾地址，并不等于所有地址都适合用作主机地址。",
+      "字符串前缀匹配不等于 CIDR 匹配，地址应先解析为二进制。"
+    ],
+    "exercises": [
+      {
+        "prompt": "验证 IPv4 地址能否属于 IPv6 示例网段。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "把 192.0.2.1 传给 v6.Contains。结果应为 false。保留对 ParseIP 返回值的校验。"
+      }
+    ],
+    "explain": "ParseCIDR 把地址范围解释为网络前缀。Contains 判断地址位是否属于此前缀。示例校验 IPv4 网段首尾、相邻网段和非法字符串。示例也校验 IPv6 前缀。地址解析失败返回 nil。此时不能把它当有效零地址。Contains 表示集合包含关系。它不负责 IPv4 网络地址与广播地址的分配策略。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net\"\n)\n\nfunc main() {\n\t_, subnet, err := net.ParseCIDR(\"192.0.2.0/24\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, text := range []string{\"192.0.2.0\", \"192.0.2.255\", \"192.0.3.1\", \"not-ip\"} {\n\t\tip := net.ParseIP(text)\n\t\tfmt.Printf(\"%s valid=%t member=%t\\n\", text, ip != nil, ip != nil && subnet.Contains(ip))\n\t}\n\tip := net.ParseIP(\"2001:db8::1\")\n\t_, v6, err := net.ParseCIDR(\"2001:db8::/32\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"ipv6=%t\\n\", v6.Contains(ip))\n}\n",
+    "output": "192.0.2.0 valid=true member=true\n192.0.2.255 valid=true member=true\n192.0.3.1 valid=true member=false\nnot-ip valid=false member=false\nipv6=true"
+  },
+  "example": {
+    "id": "go-example-252",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "IP 与网段归属",
+    "summary": "能解析 IPv4/IPv6 地址与 CIDR，验证边界和非法字符串。",
+    "concepts": [
+      "net",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net\"\n)\n\nfunc main() {\n\t_, subnet, err := net.ParseCIDR(\"192.0.2.0/24\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, text := range []string{\"192.0.2.0\", \"192.0.2.255\", \"192.0.3.1\", \"not-ip\"} {\n\t\tip := net.ParseIP(text)\n\t\tfmt.Printf(\"%s valid=%t member=%t\\n\", text, ip != nil, ip != nil && subnet.Contains(ip))\n\t}\n\tip := net.ParseIP(\"2001:db8::1\")\n\t_, v6, err := net.ParseCIDR(\"2001:db8::/32\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"ipv6=%t\\n\", v6.Contains(ip))\n}\n",
+    "expectedOutput": "192.0.2.0 valid=true member=true\n192.0.2.255 valid=true member=true\n192.0.3.1 valid=true member=false\nnot-ip valid=false member=false\nipv6=true",
+    "templateType": "go"
+  }
+}

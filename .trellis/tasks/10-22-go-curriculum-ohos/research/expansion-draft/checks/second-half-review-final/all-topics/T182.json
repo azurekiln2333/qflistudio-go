@@ -1,0 +1,71 @@
+{
+  "id": "T182",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "default=8080 dev=9090\nmissing=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-182",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内存配置文件树",
+    "summary": "从内存文件树读取默认与子目录配置，并识别不存在的文件。",
+    "concepts": [
+      "testing/fstest.MapFS",
+      "fs.Sub",
+      "fs.ReadFile",
+      "JSON 配置"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "从内存文件树读取默认与子目录配置，并识别不存在的文件。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "fs.FS 路径使用斜线且不能以斜线开头，与平台绝对路径不同。",
+      "Sub 改变视图根，之后的路径不应再次包含原子目录前缀。"
+    ],
+    "exercises": [
+      {
+        "prompt": "再加入测试配置子树，并用同一个 load 函数读取。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "添加 profiles/test/config.json，fs.Sub 选择 profiles/test 后调用 load(sub,config.json)，不要为每个环境复制解析函数。"
+      }
+    ],
+    "explain": "MapFS 提供与真实文件系统相同的 fs.FS 读取接口，适合离线夹具。默认配置从根读取，开发配置通过 fs.Sub 建立子树视图，然后仍以 config.json 读取；调用者无需知道底层来自磁盘还是内存。缺失文件使用 errors.Is 与 fs.ErrNotExist 分类。这里分别读取两份完整配置，不把零值默认等同于字段级覆盖策略。",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"errors\"\n\t\"fmt\"\n\t\"io/fs\"\n\t\"testing/fstest\"\n)\n\ntype Config struct {\n\tPort int `json:\"port\"`\n}\n\nfunc load(tree fs.FS, name string) (Config, error) {\n\tvar cfg Config\n\tdata, err := fs.ReadFile(tree, name)\n\tif err != nil {\n\t\treturn cfg, err\n\t}\n\terr = json.Unmarshal(data, &cfg)\n\treturn cfg, err\n}\nfunc main() {\n\ttree := fstest.MapFS{\"defaults.json\": &fstest.MapFile{Data: []byte(`{\"port\":8080}`)}, \"profiles/dev/config.json\": &fstest.MapFile{Data: []byte(`{\"port\":9090}`)}}\n\tdefaults, err := load(tree, \"defaults.json\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tsub, err := fs.Sub(tree, \"profiles/dev\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdev, err := load(sub, \"config.json\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"default=%d dev=%d\\n\", defaults.Port, dev.Port)\n\t_, err = load(sub, \"missing.json\")\n\tfmt.Printf(\"missing=%t\\n\", errors.Is(err, fs.ErrNotExist))\n}\n",
+    "output": "default=8080 dev=9090\nmissing=true"
+  },
+  "example": {
+    "id": "go-example-182",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内存配置文件树",
+    "summary": "从内存文件树读取默认与子目录配置，并识别不存在的文件。",
+    "concepts": [
+      "testing/fstest.MapFS",
+      "fs.Sub",
+      "fs.ReadFile",
+      "JSON 配置"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"errors\"\n\t\"fmt\"\n\t\"io/fs\"\n\t\"testing/fstest\"\n)\n\ntype Config struct {\n\tPort int `json:\"port\"`\n}\n\nfunc load(tree fs.FS, name string) (Config, error) {\n\tvar cfg Config\n\tdata, err := fs.ReadFile(tree, name)\n\tif err != nil {\n\t\treturn cfg, err\n\t}\n\terr = json.Unmarshal(data, &cfg)\n\treturn cfg, err\n}\nfunc main() {\n\ttree := fstest.MapFS{\"defaults.json\": &fstest.MapFile{Data: []byte(`{\"port\":8080}`)}, \"profiles/dev/config.json\": &fstest.MapFile{Data: []byte(`{\"port\":9090}`)}}\n\tdefaults, err := load(tree, \"defaults.json\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tsub, err := fs.Sub(tree, \"profiles/dev\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdev, err := load(sub, \"config.json\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"default=%d dev=%d\\n\", defaults.Port, dev.Port)\n\t_, err = load(sub, \"missing.json\")\n\tfmt.Printf(\"missing=%t\\n\", errors.Is(err, fs.ErrNotExist))\n}\n",
+    "expectedOutput": "default=8080 dev=9090\nmissing=true",
+    "templateType": "go"
+  }
+}

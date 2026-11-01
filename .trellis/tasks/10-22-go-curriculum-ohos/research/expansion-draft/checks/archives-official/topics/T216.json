@@ -1,0 +1,69 @@
+{
+  "id": "T216",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "docs/ dir 0755 0\ndocs/run.sh file 0750 3\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-216",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Tar 元数据清单",
+    "summary": "能从归档头读取权限和大小，跳过目录内容并生成稳定清单。",
+    "concepts": [
+      "archive/tar",
+      "sort",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能从归档头读取权限和大小，跳过目录内容并生成稳定清单。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "目录条目不应按普通文件写入 Size 字节的正文。",
+      "归档权限来自输入，真实提取程序需要过滤特殊权限位并采用本机安全策略。"
+    ],
+    "exercises": [
+      {
+        "prompt": "清单增加可执行标记，只要任意执行位被设置就输出 executable=true。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "检查 h.Mode&0111 != 0；目录的搜索权限与普通文件的可执行语义需要在界面中区分。"
+      }
+    ],
+    "explain": "tar.Header 保存文件类型、权限位和明文大小。示例创建一个目录和一个可执行脚本，再只遍历头部生成清单；Next 会跳过尚未消费的正文。权限使用八进制显示，避免把 0750 与十进制 750 混淆。报告描述归档中声明的元数据，不代表这些权限已经应用到当前系统。",
+    "code": "package main\n\nimport (\n\t\"archive/tar\"\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"sort\"\n)\n\nfunc main() {\n\tvar data bytes.Buffer\n\tw := tar.NewWriter(&data)\n\tfor _, h := range []*tar.Header{{Name: \"docs/\", Mode: 0755, Typeflag: tar.TypeDir}, {Name: \"docs/run.sh\", Mode: 0750, Size: 3, Typeflag: tar.TypeReg}} {\n\t\tif err := w.WriteHeader(h); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif h.Size > 0 {\n\t\t\tif _, err := w.Write([]byte(\"go\\n\")); err != nil {\n\t\t\t\tpanic(err)\n\t\t\t}\n\t\t}\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr := tar.NewReader(bytes.NewReader(data.Bytes()))\n\trows := []string{}\n\tfor {\n\t\th, err := r.Next()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tkind := \"file\"\n\t\tif h.Typeflag == tar.TypeDir {\n\t\t\tkind = \"dir\"\n\t\t}\n\t\trows = append(rows, fmt.Sprintf(\"%s %s %04o %d\", h.Name, kind, h.Mode, h.Size))\n\t}\n\tsort.Strings(rows)\n\tfor _, row := range rows {\n\t\tfmt.Println(row)\n\t}\n}\n",
+    "output": "docs/ dir 0755 0\ndocs/run.sh file 0750 3"
+  },
+  "example": {
+    "id": "go-example-216",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Tar 元数据清单",
+    "summary": "能从归档头读取权限和大小，跳过目录内容并生成稳定清单。",
+    "concepts": [
+      "archive/tar",
+      "sort",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"archive/tar\"\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"sort\"\n)\n\nfunc main() {\n\tvar data bytes.Buffer\n\tw := tar.NewWriter(&data)\n\tfor _, h := range []*tar.Header{{Name: \"docs/\", Mode: 0755, Typeflag: tar.TypeDir}, {Name: \"docs/run.sh\", Mode: 0750, Size: 3, Typeflag: tar.TypeReg}} {\n\t\tif err := w.WriteHeader(h); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif h.Size > 0 {\n\t\t\tif _, err := w.Write([]byte(\"go\\n\")); err != nil {\n\t\t\t\tpanic(err)\n\t\t\t}\n\t\t}\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr := tar.NewReader(bytes.NewReader(data.Bytes()))\n\trows := []string{}\n\tfor {\n\t\th, err := r.Next()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tkind := \"file\"\n\t\tif h.Typeflag == tar.TypeDir {\n\t\t\tkind = \"dir\"\n\t\t}\n\t\trows = append(rows, fmt.Sprintf(\"%s %s %04o %d\", h.Name, kind, h.Mode, h.Size))\n\t}\n\tsort.Strings(rows)\n\tfor _, row := range rows {\n\t\tfmt.Println(row)\n\t}\n}\n",
+    "expectedOutput": "docs/ dir 0755 0\ndocs/run.sh file 0750 3",
+    "templateType": "go"
+  }
+}

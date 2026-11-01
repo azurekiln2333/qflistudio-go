@@ -1,0 +1,69 @@
+{
+  "id": "T128",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "lines=2 longest=9\noversized=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-128",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "扫描器长行预算",
+    "summary": "给逐行读取设置明确长度上限，区分可接受的长行与超预算输入。",
+    "concepts": [
+      "bufio.Scanner.Buffer",
+      "资源预算",
+      "Scanner.Err"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "给逐行读取设置明确长度上限，区分可接受的长行与超预算输入。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "Buffer 的初始切片容量若已经大于业务上限，可能让较长 token 无需扩容就被接受。",
+      "Scanner 停止既可能是 EOF，也可能是超长错误；必须检查 Err。"
+    ],
+    "exercises": [
+      {
+        "prompt": "按 UTF-8 字符数限制每行最多五个字符，并保持字节读取预算。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "先用 Scanner 的字节上限约束内存，Scan 成功后用 utf8.RuneCountInString 检查字符数；两个预算分别报告，不混淆字节和字符。"
+      }
+    ],
+    "explain": "Scanner 默认限制并不等于业务预算。这里提供容量为四的初始缓冲，设置最大 token 缓冲为十二字节；九字节的长行可扩容读入，而十四字节的行触发错误。每次循环结束都检查 Err，不能把停止扫描自动当作输入正常结束。最大缓冲还需要容纳行分隔符，因此不要把该参数直接宣传为精确的正文字符数限制。",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc inspect(text string) (int, int, error) {\n\tscanner := bufio.NewScanner(strings.NewReader(text))\n\tscanner.Buffer(make([]byte, 4), 12)\n\tcount, longest := 0, 0\n\tfor scanner.Scan() {\n\t\tcount++\n\t\tif len(scanner.Text()) > longest {\n\t\t\tlongest = len(scanner.Text())\n\t\t}\n\t}\n\treturn count, longest, scanner.Err()\n}\n\nfunc main() {\n\tcount, longest, err := inspect(\"short\\n\" + strings.Repeat(\"x\", 9) + \"\\n\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"lines=%d longest=%d\\n\", count, longest)\n\t_, _, err = inspect(strings.Repeat(\"x\", 14))\n\tfmt.Printf(\"oversized=%t\\n\", err != nil)\n}\n",
+    "output": "lines=2 longest=9\noversized=true"
+  },
+  "example": {
+    "id": "go-example-128",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "扫描器长行预算",
+    "summary": "给逐行读取设置明确长度上限，区分可接受的长行与超预算输入。",
+    "concepts": [
+      "bufio.Scanner.Buffer",
+      "资源预算",
+      "Scanner.Err"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc inspect(text string) (int, int, error) {\n\tscanner := bufio.NewScanner(strings.NewReader(text))\n\tscanner.Buffer(make([]byte, 4), 12)\n\tcount, longest := 0, 0\n\tfor scanner.Scan() {\n\t\tcount++\n\t\tif len(scanner.Text()) > longest {\n\t\t\tlongest = len(scanner.Text())\n\t\t}\n\t}\n\treturn count, longest, scanner.Err()\n}\n\nfunc main() {\n\tcount, longest, err := inspect(\"short\\n\" + strings.Repeat(\"x\", 9) + \"\\n\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"lines=%d longest=%d\\n\", count, longest)\n\t_, _, err = inspect(strings.Repeat(\"x\", 14))\n\tfmt.Printf(\"oversized=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "lines=2 longest=9\noversized=true",
+    "templateType": "go"
+  }
+}

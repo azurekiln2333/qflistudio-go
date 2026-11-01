@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "date": "2026-10-23",
+  "evidenceLevel": "source-only",
+  "deviceExecution": false,
+  "testsExecuted": false,
+  "sharedOwnership": "main/C; Go read-only",
+  "records": [
+    {
+      "path": "lib/main.dart",
+      "sha256": "af2d50cc8a183c7131636bc6bacf4de6ed932efa0747fb69c4a5c78ed9fa0dd9",
+      "bytes": 4596
+    },
+    {
+      "path": "lib/go_content_repository.dart",
+      "sha256": "68eba7c93250c621f83a81cf39f63723d00b12f4c8533811175d33eefb40d831",
+      "bytes": 1789
+    },
+    {
+      "path": "lib/go_tools_page.dart",
+      "sha256": "bf3f93afc13457e3ceb3ab2324741023dd016abcc87c05020908d9cd03f43482",
+      "bytes": 14946
+    },
+    {
+      "path": "test/go_offline_profile_test.dart",
+      "sha256": "fa66e1d92fab074184a402a7b51e95b77dd6d0987ad614a3eff8a4037e83a1c1",
+      "bytes": 19562
+    },
+    {
+      "path": "test/go_tools_page_test.dart",
+      "sha256": "f02fa3cc10cdca8b76ea71d9243238641071d2fcf582a692716dd6c31207b210",
+      "bytes": 10948
+    },
+    {
+      "path": "../qfli_studio_core/lib/pages/local_content_pages.dart",
+      "sha256": "82d0be20bf537410bd1b37c10372ab9b781a3a4f61708baf8ea166b1d45652b6",
+      "bytes": 33899
+    },
+    {
+      "path": "../qfli_studio_core/lib/widgets/language_badge.dart",
+      "sha256": "2a653ec65d9c39d8aa09db4017ce717e19cb193bfb559d140ede6abf1cb6dae7",
+      "bytes": 1820
+    },
+    {
+      "path": "../qfli_studio_core/lib/workspace/saved_workspace.dart",
+      "sha256": "1464673830eededa2c0eaf658fc7e2aed46c60caec372c69b066d1ae5369f4ef",
+      "bytes": 8220
+    },
+    {
+      "path": "../qfli_studio_core/lib/pages/home_page.dart",
+      "sha256": "a170901b4280701089856c2988c2ba64570980dc0c1e871e4d33b76fa70f52b4",
+      "bytes": 50065
+    },
+    {
+      "path": "../qfli_studio_core/lib/editor/file_explorer.dart",
+      "sha256": "016d10ffdc94f738fc86c7e96d5dfd3e817fde6e548f64b6fcac572478ea415f",
+      "bytes": 50141
+    }
+  ]
+}

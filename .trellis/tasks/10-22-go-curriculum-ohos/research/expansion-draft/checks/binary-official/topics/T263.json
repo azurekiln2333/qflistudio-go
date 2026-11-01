@@ -1,0 +1,67 @@
+{
+  "id": "T263",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "ids=[100 101 130 500]\nbytes=5\ntruncated=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-263",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "差分 Varint 压缩",
+    "summary": "能对递增事件 ID 存储差分，逐项解码还原并处理截断。",
+    "concepts": [
+      "encoding/binary",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能对递增事件 ID 存储差分，逐项解码还原并处理截断。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "无符号减法遇到倒序 ID 会下溢，编码前要验证单调性。",
+      "只检查 varint 本身的溢出，不检查累加结果，仍可能产生错误 ID。"
+    ],
+    "exercises": [
+      {
+        "prompt": "允许相邻重复 ID，并解释差分零如何编码。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "保留 id<previous 的拒绝条件，重复值形成单字节零；解码后序列仍保持相同重复项。"
+      }
+    ],
+    "explain": "递增 ID 的差分通常远小于绝对值，用无符号 varint 能缩短存储。编码器保存前一个 ID，解码器累加差分恢复原序列。Uvarint 的 n 等于零表示输入不足，小于零表示编码溢出；两者都不能继续切片。即使差分本身有效，累加仍需检查 uint64 溢出。本例四个 ID 只占五字节。",
+    "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n)\n\nfunc encode(ids []uint64) []byte {\n\tout := []byte{}\n\tprevious := uint64(0)\n\tfor _, id := range ids {\n\t\tif id < previous {\n\t\t\tpanic(\"IDs not ordered\")\n\t\t}\n\t\tvar buffer [10]byte\n\t\tn := binary.PutUvarint(buffer[:], id-previous)\n\t\tout = append(out, buffer[:n]...)\n\t\tprevious = id\n\t}\n\treturn out\n}\nfunc decode(wire []byte) ([]uint64, error) {\n\tids := []uint64{}\n\tprevious := uint64(0)\n\tfor len(wire) > 0 {\n\t\tdelta, n := binary.Uvarint(wire)\n\t\tif n <= 0 {\n\t\t\treturn nil, fmt.Errorf(\"truncated or overflow varint\")\n\t\t}\n\t\tif delta > ^uint64(0)-previous {\n\t\t\treturn nil, fmt.Errorf(\"ID overflow\")\n\t\t}\n\t\tprevious += delta\n\t\tids = append(ids, previous)\n\t\twire = wire[n:]\n\t}\n\treturn ids, nil\n}\nfunc main() {\n\twire := encode([]uint64{100, 101, 130, 500})\n\tids, err := decode(wire)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"ids=%v\\nbytes=%d\\n\", ids, len(wire))\n\t_, err = decode(wire[:len(wire)-1])\n\tfmt.Printf(\"truncated=%t\\n\", err != nil)\n}\n",
+    "output": "ids=[100 101 130 500]\nbytes=5\ntruncated=true"
+  },
+  "example": {
+    "id": "go-example-263",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "差分 Varint 压缩",
+    "summary": "能对递增事件 ID 存储差分，逐项解码还原并处理截断。",
+    "concepts": [
+      "encoding/binary",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n)\n\nfunc encode(ids []uint64) []byte {\n\tout := []byte{}\n\tprevious := uint64(0)\n\tfor _, id := range ids {\n\t\tif id < previous {\n\t\t\tpanic(\"IDs not ordered\")\n\t\t}\n\t\tvar buffer [10]byte\n\t\tn := binary.PutUvarint(buffer[:], id-previous)\n\t\tout = append(out, buffer[:n]...)\n\t\tprevious = id\n\t}\n\treturn out\n}\nfunc decode(wire []byte) ([]uint64, error) {\n\tids := []uint64{}\n\tprevious := uint64(0)\n\tfor len(wire) > 0 {\n\t\tdelta, n := binary.Uvarint(wire)\n\t\tif n <= 0 {\n\t\t\treturn nil, fmt.Errorf(\"truncated or overflow varint\")\n\t\t}\n\t\tif delta > ^uint64(0)-previous {\n\t\t\treturn nil, fmt.Errorf(\"ID overflow\")\n\t\t}\n\t\tprevious += delta\n\t\tids = append(ids, previous)\n\t\twire = wire[n:]\n\t}\n\treturn ids, nil\n}\nfunc main() {\n\twire := encode([]uint64{100, 101, 130, 500})\n\tids, err := decode(wire)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"ids=%v\\nbytes=%d\\n\", ids, len(wire))\n\t_, err = decode(wire[:len(wire)-1])\n\tfmt.Printf(\"truncated=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "ids=[100 101 130 500]\nbytes=5\ntruncated=true",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "T148",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "copied=10 writes=4 equal=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-148",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "复用缓冲复制",
+    "summary": "使用固定三字节缓冲复制数据，统计写入次数并核对完整副本。",
+    "concepts": [
+      "io.CopyBuffer",
+      "接口快路径",
+      "Writer 计数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "使用固定三字节缓冲复制数据，统计写入次数并核对完整副本。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "提供缓冲并不保证它一定被使用，接口快路径可能优先执行。",
+      "零长度缓冲会使 CopyBuffer panic，应在复用前保证长度大于零。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把缓冲大小改为四，独立推导十字节内容需要几次 Write。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "由于包装器禁用快路径，读取分为四、四、二字节，因此应有三次成功 Write；同时继续检查总字节数十。"
+      }
+    ],
+    "explain": "CopyBuffer 允许调用者复用内存，但 ReaderFrom 或 WriterTo 快路径可能绕过提供的缓冲。这里的包装器仅暴露 Read 与 Write，确保示例实际使用三字节缓冲；十字节内容分成四次写入。计数 Writer 同时保存目标数据，最终检查字节数、写入次数与完整相等。真实调用通常应该保留快路径，这里隐藏它们是为了观察缓冲行为。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n)\n\ntype PlainReader struct{ Inner io.Reader }\n\nfunc (r *PlainReader) Read(data []byte) (int, error) { return r.Inner.Read(data) }\n\ntype CountingWriter struct {\n\tData  bytes.Buffer\n\tCalls int\n}\n\nfunc (w *CountingWriter) Write(data []byte) (int, error) {\n\tw.Calls++\n\treturn w.Data.Write(data)\n}\nfunc main() {\n\tsource := []byte(\"abcdefghij\")\n\treader := &PlainReader{bytes.NewReader(source)}\n\twriter := &CountingWriter{}\n\tbuffer := make([]byte, 3)\n\tn, err := io.CopyBuffer(writer, reader, buffer)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"copied=%d writes=%d equal=%t\\n\", n, writer.Calls, bytes.Equal(source, writer.Data.Bytes()))\n}\n",
+    "output": "copied=10 writes=4 equal=true"
+  },
+  "example": {
+    "id": "go-example-148",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "复用缓冲复制",
+    "summary": "使用固定三字节缓冲复制数据，统计写入次数并核对完整副本。",
+    "concepts": [
+      "io.CopyBuffer",
+      "接口快路径",
+      "Writer 计数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n)\n\ntype PlainReader struct{ Inner io.Reader }\n\nfunc (r *PlainReader) Read(data []byte) (int, error) { return r.Inner.Read(data) }\n\ntype CountingWriter struct {\n\tData  bytes.Buffer\n\tCalls int\n}\n\nfunc (w *CountingWriter) Write(data []byte) (int, error) {\n\tw.Calls++\n\treturn w.Data.Write(data)\n}\nfunc main() {\n\tsource := []byte(\"abcdefghij\")\n\treader := &PlainReader{bytes.NewReader(source)}\n\twriter := &CountingWriter{}\n\tbuffer := make([]byte, 3)\n\tn, err := io.CopyBuffer(writer, reader, buffer)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"copied=%d writes=%d equal=%t\\n\", n, writer.Calls, bytes.Equal(source, writer.Data.Bytes()))\n}\n",
+    "expectedOutput": "copied=10 writes=4 equal=true",
+    "templateType": "go"
+  }
+}

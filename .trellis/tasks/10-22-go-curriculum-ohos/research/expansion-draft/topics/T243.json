@@ -1,0 +1,69 @@
+{
+  "id": "T243",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "REPORT north: [books=3] [pens=5]\nREPORT south: [books=2]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-243",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "模板块复用",
+    "summary": "能定义并复用页头和行模板，以不同数据生成两份报告。",
+    "concepts": [
+      "text/template",
+      "bytes",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能定义并复用页头和行模板，以不同数据生成两份报告。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "子模板的点值由调用参数决定，不会自动保留外层记录。",
+      "只定义命名模板后调用根 Execute。可能得到空输出，而不是预期报表。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为没有 Rows 的报表输出 [empty]。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "在 range 中加入 else 分支。该分支只在切片为空时执行。其他模板无需修改。"
+      }
+    ],
+    "explain": "define 定义可重用的命名模板。template 把显式数据作为子模板的点值。header 接收标题字符串。row 接收一条记录。report 组合两者。解析只做一次。两个数据集分别执行。结构共享，数据互不污染。ExecuteTemplate 指定入口。避免执行只有定义没有正文的根模板。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"text/template\"\n)\n\ntype Row struct {\n\tName  string\n\tCount int\n}\ntype Report struct {\n\tTitle string\n\tRows  []Row\n}\n\nfunc main() {\n\tsource := `{{define \"header\"}}REPORT {{.}}{{end}}{{define \"row\"}}{{.Name}}={{.Count}}{{end}}{{define \"report\"}}{{template \"header\" .Title}}:{{range .Rows}} [{{template \"row\" .}}]{{end}}{{end}}`\n\tt, err := template.New(\"root\").Parse(source)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, report := range []Report{{\"north\", []Row{{\"books\", 3}, {\"pens\", 5}}}, {\"south\", []Row{{\"books\", 2}}}} {\n\t\tvar out bytes.Buffer\n\t\tif err := t.ExecuteTemplate(&out, \"report\", report); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Println(out.String())\n\t}\n}\n",
+    "output": "REPORT north: [books=3] [pens=5]\nREPORT south: [books=2]"
+  },
+  "example": {
+    "id": "go-example-243",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "模板块复用",
+    "summary": "能定义并复用页头和行模板，以不同数据生成两份报告。",
+    "concepts": [
+      "text/template",
+      "bytes",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"text/template\"\n)\n\ntype Row struct {\n\tName  string\n\tCount int\n}\ntype Report struct {\n\tTitle string\n\tRows  []Row\n}\n\nfunc main() {\n\tsource := `{{define \"header\"}}REPORT {{.}}{{end}}{{define \"row\"}}{{.Name}}={{.Count}}{{end}}{{define \"report\"}}{{template \"header\" .Title}}:{{range .Rows}} [{{template \"row\" .}}]{{end}}{{end}}`\n\tt, err := template.New(\"root\").Parse(source)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, report := range []Report{{\"north\", []Row{{\"books\", 3}, {\"pens\", 5}}}, {\"south\", []Row{{\"books\", 2}}}} {\n\t\tvar out bytes.Buffer\n\t\tif err := t.ExecuteTemplate(&out, \"report\", report); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Println(out.String())\n\t}\n}\n",
+    "expectedOutput": "REPORT north: [books=3] [pens=5]\nREPORT south: [books=2]",
+    "templateType": "go"
+  }
+}

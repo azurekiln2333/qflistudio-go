@@ -1,0 +1,504 @@
+[
+  {
+    "id": "go-tutorial-161",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "整数分币与折扣",
+    "summary": "用整数分表示金额，按逐项四舍五入规则计算折扣与税费。",
+    "concepts": [
+      "整数金额",
+      "strconv.ParseInt",
+      "基点",
+      "四舍五入"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-161-lesson",
+        "title": "整数分币与折扣",
+        "summary": "用整数分表示金额，按逐项四舍五入规则计算折扣与税费。",
+        "concepts": [
+          "整数金额",
+          "strconv.ParseInt",
+          "基点",
+          "四舍五入"
+        ],
+        "explain": "金额解析要求非负十进制、最多两位小数，并设置明确上限；计算过程中只使用整数分。百分之一基点为万分之一，roundRate 通过加五千再除一万实现非负数的半入舍入。先把折扣取整，再对折后金额计算税费，这个顺序是业务规则的一部分。12.35 的折扣为 1.24，折后 11.11 的税费为 0.92，最终 12.03。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc cents(text string) (int64, error) {\n\tparts := strings.Split(text, \".\")\n\tif len(parts) > 2 || parts[0] == \"\" {\n\t\treturn 0, fmt.Errorf(\"invalid amount\")\n\t}\n\tfraction := \"00\"\n\tif len(parts) == 2 {\n\t\tif len(parts[1]) < 1 || len(parts[1]) > 2 {\n\t\t\treturn 0, fmt.Errorf(\"invalid precision\")\n\t\t}\n\t\tfraction = parts[1]\n\t\tif len(fraction) == 1 {\n\t\t\tfraction += \"0\"\n\t\t}\n\t}\n\tfor _, r := range parts[0] + fraction {\n\t\tif r < '0' || r > '9' {\n\t\t\treturn 0, fmt.Errorf(\"invalid digit\")\n\t\t}\n\t}\n\twhole, err := strconv.ParseInt(parts[0], 10, 64)\n\tif err != nil || whole > 1000000000 {\n\t\treturn 0, fmt.Errorf(\"amount exceeds budget\")\n\t}\n\ttail, err := strconv.ParseInt(fraction, 10, 64)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\treturn whole*100 + tail, nil\n}\nfunc roundRate(amount, basisPoints int64) int64 { return (amount*basisPoints + 5000) / 10000 }\nfunc main() {\n\tbase, err := cents(\"12.35\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdiscount := roundRate(base, 1000)\n\ttax := roundRate(base-discount, 825)\n\tfmt.Printf(\"base=%d discount=%d tax=%d total=%d\\n\", base, discount, tax, base-discount+tax)\n\t_, err = cents(\"12.345\")\n\tfmt.Printf(\"precision-rejected=%t\\n\", err != nil)\n\t_, err = cents(\"-1.00\")\n\tfmt.Printf(\"negative-rejected=%t\\n\", err != nil)\n}\n",
+        "output": "base=1235 discount=124 tax=92 total=1203\nprecision-rejected=true\nnegative-rejected=true",
+        "objective": "用整数分表示金额，按逐项四舍五入规则计算折扣与税费。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "整数计算仍可能溢出，所以解析上限必须与后续乘法预算配合。",
+          "先算税再折扣或最后才统一舍入可能得到不同金额，必须固定规则。"
+        ],
+        "exercises": [
+          {
+            "prompt": "支持退款负数，并明确负数恰好半分时的舍入方向。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "不要直接复用加五千公式处理负数；先定义远离零或银行家舍入规则，再对绝对值舍入并恢复符号，同时检查最小整数取绝对值的边界。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-162",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "精确分数分账",
+    "summary": "把十元均分三份，验证精确总和与两位小数显示总和的差别。",
+    "concepts": [
+      "math/big.Rat",
+      "有理数",
+      "显示精度",
+      "守恒"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-162-lesson",
+        "title": "精确分数分账",
+        "summary": "把十元均分三份，验证精确总和与两位小数显示总和的差别。",
+        "concepts": [
+          "math/big.Rat",
+          "有理数",
+          "显示精度",
+          "守恒"
+        ],
+        "explain": "Rat 用分子分母保存精确有理数，三份 10/3 相加仍精确等于十。FloatString(2) 只是为每份生成 3.33 的显示文本，三个显示数相加却是 9.99。显示舍入没有改变 Rat 本身，但真正支付时必须制定余分分配规则，不能把每份显示值当作总额守恒的证明。Rat 运算会修改接收者，累加使用独立 sum 避免改写 share。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/big\"\n)\n\nfunc main() {\n\tshare := big.NewRat(10, 3)\n\tsum := new(big.Rat)\n\tfor i := 0; i < 3; i++ {\n\t\tsum.Add(sum, share)\n\t}\n\tfmt.Printf(\"share=%s displayed=%s\\n\", share.RatString(), share.FloatString(2))\n\tfmt.Printf(\"exact-total=%s preserved=%t\\n\", sum.RatString(), sum.Cmp(big.NewRat(10, 1)) == 0)\n\tfmt.Printf(\"displayed-total=%d.%02d\\n\", (333*3)/100, (333*3)%100)\n}\n",
+        "output": "share=10/3 displayed=3.33\nexact-total=10 preserved=true\ndisplayed-total=9.99",
+        "objective": "把十元均分三份，验证精确总和与两位小数显示总和的差别。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "FloatString 是显示转换，不能保证每项独立舍入后的总额守恒。",
+          "big.Rat 的接收者是可变对象，复用错误会意外覆盖原值。"
+        ],
+        "exercises": [
+          {
+            "prompt": "把实际一千分分配为三笔整数分，保证总和一千且任意两笔差不超过一分。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "先取商三百三十三和余数一，把多出的一分按固定账号顺序分给第一笔，结果为 334、333、333。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-163",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "大整数排列组合",
+    "summary": "计算超出 int64 的组合数，以逐步乘除递推保持精确整数结果。",
+    "concepts": [
+      "math/big.Int",
+      "组合数递推",
+      "精确除法"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-163-lesson",
+        "title": "大整数排列组合",
+        "summary": "计算超出 int64 的组合数，以逐步乘除递推保持精确整数结果。",
+        "concepts": [
+          "math/big.Int",
+          "组合数递推",
+          "精确除法"
+        ],
+        "explain": "C(n,k) 可通过每一步乘 n-k+i 再除 i 递推，结果始终为整数；利用 k 与 n-k 对称减少循环。big.Int 避免固定宽度溢出，也避免先转浮点造成精度损失。程序计算 C(70,35)，并验证它无法放入 int64；C(0,0) 为一，k 大于 n 则明确报错。任意精度不等于无限资源，外部输入仍需限制 n。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/big\"\n)\n\nfunc choose(n, k int) (*big.Int, error) {\n\tif n < 0 || k < 0 || k > n {\n\t\treturn nil, fmt.Errorf(\"invalid combination\")\n\t}\n\tif k > n-k {\n\t\tk = n - k\n\t}\n\tresult := big.NewInt(1)\n\tfor i := 1; i <= k; i++ {\n\t\tresult.Mul(result, big.NewInt(int64(n-k+i)))\n\t\tresult.Quo(result, big.NewInt(int64(i)))\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tvalue, err := choose(70, 35)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"C70,35=%s\\n\", value.String())\n\tfmt.Printf(\"fits-int64=%t\\n\", value.IsInt64())\n\tboundary, err := choose(0, 0)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"C0,0=%s\\n\", boundary.String())\n\t_, err = choose(3, 4)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+        "output": "C70,35=112186277816662845432\nfits-int64=false\nC0,0=1\ninvalid=true",
+        "objective": "计算超出 int64 的组合数，以逐步乘除递推保持精确整数结果。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "用 float64 计算后转整数无法恢复已经丢失的低位。",
+          "大整数操作会改变接收者，循环中要注意中间值别名。"
+        ],
+        "exercises": [
+          {
+            "prompt": "为 n 增加一万的上限，并在开始分配和循环之前返回预算错误。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "参数校验先检查 n 的非负性与最大值，再检查 0<=k<=n，最后应用对称性；不要等到大整数已增长后才拒绝。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-164",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "在线均值与方差",
+    "summary": "逐条更新均值与样本方差，并和可独立推导的固定数据核对。",
+    "concepts": [
+      "Welford",
+      "样本方差",
+      "math.Abs",
+      "流式统计"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-164-lesson",
+        "title": "在线均值与方差",
+        "summary": "逐条更新均值与样本方差，并和可独立推导的固定数据核对。",
+        "concepts": [
+          "Welford",
+          "样本方差",
+          "math.Abs",
+          "流式统计"
+        ],
+        "explain": "Welford 每次保存数量、均值和相对均值的平方偏差总和，不必保存完整历史，也避免直接用平方和减均值平方的严重抵消。八个样本的均值为五，偏差平方和为三十二，因此样本方差为 32/7；总体方差则会除以八。少于两个样本时样本方差没有定义，函数用布尔值显式报告。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\ntype Stats struct {\n\tCount int\n\tMean  float64\n\tM2    float64\n}\n\nfunc (s *Stats) Add(value float64) {\n\ts.Count++\n\tdelta := value - s.Mean\n\ts.Mean += delta / float64(s.Count)\n\ts.M2 += delta * (value - s.Mean)\n}\nfunc (s Stats) Variance() (float64, bool) {\n\tif s.Count < 2 {\n\t\treturn 0, false\n\t}\n\treturn s.M2 / float64(s.Count-1), true\n}\nfunc main() {\n\tstats := Stats{}\n\tfor _, value := range []float64{2, 4, 4, 4, 5, 5, 7, 9} {\n\t\tstats.Add(value)\n\t}\n\tvariance, ok := stats.Variance()\n\tfmt.Printf(\"count=%d mean=%.2f sample-variance=%.4f\\n\", stats.Count, stats.Mean, variance)\n\tfmt.Printf(\"verified=%t\\n\", ok && math.Abs(variance-32.0/7) < 1e-12)\n\tsingle := Stats{}\n\tsingle.Add(9)\n\t_, ok = single.Variance()\n\tfmt.Printf(\"single-defined=%t\\n\", ok)\n}\n",
+        "output": "count=8 mean=5.00 sample-variance=4.5714\nverified=true\nsingle-defined=false",
+        "objective": "逐条更新均值与样本方差，并和可独立推导的固定数据核对。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "样本方差分母为 n-1，不能与总体方差混用。",
+          "浮点结果不应随意用精确相等比较，要依据量级选容差。"
+        ],
+        "exercises": [
+          {
+            "prompt": "同时提供总体方差，并分别定义空输入和单样本的行为。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "总体方差在 n>0 时返回 M2/n，单样本为零；n==0 返回未定义标记。样本方差继续要求 n>=2。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-165",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "滑动窗口平均",
+    "summary": "用固定三个槽位与运行和计算最近读数平均，正确处理窗口尚未填满。",
+    "concepts": [
+      "环形窗口",
+      "运行和",
+      "预热期"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-165-lesson",
+        "title": "滑动窗口平均",
+        "summary": "用固定三个槽位与运行和计算最近读数平均，正确处理窗口尚未填满。",
+        "concepts": [
+          "环形窗口",
+          "运行和",
+          "预热期"
+        ],
+        "explain": "写入新值前，若窗口已满就减掉将被覆盖的旧值；尚未满时只增加有效数量。平均值除以 Count，因此第一个与第二个样本不会被尚未写入的零槽稀释。读数 10、20、30、50 的最后窗口为 20、30、50，平均为 100/3。每次更新的时间固定，但整数运行和仍受 int64 范围限制。",
+        "code": "package main\n\nimport \"fmt\"\n\ntype Window struct {\n\tValues []int64\n\tNext   int\n\tCount  int\n\tSum    int64\n}\n\nfunc newWindow(size int) *Window {\n\tif size <= 0 {\n\t\tpanic(\"invalid window\")\n\t}\n\treturn &Window{Values: make([]int64, size)}\n}\nfunc (w *Window) Add(value int64) float64 {\n\tif w.Count == len(w.Values) {\n\t\tw.Sum -= w.Values[w.Next]\n\t} else {\n\t\tw.Count++\n\t}\n\tw.Values[w.Next] = value\n\tw.Sum += value\n\tw.Next = (w.Next + 1) % len(w.Values)\n\treturn float64(w.Sum) / float64(w.Count)\n}\nfunc main() {\n\twindow := newWindow(3)\n\tfor _, value := range []int64{10, 20, 30, 50} {\n\t\taverage := window.Add(value)\n\t\tfmt.Printf(\"value=%d average=%.1f count=%d\\n\", value, average, window.Count)\n\t}\n}\n",
+        "output": "value=10 average=10.0 count=1\nvalue=20 average=15.0 count=2\nvalue=30 average=20.0 count=3\nvalue=50 average=33.3 count=3",
+        "objective": "用固定三个槽位与运行和计算最近读数平均，正确处理窗口尚未填满。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "预热期始终除以容量会低估前几个平均值。",
+          "覆盖旧槽前忘记从运行和扣除旧值，会变成累计平均而非滑动平均。"
+        ],
+        "exercises": [
+          {
+            "prompt": "返回当前最旧到最新的窗口内容，并验证复制结果不能修改内部状态。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "按 (Next-Count+容量)%容量 找起点，复制 Count 个值到新切片；调用者修改副本后重新读取窗口应保持不变。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-166",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "百分位插值",
+    "summary": "对延迟样本排序，用明确的线性插值定义计算 P50 与 P90，并验证单样本边界。",
+    "concepts": [
+      "sort.Float64s",
+      "线性插值",
+      "百分位定义",
+      "NaN 校验"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-166-lesson",
+        "title": "百分位插值",
+        "summary": "对延迟样本排序，用明确的线性插值定义计算 P50 与 P90，并验证单样本边界。",
+        "concepts": [
+          "sort.Float64s",
+          "线性插值",
+          "百分位定义",
+          "NaN 校验"
+        ],
+        "explain": "本例采用位置 p*(n-1) 的百分位定义，向下和向上取整后在两个样本间线性插值。五个等间距样本的 P50 为三十，P90 位置为 3.6，因此结果为四十六。百分位有多种合法定义，报告中必须写清规则。程序拒绝空输入、越界 p、NaN 和无穷样本，并在副本上排序以保护调用方顺序。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n\t\"sort\"\n)\n\nfunc percentile(input []float64, p float64) (float64, error) {\n\tif len(input) == 0 || math.IsNaN(p) || p < 0 || p > 1 {\n\t\treturn 0, fmt.Errorf(\"invalid percentile\")\n\t}\n\tdata := append([]float64(nil), input...)\n\tfor _, v := range data {\n\t\tif math.IsNaN(v) || math.IsInf(v, 0) {\n\t\t\treturn 0, fmt.Errorf(\"nonfinite sample\")\n\t\t}\n\t}\n\tsort.Float64s(data)\n\tposition := p * float64(len(data)-1)\n\tlow := int(math.Floor(position))\n\thigh := int(math.Ceil(position))\n\treturn data[low] + (data[high]-data[low])*(position-float64(low)), nil\n}\nfunc main() {\n\tdata := []float64{50, 10, 40, 20, 30}\n\tp50, err := percentile(data, .5)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tp90, err := percentile(data, .9)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tsingle, err := percentile([]float64{7}, .9)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"p50=%.1f p90=%.1f single=%.1f\\n\", p50, p90, single)\n\t_, err = percentile(data, 1.1)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n\t_, err = percentile([]float64{math.NaN()}, .5)\n\tfmt.Printf(\"nan-rejected=%t\\n\", err != nil)\n}\n",
+        "output": "p50=30.0 p90=46.0 single=7.0\ninvalid=true\nnan-rejected=true",
+        "objective": "对延迟样本排序，用明确的线性插值定义计算 P50 与 P90，并验证单样本边界。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "不同百分位定义可能给出不同 P90，不能只写一个指标名。",
+          "NaN 会破坏普通大小比较的排序前提，必须先校验。"
+        ],
+        "exercises": [
+          {
+            "prompt": "增加 P0 与 P100 的检查，证明它们分别等于最小值和最大值。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "对相同样本分别传 p=0 和 p=1，索引变为零与 n-1，插值两端重合，结果应是十和五十。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-167",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "按区间直方图",
+    "summary": "为延迟读数分桶，明确上界不包含的规则，并独立统计负数拒绝和溢出桶。",
+    "concepts": [
+      "sort.Search",
+      "半开分桶",
+      "溢出桶",
+      "无效读数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-167-lesson",
+        "title": "按区间直方图",
+        "summary": "为延迟读数分桶，明确上界不包含的规则，并独立统计负数拒绝和溢出桶。",
+        "concepts": [
+          "sort.Search",
+          "半开分桶",
+          "溢出桶",
+          "无效读数"
+        ],
+        "explain": "每个上界定义一个左闭右开桶，Search 找第一个严格大于读数的上界，所以恰好十进入第二桶，恰好一百进入溢出桶。先确认边界严格递增且为正，随后负读数被计入 rejected，其余每条恰好进入一个桶。固定输入覆盖每个端点附近，四个桶均为两条，可以独立核对计数守恒。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc histogram(values, bounds []int) ([]int, int, error) {\n\tfor i, bound := range bounds {\n\t\tif bound <= 0 || (i > 0 && bound <= bounds[i-1]) {\n\t\t\treturn nil, 0, fmt.Errorf(\"invalid bounds\")\n\t\t}\n\t}\n\tcounts := make([]int, len(bounds)+1)\n\trejected := 0\n\tfor _, value := range values {\n\t\tif value < 0 {\n\t\t\trejected++\n\t\t\tcontinue\n\t\t}\n\t\tbucket := sort.Search(len(bounds), func(i int) bool { return value < bounds[i] })\n\t\tcounts[bucket]++\n\t}\n\treturn counts, rejected, nil\n}\nfunc main() {\n\tcounts, rejected, err := histogram([]int{0, 9, 10, 49, 50, 99, 100, 150, -1}, []int{10, 50, 100})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"under10=%d under50=%d under100=%d overflow=%d\\n\", counts[0], counts[1], counts[2], counts[3])\n\tfmt.Printf(\"negative-rejected=%d\\n\", rejected)\n}\n",
+        "output": "under10=2 under50=2 under100=2 overflow=2\nnegative-rejected=1",
+        "objective": "为延迟读数分桶，明确上界不包含的规则，并独立统计负数拒绝和溢出桶。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "使用大于等于查找会改变端点归属，指标解释也随之变化。",
+          "边界未排序或重复会破坏二分前提，应在接收数据前验证。"
+        ],
+        "exercises": [
+          {
+            "prompt": "将普通桶计数转换为累计桶，并同时保留原始非累计计数。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "复制 counts 到新切片，对新切片做前缀和；不要就地覆盖原始计数，溢出桶的累计值应等于有效样本总数。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-168",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "库存多维聚合",
+    "summary": "按仓库和商品组成联合键汇总库存，稳定输出低库存项。",
+    "concepts": [
+      "结构体 map 键",
+      "分组求和",
+      "排序低库存清单"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-168-lesson",
+        "title": "库存多维聚合",
+        "summary": "按仓库和商品组成联合键汇总库存，稳定输出低库存项。",
+        "concepts": [
+          "结构体 map 键",
+          "分组求和",
+          "排序低库存清单"
+        ],
+        "explain": "同一商品在不同仓库属于不同库存，因此用可比较的结构体作为联合 map 键。先验证并汇总所有非负数量，再筛选少于四件的项，最后按仓库和商品排序输出。两笔 A 仓 pen 会合为三件，B 仓 pen 保持一件。输入验证与聚合分开后，可以进一步加上溢出、单位和重复流水 ID 的业务检查。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Key struct {\n\tWarehouse string\n\tProduct   string\n}\ntype Stock struct {\n\tKey      Key\n\tQuantity int\n}\n\nfunc aggregate(rows []Stock) (map[Key]int, error) {\n\ttotals := map[Key]int{}\n\tfor _, row := range rows {\n\t\tif row.Quantity < 0 {\n\t\t\treturn nil, fmt.Errorf(\"negative inventory\")\n\t\t}\n\t\ttotals[row.Key] += row.Quantity\n\t}\n\treturn totals, nil\n}\nfunc main() {\n\ttotals, err := aggregate([]Stock{{Key{\"A\", \"pen\"}, 2}, {Key{\"A\", \"pen\"}, 1}, {Key{\"A\", \"book\"}, 9}, {Key{\"B\", \"pen\"}, 1}, {Key{\"B\", \"book\"}, 2}})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tlow := []Key{}\n\tfor key, quantity := range totals {\n\t\tif quantity < 4 {\n\t\t\tlow = append(low, key)\n\t\t}\n\t}\n\tsort.Slice(low, func(i, j int) bool {\n\t\tif low[i].Warehouse != low[j].Warehouse {\n\t\t\treturn low[i].Warehouse < low[j].Warehouse\n\t\t}\n\t\treturn low[i].Product < low[j].Product\n\t})\n\tfor _, key := range low {\n\t\tfmt.Printf(\"%s/%s=%d\\n\", key.Warehouse, key.Product, totals[key])\n\t}\n}\n",
+        "output": "A/pen=3\nB/book=2\nB/pen=1",
+        "objective": "按仓库和商品组成联合键汇总库存，稳定输出低库存项。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "只用商品作为键会把不同仓库错误合并。",
+          "map 输出顺序不固定，低库存通知应先排序再发送或展示。"
+        ],
+        "exercises": [
+          {
+            "prompt": "为不同商品配置各自的低库存阈值，缺少配置时返回错误。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "先确认每个出现的商品在阈值表中存在，再比较聚合量；不要把 map 缺失产生的零值当作合法阈值。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-169",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有符号安全求和",
+    "summary": "累加正负账目时预先检测溢出，返回错误项位置与此前已确认的总额。",
+    "concepts": [
+      "int64 溢出",
+      "math.MaxInt64",
+      "部分结果",
+      "错误位置"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-169-lesson",
+        "title": "有符号安全求和",
+        "summary": "累加正负账目时预先检测溢出，返回错误项位置与此前已确认的总额。",
+        "concepts": [
+          "int64 溢出",
+          "math.MaxInt64",
+          "部分结果",
+          "错误位置"
+        ],
+        "explain": "有符号整数溢出不会自动成为 Go 错误，所以相加前必须检查。正数用 total>MaxInt64-value 判断上溢，负数用 total<MinInt64-value 判断下溢，这两次阈值运算自身保持在范围内。发现错误时返回此前总额和零起始项索引，不先执行错误加法。示例覆盖普通混合账目、最大值再加一与最小值再减一。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\nfunc sum(values []int64) (int64, int, error) {\n\tvar total int64\n\tfor i, value := range values {\n\t\tif (value > 0 && total > math.MaxInt64-value) || (value < 0 && total < math.MinInt64-value) {\n\t\t\treturn total, i, fmt.Errorf(\"sum overflow\")\n\t\t}\n\t\ttotal += value\n\t}\n\treturn total, -1, nil\n}\nfunc main() {\n\ttotal, _, err := sum([]int64{100, -30, 20})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"ok=%d\\n\", total)\n\ttotal, index, err := sum([]int64{math.MaxInt64 - 2, 2, 1})\n\tfmt.Printf(\"positive=%d index=%d rejected=%t\\n\", total, index, err != nil)\n\ttotal, index, err = sum([]int64{math.MinInt64 + 1, -1, -1})\n\tfmt.Printf(\"negative=%d index=%d rejected=%t\\n\", total, index, err != nil)\n}\n",
+        "output": "ok=90\npositive=9223372036854775807 index=2 rejected=true\nnegative=-9223372036854775808 index=2 rejected=true",
+        "objective": "累加正负账目时预先检测溢出，返回错误项位置与此前已确认的总额。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "先相加再比较可能已经溢出，错误值不能作为可靠依据。",
+          "正负值的安全阈值不同，不能用绝对值统一处理 MinInt64。"
+        ],
+        "exercises": [
+          {
+            "prompt": "在错误中加入当前值，并让调用者用 errors.As 读取结构化位置。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "定义包含 Index、Value、Total 的错误结构和 Error 方法，在检查失败时返回指针；调用者用 errors.As 提取，不解析错误字符串。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-170",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "单位换算与量纲",
+    "summary": "解析 KB、MiB 与原始字节，拒绝未知单位、负容量和换算溢出。",
+    "concepts": [
+      "strconv.ParseUint",
+      "十进制与二进制单位",
+      "乘法溢出"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-170-lesson",
+        "title": "单位换算与量纲",
+        "summary": "解析 KB、MiB 与原始字节，拒绝未知单位、负容量和换算溢出。",
+        "concepts": [
+          "strconv.ParseUint",
+          "十进制与二进制单位",
+          "乘法溢出"
+        ],
+        "explain": "KB 在本协议中固定为一千字节，MiB 为一百零二十四平方字节；无后缀表示原始字节。先按明确后缀选择倍率，再解析非负整数，通过 value>最大值/倍率 预检乘法。大小写和单位集合是协议的一部分，MB 不会被猜测成某种近似单位。这样容量配置的数值与量纲一起受到校验。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc capacity(text string) (uint64, error) {\n\ttext = strings.TrimSpace(text)\n\tfactor := uint64(1)\n\tif strings.HasSuffix(text, \"MiB\") {\n\t\tfactor = 1 << 20\n\t\ttext = strings.TrimSuffix(text, \"MiB\")\n\t} else if strings.HasSuffix(text, \"KB\") {\n\t\tfactor = 1000\n\t\ttext = strings.TrimSuffix(text, \"KB\")\n\t}\n\tvalue, err := strconv.ParseUint(strings.TrimSpace(text), 10, 64)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\tconst maximum uint64 = 1<<63 - 1\n\tif value > maximum/factor {\n\t\treturn 0, fmt.Errorf(\"capacity overflow\")\n\t}\n\treturn value * factor, nil\n}\nfunc main() {\n\tfor _, input := range []string{\"2KB\", \"2MiB\", \"512\"} {\n\t\tvalue, err := capacity(input)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s=%d\\n\", input, value)\n\t}\n\t_, err := capacity(\"3MB\")\n\tfmt.Printf(\"unknown=%t\\n\", err != nil)\n\t_, err = capacity(\"-1KB\")\n\tfmt.Printf(\"negative=%t\\n\", err != nil)\n\t_, err = capacity(\"9223372036854775807MiB\")\n\tfmt.Printf(\"overflow=%t\\n\", err != nil)\n}\n",
+        "output": "2KB=2000\n2MiB=2097152\n512=512\nunknown=true\nnegative=true\noverflow=true",
+        "objective": "解析 KB、MiB 与原始字节，拒绝未知单位、负容量和换算溢出。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "KB 与 KiB 含义不同，不能在界面和存储中混用。",
+          "ParseUint 成功后乘倍率仍可能溢出，必须单独预检。"
+        ],
+        "exercises": [
+          {
+            "prompt": "增加 KiB，保持 KB 的十进制定义不变，并测试两个单位不同。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "在后缀分支加入 KiB 倍率一千零二十四，2KB 应为二千而 2KiB 为二千零四十八；继续用同一除法检查乘法预算。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  }
+]

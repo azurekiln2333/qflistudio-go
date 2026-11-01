@@ -1,0 +1,69 @@
+{
+  "id": "T158",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "after25=[30 40] more=true\nafter40=[50] more=false\nafter50=[] more=false\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-158",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有序数据游标分页",
+    "summary": "用二分查找定位排他游标，处理游标不存在和最后一页为空的情况。",
+    "concepts": [
+      "sort.Search",
+      "排他游标",
+      "末页边界"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "用二分查找定位排他游标，处理游标不存在和最后一页为空的情况。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "查找大于等于会在下一页重复上一页最后一项。",
+      "以非唯一字段作游标可能漏掉相同值记录，需要联合排序键。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为相同时间戳的记录加入 ID，按时间和 ID 的联合排他游标分页。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "比较器先比较时间，时间相同再比较唯一 ID；Search 使用严格大于该二元组的条件，排序与分页保持同一全序。"
+      }
+    ],
+    "explain": "排他游标表示只返回严格大于 after 的记录，Search 查找第一个满足该条件的位置，而不要求游标值真实存在。检查有序前提与页大小后，用剩余项数限制截取范围，避免越界。分页结果复制出来，不向调用方暴露原始切片的可写窗口。重复 ID 都会被同一个排他游标跳过，因此真实分页键应唯一或使用联合键。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc page(data []int, after, size int) ([]int, bool, error) {\n\tif size < 1 || size > 100 || !sort.IntsAreSorted(data) {\n\t\treturn nil, false, fmt.Errorf(\"invalid page request\")\n\t}\n\tstart := sort.Search(len(data), func(i int) bool { return data[i] > after })\n\tcount := len(data) - start\n\tif count > size {\n\t\tcount = size\n\t}\n\tend := start + count\n\treturn append([]int{}, data[start:end]...), end < len(data), nil\n}\nfunc main() {\n\tdata := []int{10, 20, 30, 40, 50}\n\tfor _, after := range []int{25, 40, 50} {\n\t\titems, more, err := page(data, after, 2)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"after%d=%v more=%t\\n\", after, items, more)\n\t}\n}\n",
+    "output": "after25=[30 40] more=true\nafter40=[50] more=false\nafter50=[] more=false"
+  },
+  "example": {
+    "id": "go-example-158",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有序数据游标分页",
+    "summary": "用二分查找定位排他游标，处理游标不存在和最后一页为空的情况。",
+    "concepts": [
+      "sort.Search",
+      "排他游标",
+      "末页边界"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc page(data []int, after, size int) ([]int, bool, error) {\n\tif size < 1 || size > 100 || !sort.IntsAreSorted(data) {\n\t\treturn nil, false, fmt.Errorf(\"invalid page request\")\n\t}\n\tstart := sort.Search(len(data), func(i int) bool { return data[i] > after })\n\tcount := len(data) - start\n\tif count > size {\n\t\tcount = size\n\t}\n\tend := start + count\n\treturn append([]int{}, data[start:end]...), end < len(data), nil\n}\nfunc main() {\n\tdata := []int{10, 20, 30, 40, 50}\n\tfor _, after := range []int{25, 40, 50} {\n\t\titems, more, err := page(data, after, 2)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"after%d=%v more=%t\\n\", after, items, more)\n\t}\n}\n",
+    "expectedOutput": "after25=[30 40] more=true\nafter40=[50] more=false\nafter50=[] more=false",
+    "templateType": "go"
+  }
+}

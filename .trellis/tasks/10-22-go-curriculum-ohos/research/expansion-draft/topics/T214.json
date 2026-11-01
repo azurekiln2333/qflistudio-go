@@ -1,0 +1,71 @@
+{
+  "id": "T214",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "sales.csv:5\nstock.csv:4\nentries=2\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-214",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Zip 报表归档",
+    "summary": "能创建含两个报表的 zip。读取所有条目。稳定输出摘要。",
+    "concepts": [
+      "archive/zip",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能创建含两个报表的 zip。读取所有条目。稳定输出摘要。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "ZIP 总字节数不是所有明文的总字节数，不能用压缩长度验证报表内容长度。",
+      "未关闭写入器便读取归档，可能缺少中央目录而失败。"
+    ],
+    "exercises": [
+      {
+        "prompt": "将每个条目的明文限制为 16 字节。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "用 LimitReader(f,17) 读取。检查长度是否超过 16。读取器关闭和错误仍要处理。"
+      }
+    ],
+    "explain": "ZIP 写入器在 Close 时补齐中央目录，所以必须先关闭才能创建读取器。两个报表分别通过 Create 创建条目。打开归档后逐项读取。再检查实际解压字节数。输出先排序，使条目写入顺序不影响报告。每个 Open 返回的读取器都应及时关闭。不能把整个循环的清理都推迟到程序最后。",
+    "code": "package main\n\nimport (\n\t\"archive/zip\"\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"sort\"\n)\n\nfunc main() {\n\tvar data bytes.Buffer\n\tw := zip.NewWriter(&data)\n\tfor _, item := range []struct{ name, text string }{{\"sales.csv\", \"a,10\\n\"}, {\"stock.csv\", \"a,3\\n\"}} {\n\t\tf, err := w.Create(item.name)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif _, err = io.WriteString(f, item.text); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr, err := zip.NewReader(bytes.NewReader(data.Bytes()), int64(data.Len()))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\trows := []string{}\n\tfor _, file := range r.File {\n\t\tf, err := file.Open()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tbody, err := io.ReadAll(f)\n\t\tf.Close()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\trows = append(rows, fmt.Sprintf(\"%s:%d\", file.Name, len(body)))\n\t}\n\tsort.Strings(rows)\n\tfor _, row := range rows {\n\t\tfmt.Println(row)\n\t}\n\tfmt.Printf(\"entries=%d\\n\", len(rows))\n}\n",
+    "output": "sales.csv:5\nstock.csv:4\nentries=2"
+  },
+  "example": {
+    "id": "go-example-214",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Zip 报表归档",
+    "summary": "能创建含两个报表的 zip。读取所有条目。稳定输出摘要。",
+    "concepts": [
+      "archive/zip",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"archive/zip\"\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"sort\"\n)\n\nfunc main() {\n\tvar data bytes.Buffer\n\tw := zip.NewWriter(&data)\n\tfor _, item := range []struct{ name, text string }{{\"sales.csv\", \"a,10\\n\"}, {\"stock.csv\", \"a,3\\n\"}} {\n\t\tf, err := w.Create(item.name)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif _, err = io.WriteString(f, item.text); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr, err := zip.NewReader(bytes.NewReader(data.Bytes()), int64(data.Len()))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\trows := []string{}\n\tfor _, file := range r.File {\n\t\tf, err := file.Open()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tbody, err := io.ReadAll(f)\n\t\tf.Close()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\trows = append(rows, fmt.Sprintf(\"%s:%d\", file.Name, len(body)))\n\t}\n\tsort.Strings(rows)\n\tfor _, row := range rows {\n\t\tfmt.Println(row)\n\t}\n\tfmt.Printf(\"entries=%d\\n\", len(rows))\n}\n",
+    "expectedOutput": "sales.csv:5\nstock.csv:4\nentries=2",
+    "templateType": "go"
+  }
+}

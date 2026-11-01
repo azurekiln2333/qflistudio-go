@@ -1,0 +1,70 @@
+{
+  "id": "T041",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "shape 0: area=3.14 perimeter=6.28\nshape 1: area=6.00 perimeter=10.00\nnil interface is nil: true"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-041",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "接口基础与鸭子类型",
+    "summary": "定义 Shape 接口并让多种类型隐式满足它，统一调用其方法。",
+    "concepts": [
+      "接口",
+      "鸭子类型",
+      "隐式实现",
+      "多态"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能定义接口并让类型通过实现方法集合隐式满足接口，理解结构化类型。",
+    "prerequisites": [
+      "T039 方法：值接收者与指针接收者"
+    ],
+    "pitfalls": [
+      "以为需要显式声明实现：Go 是结构化类型，只要方法集合匹配就自动满足。",
+      "对 nil 接口调用方法：会 panic；接口值可为 nil，需判空。"
+    ],
+    "exercises": [
+      {
+        "prompt": "新增 Triangle 类型实现 Shape 的 Area/Perimeter，并加入 shapes 切片。",
+        "hint": "用海伦公式或简单底×高/2；周长三边之和。",
+        "answer": "定义 Triangle 并实现两方法，append 进 []Shape 后统一 describe。"
+      }
+    ],
+    "explain": "Go 的接口是“方法集合”：任何类型只要实现了接口要求的全部方法，就自动满足该接口——无需显式 implements。这叫结构化类型/鸭子类型。示例定义 Shape，让 Circle 与 Rectangle 各自实现，再放进 []Shape 统一调用。这种隐式实现让接口与实现解耦：实现方无需导入接口所在包，测试也易用替身替换。注意接口值可以为 nil，对 nil 接口调用方法会 panic。",
+    "code": "// T041 接口基础与鸭子类型。\n//\n// Go 的接口是“方法集合”：任何类型只要实现了接口要求的全部方法，就自动满足\n// 该接口——无需显式声明 implements。这叫结构化类型 / 鸭子类型。\n// 本示例定义 Shape 接口，让 Circle 与 Rectangle 各自实现，再统一调用。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\n// Shape 是接口：任何能给出面积与周长的类型都算 Shape。\ntype Shape interface {\n\tArea() float64\n\tPerimeter() float64\n}\n\n// Circle 实现 Shape。\ntype Circle struct{ R float64 }\n\nfunc (c Circle) Area() float64      { return math.Pi * c.R * c.R }\nfunc (c Circle) Perimeter() float64 { return 2 * math.Pi * c.R }\n\n// Rectangle 也实现 Shape。\ntype Rectangle struct{ W, H float64 }\n\nfunc (r Rectangle) Area() float64      { return r.W * r.H }\nfunc (r Rectangle) Perimeter() float64 { return 2 * (r.W + r.H) }\n\n// describe 只依赖 Shape 接口，不关心具体类型。\nfunc describe(s Shape) string {\n\treturn fmt.Sprintf(\"area=%.2f perimeter=%.2f\", s.Area(), s.Perimeter())\n}\n\nfunc main() {\n\t// 隐式满足：Circle 与 Rectangle 都没有写 \"implements Shape\"。\n\tshapes := []Shape{Circle{R: 1}, Rectangle{W: 2, H: 3}}\n\tfor i, s := range shapes {\n\t\tfmt.Printf(\"shape %d: %s\\n\", i, describe(s))\n\t}\n\n\t// 接口值可以为 nil；对 nil 接口调用方法会 panic，注意判空。\n\tvar s Shape\n\tfmt.Println(\"nil interface is nil:\", s == nil)\n}\n",
+    "output": "shape 0: area=3.14 perimeter=6.28\nshape 1: area=6.00 perimeter=10.00\nnil interface is nil: true"
+  },
+  "example": {
+    "id": "go-example-041",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "接口基础与鸭子类型（示例）",
+    "summary": "对应主题 T041 的可运行示例。",
+    "concepts": [
+      "接口",
+      "鸭子类型",
+      "隐式实现",
+      "多态"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T041 接口基础与鸭子类型。\n//\n// Go 的接口是“方法集合”：任何类型只要实现了接口要求的全部方法，就自动满足\n// 该接口——无需显式声明 implements。这叫结构化类型 / 鸭子类型。\n// 本示例定义 Shape 接口，让 Circle 与 Rectangle 各自实现，再统一调用。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\n// Shape 是接口：任何能给出面积与周长的类型都算 Shape。\ntype Shape interface {\n\tArea() float64\n\tPerimeter() float64\n}\n\n// Circle 实现 Shape。\ntype Circle struct{ R float64 }\n\nfunc (c Circle) Area() float64      { return math.Pi * c.R * c.R }\nfunc (c Circle) Perimeter() float64 { return 2 * math.Pi * c.R }\n\n// Rectangle 也实现 Shape。\ntype Rectangle struct{ W, H float64 }\n\nfunc (r Rectangle) Area() float64      { return r.W * r.H }\nfunc (r Rectangle) Perimeter() float64 { return 2 * (r.W + r.H) }\n\n// describe 只依赖 Shape 接口，不关心具体类型。\nfunc describe(s Shape) string {\n\treturn fmt.Sprintf(\"area=%.2f perimeter=%.2f\", s.Area(), s.Perimeter())\n}\n\nfunc main() {\n\t// 隐式满足：Circle 与 Rectangle 都没有写 \"implements Shape\"。\n\tshapes := []Shape{Circle{R: 1}, Rectangle{W: 2, H: 3}}\n\tfor i, s := range shapes {\n\t\tfmt.Printf(\"shape %d: %s\\n\", i, describe(s))\n\t}\n\n\t// 接口值可以为 nil；对 nil 接口调用方法会 panic，注意判空。\n\tvar s Shape\n\tfmt.Println(\"nil interface is nil:\", s == nil)\n}\n",
+    "expectedOutput": "shape 0: area=3.14 perimeter=6.28\nshape 1: area=6.00 perimeter=10.00\nnil interface is nil: true",
+    "templateType": "go"
+  }
+}

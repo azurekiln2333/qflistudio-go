@@ -1,0 +1,71 @@
+{
+  "id": "T160",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "go=[go golang gone]\n猫=[猫 猫咪]\nmissing=[]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-160",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "前缀树补全",
+    "summary": "建立 Unicode 单词前缀树，按字典序返回指定前缀的有限候选。",
+    "concepts": [
+      "trie",
+      "rune 键",
+      "字典序遍历",
+      "候选预算"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "建立 Unicode 单词前缀树，按字典序返回指定前缀的有限候选。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "不排序子节点会使候选顺序随 map 变化。",
+      "前缀本身可能是完整单词，不能只收集更长后缀。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为节点记录单词热度，改为返回热度最高的前三项并用单词字典序决胜。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "热度排序与字典序 DFS 不同，不能遇到前三项就停止；收集所有匹配词或维护带上界的搜索结构，再用明确的全序挑选结果。"
+      }
+    ],
+    "explain": "每个节点保存 rune 到子节点的映射以及完整单词标记。查询先走到前缀节点，再递归收集后缀；每层排序子字符，保证结果的字典序。先收集当前完整词，因此 go 自己也属于 go 的补全结果。数量达到 limit 就停止递归，缺失前缀或非正上限返回空切片。Unicode 字符遍历避免把中文拆成无意义字节节点。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Node struct {\n\tChildren map[rune]*Node\n\tEnd      bool\n}\n\nfunc newNode() *Node { return &Node{Children: map[rune]*Node{}} }\nfunc (root *Node) Insert(word string) {\n\tnode := root\n\tfor _, r := range word {\n\t\tif node.Children[r] == nil {\n\t\t\tnode.Children[r] = newNode()\n\t\t}\n\t\tnode = node.Children[r]\n\t}\n\tnode.End = true\n}\nfunc (root *Node) Complete(prefix string, limit int) []string {\n\tresult := []string{}\n\tif limit <= 0 {\n\t\treturn result\n\t}\n\tnode := root\n\tfor _, r := range prefix {\n\t\tnode = node.Children[r]\n\t\tif node == nil {\n\t\t\treturn result\n\t\t}\n\t}\n\tvar walk func(*Node, string)\n\twalk = func(at *Node, text string) {\n\t\tif len(result) >= limit {\n\t\t\treturn\n\t\t}\n\t\tif at.End {\n\t\t\tresult = append(result, text)\n\t\t}\n\t\tkeys := []rune{}\n\t\tfor r := range at.Children {\n\t\t\tkeys = append(keys, r)\n\t\t}\n\t\tsort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })\n\t\tfor _, r := range keys {\n\t\t\tif len(result) >= limit {\n\t\t\t\tbreak\n\t\t\t}\n\t\t\twalk(at.Children[r], text+string(r))\n\t\t}\n\t}\n\twalk(node, prefix)\n\treturn result\n}\nfunc main() {\n\troot := newNode()\n\tfor _, word := range []string{\"gone\", \"go\", \"gopher\", \"golang\", \"猫咪\", \"猫\"} {\n\t\troot.Insert(word)\n\t}\n\tfmt.Printf(\"go=%v\\n\", root.Complete(\"go\", 3))\n\tfmt.Printf(\"猫=%v\\n\", root.Complete(\"猫\", 2))\n\tfmt.Printf(\"missing=%v\\n\", root.Complete(\"z\", 3))\n}\n",
+    "output": "go=[go golang gone]\n猫=[猫 猫咪]\nmissing=[]"
+  },
+  "example": {
+    "id": "go-example-160",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "前缀树补全",
+    "summary": "建立 Unicode 单词前缀树，按字典序返回指定前缀的有限候选。",
+    "concepts": [
+      "trie",
+      "rune 键",
+      "字典序遍历",
+      "候选预算"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Node struct {\n\tChildren map[rune]*Node\n\tEnd      bool\n}\n\nfunc newNode() *Node { return &Node{Children: map[rune]*Node{}} }\nfunc (root *Node) Insert(word string) {\n\tnode := root\n\tfor _, r := range word {\n\t\tif node.Children[r] == nil {\n\t\t\tnode.Children[r] = newNode()\n\t\t}\n\t\tnode = node.Children[r]\n\t}\n\tnode.End = true\n}\nfunc (root *Node) Complete(prefix string, limit int) []string {\n\tresult := []string{}\n\tif limit <= 0 {\n\t\treturn result\n\t}\n\tnode := root\n\tfor _, r := range prefix {\n\t\tnode = node.Children[r]\n\t\tif node == nil {\n\t\t\treturn result\n\t\t}\n\t}\n\tvar walk func(*Node, string)\n\twalk = func(at *Node, text string) {\n\t\tif len(result) >= limit {\n\t\t\treturn\n\t\t}\n\t\tif at.End {\n\t\t\tresult = append(result, text)\n\t\t}\n\t\tkeys := []rune{}\n\t\tfor r := range at.Children {\n\t\t\tkeys = append(keys, r)\n\t\t}\n\t\tsort.Slice(keys, func(i, j int) bool { return keys[i] < keys[j] })\n\t\tfor _, r := range keys {\n\t\t\tif len(result) >= limit {\n\t\t\t\tbreak\n\t\t\t}\n\t\t\twalk(at.Children[r], text+string(r))\n\t\t}\n\t}\n\twalk(node, prefix)\n\treturn result\n}\nfunc main() {\n\troot := newNode()\n\tfor _, word := range []string{\"gone\", \"go\", \"gopher\", \"golang\", \"猫咪\", \"猫\"} {\n\t\troot.Insert(word)\n\t}\n\tfmt.Printf(\"go=%v\\n\", root.Complete(\"go\", 3))\n\tfmt.Printf(\"猫=%v\\n\", root.Complete(\"猫\", 2))\n\tfmt.Printf(\"missing=%v\\n\", root.Complete(\"z\", 3))\n}\n",
+    "expectedOutput": "go=[go golang gone]\n猫=[猫 猫咪]\nmissing=[]",
+    "templateType": "go"
+  }
+}

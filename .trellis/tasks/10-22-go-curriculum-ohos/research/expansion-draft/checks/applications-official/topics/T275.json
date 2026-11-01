@@ -1,0 +1,69 @@
+{
+  "id": "T275",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "north count=2 cents=1900\nsouth count=1 cents=900\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-275",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "本地记录查询器",
+    "summary": "能实现过滤、分组与排序的查询步骤，对订单输出部门统计。",
+    "concepts": [
+      "sort",
+      "strings",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能实现过滤、分组与排序的查询步骤，对订单输出部门统计。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "先汇总再按单笔金额条件筛选会改变业务语义。",
+      "map 遍历顺序不稳定，报表输出前必须排序键。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在汇总结果中按金额降序排序，金额相同按部门名升序。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "把 map 转成带 Department 的结果切片，使用明确的两级比较器，而不是依赖已有键顺序。"
+      }
+    ],
+    "explain": "这份内存查询器先筛选已支付且达到金额门槛的订单，再规范化部门名并分组汇总，最后排序展示。不同大小写部门归到同组，草稿单和小额单都不计入。筛选、分组、排序三个步骤各有清晰职责，便于将来替换成来自 CSV 或 JSON 的离线记录。金额采用整数分，聚合仍需根据实际规模设置溢出保护。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n)\n\ntype Order struct {\n\tDepartment, State string\n\tCents             int\n}\ntype Total struct{ Count, Cents int }\n\nfunc main() {\n\torders := []Order{{\"North\", \"paid\", 1200}, {\"south\", \"paid\", 900}, {\"north\", \"draft\", 300}, {\"NORTH\", \"paid\", 700}, {\"south\", \"paid\", 100}}\n\tgroups := map[string]Total{}\n\tfor _, order := range orders {\n\t\tif order.State != \"paid\" || order.Cents < 500 {\n\t\t\tcontinue\n\t\t}\n\t\tkey := strings.ToLower(order.Department)\n\t\ttotal := groups[key]\n\t\ttotal.Count++\n\t\ttotal.Cents += order.Cents\n\t\tgroups[key] = total\n\t}\n\tnames := []string{}\n\tfor name := range groups {\n\t\tnames = append(names, name)\n\t}\n\tsort.Strings(names)\n\tfor _, name := range names {\n\t\ttotal := groups[name]\n\t\tfmt.Printf(\"%s count=%d cents=%d\\n\", name, total.Count, total.Cents)\n\t}\n}\n",
+    "output": "north count=2 cents=1900\nsouth count=1 cents=900"
+  },
+  "example": {
+    "id": "go-example-275",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "本地记录查询器",
+    "summary": "能实现过滤、分组与排序的查询步骤，对订单输出部门统计。",
+    "concepts": [
+      "sort",
+      "strings",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n)\n\ntype Order struct {\n\tDepartment, State string\n\tCents             int\n}\ntype Total struct{ Count, Cents int }\n\nfunc main() {\n\torders := []Order{{\"North\", \"paid\", 1200}, {\"south\", \"paid\", 900}, {\"north\", \"draft\", 300}, {\"NORTH\", \"paid\", 700}, {\"south\", \"paid\", 100}}\n\tgroups := map[string]Total{}\n\tfor _, order := range orders {\n\t\tif order.State != \"paid\" || order.Cents < 500 {\n\t\t\tcontinue\n\t\t}\n\t\tkey := strings.ToLower(order.Department)\n\t\ttotal := groups[key]\n\t\ttotal.Count++\n\t\ttotal.Cents += order.Cents\n\t\tgroups[key] = total\n\t}\n\tnames := []string{}\n\tfor name := range groups {\n\t\tnames = append(names, name)\n\t}\n\tsort.Strings(names)\n\tfor _, name := range names {\n\t\ttotal := groups[name]\n\t\tfmt.Printf(\"%s count=%d cents=%d\\n\", name, total.Count, total.Cents)\n\t}\n}\n",
+    "expectedOutput": "north count=2 cents=1900\nsouth count=1 cents=900",
+    "templateType": "go"
+  }
+}

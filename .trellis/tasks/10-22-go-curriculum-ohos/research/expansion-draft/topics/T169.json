@@ -1,0 +1,71 @@
+{
+  "id": "T169",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "ok=90\npositive=9223372036854775807 index=2 rejected=true\nnegative=-9223372036854775808 index=2 rejected=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-169",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有符号安全求和",
+    "summary": "累加正负账目时预先检测溢出。返回错误项位置与此前已确认的总额。",
+    "concepts": [
+      "int64 溢出",
+      "math.MaxInt64",
+      "部分结果",
+      "错误位置"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "累加正负账目时预先检测溢出。返回错误项位置与此前已确认的总额。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "先相加再比较可能溢出，错误值不能作为可靠依据。",
+      "正负值的安全阈值不同，不能用绝对值统一处理 MinInt64。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在错误中加入当前值，并让调用者用 errors.As 读取结构化位置。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "定义包含 Index、Value、Total 的错误结构和 Error 方法。检查失败时返回指针。调用者用 errors.As 提取。不解析错误字符串。"
+      }
+    ],
+    "explain": "有符号整数溢出不会自动成为 Go 错误。所以相加前必须检查。正数用 total>MaxInt64-value 判断上溢。负数用 total<MinInt64-value 判断下溢。这两次阈值运算自身保持在范围内。发现错误时返回此前总额和零起始项索引。不先执行错误加法。示例覆盖普通混合账目、最大值再加一与最小值再减一。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\nfunc sum(values []int64) (int64, int, error) {\n\tvar total int64\n\tfor i, value := range values {\n\t\tif (value > 0 && total > math.MaxInt64-value) || (value < 0 && total < math.MinInt64-value) {\n\t\t\treturn total, i, fmt.Errorf(\"sum overflow\")\n\t\t}\n\t\ttotal += value\n\t}\n\treturn total, -1, nil\n}\nfunc main() {\n\ttotal, _, err := sum([]int64{100, -30, 20})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"ok=%d\\n\", total)\n\ttotal, index, err := sum([]int64{math.MaxInt64 - 2, 2, 1})\n\tfmt.Printf(\"positive=%d index=%d rejected=%t\\n\", total, index, err != nil)\n\ttotal, index, err = sum([]int64{math.MinInt64 + 1, -1, -1})\n\tfmt.Printf(\"negative=%d index=%d rejected=%t\\n\", total, index, err != nil)\n}\n",
+    "output": "ok=90\npositive=9223372036854775807 index=2 rejected=true\nnegative=-9223372036854775808 index=2 rejected=true"
+  },
+  "example": {
+    "id": "go-example-169",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有符号安全求和",
+    "summary": "累加正负账目时预先检测溢出。返回错误项位置与此前已确认的总额。",
+    "concepts": [
+      "int64 溢出",
+      "math.MaxInt64",
+      "部分结果",
+      "错误位置"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\nfunc sum(values []int64) (int64, int, error) {\n\tvar total int64\n\tfor i, value := range values {\n\t\tif (value > 0 && total > math.MaxInt64-value) || (value < 0 && total < math.MinInt64-value) {\n\t\t\treturn total, i, fmt.Errorf(\"sum overflow\")\n\t\t}\n\t\ttotal += value\n\t}\n\treturn total, -1, nil\n}\nfunc main() {\n\ttotal, _, err := sum([]int64{100, -30, 20})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"ok=%d\\n\", total)\n\ttotal, index, err := sum([]int64{math.MaxInt64 - 2, 2, 1})\n\tfmt.Printf(\"positive=%d index=%d rejected=%t\\n\", total, index, err != nil)\n\ttotal, index, err = sum([]int64{math.MinInt64 + 1, -1, -1})\n\tfmt.Printf(\"negative=%d index=%d rejected=%t\\n\", total, index, err != nil)\n}\n",
+    "expectedOutput": "ok=90\npositive=9223372036854775807 index=2 rejected=true\nnegative=-9223372036854775808 index=2 rejected=true",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "id": "T203",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "214ab009=true\n214ab008=false\n21=false\nzzzzzzzz=false\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-203",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "定长令牌比较",
+    "summary": "能先校验长度再比较固定字节令牌，展示错误输入和有效输入。",
+    "concepts": [
+      "crypto/subtle",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能先校验长度再比较固定字节令牌，展示错误输入和有效输入。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "常量时间比较不会修复过短、可猜测的令牌设计。",
+      "不同长度输入会提前被拒绝，不能据此宣称整个解析过程都是恒定耗时。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把协议改成 32 字节令牌并增加过长输入测试。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "将长度条件改为 32，使用 crypto/rand 生成令牌；只打印验证结果，不打印真实密钥材料。"
+      }
+    ],
+    "explain": "外部输入先经过十六进制解码，再检查是否符合固定四字节协议，最后比较内容。ConstantTimeCompare 只用于同长度有效字节串；格式和长度拒绝本来就是可见的协议边界。四字节仅便于阅读，不是足够强的生产认证令牌。示例同时覆盖一个正确令牌、末字节修改、长度不足与非十六进制字符。",
+    "code": "package main\n\nimport (\n\t\"crypto/subtle\"\n\t\"encoding/hex\"\n\t\"fmt\"\n)\n\nfunc valid(input string, want []byte) bool {\n\tdecoded, err := hex.DecodeString(input)\n\tif err != nil || len(decoded) != len(want) || len(want) != 4 {\n\t\treturn false\n\t}\n\treturn subtle.ConstantTimeCompare(decoded, want) == 1\n}\nfunc main() {\n\ttoken := []byte{0x21, 0x4a, 0xb0, 0x09}\n\tfor _, input := range []string{\"214ab009\", \"214ab008\", \"21\", \"zzzzzzzz\"} {\n\t\tfmt.Printf(\"%s=%t\\n\", input, valid(input, token))\n\t}\n}\n",
+    "output": "214ab009=true\n214ab008=false\n21=false\nzzzzzzzz=false"
+  },
+  "example": {
+    "id": "go-example-203",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "定长令牌比较",
+    "summary": "能先校验长度再比较固定字节令牌，展示错误输入和有效输入。",
+    "concepts": [
+      "crypto/subtle",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"crypto/subtle\"\n\t\"encoding/hex\"\n\t\"fmt\"\n)\n\nfunc valid(input string, want []byte) bool {\n\tdecoded, err := hex.DecodeString(input)\n\tif err != nil || len(decoded) != len(want) || len(want) != 4 {\n\t\treturn false\n\t}\n\treturn subtle.ConstantTimeCompare(decoded, want) == 1\n}\nfunc main() {\n\ttoken := []byte{0x21, 0x4a, 0xb0, 0x09}\n\tfor _, input := range []string{\"214ab009\", \"214ab008\", \"21\", \"zzzzzzzz\"} {\n\t\tfmt.Printf(\"%s=%t\\n\", input, valid(input, token))\n\t}\n}\n",
+    "expectedOutput": "214ab009=true\n214ab008=false\n21=false\nzzzzzzzz=false",
+    "templateType": "go"
+  }
+}

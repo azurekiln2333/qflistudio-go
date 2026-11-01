@@ -1,0 +1,15 @@
+[
+  {
+    "id": "T152",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "A@2\nB@3\nC@3\nremoved-index=-1\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  }
+]

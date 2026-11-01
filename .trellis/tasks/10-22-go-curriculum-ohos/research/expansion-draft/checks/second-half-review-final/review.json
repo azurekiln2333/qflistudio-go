@@ -1,0 +1,602 @@
+{
+  "schemaVersion": 1,
+  "reviewDate": "2026-10-23",
+  "scope": "T201-T280 unpromoted drafts",
+  "topics": [
+    {
+      "id": "T201",
+      "title": "摘要清单验证",
+      "topicSha256": "f05a7f6c2f78a868747482c5ca0ecb4630fbefc9c9a8e95896a88c4c4059a8ac",
+      "sampleSha256": "0fb9db9f6f3c68093f4610b3fccde2f6042c6afb884f2ddfebaad16c2ce1bb2c"
+    },
+    {
+      "id": "T202",
+      "title": "HMAC 消息认证",
+      "topicSha256": "c4b018e659d2bba0d5bbab182f85f6b259d985882f5697a5b6095d6ef621e60b",
+      "sampleSha256": "e239cf918413cf2c2e6c83ff72614509beb8e9c808a6d21cda1fe18df1bd6d7c"
+    },
+    {
+      "id": "T203",
+      "title": "定长令牌比较",
+      "topicSha256": "499d1f8b1e441f201a3dfc0632bb6860231c700d2f6bff88f14876f424de29e5",
+      "sampleSha256": "d53c5921c03a52fb6a4b5cadabadb71add601514e5e68fa221d0a02be14a0420"
+    },
+    {
+      "id": "T204",
+      "title": "AES GCM 往返和篡改",
+      "topicSha256": "66c1552711b51ec6e7f427e62b8154148cd74b5eee53799b87c70bb0562de781",
+      "sampleSha256": "c304b96efc22b6e81021d19daa6e185c390220843c95bf77e92e079cd53fe022"
+    },
+    {
+      "id": "T205",
+      "title": "Ed25519 签名校验",
+      "topicSha256": "cb681b405be99f848cf07d2a47825c76871b47b9463cb9ac4d14d704328c14f2",
+      "sampleSha256": "9c1f24bf4db1e00153d5bcd522cab80eed742b8e5bbdc669c2aa86e0630afbc6"
+    },
+    {
+      "id": "T206",
+      "title": "ECDSA 摘要签名",
+      "topicSha256": "0ea8ae729a58c9e28edd26c37c0c31852285e2921129b539e5846ea80729808c",
+      "sampleSha256": "d59d727d6e3bb4806a640a893c18571542811efcaa0821099c92c7557631643d"
+    },
+    {
+      "id": "T207",
+      "title": "密钥协商一致性",
+      "topicSha256": "41b455ae821f134c5194dd73d361d7d24f177e455bd5dccf92d7306166a0d2cf",
+      "sampleSha256": "93a4d32d08870a85efd719e8df3113df8e9e6c4a4678f33f03c4332d469caa03"
+    },
+    {
+      "id": "T208",
+      "title": "公钥 PEM 往返",
+      "topicSha256": "36931b28b70b2e39e97566452e6d1e10072c3a4bc1521fb225c02e06791fa079",
+      "sampleSha256": "694f97f7973ab1123d62c69f5a689c8ebe144879980dc79c6631c2cc9323fb6c"
+    },
+    {
+      "id": "T209",
+      "title": "CRC32 分片校验",
+      "topicSha256": "034faf29b2af396c1c80c242047aecd3d2b12792635301bd1769c1f1a7293ff0",
+      "sampleSha256": "6536e353b409aa8a74785b44fe253a9d949798e414b26de2b8557ab2914bc1a5"
+    },
+    {
+      "id": "T210",
+      "title": "流式多摘要",
+      "topicSha256": "3b74950625b2048a5904488af68e71e0aa2ec84dda4b06e44362d111c68df3ec",
+      "sampleSha256": "6259d11d2cd8a8ad1f1eb4ed5376cb934f26bd34046fe05866abb3247f962ab1"
+    },
+    {
+      "id": "T211",
+      "title": "Gzip 日志封装",
+      "topicSha256": "8069c417435d57c03ec2f20f3e4983f49785cd3c165d550b49522641a63c2b50",
+      "sampleSha256": "c5cb08b13456f3f428060e041ffa87f6788022440d9b3ed90b4257f1f32fec77"
+    },
+    {
+      "id": "T212",
+      "title": "Zlib 解压预算",
+      "topicSha256": "335b096e24c7583afb1809b4b34ae2ad5eece37cdef1e1cc89bc852cb10832f9",
+      "sampleSha256": "e6be01e439c172c1a325be4ba74808b81cd8257eb732b4b06c4b95e6768b2bc8"
+    },
+    {
+      "id": "T213",
+      "title": "Tar 选择性提取",
+      "topicSha256": "5441166c22681d9c8bf5a2abbf140ff70f2f106ada0687418a7e01923451695d",
+      "sampleSha256": "4a7773ea9c6e67f2d144ee975cfaaa8a335467949a2dcea52f45f05f41a65faf"
+    },
+    {
+      "id": "T214",
+      "title": "Zip 报表归档",
+      "topicSha256": "37c56cb5505118550cccfb7fb5366afc494df6284ac9439bd947c4968729816f",
+      "sampleSha256": "a85a94fe4dc811c64ab38571e72703b5b47aea618c02a01b7110bd20a0930902"
+    },
+    {
+      "id": "T215",
+      "title": "归档路径验证",
+      "topicSha256": "a0547975de421c8ce483b93ff987220571b8e991e39e4532d2da614c8259fab6",
+      "sampleSha256": "6263fe766cec1e076548c2284e94b67ef28d34b40388334a63f0c4bf42a2f6aa"
+    },
+    {
+      "id": "T216",
+      "title": "Tar 元数据清单",
+      "topicSha256": "ae29d2c03ee281c4743ed12e47023070bf44b09971c0a4cac4477ceed91da7ee",
+      "sampleSha256": "1bf55d68f755b99b577de3f6804d8095166eb3eb69532ac9bd1be0493991b5f3"
+    },
+    {
+      "id": "T217",
+      "title": "内存 Multipart 表单",
+      "topicSha256": "cece0d50c0b99e858c9a3d6cb7c93ad094e8486e6d64019df9d8a72826feac76",
+      "sampleSha256": "d6c40bf1d0de6dada7ae00a32a9a2c070b090c7f256d356cf96932cf015ccd82"
+    },
+    {
+      "id": "T218",
+      "title": "MIME 媒体类型参数",
+      "topicSha256": "0059e35f9d855846dd7e2be2171cb7bf7a83d05eca1fb5267f7f34e9ae125f9f",
+      "sampleSha256": "a8c78ace19818f159f0f1965a37194c155a73304429a68aff9d6ece22e4721b8"
+    },
+    {
+      "id": "T219",
+      "title": "流式 Base64 编解码",
+      "topicSha256": "d874bc1ff54686c4cb51753692da8883a567921bb7e23babba1349649599c551",
+      "sampleSha256": "1c57b113d3f00dd7e6f22aaa7a12820721c18f08f77a1dfb254db0df3f4bda57"
+    },
+    {
+      "id": "T220",
+      "title": "Quoted Printable 文本",
+      "topicSha256": "5e41fe779b5cf6e19377a88d78dedd7ac37797324f639e39a70e3477970bd556",
+      "sampleSha256": "dc0b3e73fb97cb3bea6af0ee0233db59e9c4c030f2848314878b88025280e523"
+    },
+    {
+      "id": "T221",
+      "title": "内存路由与方法约束",
+      "topicSha256": "323d38146c6b6de12d6dc4a29b81e92ba3a7228e88d0a0f042ea244a4e45e801",
+      "sampleSha256": "657c79f3685852e22628a0a12476daa5cf889f664026df670301e511dc91a05b"
+    },
+    {
+      "id": "T222",
+      "title": "严格 JSON POST",
+      "topicSha256": "ff389b6625d7f47568a17e7ba8116fd5fa8ad7dffd073d8448d38ffdb4234458",
+      "sampleSha256": "cc5efcc745d69832b119dbb1cecdb10f3b75fe175cd3809976df4c08022aa53e"
+    },
+    {
+      "id": "T223",
+      "title": "请求标识中间件",
+      "topicSha256": "bb19118b7b38062bd97a38d55d372adc851c9534aa9bb1bc22897a5fbcf0a9a0",
+      "sampleSha256": "eee59eb7d8328ae815c78d6c6b85903ad117fdef6ee7aad370a9d905d7606b63"
+    },
+    {
+      "id": "T224",
+      "title": "条件请求 ETag",
+      "topicSha256": "929e38fb2983e12222e0f0a1cd82a558122ee253cb85eb2541a07fc67ac74505",
+      "sampleSha256": "82703210486c70df6e5cffce9999a6c751417203a7e5242c6060f7416d937861"
+    },
+    {
+      "id": "T225",
+      "title": "字节范围响应",
+      "topicSha256": "b5fd9a5ed3e07eaaac2b7e49ff4e610e465bd359400f9ffc6e5a1e7acbe118ea",
+      "sampleSha256": "03b80c70d3fce365351537e736760ec2878956e442c41acbdf599425accf358f"
+    },
+    {
+      "id": "T226",
+      "title": "内容协商权重",
+      "topicSha256": "548a42725e07026d0ae372cb43cd3de0184495d209e5d5680e6273f099abceca",
+      "sampleSha256": "f4bad225cf0d6490495dc14f29449e05bb12fda065e3a60b6891332083bf563b"
+    },
+    {
+      "id": "T227",
+      "title": "Cookie 属性往返",
+      "topicSha256": "633cec5201fdbcfb958ae6cbe738996fd3ef1182b379de3dc27caf1b9d581e42",
+      "sampleSha256": "fed873abcdc28b062150a030bb08fafbb0b28df5fb1104656162d922cf595861"
+    },
+    {
+      "id": "T228",
+      "title": "查询参数规范化",
+      "topicSha256": "f814f928f182648135864fc2e45b244e264ff3a28909ff8e19b6735bea29cca4",
+      "sampleSha256": "8ce0916d716b66213b2f16679cf32d1f5fc89f185e7dbbe8d3284ef691b2f3f7"
+    },
+    {
+      "id": "T229",
+      "title": "相对 URL 解析",
+      "topicSha256": "5ab8d4f7c9305011e4676973460d1c8f669522c3147419d0a9dbbef74a43ee25",
+      "sampleSha256": "a7cdc7826674c26395b9caa1e6e986b8df6e8e284d324099681a2949bdf02fa0"
+    },
+    {
+      "id": "T230",
+      "title": "HTTP 响应报文读取",
+      "topicSha256": "fb5e1682fcd1efbf88861de26488467f76fe400b19f2547b5eebe3cc29e5370a",
+      "sampleSha256": "952a43e8b7ba7d0045e6172c9b3fe9165a9847ac0b8ccf5eb5513c757984b2b6"
+    },
+    {
+      "id": "T231",
+      "title": "有序并行转换",
+      "topicSha256": "16617fc2d0ad54222707da0c4d0360eb9012f83bc1220af47872a9e0e9c0d650",
+      "sampleSha256": "3fa0396192f8384108719bf9281f010842b066f108ead729b194de8a9b1e7824"
+    },
+    {
+      "id": "T232",
+      "title": "有界并发闸门",
+      "topicSha256": "8a3ff21e365b6eeb8ff99724346a0eaaf7847b16406a7d9a2eac0be41ec32f13",
+      "sampleSha256": "c71ab2dabd7336c40bee2565f10c2d7fbc97b29d0bebf4c2b12d4e3456e135a6"
+    },
+    {
+      "id": "T233",
+      "title": "同键请求合并",
+      "topicSha256": "75f2eb40d397c730844373fd38bbaa9a52d28b3be2b1d99a7def21170840bb35",
+      "sampleSha256": "f0e6f4a91cf95ef21d27be22932abd2cf47613fc96ab5a03f19931611a7e3c15"
+    },
+    {
+      "id": "T234",
+      "title": "条件变量屏障",
+      "topicSha256": "637a2250fe9d112ee48b792eeef03ee47491ecd7ebf1ea5ccf8d00d4cd7ad7f9",
+      "sampleSha256": "80d4a1b599c54929a06a3fc7eee1dbed8da0b4c385261ff8848adfb59ade87ba"
+    },
+    {
+      "id": "T235",
+      "title": "流水线取消传播",
+      "topicSha256": "54a5c052d1c48a43c7ff3774047b25a0186ddac80f8953840d2f2f5f89dccdfb",
+      "sampleSha256": "4989f6b247bfb81013e8273dddd143a9b7d7c04ae6b29f7e816684c930382348"
+    },
+    {
+      "id": "T236",
+      "title": "只读快照发布",
+      "topicSha256": "f32538db858ffaf14404eee9c0c772ab29958c2f814bb4d0c775ec8e1419a687",
+      "sampleSha256": "5e3d1e1d4b14b8d5e0a4695cf0c89ae677e3fab6f81d00326a4e5c43cabb9573"
+    },
+    {
+      "id": "T237",
+      "title": "扇入关闭协调",
+      "topicSha256": "07f3f28ef4b72d9031d9f48892f6ae66472e065f0bfca37eacd85b18698808a9",
+      "sampleSha256": "ec2c9045ad75a8a557d235a5a6d0e5937beee2e47a6bcc2a65aae17a557199f3"
+    },
+    {
+      "id": "T238",
+      "title": "任务结果与错误聚合",
+      "topicSha256": "05f1c1f1bec1290cca0ce61ea70c11c9233f8f7241f7598268c3a2d613aec46f",
+      "sampleSha256": "6277cecf3bb51e2895fb230247c2508b3c3303677e054542cd855502c7843299"
+    },
+    {
+      "id": "T239",
+      "title": "请求响应通道",
+      "topicSha256": "ce46f4f4d72c7e75897f7cc719346c35aa4fa94ab683a7d3e3210413af4605e8",
+      "sampleSha256": "08eced17e127df743e3962cb9af444430914d5e1ac424cc77b398da8df4ea5c7"
+    },
+    {
+      "id": "T240",
+      "title": "一次性初始化结果",
+      "topicSha256": "26e14442f7e5752a15dbf3d70b9bcf47077cad3e6cc5506f86e36e2f8073e469",
+      "sampleSha256": "88414917e3884241b9cc82e8fc3586857bffff4b851a9616f175b0adb357abcc"
+    },
+    {
+      "id": "T241",
+      "title": "模板金额辅助函数",
+      "topicSha256": "ce6992fdc70b989b97b64e1e74d43c7355d48bdde79a4d10be8324e39f04ab99",
+      "sampleSha256": "80df3fcff5eb7270db08ff007d126666436fb08a474993744e878c0f0b201183"
+    },
+    {
+      "id": "T242",
+      "title": "HTML 自动转义",
+      "topicSha256": "eb940d7e85e0568f9606ab622f866ab3010edd69e76aefadd6b72e97281abd70",
+      "sampleSha256": "fc10956f3cb88f5383a09113dc0e8c826f11384b3c0cad20f3040157c2359499"
+    },
+    {
+      "id": "T243",
+      "title": "模板块复用",
+      "topicSha256": "d889b108fd1787a2e5e002322b9d61af8a3adbd6140dc080397356b1ea18de08",
+      "sampleSha256": "b66c22793f06563d766c17bd6a952b7ddcbd7beaef2c2742cb14e375fd88a6ea"
+    },
+    {
+      "id": "T244",
+      "title": "模板缺失键策略",
+      "topicSha256": "de11d6a11199634377557c6579a06652d1967671222837c2e22a20c860d5f2ed",
+      "sampleSha256": "87e75ed01d825f152b078287a79475d9333569f15b5b1680d720464fe7a27cd8"
+    },
+    {
+      "id": "T245",
+      "title": "自定义 JSON 脱敏视图",
+      "topicSha256": "857fea942fa011cb2f7321898e2d03fb9db659392374e7ad495aee893d4e0f33",
+      "sampleSha256": "5ed512b8f229c65f611e3a3f4fecb139bbfcc51bd6413547fe02e5eb9f9ada47"
+    },
+    {
+      "id": "T246",
+      "title": "枚举文本协议",
+      "topicSha256": "3c9c4705c73d6ea17cc14cdf7a8708ff63be5cfa342e25251695b01133d084a1",
+      "sampleSha256": "c44af597d311a5de1b4f21cafbd999c91ec78bb741c9f5aa597138aeab1fc0ad"
+    },
+    {
+      "id": "T247",
+      "title": "固定列宽 Unicode 表格",
+      "topicSha256": "bd0680afa73cdad54a6e5224d666c9f7ac68ca26ed66a41aa06d6dbc13e88e0b",
+      "sampleSha256": "d624d0f36b2015ada468c290787b10fd3c947569b9e57c468635b8e6f6abc9b8"
+    },
+    {
+      "id": "T248",
+      "title": "JSON Lines 报表",
+      "topicSha256": "55671e54f7e2785d3e4504cd9f7cacfb16dbbd226e943d1e54d15d5b5beaa840",
+      "sampleSha256": "38111a983ff2f8aca78f563990b662ba78d57acf23a610d923ae490ba1bf37c3"
+    },
+    {
+      "id": "T249",
+      "title": "Markdown 表格转义",
+      "topicSha256": "6dfe46d8dc2374bd3a7f337ae8e86b8ceb66615be14678ca8fdf8d8da6770a1e",
+      "sampleSha256": "e6fa8a56f5a6a3ff6419426c7be77b0251bb0bcde62e01ca0126a0bbb5fa0329"
+    },
+    {
+      "id": "T250",
+      "title": "进度条纯函数",
+      "topicSha256": "132a0a196fe10dfe9ebed834956218c74ff9491e2f09172039660843f1a4c9c9",
+      "sampleSha256": "d15c4b9b66329423471bb731c5964c781f769ef5c3dad2ea8e7173e4e8813813"
+    },
+    {
+      "id": "T251",
+      "title": "邮件地址解析",
+      "topicSha256": "df77ae6ac611a4d0d5f5cceef26809efc8a940bf12a880f5b0a57f213c94643f",
+      "sampleSha256": "b6714f717c2af13103511b31d99dc36eef303daaa7b0026b9ac021a1c50c8344"
+    },
+    {
+      "id": "T252",
+      "title": "IP 与网段归属",
+      "topicSha256": "de89a1b07acde9910126b7fe7bedb162e61509447164dc6ec0ee30395ff3bcad",
+      "sampleSha256": "32e3f149fd0c91ba2c515464c93cce086fbd72dc5548904975ba975e7be51e96"
+    },
+    {
+      "id": "T253",
+      "title": "离线 URL 白名单",
+      "topicSha256": "9d6d3dc352699ebf38c999f0530e27a7a00b582c8f8718ec94003ba7291c7bd0",
+      "sampleSha256": "77a207553d134b62d875bae3fd3b8e4991a3522c420b13d058dcb5dd3262e957"
+    },
+    {
+      "id": "T254",
+      "title": "主机名词法校验",
+      "topicSha256": "357fcdcbf6bfa19242abc9dba60996929629c101a7e12168c66393b2283727db",
+      "sampleSha256": "aaf3b483f2532f1a49c30ba655e2b4e7b0babcb126fb201915325cd0f5226f05"
+    },
+    {
+      "id": "T255",
+      "title": "语义版本排序",
+      "topicSha256": "8365cf08e21548ccd56af5d9db881f9f8a8dde8d85082a992089ea3a55877f67",
+      "sampleSha256": "0e653c12c43f98b0b16ddbeefca4cf655cb1b2fa12428cc0485f42fd6c10c5ca"
+    },
+    {
+      "id": "T256",
+      "title": "Luhn 校验与生成",
+      "topicSha256": "3e9e14bf9fd735171d19dab5f19b8bf9b259231f154a10fc705da72ba96ab310",
+      "sampleSha256": "54e9b8a633eff6dd27b8a047426d791a422a3e91ebcfc35662d3220702524039"
+    },
+    {
+      "id": "T257",
+      "title": "ISBN13 校验",
+      "topicSha256": "572990b64ab54d3d17cf002430d16776b91be1b43439f0798ec3af14e749726f",
+      "sampleSha256": "d073234d490787ab14687e223862e3e8c9003eb33f039084e0ae8377e0bd832b"
+    },
+    {
+      "id": "T258",
+      "title": "带转义字段状态机",
+      "topicSha256": "fa6aa864df80d4c5bf9e699ac79c8fa456df9b930d6f0d1c9406c4ec40177041",
+      "sampleSha256": "306500b94d3c4ab896ac9e9ed62d1dfe91385b6424cbca9a4e23fcfe8967e90d"
+    },
+    {
+      "id": "T259",
+      "title": "括号配对与错误位置",
+      "topicSha256": "b3b1a1edabba0eee0bacdfd80c96980f02282394fe59c427edacb0307f0b3b81",
+      "sampleSha256": "f3d5c4403e67a6ab688980ade6ac42f9c71b84b08c278e692122f4a2d127fb12"
+    },
+    {
+      "id": "T260",
+      "title": "分片 UTF8 解码",
+      "topicSha256": "c2ff196f6b52a6b36dcc30a23d83b64ad13cf5bfbe72629f66ff5955c3ad99b1",
+      "sampleSha256": "e13dd523091a26b14085edf9154501a1e3e82fc3d2d98378eedb71c5a38d626f"
+    },
+    {
+      "id": "T261",
+      "title": "带 CRC 的二进制帧",
+      "topicSha256": "d2283ec77762a71ea87dd6f31475bcdcb76e32bdee12b2668321d369ea71b282",
+      "sampleSha256": "17dc6cd9de275a2d849a087a5942f7d789b4fd10ee389dbdb040d114272c5a2b"
+    },
+    {
+      "id": "T262",
+      "title": "传感器位字段",
+      "topicSha256": "5a51a392d55adb087cb15ef93faddcd96318fa6e5b8cb160610250ed8308ef9c",
+      "sampleSha256": "b8280c8534d3cda5d203ee6aa69899540d9a1b43efda8e4edd8d0246b166851f"
+    },
+    {
+      "id": "T263",
+      "title": "差分 Varint 压缩",
+      "topicSha256": "20703b9d0db34617698697fa2c4bbf661b9bb88a98e1159437e2c4dccb9bbab3",
+      "sampleSha256": "190716b399fd23cafdf01f61a5ab11b3e655501dbc12c822334fd6631659e8bc"
+    },
+    {
+      "id": "T264",
+      "title": "Netstring 消息解析",
+      "topicSha256": "768887ae82df1d749eb8185f60abd24eeb307bed0daf22efe5e2486acfc4c39b",
+      "sampleSha256": "d0671d18e78af78d94d0cf1391730461a5afad5eac1b88921002dc8fbbd4c14f"
+    },
+    {
+      "id": "T265",
+      "title": "DNS 标签编码",
+      "topicSha256": "8c38754c903e84729752d47c374d7f4e2c31dec41eca3ab1409186cb4ac458a2",
+      "sampleSha256": "a3d4613a04701f9950849d209d7c54e2168e7ea7e1dbff23cbeb063759b54323"
+    },
+    {
+      "id": "T266",
+      "title": "分片帧解包器",
+      "topicSha256": "1142cf4f47746e1937a4f9b84ca762681299755015f7d1727e4281b818fb7602",
+      "sampleSha256": "f224480a87c2f73fd9a3b5e5d8cf06de0a1ed1dfee0e2fbb104ce2c7496f0549"
+    },
+    {
+      "id": "T267",
+      "title": "位图空闲槽分配",
+      "topicSha256": "802c225de4c5acb5d248574a428faec2025ece1ec7ec9242fe49cbd17427e708",
+      "sampleSha256": "56e01d5396e2a212b1b59bbd94fb6afd7bbbfe338218c4b26276dee52ccaa72b"
+    },
+    {
+      "id": "T268",
+      "title": "位集合交并差",
+      "topicSha256": "8d06628c704fe3c77455b0cf2cd16fd3b95176cd2870ba55a8403bfabf22b096",
+      "sampleSha256": "9bf68a42147aed496ace7ddaa1a24e17e8ed07651a44d6a7f7f47f315fd69d6d"
+    },
+    {
+      "id": "T269",
+      "title": "IEEE754 字节往返",
+      "topicSha256": "9e1c8fa16072b890cd6c27eba92087d39d70b2910f99ca7f72b8887b440f41ce",
+      "sampleSha256": "4700436dbdf3dd5c0c497353cf9de461fc5de6005205943a51e936f10ab469cf"
+    },
+    {
+      "id": "T270",
+      "title": "有符号 ZigZag 编码",
+      "topicSha256": "088c1a35e5cfdc21b03bb6703449c972644954db21b8fbb7b6a9b550e4984712",
+      "sampleSha256": "d642523d4b8fe14407ebdd6ab8145b0a497ee7948b38683d564e585992a64897"
+    },
+    {
+      "id": "T271",
+      "title": "账本对账器",
+      "topicSha256": "b372fadcaff33a0a15c47bb5a829f594a9d06481571c43b2b5dce96c2e37b713",
+      "sampleSha256": "46c349c123217efc21502cf9822ad9a87461f5d6c80fd5048c0b4b9d0caa8aef"
+    },
+    {
+      "id": "T272",
+      "title": "依赖构建顺序",
+      "topicSha256": "90a0b322b95cc267d8e03f14f44809c64118ae51173e0e9823b0d7a01bc45bf3",
+      "sampleSha256": "4371aea2a57bcf8a4995e366eedd160656a5c30469daac8bec7413349d8f841c"
+    },
+    {
+      "id": "T273",
+      "title": "会议室分配",
+      "topicSha256": "bb64c2f9e053591ca208adebfb4cb66b0091c385d67c5fc847f9ca2fe9da56dc",
+      "sampleSha256": "6199f1986095fd6da5b96da2ce4c0993fad61420aa2d1280b6f9f046408e5e06"
+    },
+    {
+      "id": "T274",
+      "title": "包清单完整性检查",
+      "topicSha256": "9ff618a547d74163fa7e4a63a704043c9134b61760a87e3f563c6f56f2e044e8",
+      "sampleSha256": "42672ccbd4ec52443bcfadb7877ec57e35e7e542301e2211d6876e6c0e5e539f"
+    },
+    {
+      "id": "T275",
+      "title": "本地记录查询器",
+      "topicSha256": "33a738783c3d9325190ee8d8838aa7060acf6d4781252d272bdd0c84f6910292",
+      "sampleSha256": "51f900da316c2308ecd37cb07e7ec32433c5624656362b31c3430f0510982eb5"
+    },
+    {
+      "id": "T276",
+      "title": "事件溯源余额",
+      "topicSha256": "a12aec6b06e7706ff7c140f0b7bf8f27e42ea12ec85e53243fdad466a25c4e7f",
+      "sampleSha256": "7728fefd5b774ad30135a670950c4e4c422380966fe43017532451845c816c9f"
+    },
+    {
+      "id": "T277",
+      "title": "内存事务回滚",
+      "topicSha256": "a8267c5d35ef2fe16a7c2c1ae7887f097cc3620e98d3f5c9b368af8bf3ff4b6a",
+      "sampleSha256": "8904a1078ec7c685b0a43541970f6475d99577222f417cdee95d35d2f7eea5a9"
+    },
+    {
+      "id": "T278",
+      "title": "逻辑时钟令牌桶",
+      "topicSha256": "0242b712e93570ff1a615fee8db888a6ce86a159ad6339f3466acc7f8284b0d8",
+      "sampleSha256": "1cdd09b967abdc4eae30b14cd54bfea6a607f02402eaad20afe2701b3b26cc41"
+    },
+    {
+      "id": "T279",
+      "title": "批处理检查点恢复",
+      "topicSha256": "1c515b1681c848a5e2564d4af3172c14b6f06b0350aae5e6d8906e743ae4345f",
+      "sampleSha256": "fd9cd028c2cd886828b482625bc37b27ae70fa0360a84d49ff61c7a37b7e1be4"
+    },
+    {
+      "id": "T280",
+      "title": "中缀表达式计算器",
+      "topicSha256": "23174c166a0805d48a4fc80f0aa5fbcf8f9072408df115621e27664d89ec8447",
+      "sampleSha256": "f14d575c52a0843e7848a35dea12215e0cae246fe9a6e08a44306be6be694a37"
+    }
+  ],
+  "allTopicSnapshot": ".trellis/tasks/10-22-go-curriculum-ohos/research/expansion-draft/checks/second-half-review-final/all-topics",
+  "dedup": {
+    "topics": 280,
+    "exitCode": 0,
+    "stdout": "DEDUP OK: no substantive duplication in 280 topics"
+  },
+  "officialHistoricalEvidence": [
+    {
+      "tag": "crypto-official",
+      "path": ".trellis/tasks/10-22-go-curriculum-ohos/research/expansion-draft/checks/crypto-official/official.json",
+      "reportSha256": "c331e3a38e6ff467dcae526b8289399d533f32f02cffb6301eb7535c1b9694d9",
+      "records": 30,
+      "passed": 30,
+      "deviceExecution": false,
+      "currentTopicChanges": [
+        "T201"
+      ]
+    },
+    {
+      "tag": "archives-official",
+      "path": ".trellis/tasks/10-22-go-curriculum-ohos/research/expansion-draft/checks/archives-official/official.json",
+      "reportSha256": "7d8639436c0afaf3b265f717014917578260c874ab63b88c71ec366de2469770",
+      "records": 30,
+      "passed": 30,
+      "deviceExecution": false,
+      "currentTopicChanges": []
+    },
+    {
+      "tag": "http-official",
+      "path": ".trellis/tasks/10-22-go-curriculum-ohos/research/expansion-draft/checks/http-official/official.json",
+      "reportSha256": "f346ccef2af4fc35f8c6911936b88eac8d9233833e41f441fe9b31b3c80662d4",
+      "records": 30,
+      "passed": 30,
+      "deviceExecution": false,
+      "currentTopicChanges": [
+        "T229"
+      ]
+    },
+    {
+      "tag": "concurrency-official",
+      "path": ".trellis/tasks/10-22-go-curriculum-ohos/research/expansion-draft/checks/concurrency-official/official.json",
+      "reportSha256": "9f98734fd3056cb3de12b4ddd1d698f36c924427f1b445004494cfccc3aa9453",
+      "records": 30,
+      "passed": 30,
+      "deviceExecution": false,
+      "currentTopicChanges": []
+    },
+    {
+      "tag": "presentation-official",
+      "path": ".trellis/tasks/10-22-go-curriculum-ohos/research/expansion-draft/checks/presentation-official/official.json",
+      "reportSha256": "179590c7e9ef40a28428b2c14e0a71dea171b0f726968d93f8ead82d1940fb63",
+      "records": 30,
+      "passed": 30,
+      "deviceExecution": false,
+      "currentTopicChanges": []
+    },
+    {
+      "tag": "validation-official",
+      "path": ".trellis/tasks/10-22-go-curriculum-ohos/research/expansion-draft/checks/validation-official/official.json",
+      "reportSha256": "4373caf93add9d2b4debeb41e57cd8817f19ab3f5f83c2db9e4f590c9aa1fc1c",
+      "records": 30,
+      "passed": 30,
+      "deviceExecution": false,
+      "currentTopicChanges": [
+        "T257"
+      ]
+    },
+    {
+      "tag": "binary-official",
+      "path": ".trellis/tasks/10-22-go-curriculum-ohos/research/expansion-draft/checks/binary-official/official.json",
+      "reportSha256": "858a0fa505ab3ddbec524c5d0a50d1d4d8630e91ccf04cce3a6d8183a9eee59b",
+      "records": 30,
+      "passed": 30,
+      "deviceExecution": false,
+      "currentTopicChanges": []
+    },
+    {
+      "tag": "applications-official",
+      "path": ".trellis/tasks/10-22-go-curriculum-ohos/research/expansion-draft/checks/applications-official/official.json",
+      "reportSha256": "2a83cfe78f3933af78664a3a953678fd1a266f41e1dba046e26c046144cdd62d",
+      "records": 30,
+      "passed": 30,
+      "deviceExecution": false,
+      "currentTopicChanges": [
+        "T271",
+        "T274"
+      ]
+    }
+  ],
+  "historicalOfficialRecords": 240,
+  "currentTopicChangesSinceOfficial": [
+    "T201",
+    "T229",
+    "T257",
+    "T271",
+    "T274"
+  ],
+  "currentProgramsChangedSinceOfficial": [
+    "T201",
+    "T229",
+    "T257",
+    "T274"
+  ],
+  "currentSourceOfficialComplete": false,
+  "currentSourceNativeComplete": false,
+  "currentSourceRaceComplete": false,
+  "deviceExecution": false,
+  "promoted": false,
+  "currentInventory": {
+    "path": ".trellis/tasks/10-22-go-curriculum-ohos/research/expansion-draft/checks/second-half-current-inventory/manifest.json",
+    "sha256": "c19fe6496916ecde2531a9bd16855cb3afc0e71bbfdb4fc4384fe54d0028060e",
+    "cases": 240,
+    "issues": 0,
+    "executed": false
+  }
+}

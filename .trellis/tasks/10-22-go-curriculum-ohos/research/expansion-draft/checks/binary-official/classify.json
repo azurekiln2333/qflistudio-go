@@ -1,0 +1,132 @@
+[
+  {
+    "id": "T261",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "payload=hello\nversion-rejected=true\ntampered=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T262",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "enabled=true range=3 value=1234\nwire=b4d2\nroundtrip=true\noverflow=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T263",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "ids=[100 101 130 500]\nbytes=5\ntruncated=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T264",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "frames=[\"cat\" \"\" \"中文\"]\nbad=true\nbad=true\nbad=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T265",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "name=www.example.test\nbytes=18\nlong-label=true\nmissing-root=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T266",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "frames=[cat go]\npending=0\noversize=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T267",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "slots=[0 1 2]\nfull=true\nreused=1\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T268",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "allowed=[read export]\nunion-count=4\nremoved=[write]\nafter-revoke=[read]\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T269",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "wire=3ff8000000000000 same-bits=true negative=false\nwire=8000000000000000 same-bits=true negative=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T270",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "0 zigzag=0 bytes=1 same=true\n-1 zigzag=1 bytes=1 same=true\n1 zigzag=2 bytes=1 same=true\n-2 zigzag=3 bytes=1 same=true\n2 zigzag=4 bytes=1 same=true\n-9223372036854775808 zigzag=18446744073709551615 bytes=10 same=true\n9223372036854775807 zigzag=18446744073709551614 bytes=10 same=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  }
+]

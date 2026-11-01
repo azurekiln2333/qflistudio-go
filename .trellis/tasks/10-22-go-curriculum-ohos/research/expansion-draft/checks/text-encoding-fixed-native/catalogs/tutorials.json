@@ -1,0 +1,1011 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "go-tutorial-121",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "统一混合换行",
+      "summary": "统一 CRLF、CR 和 LF，保留没有结尾换行的最后一条日志。",
+      "concepts": [
+        "strings.ReplaceAll",
+        "日志记录",
+        "末行处理"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-121-lesson",
+          "title": "统一混合换行",
+          "summary": "统一 CRLF、CR 和 LF，保留没有结尾换行的最后一条日志。",
+          "concepts": [
+            "strings.ReplaceAll",
+            "日志记录",
+            "末行处理"
+          ],
+          "explain": "不同系统产生的日志可能混用三种行结束符。先把双字符 CRLF 替换成 LF，再替换单独的 CR，避免把一组 CRLF 拆成两个空行。只去掉表示文件结束的一枚空记录，不能对每行 TrimSpace，否则日志正文中的空格会丢失。空输入返回零条记录；没有换行结尾的 gamma 仍作为第三条记录保留。",
+          "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc records(text string) []string {\n\tif text == \"\" {\n\t\treturn nil\n\t}\n\ttext = strings.ReplaceAll(text, \"\\r\\n\", \"\\n\")\n\ttext = strings.ReplaceAll(text, \"\\r\", \"\\n\")\n\tlines := strings.Split(text, \"\\n\")\n\tif lines[len(lines)-1] == \"\" {\n\t\tlines = lines[:len(lines)-1]\n\t}\n\treturn lines\n}\n\nfunc main() {\n\tlines := records(\"alpha\\r\\nbeta\\rgamma\")\n\tfmt.Printf(\"records=%d\\n\", len(lines))\n\tfor i, line := range lines {\n\t\tfmt.Printf(\"%d:%s\\n\", i+1, line)\n\t}\n\tfmt.Printf(\"empty=%d trailing=%d\\n\", len(records(\"\")), len(records(\"one\\n\")))\n}\n",
+          "output": "records=3\n1:alpha\n2:beta\n3:gamma\nempty=0 trailing=1",
+          "objective": "统一 CRLF、CR 和 LF，保留没有结尾换行的最后一条日志。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "先替换 CR 会让 CRLF 变成两个 LF，凭空增加记录。",
+            "TrimSpace 会改变正文；不能用它代替精确处理最后一个换行。"
+          ],
+          "exercises": [
+            {
+              "prompt": "增加输入 a\\n\\n，保留其中一条真实空日志，同时去掉结束符产生的空记录。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "现有实现只删除切片末尾一个空字符串，得到 [a 空字符串]；不要循环删除所有空项。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-122",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "Unicode 标识清洗",
+      "summary": "把含中文、空白和标点的标题清洗为稳定标识，合并分隔符。",
+      "concepts": [
+        "unicode.IsLetter",
+        "unicode.IsNumber",
+        "rune",
+        "strings.Builder"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-122-lesson",
+          "title": "Unicode 标识清洗",
+          "summary": "把含中文、空白和标点的标题清洗为稳定标识，合并分隔符。",
+          "concepts": [
+            "unicode.IsLetter",
+            "unicode.IsNumber",
+            "rune",
+            "strings.Builder"
+          ],
+          "explain": "标识清洗按 Unicode 字符遍历，保留各语言字母和数字，并将字母转小写。pending 标记记录是否见过分隔符，只有遇到下一个有效字符才写入横线，因此不会生成首尾横线或连续横线。中文不是 ASCII，却仍是合法字母；全是标点的输入会得到空字符串，交给调用者决定是否拒绝。",
+          "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"unicode\"\n)\n\nfunc identifier(text string) string {\n\tvar out strings.Builder\n\tpending := false\n\tfor _, r := range text {\n\t\tif unicode.IsLetter(r) || unicode.IsNumber(r) {\n\t\t\tif pending && out.Len() > 0 {\n\t\t\t\tout.WriteByte('-')\n\t\t\t}\n\t\t\tout.WriteRune(unicode.ToLower(r))\n\t\t\tpending = false\n\t\t} else {\n\t\t\tpending = true\n\t\t}\n\t}\n\treturn out.String()\n}\n\nfunc main() {\n\tfmt.Println(identifier(\"  Go 工具：离线 / 版本 2! \"))\n\tfmt.Printf(\"merged=%s\\n\", identifier(\"A---B__C\"))\n\tfmt.Printf(\"empty=%t\\n\", identifier(\" !? \") == \"\")\n}\n",
+          "output": "go-工具-离线-版本-2\nmerged=a-b-c\nempty=true",
+          "objective": "把含中文、空白和标点的标题清洗为稳定标识，合并分隔符。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "按字节判断会拆开中文的 UTF-8 编码。",
+            "这里采用 Unicode 小写映射，不宣称执行音译或 Unicode 规范化。"
+          ],
+          "exercises": [
+            {
+              "prompt": "让调用者在清洗结果为空时返回错误，同时保持中文标题的结果。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "保留清洗函数，在包装函数中检查 result == 空字符串并返回 errors.New；不要用默认编号悄悄覆盖非法输入。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-123",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "日志字段脱敏",
+      "summary": "只脱敏 email 与 token 字段，保留日志其余结构和普通消息。",
+      "concepts": [
+        "regexp.ReplaceAllStringFunc",
+        "字段边界",
+        "strings.Cut"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-123-lesson",
+          "title": "日志字段脱敏",
+          "summary": "只脱敏 email 与 token 字段，保留日志其余结构和普通消息。",
+          "concepts": [
+            "regexp.ReplaceAllStringFunc",
+            "字段边界",
+            "strings.Cut"
+          ],
+          "explain": "固定日志格式使用空白分隔的键值字段。正则要求目标键位于行首或空白之后，避免把 nottoken 当作 token；替换函数保留匹配中的前导分隔符，只将等号后的值改成星号。程序输出同时包含目标字段和普通 message、nottoken，证明替换范围受字段边界约束。此解析器不适用于带空格的引号值，不能把它当作通用日志格式解析器。",
+          "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"regexp\"\n\t\"strings\"\n)\n\nfunc redact(line string) string {\n\tfields := regexp.MustCompile(`(^|[[:space:]])(email|token)=[^[:space:]]+`)\n\treturn fields.ReplaceAllStringFunc(line, func(field string) string {\n\t\tkey, _, _ := strings.Cut(field, \"=\")\n\t\treturn key + \"=***\"\n\t})\n}\n\nfunc main() {\n\tfmt.Println(redact(\"10:00 INFO email=lin@example.test token=abc message=ready\"))\n\tfmt.Println(redact(\"token=secret nottoken=visible message=email-help\"))\n}\n",
+          "output": "10:00 INFO email=*** token=*** message=ready\ntoken=*** nottoken=visible message=email-help",
+          "objective": "只脱敏 email 与 token 字段，保留日志其余结构和普通消息。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "没有键边界的正则会误伤 nottoken 这样的普通字段。",
+            "本例值不能包含空白；需要引号值时应换成完整的字段词法分析。"
+          ],
+          "exercises": [
+            {
+              "prompt": "再脱敏 phone 字段，但不要改变 headphone 字段。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "将正则键分支改为 email|token|phone，保留行首或空白前缀，并加入 phone=123 headphone=ok 的测试。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-124",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "词频 Top N 与并列规则",
+      "summary": "统计多行文档的词频，按次数降序、单词字典序处理并列并取前三名。",
+      "concepts": [
+        "bufio.Scanner",
+        "词频映射",
+        "sort.Slice",
+        "稳定并列规则"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-124-lesson",
+          "title": "词频 Top N 与并列规则",
+          "summary": "统计多行文档的词频，按次数降序、单词字典序处理并列并取前三名。",
+          "concepts": [
+            "bufio.Scanner",
+            "词频映射",
+            "sort.Slice",
+            "稳定并列规则"
+          ],
+          "explain": "Scanner 使用 ScanWords 把文档按空白拆词，统一小写后累加计数，再将 map 转成可排序的记录切片。比较器首先比较次数，次数相同时比较单词，因此 map 的遍历顺序不会影响结果。输入刻意让 alpha 和 gamma 次数相同，输出验证字典序决胜；N 超过词数时自动收缩，N 为零时不访问首项。标点归一化不属于此处的空白词元规则。",
+          "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n)\n\ntype Word struct {\n\tText  string\n\tCount int\n}\n\nfunc top(text string, n int) []Word {\n\tcounts := map[string]int{}\n\tscanner := bufio.NewScanner(strings.NewReader(text))\n\tscanner.Split(bufio.ScanWords)\n\tfor scanner.Scan() {\n\t\tcounts[strings.ToLower(scanner.Text())]++\n\t}\n\tif err := scanner.Err(); err != nil {\n\t\tpanic(err)\n\t}\n\twords := make([]Word, 0, len(counts))\n\tfor word, count := range counts {\n\t\twords = append(words, Word{word, count})\n\t}\n\tsort.Slice(words, func(i, j int) bool {\n\t\tif words[i].Count != words[j].Count {\n\t\t\treturn words[i].Count > words[j].Count\n\t\t}\n\t\treturn words[i].Text < words[j].Text\n\t})\n\tif n > len(words) {\n\t\tn = len(words)\n\t}\n\treturn words[:n]\n}\n\nfunc main() {\n\ttext := \"Beta alpha beta\\ngamma ALPHA gamma beta delta\"\n\tfor _, word := range top(text, 3) {\n\t\tfmt.Printf(\"%s=%d\\n\", word.Text, word.Count)\n\t}\n\tfmt.Printf(\"zero=%d all=%d\\n\", len(top(text, 0)), len(top(text, 99)))\n}\n",
+          "output": "beta=3\nalpha=2\ngamma=2\nzero=0 all=4",
+          "objective": "统计多行文档的词频，按次数降序、单词字典序处理并列并取前三名。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "直接从 map 取前三项没有确定顺序。",
+            "比较器缺少次数相同时的规则，会让并列结果不稳定。"
+          ],
+          "exercises": [
+            {
+              "prompt": "支持负数 N 并将其作为错误返回，而不是触发切片越界。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "让 top 接受 N 后先判断 N < 0 并返回错误；保留 N==0 的空结果，不把负值自动改成零。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-125",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "带引号键值解析",
+      "summary": "解析含空格与转义的 key=value 配置，并明确报告未闭合引号。",
+      "concepts": [
+        "词法扫描",
+        "strconv.Unquote",
+        "转义状态",
+        "错误边界"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-125-lesson",
+          "title": "带引号键值解析",
+          "summary": "解析含空格与转义的 key=value 配置，并明确报告未闭合引号。",
+          "concepts": [
+            "词法扫描",
+            "strconv.Unquote",
+            "转义状态",
+            "错误边界"
+          ],
+          "explain": "解析器每次消费一个键和一个值。引号值用 escaped 状态跳过被反斜杠保护的字符，找到真正的结束引号后交给 strconv.Unquote 处理转义；普通值消费到下一个空白。引号后必须是空白或输入结尾，防止错误地接受 name=\"Lin\"junk。最后单独 ParseBool，词法正确与值的业务类型正确是两个不同检查。重复键在此采用后值覆盖策略。",
+          "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc parse(text string) (map[string]string, error) {\n\tresult := map[string]string{}\n\tfor text = strings.TrimSpace(text); text != \"\"; text = strings.TrimSpace(text) {\n\t\teq := strings.IndexByte(text, '=')\n\t\tif eq < 1 {\n\t\t\treturn nil, fmt.Errorf(\"missing key or equals\")\n\t\t}\n\t\tkey := strings.TrimSpace(text[:eq])\n\t\ttext = strings.TrimSpace(text[eq+1:])\n\t\tif text == \"\" {\n\t\t\treturn nil, fmt.Errorf(\"missing value for %s\", key)\n\t\t}\n\t\tvalue := \"\"\n\t\tif text[0] == '\"' {\n\t\t\tend, escaped := -1, false\n\t\t\tfor i := 1; i < len(text); i++ {\n\t\t\t\tif escaped {\n\t\t\t\t\tescaped = false\n\t\t\t\t\tcontinue\n\t\t\t\t}\n\t\t\t\tif text[i] == '\\\\' {\n\t\t\t\t\tescaped = true\n\t\t\t\t\tcontinue\n\t\t\t\t}\n\t\t\t\tif text[i] == '\"' {\n\t\t\t\t\tend = i\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t\tif end < 0 {\n\t\t\t\treturn nil, fmt.Errorf(\"unclosed quote\")\n\t\t\t}\n\t\t\tvar err error\n\t\t\tvalue, err = strconv.Unquote(text[:end+1])\n\t\t\tif err != nil {\n\t\t\t\treturn nil, err\n\t\t\t}\n\t\t\ttext = text[end+1:]\n\t\t\tif text != \"\" && !strings.ContainsAny(text[:1], \" \\t\\r\\n\") {\n\t\t\t\treturn nil, fmt.Errorf(\"missing field separator\")\n\t\t\t}\n\t\t} else {\n\t\t\tend := strings.IndexAny(text, \" \\t\\r\\n\")\n\t\t\tif end < 0 {\n\t\t\t\tend = len(text)\n\t\t\t}\n\t\t\tvalue, text = text[:end], text[end:]\n\t\t}\n\t\tresult[key] = value\n\t}\n\treturn result, nil\n}\n\nfunc main() {\n\tvalues, err := parse(`name=\"Li Yu\" enabled=true note=\"say \\\"hi\\\"\"`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tenabled, err := strconv.ParseBool(values[\"enabled\"])\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"name=%s enabled=%t note=%s\\n\", values[\"name\"], enabled, values[\"note\"])\n\t_, err = parse(`name=\"unfinished`)\n\tfmt.Printf(\"unclosed=%t\\n\", err != nil)\n\t_, err = parse(`name=\"Lin\"junk`)\n\tfmt.Printf(\"missing-separator=%t\\n\", err != nil)\n}\n",
+          "output": "name=Li Yu enabled=true note=say \"hi\"\nunclosed=true\nmissing-separator=true",
+          "objective": "解析含空格与转义的 key=value 配置，并明确报告未闭合引号。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "只查找下一个双引号会把转义引号误当作结束位置。",
+            "Unquote 成功不意味着 enabled 是合法布尔值，还需 ParseBool。"
+          ],
+          "exercises": [
+            {
+              "prompt": "改为拒绝重复键，并返回重复键名。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "在 result[key]=value 前用 _, exists := result[key] 检查；若已存在就返回 fmt.Errorf，避免静默覆盖。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-126",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "最长公共前后缀",
+      "summary": "计算多个版本文件名的公共前缀和后缀，避免切断中文字符。",
+      "concepts": [
+        "strings.HasPrefix",
+        "strings.HasSuffix",
+        "rune 边界",
+        "utf8.ValidString"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-126-lesson",
+          "title": "最长公共前后缀",
+          "summary": "计算多个版本文件名的公共前缀和后缀，避免切断中文字符。",
+          "concepts": [
+            "strings.HasPrefix",
+            "strings.HasSuffix",
+            "rune 边界",
+            "utf8.ValidString"
+          ],
+          "explain": "先用第一个文件名初始化候选前后缀，然后逐个缩短，直到所有名称都匹配。候选通过 rune 切片缩短，保证每次都移除完整字符；最后用 utf8.ValidString 验证结果。前后缀独立计算，短输入时它们可能重叠，不能直接据此切割中间部分。零个名称有明确定义，返回两个空字符串。",
+          "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"unicode/utf8\"\n)\n\nfunc common(names []string) (string, string) {\n\tif len(names) == 0 {\n\t\treturn \"\", \"\"\n\t}\n\tprefix, suffix := []rune(names[0]), []rune(names[0])\n\tfor _, name := range names[1:] {\n\t\tfor !strings.HasPrefix(name, string(prefix)) {\n\t\t\tprefix = prefix[:len(prefix)-1]\n\t\t}\n\t\tfor !strings.HasSuffix(name, string(suffix)) {\n\t\t\tsuffix = suffix[1:]\n\t\t}\n\t}\n\treturn string(prefix), string(suffix)\n}\n\nfunc main() {\n\tprefix, suffix := common([]string{\"报告-2024.csv\", \"报告-2025.csv\", \"报告-2026.csv\"})\n\tfmt.Printf(\"prefix=%s suffix=%s\\n\", prefix, suffix)\n\tfmt.Printf(\"utf8=%t\\n\", utf8.ValidString(prefix) && utf8.ValidString(suffix))\n\ta, b := common(nil)\n\tfmt.Printf(\"empty=%t\\n\", a == \"\" && b == \"\")\n}\n",
+          "output": "prefix=报告-202 suffix=.csv\nutf8=true\nempty=true",
+          "objective": "计算多个版本文件名的公共前缀和后缀，避免切断中文字符。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "按字节每次减一可能留下半个中文字符。",
+            "独立求出的前后缀可能重叠；用来提取中间文本前必须检查长度。"
+          ],
+          "exercises": [
+            {
+              "prompt": "增加只有一个名称的输入，并说明前后缀为什么都等于完整名称。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "候选来自第一个名称，没有其他名称触发缩短，因此两者都保持原值；若业务要求不重叠，应另外定义截断策略。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-127",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "逐行差异定位",
+      "summary": "对比两份文本，输出新增、删除与改变的内容及其原始行号。",
+      "concepts": [
+        "bufio.Scanner",
+        "最长公共子序列",
+        "编辑脚本",
+        "行号映射"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-127-lesson",
+          "title": "逐行差异定位",
+          "summary": "对比两份文本，输出新增、删除与改变的内容及其原始行号。",
+          "concepts": [
+            "bufio.Scanner",
+            "最长公共子序列",
+            "编辑脚本",
+            "行号映射"
+          ],
+          "explain": "动态规划表保存从每一对行位置开始的最长公共子序列长度。回溯时相同行同时前进，不同则选择保留更多公共行的删除或新增操作；并列时固定先删除，结果便可重复。相邻的一次删除和一次新增合并显示为改变，但保留两份文件各自的行号。这里比较整行，时间和空间为行数乘积，适合小配置与短日志。",
+          "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc lines(text string) []string {\n\tresult := []string{}\n\tscan := bufio.NewScanner(strings.NewReader(text))\n\tfor scan.Scan() {\n\t\tresult = append(result, scan.Text())\n\t}\n\tif err := scan.Err(); err != nil {\n\t\tpanic(err)\n\t}\n\treturn result\n}\n\ntype Edit struct {\n\tKind string\n\tOld  int\n\tNew  int\n\tText string\n}\n\nfunc diff(a, b []string) []Edit {\n\ttable := make([][]int, len(a)+1)\n\tfor i := range table {\n\t\ttable[i] = make([]int, len(b)+1)\n\t}\n\tfor i := len(a) - 1; i >= 0; i-- {\n\t\tfor j := len(b) - 1; j >= 0; j-- {\n\t\t\tif a[i] == b[j] {\n\t\t\t\ttable[i][j] = table[i+1][j+1] + 1\n\t\t\t} else if table[i+1][j] >= table[i][j+1] {\n\t\t\t\ttable[i][j] = table[i+1][j]\n\t\t\t} else {\n\t\t\t\ttable[i][j] = table[i][j+1]\n\t\t\t}\n\t\t}\n\t}\n\tedits := []Edit{}\n\ti, j := 0, 0\n\tfor i < len(a) || j < len(b) {\n\t\tif i < len(a) && j < len(b) && a[i] == b[j] {\n\t\t\ti++\n\t\t\tj++\n\t\t\tcontinue\n\t\t}\n\t\tif i < len(a) && (j == len(b) || table[i+1][j] >= table[i][j+1]) {\n\t\t\tedits = append(edits, Edit{\"delete\", i + 1, j + 1, a[i]})\n\t\t\ti++\n\t\t} else {\n\t\t\tedits = append(edits, Edit{\"add\", i + 1, j + 1, b[j]})\n\t\t\tj++\n\t\t}\n\t}\n\treturn edits\n}\n\nfunc main() {\n\tedits := diff(lines(\"alpha\\nbeta\\ngamma\\ndelta\\nobsolete\"), lines(\"alpha\\nBETA\\ngamma\\nomega\\ndelta\"))\n\tfor i := 0; i < len(edits); i++ {\n\t\tedit := edits[i]\n\t\tif edit.Kind == \"delete\" && i+1 < len(edits) && edits[i+1].Kind == \"add\" {\n\t\t\tnext := edits[i+1]\n\t\t\tfmt.Printf(\"change old:%d new:%d %s -> %s\\n\", edit.Old, next.New, edit.Text, next.Text)\n\t\t\ti++\n\t\t} else if edit.Kind == \"delete\" {\n\t\t\tfmt.Printf(\"delete old:%d %s\\n\", edit.Old, edit.Text)\n\t\t} else {\n\t\t\tfmt.Printf(\"add new:%d %s\\n\", edit.New, edit.Text)\n\t\t}\n\t}\n}\n",
+          "output": "change old:2 new:2 beta -> BETA\nadd new:4 omega\ndelete old:5 obsolete",
+          "objective": "对比两份文本，输出新增、删除与改变的内容及其原始行号。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "把两份文件相同行号直接比较，会把插入之后的所有行误报为改变。",
+            "矩阵空间随两份文本行数的乘积增长，不能无预算用于巨大文件。"
+          ],
+          "exercises": [
+            {
+              "prompt": "在分配矩阵前增加两份文本的行数乘积预算，超过预算返回错误。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "读取行数后先检查 len(old) 和 len(new)，用除法避免乘法溢出，再允许分配 (n+1)*(m+1) 单元。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-128",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "扫描器长行预算",
+      "summary": "给逐行读取设置明确长度上限，区分可接受的长行与超预算输入。",
+      "concepts": [
+        "bufio.Scanner.Buffer",
+        "资源预算",
+        "Scanner.Err"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-128-lesson",
+          "title": "扫描器长行预算",
+          "summary": "给逐行读取设置明确长度上限，区分可接受的长行与超预算输入。",
+          "concepts": [
+            "bufio.Scanner.Buffer",
+            "资源预算",
+            "Scanner.Err"
+          ],
+          "explain": "Scanner 默认限制并不等于业务预算。这里提供容量为四的初始缓冲，设置最大 token 缓冲为十二字节；九字节的长行可扩容读入，而十四字节的行触发错误。每次循环结束都检查 Err，不能把停止扫描自动当作输入正常结束。最大缓冲还需要容纳行分隔符，因此不要把该参数直接宣传为精确的正文字符数限制。",
+          "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc inspect(text string) (int, int, error) {\n\tscanner := bufio.NewScanner(strings.NewReader(text))\n\tscanner.Buffer(make([]byte, 4), 12)\n\tcount, longest := 0, 0\n\tfor scanner.Scan() {\n\t\tcount++\n\t\tif len(scanner.Text()) > longest {\n\t\t\tlongest = len(scanner.Text())\n\t\t}\n\t}\n\treturn count, longest, scanner.Err()\n}\n\nfunc main() {\n\tcount, longest, err := inspect(\"short\\n\" + strings.Repeat(\"x\", 9) + \"\\n\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"lines=%d longest=%d\\n\", count, longest)\n\t_, _, err = inspect(strings.Repeat(\"x\", 14))\n\tfmt.Printf(\"oversized=%t\\n\", err != nil)\n}\n",
+          "output": "lines=2 longest=9\noversized=true",
+          "objective": "给逐行读取设置明确长度上限，区分可接受的长行与超预算输入。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "Buffer 的初始切片容量若已经大于业务上限，可能让较长 token 无需扩容就被接受。",
+            "Scanner 停止既可能是 EOF，也可能是超长错误；必须检查 Err。"
+          ],
+          "exercises": [
+            {
+              "prompt": "按 UTF-8 字符数限制每行最多五个字符，并保持字节读取预算。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "先用 Scanner 的字节上限约束内存，Scan 成功后用 utf8.RuneCountInString 检查字符数；两个预算分别报告，不混淆字节和字符。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-129",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "多模式替换优先级",
+      "summary": "一次转义日志分隔符，验证新生成文本不会二次替换，并比较重叠模式顺序。",
+      "concepts": [
+        "strings.NewReplacer",
+        "单次替换",
+        "重叠模式优先级"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-129-lesson",
+          "title": "多模式替换优先级",
+          "summary": "一次转义日志分隔符，验证新生成文本不会二次替换，并比较重叠模式顺序。",
+          "concepts": [
+            "strings.NewReplacer",
+            "单次替换",
+            "重叠模式优先级"
+          ],
+          "explain": "NewReplacer 在原始输入上匹配，写出的替换结果不会再次参与匹配。竖线生成的反斜杠因此不会被反斜杠规则再次放大，和依次调用多次 ReplaceAll 的行为不同。模式重叠时，参数中较早的匹配优先；第二部分用 a 与 ab 展示这一点。如果业务要优先较长模式，应在规则表中明确排序，而不能假定 Replacer 自动选择最长项。",
+          "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\tescape := strings.NewReplacer(\"|\", `\\|`, `\\`, `\\\\`, \"\\n\", `\\n`)\n\tfmt.Printf(\"escaped=%s\\n\", escape.Replace(\"a|b\\\\c\\nnext\"))\n\tfirst := strings.NewReplacer(\"a\", \"1\", \"ab\", \"2\")\n\tlongest := strings.NewReplacer(\"ab\", \"2\", \"a\", \"1\")\n\tfmt.Printf(\"first=%s\\n\", first.Replace(\"ab a\"))\n\tfmt.Printf(\"longest=%s\\n\", longest.Replace(\"ab a\"))\n}\n",
+          "output": "escaped=a\\|b\\\\c\\nnext\nfirst=1b 1\nlongest=2 1",
+          "objective": "一次转义日志分隔符，验证新生成文本不会二次替换，并比较重叠模式顺序。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "连续 ReplaceAll 会让前一轮生成的内容参与下一轮，改变转义层数。",
+            "重叠模式按参数顺序决胜，并非自动最长匹配。"
+          ],
+          "exercises": [
+            {
+              "prompt": "加入制表符转义，并说明为什么生成的反斜杠不会再匹配反斜杠规则。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "在同一个 NewReplacer 中加入制表符到反斜杠加 t 的规则；算法只消费原始输入，所以写出的反斜杠不会重新扫描。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-130",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "词边界倒排索引",
+      "summary": "为三篇离线文档建立去重词索引，并求多个查询词对应文档的交集。",
+      "concepts": [
+        "unicode",
+        "倒排索引",
+        "集合交集",
+        "sort.Ints"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-130-lesson",
+          "title": "词边界倒排索引",
+          "summary": "为三篇离线文档建立去重词索引，并求多个查询词对应文档的交集。",
+          "concepts": [
+            "unicode",
+            "倒排索引",
+            "集合交集",
+            "sort.Ints"
+          ],
+          "explain": "FieldsFunc 按非字母、非数字划分词元，小写归一后把文档 ID 写入集合。同一文档里重复出现 go 仍只产生一个索引成员。查询先遍历第一个词的候选文档，再要求每个后续词都包含该 ID，最后排序输出，保证确定性。查询缺失词返回空切片；零词查询也被定义为空结果，而不是所有文档。",
+          "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n\t\"unicode\"\n)\n\ntype Index map[string]map[int]bool\n\nfunc build(documents []string) Index {\n\tindex := Index{}\n\tfor i, document := range documents {\n\t\twords := strings.FieldsFunc(strings.ToLower(document), func(r rune) bool {\n\t\t\treturn !unicode.IsLetter(r) && !unicode.IsNumber(r)\n\t\t})\n\t\tfor _, word := range words {\n\t\t\tif index[word] == nil {\n\t\t\t\tindex[word] = map[int]bool{}\n\t\t\t}\n\t\t\tindex[word][i+1] = true\n\t\t}\n\t}\n\treturn index\n}\n\nfunc query(index Index, words ...string) []int {\n\tresult := []int{}\n\tif len(words) == 0 {\n\t\treturn result\n\t}\n\tfor id := range index[strings.ToLower(words[0])] {\n\t\tfound := true\n\t\tfor _, word := range words[1:] {\n\t\t\tif !index[strings.ToLower(word)][id] {\n\t\t\t\tfound = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t}\n\t\tif found {\n\t\t\tresult = append(result, id)\n\t\t}\n\t}\n\tsort.Ints(result)\n\treturn result\n}\n\nfunc main() {\n\tindex := build([]string{\"Go local tools go\", \"Go offline docs\", \"local offline data\"})\n\tfmt.Printf(\"go=%v\\n\", query(index, \"go\"))\n\tfmt.Printf(\"go+local=%v\\n\", query(index, \"go\", \"local\"))\n\tfmt.Printf(\"local+offline=%v\\n\", query(index, \"local\", \"offline\"))\n\tfmt.Printf(\"missing=%v\\n\", query(index, \"absent\"))\n}\n",
+          "output": "go=[1 2]\ngo+local=[1]\nlocal+offline=[3]\nmissing=[]",
+          "objective": "为三篇离线文档建立去重词索引，并求多个查询词对应文档的交集。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "把出现次数当作索引列表会重复返回同一文档。",
+            "map 集合无稳定顺序，输出前应排序 ID。"
+          ],
+          "exercises": [
+            {
+              "prompt": "增加三个词的 AND 查询，并保证某个词不存在时快速返回空结果。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "现有 query 已循环检查其余词，可直接传三个词；查询前检查每个词的集合是否为空，若为空立即返回空切片。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-131",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "十六进制校验输入",
+      "summary": "解析空白分组的十六进制字节，拒绝奇数长度和非法字符并输出规范形式。",
+      "concepts": [
+        "encoding/hex",
+        "字节表示",
+        "输入校验"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-131-lesson",
+          "title": "十六进制校验输入",
+          "summary": "解析空白分组的十六进制字节，拒绝奇数长度和非法字符并输出规范形式。",
+          "concepts": [
+            "encoding/hex",
+            "字节表示",
+            "输入校验"
+          ],
+          "explain": "输入先通过 Fields 去掉分组空白，再交给 hex.DecodeString。十六进制中的每两个字符表示一个字节，奇数长度无法组成完整字节；长度正确但出现 z 也必须失败。EncodeToString 为合法结果生成统一的小写形式，避免把原始输入的大小写或分组格式当作规范数据。这里只允许空白分组，不会偷偷忽略冒号等未声明字符。",
+          "code": "package main\n\nimport (\n\t\"encoding/hex\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc decode(text string) ([]byte, error) {\n\treturn hex.DecodeString(strings.Join(strings.Fields(text), \"\"))\n}\n\nfunc main() {\n\tdata, err := decode(\"0A ff\\t10\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"bytes=%s length=%d\\n\", hex.EncodeToString(data), len(data))\n\t_, err = decode(\"abc\")\n\tfmt.Printf(\"odd-rejected=%t\\n\", err != nil)\n\t_, err = decode(\"00 zz\")\n\tfmt.Printf(\"invalid-rejected=%t\\n\", err != nil)\n}\n",
+          "output": "bytes=0aff10 length=3\nodd-rejected=true\ninvalid-rejected=true",
+          "objective": "解析空白分组的十六进制字节，拒绝奇数长度和非法字符并输出规范形式。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "不能用删除所有非十六进制字符的方法校验，它会把损坏输入变成另一份合法数据。",
+            "奇数长度与非法字符是不同错误，二者都不能只返回空切片表示成功。"
+          ],
+          "exercises": [
+            {
+              "prompt": "允许可选的 0x 前缀，同时继续拒绝字节之间的冒号。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "对 TrimSpace 后的整体输入只调用一次 TrimPrefix 去掉 0x，再沿用 Fields 和 DecodeString；不要对中间每个字段随意去前缀。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-132",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "Base32 人工核对编号",
+      "summary": "生成无填充的批次编号，验证解码往返并明确小写输入的处理规则。",
+      "concepts": [
+        "encoding/base32",
+        "NoPadding",
+        "大小写策略"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-132-lesson",
+          "title": "Base32 人工核对编号",
+          "summary": "生成无填充的批次编号，验证解码往返并明确小写输入的处理规则。",
+          "concepts": [
+            "encoding/base32",
+            "NoPadding",
+            "大小写策略"
+          ],
+          "explain": "Base32 将字节映射为较小的字符集合，适合展示和手工核对。这里选用标准字母表并关闭填充，固定批次标识 foo 对应 MZXW6。解码器的大小写规则不能靠猜测：原始小写输入被拒绝，面向人工输入的包装层可以显式转成大写后再解码。大小写归一化是产品策略，编码本身并不提供校验和或防篡改能力。",
+          "code": "package main\n\nimport (\n\t\"encoding/base32\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\tcodec := base32.StdEncoding.WithPadding(base32.NoPadding)\n\tid := codec.EncodeToString([]byte(\"foo\"))\n\trestored, err := codec.DecodeString(id)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"id=%s restored=%s\\n\", id, restored)\n\tlower := strings.ToLower(id)\n\t_, err = codec.DecodeString(lower)\n\tfmt.Printf(\"lower-rejected=%t\\n\", err != nil)\n\tnormalized, err := codec.DecodeString(strings.ToUpper(lower))\n\tfmt.Printf(\"normalized=%t\\n\", err == nil && string(normalized) == \"foo\")\n}\n",
+          "output": "id=MZXW6 restored=foo\nlower-rejected=true\nnormalized=true",
+          "objective": "生成无填充的批次编号，验证解码往返并明确小写输入的处理规则。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "无填充编码必须使用同样的 NoPadding 解码器。",
+            "Base32 只是编码，不是加密；编号中的原始内容可以恢复。"
+          ],
+          "exercises": [
+            {
+              "prompt": "在编号后增加短校验码，并在转大写后先验证校验码再解码。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "先定义校验码算法和覆盖范围，例如对规范大写编码计算 CRC；校验失败返回错误，不把 CRC 当作身份认证。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-133",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "URL 安全 Base64 游标",
+      "summary": "把分页位置编码为 URL 安全游标，读取下一页并拒绝非法或负数位置。",
+      "concepts": [
+        "encoding/base64",
+        "encoding/json",
+        "分页游标",
+        "边界校验"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-133-lesson",
+          "title": "URL 安全 Base64 游标",
+          "summary": "把分页位置编码为 URL 安全游标，读取下一页并拒绝非法或负数位置。",
+          "concepts": [
+            "encoding/base64",
+            "encoding/json",
+            "分页游标",
+            "边界校验"
+          ],
+          "explain": "游标用 JSON 保存 offset 与 limit，再通过 RawURLEncoding 生成无需填充的 URL 安全字符串。读取时按相反顺序解码，并把结构校验放在切片操作之前。有效游标读取 c、d 两项，下一页位置为四；损坏编码与负偏移分别被拒绝。游标不包含签名，服务端若依赖它做权限判断还需要认证，不能因为内容经过 Base64 就信任它。",
+          "code": "package main\n\nimport (\n\t\"encoding/base64\"\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Cursor struct {\n\tOffset int `json:\"offset\"`\n\tLimit  int `json:\"limit\"`\n}\n\nfunc encode(cursor Cursor) string {\n\tdata, err := json.Marshal(cursor)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\treturn base64.RawURLEncoding.EncodeToString(data)\n}\n\nfunc decode(text string) (Cursor, error) {\n\tvar cursor Cursor\n\tdata, err := base64.RawURLEncoding.DecodeString(text)\n\tif err != nil {\n\t\treturn cursor, err\n\t}\n\tif err := json.Unmarshal(data, &cursor); err != nil {\n\t\treturn cursor, err\n\t}\n\tif cursor.Offset < 0 || cursor.Limit < 1 || cursor.Limit > 50 {\n\t\treturn cursor, fmt.Errorf(\"invalid cursor bounds\")\n\t}\n\treturn cursor, nil\n}\n\nfunc page(items []string, cursor Cursor) ([]string, string, error) {\n\tif cursor.Offset < 0 || cursor.Offset > len(items) || cursor.Limit < 1 || cursor.Limit > 50 {\n\t\treturn nil, \"\", fmt.Errorf(\"invalid page bounds\")\n\t}\n\tcount := len(items) - cursor.Offset\n\tif count > cursor.Limit {\n\t\tcount = cursor.Limit\n\t}\n\tend := cursor.Offset + count\n\tnext := \"\"\n\tif end < len(items) {\n\t\tnext = encode(Cursor{end, cursor.Limit})\n\t}\n\treturn items[cursor.Offset:end], next, nil\n}\n\nfunc main() {\n\tcursor, err := decode(encode(Cursor{2, 2}))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\titems, next, err := page([]string{\"a\", \"b\", \"c\", \"d\", \"e\"}, cursor)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tnextCursor, err := decode(next)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"page=%v next=%d\\n\", items, nextCursor.Offset)\n\t_, err = decode(\"*\")\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n\t_, err = decode(encode(Cursor{-1, 2}))\n\tfmt.Printf(\"negative=%t\\n\", err != nil)\n}\n",
+          "output": "page=[c d] next=4\ninvalid=true\nnegative=true",
+          "objective": "把分页位置编码为 URL 安全游标，读取下一页并拒绝非法或负数位置。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "Base64 解码成功不代表 JSON 和分页范围合法。",
+            "切片上界计算必须在验证 offset 与 limit 后进行，避免越界或溢出。"
+          ],
+          "exercises": [
+            {
+              "prompt": "当剩余数据少于 limit 时返回剩余项，并用空游标表示结束。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "先计算 remaining := len(items)-offset，再取 min(limit, remaining)，只有 end < len(items) 时生成下一游标；避免先计算可能溢出的 offset+limit。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-134",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "严格 JSON 配置",
+      "summary": "严格读取配置，拒绝未知字段和尾随第二个 JSON 值，并保留缺失字段的默认值。",
+      "concepts": [
+        "json.Decoder",
+        "DisallowUnknownFields",
+        "默认值",
+        "尾随输入"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-134-lesson",
+          "title": "严格 JSON 配置",
+          "summary": "严格读取配置，拒绝未知字段和尾随第二个 JSON 值，并保留缺失字段的默认值。",
+          "concepts": [
+            "json.Decoder",
+            "DisallowUnknownFields",
+            "默认值",
+            "尾随输入"
+          ],
+          "explain": "解码前初始化默认配置，JSON 中未出现的字段保持原值，而显式 false 会覆盖 true。DisallowUnknownFields 阻止拼错字段被静默忽略；首次 Decode 成功之后还要再次解码并要求 io.EOF，才能拒绝两个相邻 JSON 对象。默认值、结构校验与完整输入校验分别解决不同问题，不能只完成其中一步。",
+          "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\ntype Config struct {\n\tName    string `json:\"name\"`\n\tTimeout int    `json:\"timeout\"`\n\tEnabled bool   `json:\"enabled\"`\n}\n\nfunc load(text string) (Config, error) {\n\tcfg := Config{Name: \"default\", Timeout: 3, Enabled: true}\n\tdecoder := json.NewDecoder(strings.NewReader(text))\n\tdecoder.DisallowUnknownFields()\n\tif err := decoder.Decode(&cfg); err != nil {\n\t\treturn cfg, err\n\t}\n\tvar extra interface{}\n\tif err := decoder.Decode(&extra); err != io.EOF {\n\t\tif err == nil {\n\t\t\terr = fmt.Errorf(\"second JSON value\")\n\t\t}\n\t\treturn cfg, err\n\t}\n\treturn cfg, nil\n}\n\nfunc main() {\n\tcfg, err := load(`{\"name\":\"local\",\"enabled\":false}`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"name=%s timeout=%d enabled=%t\\n\", cfg.Name, cfg.Timeout, cfg.Enabled)\n\t_, err = load(`{\"timeuot\":8}`)\n\tfmt.Printf(\"unknown=%t\\n\", err != nil)\n\t_, err = load(`{} {}`)\n\tfmt.Printf(\"trailing=%t\\n\", err != nil)\n}\n",
+          "output": "name=local timeout=3 enabled=false\nunknown=true\ntrailing=true",
+          "objective": "严格读取配置，拒绝未知字段和尾随第二个 JSON 值，并保留缺失字段的默认值。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "把 false 视作缺失会覆盖用户明确关闭的选项。",
+            "第一次 Decode 成功后输入仍可能有第二个值，必须检查 EOF。"
+          ],
+          "exercises": [
+            {
+              "prompt": "增加 timeout 必须大于零且不超过六十秒的业务约束。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "在两次解码检查全部成功之后验证 Timeout 范围；这样未知字段或尾随内容不会被业务检查掩盖。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-135",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "JSON 多态消息",
+      "summary": "先读取事件类型，再解码对应载荷，拒绝未知类型和字段类型错误。",
+      "concepts": [
+        "json.RawMessage",
+        "事件判别",
+        "分阶段解码"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-135-lesson",
+          "title": "JSON 多态消息",
+          "summary": "先读取事件类型，再解码对应载荷，拒绝未知类型和字段类型错误。",
+          "concepts": [
+            "json.RawMessage",
+            "事件判别",
+            "分阶段解码"
+          ],
+          "explain": "消息外层先解码 kind 和 RawMessage，不急于猜测 payload 的结构。switch 根据 kind 选择用户或配额结构，再进行第二次解码和必要字段检查。两种事件可共享外层协议，但各自有明确的载荷契约；未知 kind 直接报错，配额数字被写成字符串也不会混过去。这个结构比 map[string]interface{} 的反复类型断言更清晰。",
+          "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Envelope struct {\n\tKind    string          `json:\"kind\"`\n\tPayload json.RawMessage `json:\"payload\"`\n}\n\nfunc describe(text string) (string, error) {\n\tvar event Envelope\n\tif err := json.Unmarshal([]byte(text), &event); err != nil {\n\t\treturn \"\", err\n\t}\n\tswitch event.Kind {\n\tcase \"user\":\n\t\tvar user struct {\n\t\t\tName string `json:\"name\"`\n\t\t}\n\t\tif err := json.Unmarshal(event.Payload, &user); err != nil {\n\t\t\treturn \"\", err\n\t\t}\n\t\tif user.Name == \"\" {\n\t\t\treturn \"\", fmt.Errorf(\"missing name\")\n\t\t}\n\t\treturn \"user=\" + user.Name, nil\n\tcase \"quota\":\n\t\tvar quota struct {\n\t\t\tLimit int `json:\"limit\"`\n\t\t}\n\t\tif err := json.Unmarshal(event.Payload, &quota); err != nil {\n\t\t\treturn \"\", err\n\t\t}\n\t\tif quota.Limit < 1 {\n\t\t\treturn \"\", fmt.Errorf(\"invalid limit\")\n\t\t}\n\t\treturn fmt.Sprintf(\"limit=%d\", quota.Limit), nil\n\tdefault:\n\t\treturn \"\", fmt.Errorf(\"unknown kind %q\", event.Kind)\n\t}\n}\n\nfunc main() {\n\tfor _, input := range []string{`{\"kind\":\"user\",\"payload\":{\"name\":\"Lin\"}}`, `{\"kind\":\"quota\",\"payload\":{\"limit\":8}}`} {\n\t\tline, err := describe(input)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Println(line)\n\t}\n\t_, err := describe(`{\"kind\":\"future\",\"payload\":{}}`)\n\tfmt.Printf(\"unknown=%t\\n\", err != nil)\n\t_, err = describe(`{\"kind\":\"quota\",\"payload\":{\"limit\":\"bad\"}}`)\n\tfmt.Printf(\"bad-payload=%t\\n\", err != nil)\n}\n",
+          "output": "user=Lin\nlimit=8\nunknown=true\nbad-payload=true",
+          "objective": "先读取事件类型，再解码对应载荷，拒绝未知类型和字段类型错误。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "RawMessage 保存原始 JSON 字节，不能直接把它当作已验证的业务对象。",
+            "未知事件类型不应悄悄走默认成功分支。"
+          ],
+          "exercises": [
+            {
+              "prompt": "新增 rename 事件，要求同时包含非空 old 与 new 字段。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "在 switch 添加专属结构和分支，Unmarshal 成功后分别检查两个字段；不要让它复用仅检查 name 的用户分支。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-136",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "JSON 部分更新的三态",
+      "summary": "区分字段缺失、null 与实际字符串，对用户昵称执行部分更新。",
+      "concepts": [
+        "json.RawMessage",
+        "缺失与 null",
+        "指针",
+        "原子更新"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-136-lesson",
+          "title": "JSON 部分更新的三态",
+          "summary": "区分字段缺失、null 与实际字符串，对用户昵称执行部分更新。",
+          "concepts": [
+            "json.RawMessage",
+            "缺失与 null",
+            "指针",
+            "原子更新"
+          ],
+          "explain": "普通字符串指针无法独立描述字段是否出现在补丁中，因此先将补丁解码为 RawMessage 映射。查不到键表示保持原值，null 表示清除指针，字符串表示赋新值。先把新值成功解码到局部变量再修改资料，错误输入不会破坏旧昵称。示例连续展示三种合法状态，并用数字值验证类型错误的拒绝路径。",
+          "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Profile struct{ Nickname *string }\n\nfunc apply(profile *Profile, text string) error {\n\tvar fields map[string]json.RawMessage\n\tif err := json.Unmarshal([]byte(text), &fields); err != nil {\n\t\treturn err\n\t}\n\traw, exists := fields[\"nickname\"]\n\tif !exists {\n\t\treturn nil\n\t}\n\tif bytes.Equal(bytes.TrimSpace(raw), []byte(\"null\")) {\n\t\tprofile.Nickname = nil\n\t\treturn nil\n\t}\n\tvar name string\n\tif err := json.Unmarshal(raw, &name); err != nil {\n\t\treturn err\n\t}\n\tprofile.Nickname = &name\n\treturn nil\n}\n\nfunc display(profile Profile) string {\n\tif profile.Nickname == nil {\n\t\treturn \"<unset>\"\n\t}\n\treturn *profile.Nickname\n}\n\nfunc main() {\n\tinitial := \"Li\"\n\tprofile := Profile{&initial}\n\tfor _, step := range []struct {\n\t\tLabel string\n\t\tPatch string\n\t}{\n\t\t{\"missing\", `{}`}, {\"null\", `{\"nickname\":null}`}, {\"value\", `{\"nickname\":\"Yu\"}`},\n\t} {\n\t\tif err := apply(&profile, step.Patch); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s=%s\\n\", step.Label, display(profile))\n\t}\n\terr := apply(&profile, `{\"nickname\":42}`)\n\tfmt.Printf(\"bad-type=%t preserved=%s\\n\", err != nil, display(profile))\n}\n",
+          "output": "missing=Li\nnull=<unset>\nvalue=Yu\nbad-type=true preserved=Yu",
+          "objective": "区分字段缺失、null 与实际字符串，对用户昵称执行部分更新。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "缺失字段与显式 null 语义不同，不能都当作空字符串。",
+            "在完成类型检查前修改资料，会让失败补丁留下部分状态。"
+          ],
+          "exercises": [
+            {
+              "prompt": "支持同时更新 nickname 和 city，并保证任一字段错误时两个字段都不变。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "先复制资料为 candidate，在 candidate 上验证和更新所有字段，全部成功后一次赋回原资料；注意指针指向的可变对象也需按需要复制。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-137",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "CSV 账单汇总",
+      "summary": "按表头定位账单列，拒绝坏金额并汇总有效行，金额使用整数分。",
+      "concepts": [
+        "encoding/csv",
+        "表头索引",
+        "strconv.ParseInt",
+        "整数金额"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-137-lesson",
+          "title": "CSV 账单汇总",
+          "summary": "按表头定位账单列，拒绝坏金额并汇总有效行，金额使用整数分。",
+          "concepts": [
+            "encoding/csv",
+            "表头索引",
+            "strconv.ParseInt",
+            "整数金额"
+          ],
+          "explain": "CSV 的列顺序不应隐藏在数字下标里。先读取表头并建立索引，确认 quantity 与 cents 都存在，再逐行读取。整数分避免浮点舍入，解析失败或负值的行计入 rejected，CSV 结构错误则使整次读取失败。固定输入包括带逗号的商品名和坏金额，因此能同时验证格式解析与数据规则。乘积与总额在真实系统中还应加入溢出边界。",
+          "code": "package main\n\nimport (\n\t\"encoding/csv\"\n\t\"fmt\"\n\t\"io\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc total(text string) (int64, int, int, error) {\n\treader := csv.NewReader(strings.NewReader(text))\n\theader, err := reader.Read()\n\tif err != nil {\n\t\treturn 0, 0, 0, err\n\t}\n\tcolumns := map[string]int{}\n\tfor i, name := range header {\n\t\tcolumns[name] = i\n\t}\n\tquantity, hasQuantity := columns[\"quantity\"]\n\tcents, hasCents := columns[\"cents\"]\n\tif !hasQuantity || !hasCents {\n\t\treturn 0, 0, 0, fmt.Errorf(\"missing required header\")\n\t}\n\tvar sum int64\n\tvalid, rejected := 0, 0\n\tfor {\n\t\trow, err := reader.Read()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\treturn 0, valid, rejected, err\n\t\t}\n\t\tcount, countErr := strconv.ParseInt(row[quantity], 10, 64)\n\t\tprice, priceErr := strconv.ParseInt(row[cents], 10, 64)\n\t\tif countErr != nil || priceErr != nil || count < 0 || price < 0 {\n\t\t\trejected++\n\t\t\tcontinue\n\t\t}\n\t\tsum += count * price\n\t\tvalid++\n\t}\n\treturn sum, valid, rejected, nil\n}\n\nfunc main() {\n\tsum, valid, rejected, err := total(\"quantity,item,cents\\n2,\\\"tea, green\\\",250\\n1,cake,225\\n1,invalid,oops\\n\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"valid=%d rejected=%d total-cents=%d\\n\", valid, rejected, sum)\n\t_, _, _, err = total(\"item,cents\\ntea,250\\n\")\n\tfmt.Printf(\"missing-header=%t\\n\", err != nil)\n}\n",
+          "output": "valid=2 rejected=1 total-cents=725\nmissing-header=true",
+          "objective": "按表头定位账单列，拒绝坏金额并汇总有效行，金额使用整数分。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "不能用 strings.Split 解析 CSV，带引号的逗号属于字段内容。",
+            "金额使用浮点数会引入舍入问题；本例用整数分，但生产数据仍需溢出检查。"
+          ],
+          "exercises": [
+            {
+              "prompt": "增加单行金额与总额的溢出检查，错误行计入 rejected。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "对非负数先验证 cents <= MaxInt64/quantity，再验证 subtotal <= MaxInt64-total；quantity 为零时单独处理。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-138",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "CSV 安全导出",
+      "summary": "导出含逗号、双引号和换行的地址簿，再读回验证字段内容完全一致。",
+      "concepts": [
+        "csv.Writer",
+        "引号转义",
+        "多行字段",
+        "往返验证"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-138-lesson",
+          "title": "CSV 安全导出",
+          "summary": "导出含逗号、双引号和换行的地址簿，再读回验证字段内容完全一致。",
+          "concepts": [
+            "csv.Writer",
+            "引号转义",
+            "多行字段",
+            "往返验证"
+          ],
+          "explain": "CSV Writer 负责决定哪些字段需要引号，并把字段内部的双引号写成两个双引号。字段换行属于一条记录的内容，不能按文本行数计算联系人数量。程序把三行逻辑记录写到内存后重新解析，逐字段对比，并单独检查双引号和换行是否保留。这里的安全指 CSV 格式保持；若交给电子表格软件打开，还要另行制定公式前缀处理策略。",
+          "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/csv\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\trecords := [][]string{{\"name\", \"address\"}, {\"Lin\", \"East, Road\"}, {\"Yu\", \"\\\"Suite\\\" 3\\nFloor 2\"}}\n\tvar buffer bytes.Buffer\n\twriter := csv.NewWriter(&buffer)\n\tif err := writer.WriteAll(records); err != nil {\n\t\tpanic(err)\n\t}\n\tdecoded, err := csv.NewReader(strings.NewReader(buffer.String())).ReadAll()\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tequal := len(decoded) == len(records)\n\tif equal {\n\t\tfor i, row := range records {\n\t\t\tif len(decoded[i]) != len(row) {\n\t\t\t\tequal = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t\tfor j, value := range row {\n\t\t\t\tif decoded[i][j] != value {\n\t\t\t\t\tequal = false\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\tfmt.Printf(\"rows=%d roundtrip=%t\\n\", len(decoded)-1, equal)\n\tfmt.Printf(\"quotes-doubled=%t\\n\", strings.Contains(buffer.String(), `\"\"Suite\"\"`))\n\tfmt.Printf(\"line-preserved=%t\\n\", decoded[2][1] == \"\\\"Suite\\\" 3\\nFloor 2\")\n}\n",
+          "output": "rows=2 roundtrip=true\nquotes-doubled=true\nline-preserved=true",
+          "objective": "导出含逗号、双引号和换行的地址簿，再读回验证字段内容完全一致。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "自己拼接逗号和引号容易破坏嵌套引号及多行字段。",
+            "格式正确不等于防电子表格公式执行；本例不把 CSV 转义当作公式防护。"
+          ],
+          "exercises": [
+            {
+              "prompt": "导出前识别以等号开头的地址字段，并按明确的电子表格策略添加前缀。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "在业务层生成单独的表格导出副本，对危险前缀应用选定策略，再由 csv.Writer 处理格式；保留原始数据，说明该策略会改变单元格文本。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-139",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "XML 库存与属性",
+      "summary": "读取 XML 属性与嵌套库存，补充低库存项目并重新编码验证。",
+      "concepts": [
+        "encoding/xml",
+        "属性标签",
+        "嵌套路径",
+        "结构化更新"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-139-lesson",
+          "title": "XML 库存与属性",
+          "summary": "读取 XML 属性与嵌套库存，补充低库存项目并重新编码验证。",
+          "concepts": [
+            "encoding/xml",
+            "属性标签",
+            "嵌套路径",
+            "结构化更新"
+          ],
+          "explain": "结构体标签分别描述 sku 属性、quantity 子元素和 items>item 嵌套路径，数据转换无需手工拼接 XML 字符串。程序只将少于五件的商品补到五件，记录修改数量后 Marshal，再解码确认库存不变。坏库存文本无法解析成整数，会返回错误。未展示在结构中的 XML 内容可能被丢弃，所以这种读取再写出适用于受控协议，而不是任意文档的无损编辑。",
+          "code": "package main\n\nimport (\n\t\"encoding/xml\"\n\t\"fmt\"\n)\n\ntype Item struct {\n\tSKU      string `xml:\"sku,attr\"`\n\tQuantity int    `xml:\"quantity\"`\n}\ntype Inventory struct {\n\tXMLName xml.Name `xml:\"inventory\"`\n\tItems   []Item   `xml:\"items>item\"`\n}\n\nfunc main() {\n\tinput := `<inventory><items><item sku=\"A\"><quantity>1</quantity></item><item sku=\"B\"><quantity>7</quantity></item></items></inventory>`\n\tvar inventory Inventory\n\tif err := xml.Unmarshal([]byte(input), &inventory); err != nil {\n\t\tpanic(err)\n\t}\n\tchanged := 0\n\tfor i := range inventory.Items {\n\t\tif inventory.Items[i].Quantity < 5 {\n\t\t\tinventory.Items[i].Quantity = 5\n\t\t\tchanged++\n\t\t}\n\t}\n\tencoded, err := xml.Marshal(inventory)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar restored Inventory\n\tif err := xml.Unmarshal(encoded, &restored); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"restocked=%d\\n\", changed)\n\tfmt.Printf(\"%s=%d %s=%d\\n\", restored.Items[0].SKU, restored.Items[0].Quantity, restored.Items[1].SKU, restored.Items[1].Quantity)\n\tfmt.Printf(\"roundtrip=%t\\n\", len(restored.Items) == 2 && restored.Items[0].Quantity == 5 && restored.Items[1].Quantity == 7)\n\terr = xml.Unmarshal([]byte(`<inventory><items><item sku=\"C\"><quantity>many</quantity></item></items></inventory>`), &restored)\n\tfmt.Printf(\"bad-stock=%t\\n\", err != nil)\n}\n",
+          "output": "restocked=1\nA=5 B=7\nroundtrip=true\nbad-stock=true",
+          "objective": "读取 XML 属性与嵌套库存，补充低库存项目并重新编码验证。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "属性与子元素需要不同标签，sku,attr 不能写成普通元素。",
+            "结构化往返只保留已建模字段，不能保证保留原文注释、空白和未知节点。"
+          ],
+          "exercises": [
+            {
+              "prompt": "拒绝重复 sku，并保证整份库存验证成功后再开始补货。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "解码后先遍历并用 map 检查空 sku、重复 sku 和负库存；全部通过后再执行第二遍补货，避免错误数据的部分更新。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-140",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "Gob 快照兼容读取",
+      "summary": "写入旧版状态快照，用增加字段的新结构读取并验证零值兼容和截断错误。",
+      "concepts": [
+        "encoding/gob",
+        "字段兼容",
+        "零值",
+        "截断检测"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-140-lesson",
+          "title": "Gob 快照兼容读取",
+          "summary": "写入旧版状态快照，用增加字段的新结构读取并验证零值兼容和截断错误。",
+          "concepts": [
+            "encoding/gob",
+            "字段兼容",
+            "零值",
+            "截断检测"
+          ],
+          "explain": "Gob 根据导出字段名匹配结构，不要求发送端和接收端使用相同 Go 类型名。旧快照包含 Name 和 Count，新结构增加 Note；读取后已有字段还原，缺失的新字段保持零值。程序也对截断字节流尝试解码，确认损坏输入返回错误。兼容不意味着任意字段类型变更都可接受，也不应把 Gob 当作可直接解码不可信海量输入的无限制格式。",
+          "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/gob\"\n\t\"fmt\"\n)\n\ntype OldState struct {\n\tName  string\n\tCount int\n}\ntype NewState struct {\n\tName  string\n\tCount int\n\tNote  string\n}\n\nfunc main() {\n\tvar buffer bytes.Buffer\n\tif err := gob.NewEncoder(&buffer).Encode(OldState{\"queue\", 3}); err != nil {\n\t\tpanic(err)\n\t}\n\tsnapshot := append([]byte(nil), buffer.Bytes()...)\n\tvar restored NewState\n\tif err := gob.NewDecoder(bytes.NewReader(snapshot)).Decode(&restored); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"name=%s count=%d\\n\", restored.Name, restored.Count)\n\tfmt.Printf(\"new-field-empty=%t\\n\", restored.Note == \"\")\n\tvar damaged NewState\n\terr := gob.NewDecoder(bytes.NewReader(snapshot[:len(snapshot)/2])).Decode(&damaged)\n\tfmt.Printf(\"truncated=%t\\n\", err != nil)\n}\n",
+          "output": "name=queue count=3\nnew-field-empty=true\ntruncated=true",
+          "objective": "写入旧版状态快照，用增加字段的新结构读取并验证零值兼容和截断错误。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "未导出字段不参与 Gob 编码，不能依靠它保存私有状态。",
+            "新增兼容字段与改变既有字段类型不同；后者可能解码失败。"
+          ],
+          "exercises": [
+            {
+              "prompt": "把新结构的 Count 改成字符串，验证旧快照解码会失败并保留错误信息。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "定义另一个接收结构并对同一份独立 bytes.Reader 解码，检查 err != nil；不要复用已经消费完的 Decoder 来测试类型兼容。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    }
+  ]
+}

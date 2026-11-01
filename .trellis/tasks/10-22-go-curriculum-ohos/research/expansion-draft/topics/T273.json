@@ -1,0 +1,69 @@
+{
+  "id": "T273",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "A=room1\nB=room2\nC=room2\nD=room2\nrooms=2\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-273",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "会议室分配",
+    "summary": "能按结束时间复用会议室。输出每个预约的房间和最少房间数。",
+    "concepts": [
+      "container/heap",
+      "sort",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能按结束时间复用会议室。输出每个预约的房间和最少房间数。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "结束等于下一场开始应视为可复用还是冲突。必须先约定区间端点语义。",
+      "只按房间编号选择而忽略结束时间。这样可能错误复用仍占用的房间。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加同开始时刻的预约，以 ID 作为排序次关键字。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "在 sort 比较中先比 Start。再比 ID。相同时间输入顺序变化也得到稳定分配。"
+      }
+    ],
+    "explain": "按开始时间处理预约。堆顶保存最早结束的房间。该房间已结束就复用它。否则才新增房间。B 在十分钟结束。C 恰好十分钟开始。因此二者可以复用。这依赖左闭右开的预约区间约定。房间结束时间相同时再按编号比较。这样能保证结果稳定。算法最小化房间总数。它不承诺每次挑编号最小的空房。",
+    "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Booking struct {\n\tID         string\n\tStart, End int\n}\ntype Room struct{ End, ID int }\ntype Active []Room\n\nfunc (h Active) Len() int { return len(h) }\nfunc (h Active) Less(i, j int) bool {\n\tif h[i].End != h[j].End {\n\t\treturn h[i].End < h[j].End\n\t}\n\treturn h[i].ID < h[j].ID\n}\nfunc (h Active) Swap(i, j int)       { h[i], h[j] = h[j], h[i] }\nfunc (h *Active) Push(v interface{}) { *h = append(*h, v.(Room)) }\nfunc (h *Active) Pop() interface{}   { old := *h; v := old[len(old)-1]; *h = old[:len(old)-1]; return v }\nfunc main() {\n\tbookings := []Booking{{\"A\", 0, 30}, {\"B\", 5, 10}, {\"C\", 10, 20}, {\"D\", 30, 40}}\n\tsort.SliceStable(bookings, func(i, j int) bool { return bookings[i].Start < bookings[j].Start })\n\tactive := &Active{}\n\theap.Init(active)\n\trooms := 0\n\tfor _, booking := range bookings {\n\t\tif booking.Start >= booking.End {\n\t\t\tpanic(\"bad interval\")\n\t\t}\n\t\troom := 0\n\t\tif active.Len() > 0 && (*active)[0].End <= booking.Start {\n\t\t\troom = heap.Pop(active).(Room).ID\n\t\t} else {\n\t\t\trooms++\n\t\t\troom = rooms\n\t\t}\n\t\theap.Push(active, Room{booking.End, room})\n\t\tfmt.Printf(\"%s=room%d\\n\", booking.ID, room)\n\t}\n\tfmt.Printf(\"rooms=%d\\n\", rooms)\n}\n",
+    "output": "A=room1\nB=room2\nC=room2\nD=room2\nrooms=2"
+  },
+  "example": {
+    "id": "go-example-273",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "会议室分配",
+    "summary": "能按结束时间复用会议室。输出每个预约的房间和最少房间数。",
+    "concepts": [
+      "container/heap",
+      "sort",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Booking struct {\n\tID         string\n\tStart, End int\n}\ntype Room struct{ End, ID int }\ntype Active []Room\n\nfunc (h Active) Len() int { return len(h) }\nfunc (h Active) Less(i, j int) bool {\n\tif h[i].End != h[j].End {\n\t\treturn h[i].End < h[j].End\n\t}\n\treturn h[i].ID < h[j].ID\n}\nfunc (h Active) Swap(i, j int)       { h[i], h[j] = h[j], h[i] }\nfunc (h *Active) Push(v interface{}) { *h = append(*h, v.(Room)) }\nfunc (h *Active) Pop() interface{}   { old := *h; v := old[len(old)-1]; *h = old[:len(old)-1]; return v }\nfunc main() {\n\tbookings := []Booking{{\"A\", 0, 30}, {\"B\", 5, 10}, {\"C\", 10, 20}, {\"D\", 30, 40}}\n\tsort.SliceStable(bookings, func(i, j int) bool { return bookings[i].Start < bookings[j].Start })\n\tactive := &Active{}\n\theap.Init(active)\n\trooms := 0\n\tfor _, booking := range bookings {\n\t\tif booking.Start >= booking.End {\n\t\t\tpanic(\"bad interval\")\n\t\t}\n\t\troom := 0\n\t\tif active.Len() > 0 && (*active)[0].End <= booking.Start {\n\t\t\troom = heap.Pop(active).(Room).ID\n\t\t} else {\n\t\t\trooms++\n\t\t\troom = rooms\n\t\t}\n\t\theap.Push(active, Room{booking.End, room})\n\t\tfmt.Printf(\"%s=room%d\\n\", booking.ID, room)\n\t}\n\tfmt.Printf(\"rooms=%d\\n\", rooms)\n}\n",
+    "expectedOutput": "A=room1\nB=room2\nC=room2\nD=room2\nrooms=2",
+    "templateType": "go"
+  }
+}

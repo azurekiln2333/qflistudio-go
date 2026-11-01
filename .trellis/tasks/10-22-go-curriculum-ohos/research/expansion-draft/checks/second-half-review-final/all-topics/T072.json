@@ -1,0 +1,70 @@
+{
+  "id": "T072",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "received: handoff payload\nreceived: 42"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-072",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "channel 一：无缓冲与同步通信",
+    "summary": "用无缓冲 channel 完成发送与接收的同步交接。",
+    "concepts": [
+      "channel",
+      "无缓冲",
+      "同步交接",
+      "生产者消费者"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能说明无缓冲 channel 的收发会互相阻塞，并据此实现同步交接。",
+    "prerequisites": [
+      "T071 goroutine 基础与启动"
+    ],
+    "pitfalls": [
+      "在同一个 goroutine 里先发后收：会死锁，因为无人接收。",
+      "以为无缓冲 channel 能缓存值：它不缓存，发送即阻塞直到被接收。"
+    ],
+    "exercises": [
+      {
+        "prompt": "用无缓冲 channel 在两个 goroutine 间来回 ping-pong 若干次。",
+        "hint": "两个 channel 轮流收发可避免死锁。",
+        "answer": "ping 与 pong 各持一个 channel，循环交替发送与接收。"
+      }
+    ],
+    "explain": "无缓冲 channel 是同步点：发送方阻塞直到有接收方接手，接收方也阻塞直到有值到来。因此它天然表达“交接”——值的传递与双方的时间点对齐是同一次操作。示例从 goroutine 发送字符串，主 goroutine 接收，二者严格配对，输出顺序因此确定。这也是 channel 被称为“用通信共享内存”的原因：交接本身保证了同步，无需额外锁。",
+    "code": "// T072 channel 一：无缓冲与同步通信。\n//\n// 无缓冲 channel 的发送与接收会\"互相等待\"，因此天然是一次同步交接：\n// 发送方阻塞直到有人接收，接收方阻塞直到有人发送。本示例用一个无缓冲\n// channel 把值从 goroutine 交接给 main，顺序天然确定。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\tch := make(chan string) // 无缓冲\n\n\t// 生产者 goroutine：发送后阻塞，直到 main 接收。\n\tgo func() {\n\t\tch <- \"handoff payload\"\n\t}()\n\n\t// 主 goroutine 接收，完成同步交接。\n\tgot := <-ch\n\tfmt.Println(\"received:\", got)\n\n\t// 再来一次，演示\"先接收后发送\"同样能配对。\n\tch2 := make(chan int)\n\tgo func() {\n\t\tch2 <- 42\n\t}()\n\tfmt.Println(\"received:\", <-ch2)\n}\n",
+    "output": "received: handoff payload\nreceived: 42"
+  },
+  "example": {
+    "id": "go-example-072",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "channel 一：无缓冲与同步通信（示例）",
+    "summary": "对应主题 T072 的可运行示例。",
+    "concepts": [
+      "channel",
+      "无缓冲",
+      "同步交接",
+      "生产者消费者"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T072 channel 一：无缓冲与同步通信。\n//\n// 无缓冲 channel 的发送与接收会\"互相等待\"，因此天然是一次同步交接：\n// 发送方阻塞直到有人接收，接收方阻塞直到有人发送。本示例用一个无缓冲\n// channel 把值从 goroutine 交接给 main，顺序天然确定。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\tch := make(chan string) // 无缓冲\n\n\t// 生产者 goroutine：发送后阻塞，直到 main 接收。\n\tgo func() {\n\t\tch <- \"handoff payload\"\n\t}()\n\n\t// 主 goroutine 接收，完成同步交接。\n\tgot := <-ch\n\tfmt.Println(\"received:\", got)\n\n\t// 再来一次，演示\"先接收后发送\"同样能配对。\n\tch2 := make(chan int)\n\tgo func() {\n\t\tch2 <- 42\n\t}()\n\tfmt.Println(\"received:\", <-ch2)\n}\n",
+    "expectedOutput": "received: handoff payload\nreceived: 42",
+    "templateType": "go"
+  }
+}

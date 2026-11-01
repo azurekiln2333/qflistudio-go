@@ -1,0 +1,67 @@
+{
+  "id": "T268",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "allowed=[read export]\nunion-count=4\nremoved=[write]\nafter-revoke=[read]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-268",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "位集合交并差",
+    "summary": "能以位集合表达权限，计算交并差并列出最终授权项。",
+    "concepts": [
+      "math/bits",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能以位集合表达权限，计算交并差并列出最终授权项。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "Go 的 &^ 是按位清除，不应误写成布尔非或算术减法。",
+      "权限位编号一旦用于持久化协议，重新排列名称会改变已有数据语义。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为未知高位增加拒绝逻辑，不把它们静默忽略。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "定义 knownMask=(1<<4)-1；输入&^knownMask 非零时返回未知权限错误。"
+      }
+    ],
+    "explain": "权限集合可以把每个明确编号的权限映射成一个位。与得到共同授权，或得到并集，&^ 得到左侧存在但右侧没有的权限。名称按固定位序导出，因此展示顺序稳定；撤销 export 只清除对应位。位图适合固定小集合，不适合任意增长且缺少版本管理的权限协议。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/bits\"\n)\n\nfunc names(set uint64) []string {\n\tall := []string{\"read\", \"write\", \"export\", \"admin\"}\n\tout := []string{}\n\tfor i, name := range all {\n\t\tif set&(uint64(1)<<uint(i)) != 0 {\n\t\t\tout = append(out, name)\n\t\t}\n\t}\n\treturn out\n}\nfunc main() {\n\tuser := uint64(1<<0 | 1<<1 | 1<<2)\n\tpolicy := uint64(1<<0 | 1<<2 | 1<<3)\n\tintersection := user & policy\n\tunion := user | policy\n\tremoved := user &^ policy\n\tfmt.Printf(\"allowed=%v\\nunion-count=%d\\nremoved=%v\\n\", names(intersection), bits.OnesCount64(union), names(removed))\n\tgrant := intersection &^ (uint64(1) << 2)\n\tfmt.Printf(\"after-revoke=%v\\n\", names(grant))\n}\n",
+    "output": "allowed=[read export]\nunion-count=4\nremoved=[write]\nafter-revoke=[read]"
+  },
+  "example": {
+    "id": "go-example-268",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "位集合交并差",
+    "summary": "能以位集合表达权限，计算交并差并列出最终授权项。",
+    "concepts": [
+      "math/bits",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/bits\"\n)\n\nfunc names(set uint64) []string {\n\tall := []string{\"read\", \"write\", \"export\", \"admin\"}\n\tout := []string{}\n\tfor i, name := range all {\n\t\tif set&(uint64(1)<<uint(i)) != 0 {\n\t\t\tout = append(out, name)\n\t\t}\n\t}\n\treturn out\n}\nfunc main() {\n\tuser := uint64(1<<0 | 1<<1 | 1<<2)\n\tpolicy := uint64(1<<0 | 1<<2 | 1<<3)\n\tintersection := user & policy\n\tunion := user | policy\n\tremoved := user &^ policy\n\tfmt.Printf(\"allowed=%v\\nunion-count=%d\\nremoved=%v\\n\", names(intersection), bits.OnesCount64(union), names(removed))\n\tgrant := intersection &^ (uint64(1) << 2)\n\tfmt.Printf(\"after-revoke=%v\\n\", names(grant))\n}\n",
+    "expectedOutput": "allowed=[read export]\nunion-count=4\nremoved=[write]\nafter-revoke=[read]",
+    "templateType": "go"
+  }
+}

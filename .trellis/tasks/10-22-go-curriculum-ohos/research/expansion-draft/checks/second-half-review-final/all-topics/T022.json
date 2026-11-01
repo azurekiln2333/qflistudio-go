@@ -1,0 +1,68 @@
+{
+  "id": "T022",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "go present: 3\njava absent\nkeys: 1\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-022",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "映射：增删查与存在性判断",
+    "summary": "用逗号-ok 判断键是否存在，安全地增删查与计数。",
+    "concepts": [
+      "map",
+      "逗号-ok",
+      "delete"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用计数写法更新 map、用 v, ok 判断键存在，并用 delete 移除键。",
+    "prerequisites": [
+      "T021 切片操作"
+    ],
+    "pitfalls": [
+      "用 v := m[k] 判断存在性：键不存在时返回零值，无法区分「值是零」和「键不存在」，必须用 v, ok := m[k]。",
+      "对 nil map 写入：未 make 的 map 为 nil，读取安全但写入会 panic。"
+    ],
+    "exercises": [
+      {
+        "prompt": "统计一段词频，并只打印出现次数大于 1 的词。",
+        "hint": "先用计数 map，再遍历过滤。",
+        "answer": "counts[w]++ 累加后用 if v>1 过滤输出。"
+      }
+    ],
+    "explain": "map 是无序的键值集合。读取 m[k] 在键不存在时返回该值类型的零值，因此要区分「存在且为零」与「不存在」必须用两值形式 v, ok := m[k]，ok 为布尔存在标志。写入用 m[k]=v，删除用 delete(m,k)。\n\nmap 的零值是 nil：nil map 可以安全读取（返回零值、ok=false），但写入会 panic，所以需要写入前 make。样例用 counts[w]++ 的计数惯用法统计词频，并用逗号-ok 检查存在性。\n\nmap 遍历顺序不确定，因此样例只打印条目数而不依赖顺序。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tcounts := map[string]int{}\n\tfor _, w := range []string{\"go\", \"go\", \"rust\", \"go\"} {\n\t\tcounts[w]++\n\t}\n\tif v, ok := counts[\"go\"]; ok {\n\t\tfmt.Println(\"go present:\", v)\n\t}\n\tif _, ok := counts[\"java\"]; !ok {\n\t\tfmt.Println(\"java absent\")\n\t}\n\tdelete(counts, \"rust\")\n\tfmt.Println(\"keys:\", len(counts))\n}\n",
+    "output": "go present: 3\njava absent\nkeys: 1"
+  },
+  "example": {
+    "id": "go-example-022",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "映射：增删查与存在性判断",
+    "summary": "用逗号-ok 判断键是否存在，安全地增删查与计数。",
+    "concepts": [
+      "map",
+      "逗号-ok",
+      "delete"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tcounts := map[string]int{}\n\tfor _, w := range []string{\"go\", \"go\", \"rust\", \"go\"} {\n\t\tcounts[w]++\n\t}\n\tif v, ok := counts[\"go\"]; ok {\n\t\tfmt.Println(\"go present:\", v)\n\t}\n\tif _, ok := counts[\"java\"]; !ok {\n\t\tfmt.Println(\"java absent\")\n\t}\n\tdelete(counts, \"rust\")\n\tfmt.Println(\"keys:\", len(counts))\n}\n",
+    "expectedOutput": "go present: 3\njava absent\nkeys: 1",
+    "templateType": "go"
+  }
+}

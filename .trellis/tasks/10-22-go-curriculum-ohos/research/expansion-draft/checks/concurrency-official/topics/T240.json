@@ -1,0 +1,67 @@
+{
+  "id": "T240",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "attempts=1\nerrors=4\nsame=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-240",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "一次性初始化结果",
+    "summary": "能用 Once 共享可失败初始化结果，验证多次调用不会重复初始化。",
+    "concepts": [
+      "sync",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能用 Once 共享可失败初始化结果，验证多次调用不会重复初始化。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "Once 的初始化失败也算已经执行，后续 Do 不会自动重试。",
+      "只保存成功值、不保存错误，会让后续调用误认为零值是有效初始化结果。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把初始化改成从给定字节配置解码，分别创建成功和失败的 Service。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "每个 Service 保留自己的 once、value 和 err；对两个实例分别检查只执行一次和结果稳定。"
+      }
+    ],
+    "explain": "Once 只执行初始化闭包一次，并让其他调用等待初始化结束。结构把成功值与错误一起保留，所以初始化失败后所有调用得到同一错误，而不是重新尝试。四个并发调用的错误通过通道汇总，Wait 后检查尝试次数为一。若业务要求失败后重试，就需要另一套状态机，不能假设 Once 自动重置。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\ntype Service struct {\n\tonce     sync.Once\n\tvalue    string\n\terr      error\n\tattempts int\n}\n\nfunc (s *Service) Get() (string, error) {\n\ts.once.Do(func() { s.attempts++; s.err = fmt.Errorf(\"local config missing\") })\n\treturn s.value, s.err\n}\nfunc main() {\n\tservice := &Service{}\n\tvar callers sync.WaitGroup\n\terrors := make(chan string, 4)\n\tfor i := 0; i < 4; i++ {\n\t\tcallers.Add(1)\n\t\tgo func() {\n\t\t\tdefer callers.Done()\n\t\t\t_, err := service.Get()\n\t\t\tif err != nil {\n\t\t\t\terrors <- err.Error()\n\t\t\t}\n\t\t}()\n\t}\n\tcallers.Wait()\n\tclose(errors)\n\tcount := 0\n\tsame := true\n\tfor message := range errors {\n\t\tcount++\n\t\tsame = same && message == \"local config missing\"\n\t}\n\tfmt.Printf(\"attempts=%d\\nerrors=%d\\nsame=%t\\n\", service.attempts, count, same)\n}\n",
+    "output": "attempts=1\nerrors=4\nsame=true"
+  },
+  "example": {
+    "id": "go-example-240",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "一次性初始化结果",
+    "summary": "能用 Once 共享可失败初始化结果，验证多次调用不会重复初始化。",
+    "concepts": [
+      "sync",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\ntype Service struct {\n\tonce     sync.Once\n\tvalue    string\n\terr      error\n\tattempts int\n}\n\nfunc (s *Service) Get() (string, error) {\n\ts.once.Do(func() { s.attempts++; s.err = fmt.Errorf(\"local config missing\") })\n\treturn s.value, s.err\n}\nfunc main() {\n\tservice := &Service{}\n\tvar callers sync.WaitGroup\n\terrors := make(chan string, 4)\n\tfor i := 0; i < 4; i++ {\n\t\tcallers.Add(1)\n\t\tgo func() {\n\t\t\tdefer callers.Done()\n\t\t\t_, err := service.Get()\n\t\t\tif err != nil {\n\t\t\t\terrors <- err.Error()\n\t\t\t}\n\t\t}()\n\t}\n\tcallers.Wait()\n\tclose(errors)\n\tcount := 0\n\tsame := true\n\tfor message := range errors {\n\t\tcount++\n\t\tsame = same && message == \"local config missing\"\n\t}\n\tfmt.Printf(\"attempts=%d\\nerrors=%d\\nsame=%t\\n\", service.attempts, count, same)\n}\n",
+    "expectedOutput": "attempts=1\nerrors=4\nsame=true",
+    "templateType": "go"
+  }
+}

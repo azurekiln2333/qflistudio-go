@@ -1,0 +1,218 @@
+{
+  "syntheticArchiveOnly": true,
+  "realBuildOrDeviceExecution": false,
+  "inspectorSha256": "fd8837c04163803d07a26c9404d85d25a636c66597d7ee704813f5a5aa8b655c",
+  "sourceDigestSnapshot": "30315877cf9b15843743e91d3697086c9f6646e330587fcb20eb08f6129cc70f",
+  "checks": [
+    {
+      "case": "x86_64/identity",
+      "expectedSuccess": true,
+      "actualSuccess": true,
+      "errors": [],
+      "binding": {
+        "stagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "stagedBytes": 23057648,
+        "packagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "packagedBytes": 23057648,
+        "transform": "identity",
+        "verified": true
+      }
+    },
+    {
+      "case": "x86_64/exact-sdk-transform",
+      "expectedSuccess": true,
+      "actualSuccess": true,
+      "errors": [],
+      "binding": {
+        "stagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "stagedBytes": 23057648,
+        "packagedSha256": "3ccd51e622ac3d8231e3c368ed2036fa058d1e06874daa3640159b54a918577b",
+        "packagedBytes": 23057464,
+        "transform": "hvigor-default-strip-keep-permission",
+        "verified": true,
+        "tool": "D:\\ProgramFiles\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\native\\llvm\\bin\\llvm-strip.exe",
+        "toolSha256": "7092b2a07041635687d30d54f1e60b9cc440bc914d50cf0e2f3a21c348c97967",
+        "stagedSource": "D:\\AppData\\Local\\Temp\\go_inspector_binding_review_53jymber\\ohos\\entry\\libs\\x86_64\\libqfli_go_runtime.so",
+        "arguments": [
+          "--keep-section=.permission",
+          "D:\\AppData\\Local\\Temp\\go_hap_elf__y2v8ylu\\staged-runtime.so",
+          "-oD:\\AppData\\Local\\Temp\\go_hap_elf__y2v8ylu\\sdk-stripped-runtime.so"
+        ],
+        "transformedSha256": "3ccd51e622ac3d8231e3c368ed2036fa058d1e06874daa3640159b54a918577b",
+        "transformedBytes": 23057464
+      }
+    },
+    {
+      "case": "x86_64/one-byte-mismatch",
+      "expectedSuccess": false,
+      "actualSuccess": false,
+      "errors": [
+        "packaged Go runtime matches neither the built library nor its exact SDK strip transform"
+      ],
+      "binding": {
+        "stagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "stagedBytes": 23057648,
+        "packagedSha256": "d7df616b32ad4840ff747f66d194d50463a62264dd4a1106a3aa0083e1223aaf",
+        "packagedBytes": 23057465,
+        "transform": "hvigor-default-strip-keep-permission",
+        "verified": false,
+        "tool": "D:\\ProgramFiles\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\native\\llvm\\bin\\llvm-strip.exe",
+        "toolSha256": "7092b2a07041635687d30d54f1e60b9cc440bc914d50cf0e2f3a21c348c97967",
+        "stagedSource": "D:\\AppData\\Local\\Temp\\go_inspector_binding_review_53jymber\\ohos\\entry\\libs\\x86_64\\libqfli_go_runtime.so",
+        "arguments": [
+          "--keep-section=.permission",
+          "D:\\AppData\\Local\\Temp\\go_hap_elf_d3m8u482\\staged-runtime.so",
+          "-oD:\\AppData\\Local\\Temp\\go_hap_elf_d3m8u482\\sdk-stripped-runtime.so"
+        ],
+        "transformedSha256": "3ccd51e622ac3d8231e3c368ed2036fa058d1e06874daa3640159b54a918577b",
+        "transformedBytes": 23057464
+      }
+    },
+    {
+      "case": "arm64-v8a/identity",
+      "expectedSuccess": true,
+      "actualSuccess": true,
+      "errors": [],
+      "binding": {
+        "stagedSha256": "c360012403c6b785a898495dc18f33cb5e581629dca6ce2d5478c95b1ddaaee9",
+        "stagedBytes": 21433104,
+        "packagedSha256": "c360012403c6b785a898495dc18f33cb5e581629dca6ce2d5478c95b1ddaaee9",
+        "packagedBytes": 21433104,
+        "transform": "identity",
+        "verified": true
+      }
+    },
+    {
+      "case": "arm64-v8a/exact-sdk-transform",
+      "expectedSuccess": true,
+      "actualSuccess": true,
+      "errors": [],
+      "binding": {
+        "stagedSha256": "c360012403c6b785a898495dc18f33cb5e581629dca6ce2d5478c95b1ddaaee9",
+        "stagedBytes": 21433104,
+        "packagedSha256": "9b38a1481edb1762704e086e38c28599a620f33c12029aae0dc95b65b0ce1173",
+        "packagedBytes": 21432920,
+        "transform": "hvigor-default-strip-keep-permission",
+        "verified": true,
+        "tool": "D:\\ProgramFiles\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\native\\llvm\\bin\\llvm-strip.exe",
+        "toolSha256": "7092b2a07041635687d30d54f1e60b9cc440bc914d50cf0e2f3a21c348c97967",
+        "stagedSource": "D:\\AppData\\Local\\Temp\\go_inspector_binding_review_53jymber\\ohos\\entry\\libs\\arm64-v8a\\libqfli_go_runtime.so",
+        "arguments": [
+          "--keep-section=.permission",
+          "D:\\AppData\\Local\\Temp\\go_hap_elf_yw50ngfy\\staged-runtime.so",
+          "-oD:\\AppData\\Local\\Temp\\go_hap_elf_yw50ngfy\\sdk-stripped-runtime.so"
+        ],
+        "transformedSha256": "9b38a1481edb1762704e086e38c28599a620f33c12029aae0dc95b65b0ce1173",
+        "transformedBytes": 21432920
+      }
+    },
+    {
+      "case": "arm64-v8a/one-byte-mismatch",
+      "expectedSuccess": false,
+      "actualSuccess": false,
+      "errors": [
+        "packaged Go runtime matches neither the built library nor its exact SDK strip transform"
+      ],
+      "binding": {
+        "stagedSha256": "c360012403c6b785a898495dc18f33cb5e581629dca6ce2d5478c95b1ddaaee9",
+        "stagedBytes": 21433104,
+        "packagedSha256": "2a3daae1f1ce9b0c6f0f01c73ef073b5bcda358d51043a03dc660888e2bfb50f",
+        "packagedBytes": 21432921,
+        "transform": "hvigor-default-strip-keep-permission",
+        "verified": false,
+        "tool": "D:\\ProgramFiles\\Huawei\\DevEco Studio\\sdk\\default\\openharmony\\native\\llvm\\bin\\llvm-strip.exe",
+        "toolSha256": "7092b2a07041635687d30d54f1e60b9cc440bc914d50cf0e2f3a21c348c97967",
+        "stagedSource": "D:\\AppData\\Local\\Temp\\go_inspector_binding_review_53jymber\\ohos\\entry\\libs\\arm64-v8a\\libqfli_go_runtime.so",
+        "arguments": [
+          "--keep-section=.permission",
+          "D:\\AppData\\Local\\Temp\\go_hap_elf_699d3h7s\\staged-runtime.so",
+          "-oD:\\AppData\\Local\\Temp\\go_hap_elf_699d3h7s\\sdk-stripped-runtime.so"
+        ],
+        "transformedSha256": "9b38a1481edb1762704e086e38c28599a620f33c12029aae0dc95b65b0ce1173",
+        "transformedBytes": 21432920
+      }
+    },
+    {
+      "case": "negative/source-digest",
+      "expectedSuccess": false,
+      "actualSuccess": false,
+      "errors": [
+        "runtime build provenance does not match current native sources"
+      ],
+      "binding": {
+        "stagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "stagedBytes": 23057648,
+        "packagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "packagedBytes": 23057648,
+        "transform": "identity",
+        "verified": true
+      }
+    },
+    {
+      "case": "negative/missing-build-ABI",
+      "expectedSuccess": false,
+      "actualSuccess": false,
+      "errors": [
+        "runtime build provenance does not cover exactly all five bundled ABIs"
+      ],
+      "binding": {
+        "stagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "stagedBytes": 23057648,
+        "packagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "packagedBytes": 23057648,
+        "transform": "identity",
+        "verified": true
+      }
+    },
+    {
+      "case": "negative/build-script-drift",
+      "expectedSuccess": false,
+      "actualSuccess": false,
+      "errors": [
+        "runtime build input changed: tool/build_go_runtime.ps1"
+      ],
+      "binding": {
+        "stagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "stagedBytes": 23057648,
+        "packagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "packagedBytes": 23057648,
+        "transform": "identity",
+        "verified": true
+      }
+    },
+    {
+      "case": "negative/missing-catalog-case",
+      "expectedSuccess": false,
+      "actualSuccess": false,
+      "errors": [
+        "audit coverage must include exactly 120 topics/364 cases",
+        "audit manifest differs from the full regenerated source inventory"
+      ],
+      "binding": {
+        "stagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "stagedBytes": 23057648,
+        "packagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "packagedBytes": 23057648,
+        "transform": "identity",
+        "verified": true
+      }
+    },
+    {
+      "case": "negative/unexpected-packaged-ABI",
+      "expectedSuccess": false,
+      "actualSuccess": false,
+      "errors": [
+        "unexpected runtime ABI set: ['libs/x86_64/libqfli_go_runtime.so', 'libs/unexpected/libqfli_go_runtime.so']"
+      ],
+      "binding": {
+        "stagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "stagedBytes": 23057648,
+        "packagedSha256": "d29165b6d91fd22ff8c41a8b98344bb324585c9889f08206fece98d53f69003a",
+        "packagedBytes": 23057648,
+        "transform": "identity",
+        "verified": true
+      }
+    }
+  ],
+  "success": true
+}

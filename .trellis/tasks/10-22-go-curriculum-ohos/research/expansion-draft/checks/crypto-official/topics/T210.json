@@ -1,0 +1,73 @@
+{
+  "id": "T210",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "bytes=11\nlengths=32,64\nsha256-match=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-210",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "流式多摘要",
+    "summary": "能用 MultiWriter 一次消费输入同时计算两类摘要并验证长度与一致性。",
+    "concepts": [
+      "hash",
+      "crypto/sha256",
+      "crypto/sha512",
+      "io",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能用 MultiWriter 一次消费输入同时计算两类摘要并验证长度与一致性。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "Sum 不会重置状态，复用同一个哈希对象计算新文件前应调用 Reset。",
+      "MultiWriter 中任一目标写入失败会停止当前复制，不能忽略 Copy 的错误。"
+    ],
+    "exercises": [
+      {
+        "prompt": "复制完成后再次调用 Sum，并验证取摘要不会改变其内容。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "保存第一次 Sum 的结果，再调用一次 Sum；比较两份字节并检查长度仍一致。"
+      }
+    ],
+    "explain": "MultiWriter 将每次写入交给两个哈希状态，所以源输入只读一遍即可同时得到 SHA256 和 SHA512。Copy 返回实际消费字节数，Sum(nil) 取出当前摘要而不清空哈希状态。示例核对两个摘要长度，再将流式 SHA256 与一次性计算对照。这种组合可用于离线导出时兼容不同清单格式。",
+    "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"crypto/sha512\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc main() {\n\tinput := \"alpha\\nbeta\\n\"\n\tsmall := sha256.New()\n\tlarge := sha512.New()\n\tcopied, err := io.Copy(io.MultiWriter(small, large), strings.NewReader(input))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\texpected := sha256.Sum256([]byte(input))\n\tfmt.Printf(\"bytes=%d\\nlengths=%d,%d\\nsha256-match=%t\\n\", copied, len(small.Sum(nil)), len(large.Sum(nil)), fmt.Sprintf(\"%x\", small.Sum(nil)) == fmt.Sprintf(\"%x\", expected))\n}\n",
+    "output": "bytes=11\nlengths=32,64\nsha256-match=true"
+  },
+  "example": {
+    "id": "go-example-210",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "流式多摘要",
+    "summary": "能用 MultiWriter 一次消费输入同时计算两类摘要并验证长度与一致性。",
+    "concepts": [
+      "hash",
+      "crypto/sha256",
+      "crypto/sha512",
+      "io",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"crypto/sha512\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc main() {\n\tinput := \"alpha\\nbeta\\n\"\n\tsmall := sha256.New()\n\tlarge := sha512.New()\n\tcopied, err := io.Copy(io.MultiWriter(small, large), strings.NewReader(input))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\texpected := sha256.Sum256([]byte(input))\n\tfmt.Printf(\"bytes=%d\\nlengths=%d,%d\\nsha256-match=%t\\n\", copied, len(small.Sum(nil)), len(large.Sum(nil)), fmt.Sprintf(\"%x\", small.Sum(nil)) == fmt.Sprintf(\"%x\", expected))\n}\n",
+    "expectedOutput": "bytes=11\nlengths=32,64\nsha256-match=true",
+    "templateType": "go"
+  }
+}

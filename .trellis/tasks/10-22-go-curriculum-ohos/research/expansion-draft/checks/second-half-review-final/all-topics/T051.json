@@ -1,0 +1,70 @@
+{
+  "id": "T051",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "full: level1: level2: base failure\nunwrap chain:\n  level1: level2: base failure\n  level2: base failure\n  base failure\nIs(errBase): true\nwith %v Is(errBase): false"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-051",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "错误包装与 %w 的解包链",
+    "summary": "用 %w 逐层包装并用 errors.Unwrap 打印解包链。",
+    "concepts": [
+      "%w",
+      "errors.Unwrap",
+      "解包链",
+      "上下文"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 %w 构建可解包链，用 errors.Unwrap 逐层取出并说明 %v 不构成链。",
+    "prerequisites": [
+      "T050 errors.New、fmt.Errorf 与哨兵错误"
+    ],
+    "pitfalls": [
+      "用 %w 包装多个错误：一个 fmt.Errorf 只能有一个 %w。",
+      "在链上丢失上下文：只返回底层错误会丢掉“哪一步失败”。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为每一层补充操作名，并打印完整链与 errors.Is(errBase)。",
+        "hint": "每层用 fmt.Errorf(\"op: %w\", err)。",
+        "answer": "for e:=err; e!=nil; e=errors.Unwrap(e) { print(e) }；errors.Is(err, errBase)。"
+      }
+    ],
+    "explain": "%w 在 fmt.Errorf 中表示“包装”错误，形成可解包的链：errors.Unwrap 逐层取出内层错误，errors.Is/As 则遍历整条链。示例三层包装后，打印完整文本与逐层链，并用 errors.Is 命中基础错误。对照用 %v 只拼接文本、不构成可解包链，因此 errors.Is 失败。包装链让错误既保留最内层原因，又带有每一层的上下文。",
+    "code": "// T051 错误包装与 %w 的解包链。\n//\n// %w 在 fmt.Errorf 中表示“包装”错误，形成可解包的链：\n// errors.Unwrap 逐层取出内层错误，errors.Is/As 则会遍历整条链。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nvar errBase = errors.New(\"base failure\")\n\n// level3 最内层返回基础错误。\nfunc level3() error { return errBase }\n\n// level2 包装一层。\nfunc level2() error { return fmt.Errorf(\"level2: %w\", level3()) }\n\n// level1 再包装一层。\nfunc level1() error { return fmt.Errorf(\"level1: %w\", level2()) }\n\nfunc main() {\n\terr := level1()\n\n\t// 完整文本保留每一层的上下文。\n\tfmt.Println(\"full:\", err)\n\n\t// 逐层解包，打印链上每一层。\n\tfmt.Println(\"unwrap chain:\")\n\tfor e := err; e != nil; e = errors.Unwrap(e) {\n\t\tfmt.Println(\" \", e)\n\t}\n\n\t// errors.Is 会遍历整条链命中基础错误。\n\tfmt.Println(\"Is(errBase):\", errors.Is(err, errBase))\n\n\t// 使用 %v（而非 %w）只做文本拼接，不构成可解包链。\n\tnoChain := fmt.Errorf(\"context: %v\", errBase)\n\tdirective := \"%v\"\n\tfmt.Println(\"with \"+directive+\" Is(errBase):\", errors.Is(noChain, errBase))\n}\n",
+    "output": "full: level1: level2: base failure\nunwrap chain:\n  level1: level2: base failure\n  level2: base failure\n  base failure\nIs(errBase): true\nwith %v Is(errBase): false"
+  },
+  "example": {
+    "id": "go-example-051",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "错误包装与 %w 的解包链（示例）",
+    "summary": "对应主题 T051 的可运行示例。",
+    "concepts": [
+      "%w",
+      "errors.Unwrap",
+      "解包链",
+      "上下文"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T051 错误包装与 %w 的解包链。\n//\n// %w 在 fmt.Errorf 中表示“包装”错误，形成可解包的链：\n// errors.Unwrap 逐层取出内层错误，errors.Is/As 则会遍历整条链。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nvar errBase = errors.New(\"base failure\")\n\n// level3 最内层返回基础错误。\nfunc level3() error { return errBase }\n\n// level2 包装一层。\nfunc level2() error { return fmt.Errorf(\"level2: %w\", level3()) }\n\n// level1 再包装一层。\nfunc level1() error { return fmt.Errorf(\"level1: %w\", level2()) }\n\nfunc main() {\n\terr := level1()\n\n\t// 完整文本保留每一层的上下文。\n\tfmt.Println(\"full:\", err)\n\n\t// 逐层解包，打印链上每一层。\n\tfmt.Println(\"unwrap chain:\")\n\tfor e := err; e != nil; e = errors.Unwrap(e) {\n\t\tfmt.Println(\" \", e)\n\t}\n\n\t// errors.Is 会遍历整条链命中基础错误。\n\tfmt.Println(\"Is(errBase):\", errors.Is(err, errBase))\n\n\t// 使用 %v（而非 %w）只做文本拼接，不构成可解包链。\n\tnoChain := fmt.Errorf(\"context: %v\", errBase)\n\tdirective := \"%v\"\n\tfmt.Println(\"with \"+directive+\" Is(errBase):\", errors.Is(noChain, errBase))\n}\n",
+    "expectedOutput": "full: level1: level2: base failure\nunwrap chain:\n  level1: level2: base failure\n  level2: base failure\n  base failure\nIs(errBase): true\nwith %v Is(errBase): false",
+    "templateType": "go"
+  }
+}

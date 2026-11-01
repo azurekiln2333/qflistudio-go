@@ -1,0 +1,71 @@
+{
+  "id": "T172",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "09:00 count=2 sum=7\n09:15 count=1 sum=4\n09:30 count=1 sum=3\n09:45 count=0 sum=0\nrejected=1\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-172",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "UTC 时间桶聚合",
+    "summary": "把乱序事件归入十五分钟 UTC 桶，稳定输出空桶与非空桶并拒绝范围外事件。",
+    "concepts": [
+      "time.Truncate",
+      "UTC 归一",
+      "空桶",
+      "排序聚合"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "把乱序事件归入十五分钟 UTC 桶，稳定输出空桶与非空桶并拒绝范围外事件。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "只输出 map 中实际出现的键会丢掉空桶。",
+      "范围终点是否包含必须明确，否则边界事件可能被重复统计。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为桶增加平均值，并让空桶显示空值而不是零除错误。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "仅在 Count>0 时计算 Sum/Count，空桶输出单独的缺失标记；保留原始计数与总和，便于再次聚合。"
+      }
+    ],
+    "explain": "先将事件转换成 UTC，再以十五分钟 Truncate 得到桶起点，避免不同偏移文本落入不同键。预先生成查询范围内全部桶，所以没有事件的 09:45 也会输出零。范围使用左闭右开，10:00 属于范围外而不是最后一桶。桶键排序后同时输出计数与金额总和，乱序输入不会改变结果。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"time\"\n)\n\ntype Bucket struct {\n\tCount int\n\tSum   int\n}\n\nfunc parse(text string) time.Time {\n\tvalue, err := time.Parse(time.RFC3339, text)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\treturn value\n}\nfunc main() {\n\tstart := parse(\"2026-03-12T09:00:00Z\")\n\tend := start.Add(time.Hour)\n\tbuckets := map[time.Time]Bucket{}\n\tfor at := start; at.Before(end); at = at.Add(15 * time.Minute) {\n\t\tbuckets[at] = Bucket{}\n\t}\n\trejected := 0\n\tfor _, event := range []struct {\n\t\tText  string\n\t\tValue int\n\t}{{\"2026-03-12T09:34:00Z\", 3}, {\"2026-03-12T09:03:00Z\", 2}, {\"2026-03-12T09:29:00Z\", 4}, {\"2026-03-12T17:03:00+08:00\", 5}, {\"2026-03-12T10:00:00Z\", 9}} {\n\t\tat := parse(event.Text).UTC()\n\t\tif at.Before(start) || !at.Before(end) {\n\t\t\trejected++\n\t\t\tcontinue\n\t\t}\n\t\tkey := at.Truncate(15 * time.Minute)\n\t\tbucket := buckets[key]\n\t\tbucket.Count++\n\t\tbucket.Sum += event.Value\n\t\tbuckets[key] = bucket\n\t}\n\tkeys := []time.Time{}\n\tfor key := range buckets {\n\t\tkeys = append(keys, key)\n\t}\n\tsort.Slice(keys, func(i, j int) bool { return keys[i].Before(keys[j]) })\n\tfor _, key := range keys {\n\t\tbucket := buckets[key]\n\t\tfmt.Printf(\"%s count=%d sum=%d\\n\", key.Format(\"15:04\"), bucket.Count, bucket.Sum)\n\t}\n\tfmt.Printf(\"rejected=%d\\n\", rejected)\n}\n",
+    "output": "09:00 count=2 sum=7\n09:15 count=1 sum=4\n09:30 count=1 sum=3\n09:45 count=0 sum=0\nrejected=1"
+  },
+  "example": {
+    "id": "go-example-172",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "UTC 时间桶聚合",
+    "summary": "把乱序事件归入十五分钟 UTC 桶，稳定输出空桶与非空桶并拒绝范围外事件。",
+    "concepts": [
+      "time.Truncate",
+      "UTC 归一",
+      "空桶",
+      "排序聚合"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"time\"\n)\n\ntype Bucket struct {\n\tCount int\n\tSum   int\n}\n\nfunc parse(text string) time.Time {\n\tvalue, err := time.Parse(time.RFC3339, text)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\treturn value\n}\nfunc main() {\n\tstart := parse(\"2026-03-12T09:00:00Z\")\n\tend := start.Add(time.Hour)\n\tbuckets := map[time.Time]Bucket{}\n\tfor at := start; at.Before(end); at = at.Add(15 * time.Minute) {\n\t\tbuckets[at] = Bucket{}\n\t}\n\trejected := 0\n\tfor _, event := range []struct {\n\t\tText  string\n\t\tValue int\n\t}{{\"2026-03-12T09:34:00Z\", 3}, {\"2026-03-12T09:03:00Z\", 2}, {\"2026-03-12T09:29:00Z\", 4}, {\"2026-03-12T17:03:00+08:00\", 5}, {\"2026-03-12T10:00:00Z\", 9}} {\n\t\tat := parse(event.Text).UTC()\n\t\tif at.Before(start) || !at.Before(end) {\n\t\t\trejected++\n\t\t\tcontinue\n\t\t}\n\t\tkey := at.Truncate(15 * time.Minute)\n\t\tbucket := buckets[key]\n\t\tbucket.Count++\n\t\tbucket.Sum += event.Value\n\t\tbuckets[key] = bucket\n\t}\n\tkeys := []time.Time{}\n\tfor key := range buckets {\n\t\tkeys = append(keys, key)\n\t}\n\tsort.Slice(keys, func(i, j int) bool { return keys[i].Before(keys[j]) })\n\tfor _, key := range keys {\n\t\tbucket := buckets[key]\n\t\tfmt.Printf(\"%s count=%d sum=%d\\n\", key.Format(\"15:04\"), bucket.Count, bucket.Sum)\n\t}\n\tfmt.Printf(\"rejected=%d\\n\", rejected)\n}\n",
+    "expectedOutput": "09:00 count=2 sum=7\n09:15 count=1 sum=4\n09:30 count=1 sum=3\n09:45 count=0 sum=0\nrejected=1",
+    "templateType": "go"
+  }
+}

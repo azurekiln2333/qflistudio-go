@@ -1,0 +1,70 @@
+{
+  "id": "T076",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "sum of squares 1..3 = 14\nread: 10\nread: 20\nread: 30"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-076",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "单向 channel 与接口约束",
+    "summary": "用只发 chan<- T / 只收 <-chan T 在类型层面表达设计意图。",
+    "concepts": [
+      "单向 channel",
+      "只发",
+      "只收",
+      "接口约束"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用单向 channel 声明函数参数含义，并说明它只能由双向 channel 隐式转换而来。",
+    "prerequisites": [
+      "T075 select：多路复用与超时"
+    ],
+    "pitfalls": [
+      "试图把单向 channel 转回双向：不允许，方向只能由双向收窄为单向。",
+      "以为单向 channel 是不同类型：底层仍是同一 channel，只是类型系统限制了可用操作。"
+    ],
+    "exercises": [
+      {
+        "prompt": "写一个 merge 函数，把两个 <-chan int 合并为一个 <-chan int。",
+        "hint": "起两个 goroutine 各自转发，再 close 输出。",
+        "answer": "输出 channel 由 merge 创建；两个输入各起 goroutine 转发，WaitGroup 后 close(out)。"
+      }
+    ],
+    "explain": "函数参数可声明为只发 chan<- T 或只收 <-chan T。它用类型系统表达“这个函数只发送/只接收”，让误用变成编译错误，起文档与约束双重作用。方向不能凭空创建，只能由双向 channel 隐式收窄得到，因此是安全的。示例把双向 channel 分别以只发视角交给 producer、以只收视角交给 consumer，再用一个只收 channel 做 range。这种写法在库 API 里很常见，能明确告知调用者函数只消费或只产出。",
+    "code": "// T076 单向 channel 与接口约束。\n//\n// 函数参数可以声明为只发 `chan<- T` 或只收 `<-chan T`，用类型系统表达\n// \"这个函数只应该发送/只应该接收\"。它不能凭空创建方向，只能由双向 channel\n// 隐式转换而来，因此起到文档与编译期约束的双重作用。\npackage main\n\nimport \"fmt\"\n\n// producer 只能向 ch 发送，无法从中接收——编译器会阻止误用。\nfunc producer(out chan<- int) {\n\tfor i := 1; i <= 3; i++ {\n\t\tout <- i * i\n\t}\n\tclose(out)\n}\n\n// consumer 只能从 ch 接收，无法发送。\nfunc consumer(in <-chan int) int {\n\tsum := 0\n\tfor v := range in {\n\t\tsum += v\n\t}\n\treturn sum\n}\n\nfunc main() {\n\t// 双向 channel，分别以只发/只收的视角传给两个函数。\n\tch := make(chan int, 3)\n\tproducer(ch)\n\tfmt.Println(\"sum of squares 1..3 =\", consumer(ch))\n\n\t// 只收 channel 也可直接用于 range；顺序由缓冲保证为 FIFO。\n\tnums := make(chan int, 3)\n\tnums <- 10\n\tnums <- 20\n\tnums <- 30\n\tclose(nums)\n\tfor v := range nums {\n\t\tfmt.Println(\"read:\", v)\n\t}\n}\n",
+    "output": "sum of squares 1..3 = 14\nread: 10\nread: 20\nread: 30"
+  },
+  "example": {
+    "id": "go-example-076",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "单向 channel 与接口约束（示例）",
+    "summary": "对应主题 T076 的可运行示例。",
+    "concepts": [
+      "单向 channel",
+      "只发",
+      "只收",
+      "接口约束"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T076 单向 channel 与接口约束。\n//\n// 函数参数可以声明为只发 `chan<- T` 或只收 `<-chan T`，用类型系统表达\n// \"这个函数只应该发送/只应该接收\"。它不能凭空创建方向，只能由双向 channel\n// 隐式转换而来，因此起到文档与编译期约束的双重作用。\npackage main\n\nimport \"fmt\"\n\n// producer 只能向 ch 发送，无法从中接收——编译器会阻止误用。\nfunc producer(out chan<- int) {\n\tfor i := 1; i <= 3; i++ {\n\t\tout <- i * i\n\t}\n\tclose(out)\n}\n\n// consumer 只能从 ch 接收，无法发送。\nfunc consumer(in <-chan int) int {\n\tsum := 0\n\tfor v := range in {\n\t\tsum += v\n\t}\n\treturn sum\n}\n\nfunc main() {\n\t// 双向 channel，分别以只发/只收的视角传给两个函数。\n\tch := make(chan int, 3)\n\tproducer(ch)\n\tfmt.Println(\"sum of squares 1..3 =\", consumer(ch))\n\n\t// 只收 channel 也可直接用于 range；顺序由缓冲保证为 FIFO。\n\tnums := make(chan int, 3)\n\tnums <- 10\n\tnums <- 20\n\tnums <- 30\n\tclose(nums)\n\tfor v := range nums {\n\t\tfmt.Println(\"read:\", v)\n\t}\n}\n",
+    "expectedOutput": "sum of squares 1..3 = 14\nread: 10\nread: 20\nread: 30",
+    "templateType": "go"
+  }
+}

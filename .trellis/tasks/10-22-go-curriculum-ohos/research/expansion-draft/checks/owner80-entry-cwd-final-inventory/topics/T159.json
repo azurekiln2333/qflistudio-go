@@ -1,0 +1,71 @@
+{
+  "id": "T159",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "group=[1 2]\ngroup=[3 4]\nshared=true distinct=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-159",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "并查集合并账号",
+    "summary": "通过共享邮箱合并账号，以路径压缩维护连通组并稳定导出分组。",
+    "concepts": [
+      "并查集",
+      "路径压缩",
+      "共享标识",
+      "稳定分组"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "通过共享邮箱合并账号，以路径压缩维护连通组并稳定导出分组。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "只合并直接共享邮箱的两项而不追踪传递关系，会漏掉间接连接。",
+      "共享邮箱仅是本例的连接规则，不自动构成真实身份认证。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为每次 Union 保存触发合并的邮箱，支持解释两个账号为什么被归到同组。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "另建账号关系边列表，记录邮箱证据；并查集继续做快速连通查询，解释时在证据图上找路径，不依赖已压缩的父链。"
+      }
+    ],
+    "explain": "邮箱到首次拥有者的映射把共享关系转换为 Union 操作，Find 递归压缩父链，减少后续查询深度。合并时总让较小根作为代表，导出再对组内 ID 和根排序，结果不受 map 遍历影响。并查集能表达传递连通，但不会解释账号身份是否真实；真实合并还需要独立的邮箱所有权和冲突策略。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Groups struct{ Parent []int }\n\nfunc (g *Groups) Find(id int) int {\n\tif g.Parent[id] != id {\n\t\tg.Parent[id] = g.Find(g.Parent[id])\n\t}\n\treturn g.Parent[id]\n}\nfunc (g *Groups) Union(a, b int) {\n\ta = g.Find(a)\n\tb = g.Find(b)\n\tif a > b {\n\t\ta, b = b, a\n\t}\n\tg.Parent[b] = a\n}\nfunc main() {\n\taccounts := [][]string{{\"a@local\", \"shared@local\"}, {\"b@local\", \"shared@local\"}, {\"c@local\"}, {\"d@local\", \"c@local\"}}\n\tgroups := &Groups{Parent: make([]int, len(accounts))}\n\tfor i := range groups.Parent {\n\t\tgroups.Parent[i] = i\n\t}\n\towners := map[string]int{}\n\tfor id, emails := range accounts {\n\t\tfor _, email := range emails {\n\t\t\tif previous, exists := owners[email]; exists {\n\t\t\t\tgroups.Union(id, previous)\n\t\t\t} else {\n\t\t\t\towners[email] = id\n\t\t\t}\n\t\t}\n\t}\n\tbuckets := map[int][]int{}\n\tfor id := range accounts {\n\t\troot := groups.Find(id)\n\t\tbuckets[root] = append(buckets[root], id+1)\n\t}\n\troots := []int{}\n\tfor root := range buckets {\n\t\troots = append(roots, root)\n\t}\n\tsort.Ints(roots)\n\tfor _, root := range roots {\n\t\tsort.Ints(buckets[root])\n\t\tfmt.Printf(\"group=%v\\n\", buckets[root])\n\t}\n\tfmt.Printf(\"shared=%t distinct=%t\\n\", groups.Find(0) == groups.Find(1), groups.Find(0) != groups.Find(2))\n}\n",
+    "output": "group=[1 2]\ngroup=[3 4]\nshared=true distinct=true"
+  },
+  "example": {
+    "id": "go-example-159",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "并查集合并账号",
+    "summary": "通过共享邮箱合并账号，以路径压缩维护连通组并稳定导出分组。",
+    "concepts": [
+      "并查集",
+      "路径压缩",
+      "共享标识",
+      "稳定分组"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Groups struct{ Parent []int }\n\nfunc (g *Groups) Find(id int) int {\n\tif g.Parent[id] != id {\n\t\tg.Parent[id] = g.Find(g.Parent[id])\n\t}\n\treturn g.Parent[id]\n}\nfunc (g *Groups) Union(a, b int) {\n\ta = g.Find(a)\n\tb = g.Find(b)\n\tif a > b {\n\t\ta, b = b, a\n\t}\n\tg.Parent[b] = a\n}\nfunc main() {\n\taccounts := [][]string{{\"a@local\", \"shared@local\"}, {\"b@local\", \"shared@local\"}, {\"c@local\"}, {\"d@local\", \"c@local\"}}\n\tgroups := &Groups{Parent: make([]int, len(accounts))}\n\tfor i := range groups.Parent {\n\t\tgroups.Parent[i] = i\n\t}\n\towners := map[string]int{}\n\tfor id, emails := range accounts {\n\t\tfor _, email := range emails {\n\t\t\tif previous, exists := owners[email]; exists {\n\t\t\t\tgroups.Union(id, previous)\n\t\t\t} else {\n\t\t\t\towners[email] = id\n\t\t\t}\n\t\t}\n\t}\n\tbuckets := map[int][]int{}\n\tfor id := range accounts {\n\t\troot := groups.Find(id)\n\t\tbuckets[root] = append(buckets[root], id+1)\n\t}\n\troots := []int{}\n\tfor root := range buckets {\n\t\troots = append(roots, root)\n\t}\n\tsort.Ints(roots)\n\tfor _, root := range roots {\n\t\tsort.Ints(buckets[root])\n\t\tfmt.Printf(\"group=%v\\n\", buckets[root])\n\t}\n\tfmt.Printf(\"shared=%t distinct=%t\\n\", groups.Find(0) == groups.Find(1), groups.Find(0) != groups.Find(2))\n}\n",
+    "expectedOutput": "group=[1 2]\ngroup=[3 4]\nshared=true distinct=true",
+    "templateType": "go"
+  }
+}

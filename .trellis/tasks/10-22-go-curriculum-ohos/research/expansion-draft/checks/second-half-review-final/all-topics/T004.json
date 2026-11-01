@@ -1,0 +1,68 @@
+{
+  "id": "T004",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "int8=127 uint8=255 float64=3.5 bool=true string=\"go\"\ntyped 是 int\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-004",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "基础类型与类型推断",
+    "summary": "认识 bool、定长整数、浮点与 string 的宽度，并用 %T 观察推断出的类型。",
+    "concepts": [
+      "基础类型",
+      "类型推断",
+      "%T"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能说明 int8/uint8/float64/bool/string 的表示范围，并用 %T 验证推断类型。",
+    "prerequisites": [
+      "T003 变量与零值"
+    ],
+    "pitfalls": [
+      "假设 int 是 32 位：int 的宽度随平台变化（64 位平台通常是 64 位），需要固定宽度时必须显式用 int32/int64。",
+      "把无类型整数常量直接赋给 int8 而不检查范围：超出范围会在编译期报错，而不是运行时溢出。"
+    ],
+    "exercises": [
+      {
+        "prompt": "声明一个 int8 等于 127 并尝试 +1，观察编译或运行行为并解释。",
+        "hint": "127 是 int8 的上界，127+1 作为常量表达式会溢出。",
+        "answer": "将 128 赋给 int8 会在编译期报 constant 128 overflows int8，说明 Go 在编译期就检查常量范围。"
+      }
+    ],
+    "explain": "Go 的基础类型是定长且显式的：int8/uint8 占 1 字节，float64 是 8 字节双精度，bool 是布尔，string 是不可变字节序列（UTF-8 编码）。int 与 uint 的宽度依赖平台，需要精确控制宽度时应使用定长类型，否则跨平台行为可能不一致。\n\n类型推断只发生在有初始化表达式时：typed := 10 推断为 int。fmt 的 %T 谓词会打印变量的动态类型，是理解推断结果的实用工具。\n\n本样例打印每种类型的值和类型，并演示 := 推断出 int。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tvar i8 int8 = 127\n\tvar u8 uint8 = 255\n\tvar f float64 = 3.5\n\tvar b bool = true\n\tvar s string = \"go\"\n\tfmt.Printf(\"%T=%v %T=%v %T=%v %T=%v %T=%q\\n\", i8, i8, u8, u8, f, f, b, b, s, s)\n\t// 类型推断：值决定默认类型。\n\ttyped := 10\n\tfmt.Printf(\"typed 是 %T\\n\", typed)\n}\n",
+    "output": "int8=127 uint8=255 float64=3.5 bool=true string=\"go\"\ntyped 是 int"
+  },
+  "example": {
+    "id": "go-example-004",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "类型与 %T",
+    "summary": "用 %T 打印多个基础类型变量的实际类型。",
+    "concepts": [
+      "基础类型",
+      "类型推断",
+      "%T"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tvar i8 int8 = 127\n\tvar u8 uint8 = 255\n\tvar f float64 = 3.5\n\tvar b bool = true\n\tvar s string = \"go\"\n\tfmt.Printf(\"%T=%v %T=%v %T=%v %T=%v %T=%q\\n\", i8, i8, u8, u8, f, f, b, b, s, s)\n\t// 类型推断：值决定默认类型。\n\ttyped := 10\n\tfmt.Printf(\"typed 是 %T\\n\", typed)\n}\n",
+    "expectedOutput": "int8=127 uint8=255 float64=3.5 bool=true string=\"go\"\ntyped 是 int",
+    "templateType": "go"
+  }
+}

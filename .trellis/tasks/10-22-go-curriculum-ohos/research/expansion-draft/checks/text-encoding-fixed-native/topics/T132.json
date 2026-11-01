@@ -1,0 +1,69 @@
+{
+  "id": "T132",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "id=MZXW6 restored=foo\nlower-rejected=true\nnormalized=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-132",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Base32 人工核对编号",
+    "summary": "生成无填充的批次编号，验证解码往返并明确小写输入的处理规则。",
+    "concepts": [
+      "encoding/base32",
+      "NoPadding",
+      "大小写策略"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "生成无填充的批次编号，验证解码往返并明确小写输入的处理规则。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "无填充编码必须使用同样的 NoPadding 解码器。",
+      "Base32 只是编码，不是加密；编号中的原始内容可以恢复。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在编号后增加短校验码，并在转大写后先验证校验码再解码。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "先定义校验码算法和覆盖范围，例如对规范大写编码计算 CRC；校验失败返回错误，不把 CRC 当作身份认证。"
+      }
+    ],
+    "explain": "Base32 将字节映射为较小的字符集合，适合展示和手工核对。这里选用标准字母表并关闭填充，固定批次标识 foo 对应 MZXW6。解码器的大小写规则不能靠猜测：原始小写输入被拒绝，面向人工输入的包装层可以显式转成大写后再解码。大小写归一化是产品策略，编码本身并不提供校验和或防篡改能力。",
+    "code": "package main\n\nimport (\n\t\"encoding/base32\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\tcodec := base32.StdEncoding.WithPadding(base32.NoPadding)\n\tid := codec.EncodeToString([]byte(\"foo\"))\n\trestored, err := codec.DecodeString(id)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"id=%s restored=%s\\n\", id, restored)\n\tlower := strings.ToLower(id)\n\t_, err = codec.DecodeString(lower)\n\tfmt.Printf(\"lower-rejected=%t\\n\", err != nil)\n\tnormalized, err := codec.DecodeString(strings.ToUpper(lower))\n\tfmt.Printf(\"normalized=%t\\n\", err == nil && string(normalized) == \"foo\")\n}\n",
+    "output": "id=MZXW6 restored=foo\nlower-rejected=true\nnormalized=true"
+  },
+  "example": {
+    "id": "go-example-132",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Base32 人工核对编号",
+    "summary": "生成无填充的批次编号，验证解码往返并明确小写输入的处理规则。",
+    "concepts": [
+      "encoding/base32",
+      "NoPadding",
+      "大小写策略"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/base32\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\tcodec := base32.StdEncoding.WithPadding(base32.NoPadding)\n\tid := codec.EncodeToString([]byte(\"foo\"))\n\trestored, err := codec.DecodeString(id)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"id=%s restored=%s\\n\", id, restored)\n\tlower := strings.ToLower(id)\n\t_, err = codec.DecodeString(lower)\n\tfmt.Printf(\"lower-rejected=%t\\n\", err != nil)\n\tnormalized, err := codec.DecodeString(strings.ToUpper(lower))\n\tfmt.Printf(\"normalized=%t\\n\", err == nil && string(normalized) == \"foo\")\n}\n",
+    "expectedOutput": "id=MZXW6 restored=foo\nlower-rejected=true\nnormalized=true",
+    "templateType": "go"
+  }
+}

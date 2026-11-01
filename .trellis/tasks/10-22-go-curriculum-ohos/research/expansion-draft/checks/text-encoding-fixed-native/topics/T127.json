@@ -1,0 +1,71 @@
+{
+  "id": "T127",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "change old:2 new:2 beta -> BETA\nadd new:4 omega\ndelete old:5 obsolete\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-127",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "逐行差异定位",
+    "summary": "对比两份文本，输出新增、删除与改变的内容及其原始行号。",
+    "concepts": [
+      "bufio.Scanner",
+      "最长公共子序列",
+      "编辑脚本",
+      "行号映射"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "对比两份文本，输出新增、删除与改变的内容及其原始行号。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "把两份文件相同行号直接比较，会把插入之后的所有行误报为改变。",
+      "矩阵空间随两份文本行数的乘积增长，不能无预算用于巨大文件。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在分配矩阵前增加两份文本的行数乘积预算，超过预算返回错误。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "读取行数后先检查 len(old) 和 len(new)，用除法避免乘法溢出，再允许分配 (n+1)*(m+1) 单元。"
+      }
+    ],
+    "explain": "动态规划表保存从每一对行位置开始的最长公共子序列长度。回溯时相同行同时前进，不同则选择保留更多公共行的删除或新增操作；并列时固定先删除，结果便可重复。相邻的一次删除和一次新增合并显示为改变，但保留两份文件各自的行号。这里比较整行，时间和空间为行数乘积，适合小配置与短日志。",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc lines(text string) []string {\n\tresult := []string{}\n\tscan := bufio.NewScanner(strings.NewReader(text))\n\tfor scan.Scan() {\n\t\tresult = append(result, scan.Text())\n\t}\n\tif err := scan.Err(); err != nil {\n\t\tpanic(err)\n\t}\n\treturn result\n}\n\ntype Edit struct {\n\tKind string\n\tOld  int\n\tNew  int\n\tText string\n}\n\nfunc diff(a, b []string) []Edit {\n\ttable := make([][]int, len(a)+1)\n\tfor i := range table {\n\t\ttable[i] = make([]int, len(b)+1)\n\t}\n\tfor i := len(a) - 1; i >= 0; i-- {\n\t\tfor j := len(b) - 1; j >= 0; j-- {\n\t\t\tif a[i] == b[j] {\n\t\t\t\ttable[i][j] = table[i+1][j+1] + 1\n\t\t\t} else if table[i+1][j] >= table[i][j+1] {\n\t\t\t\ttable[i][j] = table[i+1][j]\n\t\t\t} else {\n\t\t\t\ttable[i][j] = table[i][j+1]\n\t\t\t}\n\t\t}\n\t}\n\tedits := []Edit{}\n\ti, j := 0, 0\n\tfor i < len(a) || j < len(b) {\n\t\tif i < len(a) && j < len(b) && a[i] == b[j] {\n\t\t\ti++\n\t\t\tj++\n\t\t\tcontinue\n\t\t}\n\t\tif i < len(a) && (j == len(b) || table[i+1][j] >= table[i][j+1]) {\n\t\t\tedits = append(edits, Edit{\"delete\", i + 1, j + 1, a[i]})\n\t\t\ti++\n\t\t} else {\n\t\t\tedits = append(edits, Edit{\"add\", i + 1, j + 1, b[j]})\n\t\t\tj++\n\t\t}\n\t}\n\treturn edits\n}\n\nfunc main() {\n\tedits := diff(lines(\"alpha\\nbeta\\ngamma\\ndelta\\nobsolete\"), lines(\"alpha\\nBETA\\ngamma\\nomega\\ndelta\"))\n\tfor i := 0; i < len(edits); i++ {\n\t\tedit := edits[i]\n\t\tif edit.Kind == \"delete\" && i+1 < len(edits) && edits[i+1].Kind == \"add\" {\n\t\t\tnext := edits[i+1]\n\t\t\tfmt.Printf(\"change old:%d new:%d %s -> %s\\n\", edit.Old, next.New, edit.Text, next.Text)\n\t\t\ti++\n\t\t} else if edit.Kind == \"delete\" {\n\t\t\tfmt.Printf(\"delete old:%d %s\\n\", edit.Old, edit.Text)\n\t\t} else {\n\t\t\tfmt.Printf(\"add new:%d %s\\n\", edit.New, edit.Text)\n\t\t}\n\t}\n}\n",
+    "output": "change old:2 new:2 beta -> BETA\nadd new:4 omega\ndelete old:5 obsolete"
+  },
+  "example": {
+    "id": "go-example-127",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "逐行差异定位",
+    "summary": "对比两份文本，输出新增、删除与改变的内容及其原始行号。",
+    "concepts": [
+      "bufio.Scanner",
+      "最长公共子序列",
+      "编辑脚本",
+      "行号映射"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc lines(text string) []string {\n\tresult := []string{}\n\tscan := bufio.NewScanner(strings.NewReader(text))\n\tfor scan.Scan() {\n\t\tresult = append(result, scan.Text())\n\t}\n\tif err := scan.Err(); err != nil {\n\t\tpanic(err)\n\t}\n\treturn result\n}\n\ntype Edit struct {\n\tKind string\n\tOld  int\n\tNew  int\n\tText string\n}\n\nfunc diff(a, b []string) []Edit {\n\ttable := make([][]int, len(a)+1)\n\tfor i := range table {\n\t\ttable[i] = make([]int, len(b)+1)\n\t}\n\tfor i := len(a) - 1; i >= 0; i-- {\n\t\tfor j := len(b) - 1; j >= 0; j-- {\n\t\t\tif a[i] == b[j] {\n\t\t\t\ttable[i][j] = table[i+1][j+1] + 1\n\t\t\t} else if table[i+1][j] >= table[i][j+1] {\n\t\t\t\ttable[i][j] = table[i+1][j]\n\t\t\t} else {\n\t\t\t\ttable[i][j] = table[i][j+1]\n\t\t\t}\n\t\t}\n\t}\n\tedits := []Edit{}\n\ti, j := 0, 0\n\tfor i < len(a) || j < len(b) {\n\t\tif i < len(a) && j < len(b) && a[i] == b[j] {\n\t\t\ti++\n\t\t\tj++\n\t\t\tcontinue\n\t\t}\n\t\tif i < len(a) && (j == len(b) || table[i+1][j] >= table[i][j+1]) {\n\t\t\tedits = append(edits, Edit{\"delete\", i + 1, j + 1, a[i]})\n\t\t\ti++\n\t\t} else {\n\t\t\tedits = append(edits, Edit{\"add\", i + 1, j + 1, b[j]})\n\t\t\tj++\n\t\t}\n\t}\n\treturn edits\n}\n\nfunc main() {\n\tedits := diff(lines(\"alpha\\nbeta\\ngamma\\ndelta\\nobsolete\"), lines(\"alpha\\nBETA\\ngamma\\nomega\\ndelta\"))\n\tfor i := 0; i < len(edits); i++ {\n\t\tedit := edits[i]\n\t\tif edit.Kind == \"delete\" && i+1 < len(edits) && edits[i+1].Kind == \"add\" {\n\t\t\tnext := edits[i+1]\n\t\t\tfmt.Printf(\"change old:%d new:%d %s -> %s\\n\", edit.Old, next.New, edit.Text, next.Text)\n\t\t\ti++\n\t\t} else if edit.Kind == \"delete\" {\n\t\t\tfmt.Printf(\"delete old:%d %s\\n\", edit.Old, edit.Text)\n\t\t} else {\n\t\t\tfmt.Printf(\"add new:%d %s\\n\", edit.New, edit.Text)\n\t\t}\n\t}\n}\n",
+    "expectedOutput": "change old:2 new:2 beta -> BETA\nadd new:4 omega\ndelete old:5 obsolete",
+    "templateType": "go"
+  }
+}

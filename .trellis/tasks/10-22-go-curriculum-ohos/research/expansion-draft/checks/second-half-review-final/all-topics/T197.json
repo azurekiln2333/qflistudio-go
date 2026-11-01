@@ -1,0 +1,71 @@
+{
+  "id": "T197",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "before=0\nname      qty\npen       2\nnotebook  12\nquantity-column=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-197",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "表格对齐输出",
+    "summary": "用 TabWriter 输出不同长度字段的表格，核对列对齐和 Flush 后可见性。",
+    "concepts": [
+      "text/tabwriter",
+      "列宽",
+      "Flush",
+      "固定输出"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "用 TabWriter 输出不同长度字段的表格，核对列对齐和 Flush 后可见性。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "原始制表符的显示宽度取决于终端，TabWriter 可生成明确空格列。",
+      "Unicode 字符数不等于终端显示格数，不能直接推广 ASCII 对齐结论。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加橡皮 eraser 一行，保持数量列仍在索引十。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "新名称长度六未超过 notebook 的八，所以最大列宽不变；Flush 后检查新行数字位置依然为十。"
+      }
+    ],
+    "explain": "TabWriter 使用制表分隔的逻辑列计算统一宽度，再用空格填充。最长名称 notebook 长八，列后保留两空格，所以数量列从索引十开始。缓冲在 Flush 后成为完整文本，程序不仅展示表格，也检查表头与各行数量字段的起点一致。这里使用 ASCII 字段；终端中宽字符的实际显示宽度需要单独处理。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"strings\"\n\t\"text/tabwriter\"\n)\n\nfunc main() {\n\tvar buffer bytes.Buffer\n\twriter := tabwriter.NewWriter(&buffer, 0, 4, 2, ' ', 0)\n\tif _, err := writer.Write([]byte(\"name\\tqty\\npen\\t2\\nnotebook\\t12\\n\")); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"before=%d\\n\", buffer.Len())\n\tif err := writer.Flush(); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Print(buffer.String())\n\trows := strings.Split(strings.TrimSuffix(buffer.String(), \"\\n\"), \"\\n\")\n\taligned := strings.Index(rows[0], \"qty\") == 10 && strings.Index(rows[1], \"2\") == 10 && strings.Index(rows[2], \"12\") == 10\n\tfmt.Printf(\"quantity-column=%t\\n\", aligned)\n}\n",
+    "output": "before=0\nname      qty\npen       2\nnotebook  12\nquantity-column=true"
+  },
+  "example": {
+    "id": "go-example-197",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "表格对齐输出",
+    "summary": "用 TabWriter 输出不同长度字段的表格，核对列对齐和 Flush 后可见性。",
+    "concepts": [
+      "text/tabwriter",
+      "列宽",
+      "Flush",
+      "固定输出"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"strings\"\n\t\"text/tabwriter\"\n)\n\nfunc main() {\n\tvar buffer bytes.Buffer\n\twriter := tabwriter.NewWriter(&buffer, 0, 4, 2, ' ', 0)\n\tif _, err := writer.Write([]byte(\"name\\tqty\\npen\\t2\\nnotebook\\t12\\n\")); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"before=%d\\n\", buffer.Len())\n\tif err := writer.Flush(); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Print(buffer.String())\n\trows := strings.Split(strings.TrimSuffix(buffer.String(), \"\\n\"), \"\\n\")\n\taligned := strings.Index(rows[0], \"qty\") == 10 && strings.Index(rows[1], \"2\") == 10 && strings.Index(rows[2], \"12\") == 10\n\tfmt.Printf(\"quantity-column=%t\\n\", aligned)\n}\n",
+    "expectedOutput": "before=0\nname      qty\npen       2\nnotebook  12\nquantity-column=true",
+    "templateType": "go"
+  }
+}

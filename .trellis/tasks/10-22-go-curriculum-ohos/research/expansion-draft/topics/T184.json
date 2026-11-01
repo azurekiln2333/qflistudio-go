@@ -1,0 +1,71 @@
+{
+  "id": "T184",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "files=2 bytes=8\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-184",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "遍历时跳过目录",
+    "summary": "遍历虚拟源码树时跳过 cache 子树。统计其余 Go 源文件数和字节数。",
+    "concepts": [
+      "fs.WalkDir",
+      "fs.SkipDir",
+      "DirEntry.Info",
+      "文件统计"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "遍历虚拟源码树时跳过 cache 子树。统计其余 Go 源文件数和字节数。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "对普通文件返回 SkipDir 可能跳过同目录后续项。并非只忽略该文件。",
+      "忽略回调收到的错误会把不完整遍历伪装成完整统计。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把跳过目录名单扩展为 cache 与 vendor，并保留文件名 vendor.go。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "先检查 entry.IsDir。再查集合中的 entry.Name。普通文件 vendor.go 不应命中目录名单。"
+      }
+    ],
+    "explain": "WalkDir 回调先处理传入错误。只有确认节点是名为 cache 的目录时才返回 SkipDir。源文件通过后缀过滤。再读取 Info 的 Size。最终不把缓存中的大文件计入统计。SkipDir 对文件节点的含义不同。因此目录判断不可省略。样本正文只作为字节夹具，不执行其中内容。三字节与五字节两项共八字节。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"io/fs\"\n\t\"strings\"\n\t\"testing/fstest\"\n)\n\nfunc main() {\n\ttree := fstest.MapFS{\"src/main.go\": &fstest.MapFile{Data: []byte(\"abc\")}, \"src/lib/util.go\": &fstest.MapFile{Data: []byte(\"12345\")}, \"src/cache/old.go\": &fstest.MapFile{Data: []byte(strings.Repeat(\"x\", 100))}, \"notes.md\": &fstest.MapFile{Data: []byte(\"notes\")}}\n\tfiles := 0\n\tvar bytes int64\n\terr := fs.WalkDir(tree, \".\", func(name string, entry fs.DirEntry, err error) error {\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tif entry.IsDir() {\n\t\t\tif entry.Name() == \"cache\" {\n\t\t\t\treturn fs.SkipDir\n\t\t\t}\n\t\t\treturn nil\n\t\t}\n\t\tif !strings.HasSuffix(name, \".go\") {\n\t\t\treturn nil\n\t\t}\n\t\tinfo, err := entry.Info()\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfiles++\n\t\tbytes += info.Size()\n\t\treturn nil\n\t})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"files=%d bytes=%d\\n\", files, bytes)\n}\n",
+    "output": "files=2 bytes=8"
+  },
+  "example": {
+    "id": "go-example-184",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "遍历时跳过目录",
+    "summary": "遍历虚拟源码树时跳过 cache 子树。统计其余 Go 源文件数和字节数。",
+    "concepts": [
+      "fs.WalkDir",
+      "fs.SkipDir",
+      "DirEntry.Info",
+      "文件统计"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"io/fs\"\n\t\"strings\"\n\t\"testing/fstest\"\n)\n\nfunc main() {\n\ttree := fstest.MapFS{\"src/main.go\": &fstest.MapFile{Data: []byte(\"abc\")}, \"src/lib/util.go\": &fstest.MapFile{Data: []byte(\"12345\")}, \"src/cache/old.go\": &fstest.MapFile{Data: []byte(strings.Repeat(\"x\", 100))}, \"notes.md\": &fstest.MapFile{Data: []byte(\"notes\")}}\n\tfiles := 0\n\tvar bytes int64\n\terr := fs.WalkDir(tree, \".\", func(name string, entry fs.DirEntry, err error) error {\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tif entry.IsDir() {\n\t\t\tif entry.Name() == \"cache\" {\n\t\t\t\treturn fs.SkipDir\n\t\t\t}\n\t\t\treturn nil\n\t\t}\n\t\tif !strings.HasSuffix(name, \".go\") {\n\t\t\treturn nil\n\t\t}\n\t\tinfo, err := entry.Info()\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfiles++\n\t\tbytes += info.Size()\n\t\treturn nil\n\t})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"files=%d bytes=%d\\n\", files, bytes)\n}\n",
+    "expectedOutput": "files=2 bytes=8",
+    "templateType": "go"
+  }
+}

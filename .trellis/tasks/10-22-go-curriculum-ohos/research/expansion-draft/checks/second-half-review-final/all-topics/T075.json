@@ -1,0 +1,71 @@
+{
+  "id": "T075",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "took ready channel: payload\ntimeout branch taken\nselected exactly one ready channel"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-075",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "select：多路复用与超时",
+    "summary": "用 select 等待多个 channel，演示就绪分支、超时分支，以及多分支就绪时的随机性。",
+    "concepts": [
+      "select",
+      "多路复用",
+      "超时",
+      "随机选择"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 select 实现多路等待与超时，并知道多分支就绪时的选择是随机的。",
+    "prerequisites": [
+      "T074 channel 三：close 与 range 接收",
+      "T092 时间一：time.Time、Duration 与格式化"
+    ],
+    "pitfalls": [
+      "在 select 里依赖某个分支“总是”被选中：多个就绪分支是随机选的。",
+      "把 time.After 放进热循环：每轮都会新建定时器，造成额外分配。"
+    ],
+    "exercises": [
+      {
+        "prompt": "实现一个带超时的 get，select 等待数据 channel 与 time.After。",
+        "hint": "超时分支返回错误，数据分支返回值。",
+        "answer": "select { case v := <-ch: return v,nil; case <-time.After(d): return 0,errTimeout }"
+      }
+    ],
+    "explain": "select 同时等待多个 channel 操作，哪个就绪走哪个；若写了 default，则无人就绪时立即走 default 而不阻塞。示例先用预置值的 channel 让接收分支必然就绪，得到确定结果；再用永不发送的 channel 配合 time.After 演示超时分支，并只断言“走了哪个分支”，不断言耗时；最后让两个 channel 都就绪，演示 Go 会随机选一个——因此示例只断言“恰好取到一个值”，用集合语义消解随机性。",
+    "code": "// T075 select：多路复用与超时。\n//\n// select 同时等待多个 channel 操作，哪个先就绪就走哪个分支；\n// 当所有分支都未就绪且写了 default，则立即走 default。\n// 本示例用\"已就绪的 channel\"制造确定性的选择结果，\n// 并用 time.After 演示超时分支，但断言只看\"是否走到超时分支\"，不看具体耗时。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc main() {\n\tready := make(chan string, 1)\n\tready <- \"payload\" // 预置，保证接收分支必然就绪\n\n\t// 只有一个分支就绪时，select 必然选择它，结果确定。\n\tselect {\n\tcase v := <-ready:\n\t\tfmt.Println(\"took ready channel:\", v)\n\tdefault:\n\t\tfmt.Println(\"nothing ready\")\n\t}\n\n\t// 演示超时分支：慢 channel 永远不发送，超时时间极短。\n\t// 我们断言\"走了哪个分支\"，不断言实际耗时。\n\tslow := make(chan int) // 无人发送\n\tselect {\n\tcase v := <-slow:\n\t\tfmt.Println(\"unexpected value:\", v)\n\tcase <-time.After(10 * time.Millisecond):\n\t\tfmt.Println(\"timeout branch taken\")\n\t}\n\n\t// 两个 channel 都就绪时，Go 会随机选一个；因此这里不比较谁被选中，\n\t// 只断言\"恰好取到一个值\"，用集合语义消解随机性。\n\ta := make(chan int, 1)\n\tb := make(chan int, 1)\n\ta <- 1\n\tb <- 2\n\tselect {\n\tcase <-a:\n\t\tfmt.Println(\"selected exactly one ready channel\")\n\tcase <-b:\n\t\tfmt.Println(\"selected exactly one ready channel\")\n\t}\n}\n",
+    "output": "took ready channel: payload\ntimeout branch taken\nselected exactly one ready channel"
+  },
+  "example": {
+    "id": "go-example-075",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "select：多路复用与超时（示例）",
+    "summary": "对应主题 T075 的可运行示例。",
+    "concepts": [
+      "select",
+      "多路复用",
+      "超时",
+      "随机选择"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T075 select：多路复用与超时。\n//\n// select 同时等待多个 channel 操作，哪个先就绪就走哪个分支；\n// 当所有分支都未就绪且写了 default，则立即走 default。\n// 本示例用\"已就绪的 channel\"制造确定性的选择结果，\n// 并用 time.After 演示超时分支，但断言只看\"是否走到超时分支\"，不看具体耗时。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc main() {\n\tready := make(chan string, 1)\n\tready <- \"payload\" // 预置，保证接收分支必然就绪\n\n\t// 只有一个分支就绪时，select 必然选择它，结果确定。\n\tselect {\n\tcase v := <-ready:\n\t\tfmt.Println(\"took ready channel:\", v)\n\tdefault:\n\t\tfmt.Println(\"nothing ready\")\n\t}\n\n\t// 演示超时分支：慢 channel 永远不发送，超时时间极短。\n\t// 我们断言\"走了哪个分支\"，不断言实际耗时。\n\tslow := make(chan int) // 无人发送\n\tselect {\n\tcase v := <-slow:\n\t\tfmt.Println(\"unexpected value:\", v)\n\tcase <-time.After(10 * time.Millisecond):\n\t\tfmt.Println(\"timeout branch taken\")\n\t}\n\n\t// 两个 channel 都就绪时，Go 会随机选一个；因此这里不比较谁被选中，\n\t// 只断言\"恰好取到一个值\"，用集合语义消解随机性。\n\ta := make(chan int, 1)\n\tb := make(chan int, 1)\n\ta <- 1\n\tb <- 2\n\tselect {\n\tcase <-a:\n\t\tfmt.Println(\"selected exactly one ready channel\")\n\tcase <-b:\n\t\tfmt.Println(\"selected exactly one ready channel\")\n\t}\n}\n",
+    "expectedOutput": "took ready channel: payload\ntimeout branch taken\nselected exactly one ready channel",
+    "templateType": "go"
+  }
+}

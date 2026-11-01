@@ -1,0 +1,69 @@
+{
+  "id": "T170",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "2KB=2000\n2MiB=2097152\n512=512\nunknown=true\nnegative=true\noverflow=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-170",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "单位换算与量纲",
+    "summary": "解析 KB、MiB 与原始字节，拒绝未知单位、负容量和换算溢出。",
+    "concepts": [
+      "strconv.ParseUint",
+      "十进制与二进制单位",
+      "乘法溢出"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "解析 KB、MiB 与原始字节，拒绝未知单位、负容量和换算溢出。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "KB 与 KiB 含义不同，不能在界面和存储中混用。",
+      "ParseUint 成功后乘倍率仍可能溢出，必须单独预检。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加 KiB，保持 KB 的十进制定义不变，并测试两个单位不同。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "在后缀分支加入 KiB 倍率一千零二十四。2KB 应为二千。2KiB 为二千零四十八。继续用同一除法检查乘法预算。"
+      }
+    ],
+    "explain": "KB 在本协议中固定为一千字节。MiB 为 1024×1024 字节。无后缀表示原始字节。先按明确后缀选择倍率。再解析非负整数。通过 value>最大值/倍率 预检乘法。大小写和单位集合是协议的一部分。不能把 MB 猜测成近似单位。这样容量配置的数值与量纲一起纳入检查。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc capacity(text string) (uint64, error) {\n\ttext = strings.TrimSpace(text)\n\tfactor := uint64(1)\n\tif strings.HasSuffix(text, \"MiB\") {\n\t\tfactor = 1 << 20\n\t\ttext = strings.TrimSuffix(text, \"MiB\")\n\t} else if strings.HasSuffix(text, \"KB\") {\n\t\tfactor = 1000\n\t\ttext = strings.TrimSuffix(text, \"KB\")\n\t}\n\tvalue, err := strconv.ParseUint(strings.TrimSpace(text), 10, 64)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\tconst maximum uint64 = 1<<63 - 1\n\tif value > maximum/factor {\n\t\treturn 0, fmt.Errorf(\"capacity overflow\")\n\t}\n\treturn value * factor, nil\n}\nfunc main() {\n\tfor _, input := range []string{\"2KB\", \"2MiB\", \"512\"} {\n\t\tvalue, err := capacity(input)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s=%d\\n\", input, value)\n\t}\n\t_, err := capacity(\"3MB\")\n\tfmt.Printf(\"unknown=%t\\n\", err != nil)\n\t_, err = capacity(\"-1KB\")\n\tfmt.Printf(\"negative=%t\\n\", err != nil)\n\t_, err = capacity(\"9223372036854775807MiB\")\n\tfmt.Printf(\"overflow=%t\\n\", err != nil)\n}\n",
+    "output": "2KB=2000\n2MiB=2097152\n512=512\nunknown=true\nnegative=true\noverflow=true"
+  },
+  "example": {
+    "id": "go-example-170",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "单位换算与量纲",
+    "summary": "解析 KB、MiB 与原始字节，拒绝未知单位、负容量和换算溢出。",
+    "concepts": [
+      "strconv.ParseUint",
+      "十进制与二进制单位",
+      "乘法溢出"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc capacity(text string) (uint64, error) {\n\ttext = strings.TrimSpace(text)\n\tfactor := uint64(1)\n\tif strings.HasSuffix(text, \"MiB\") {\n\t\tfactor = 1 << 20\n\t\ttext = strings.TrimSuffix(text, \"MiB\")\n\t} else if strings.HasSuffix(text, \"KB\") {\n\t\tfactor = 1000\n\t\ttext = strings.TrimSuffix(text, \"KB\")\n\t}\n\tvalue, err := strconv.ParseUint(strings.TrimSpace(text), 10, 64)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\tconst maximum uint64 = 1<<63 - 1\n\tif value > maximum/factor {\n\t\treturn 0, fmt.Errorf(\"capacity overflow\")\n\t}\n\treturn value * factor, nil\n}\nfunc main() {\n\tfor _, input := range []string{\"2KB\", \"2MiB\", \"512\"} {\n\t\tvalue, err := capacity(input)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s=%d\\n\", input, value)\n\t}\n\t_, err := capacity(\"3MB\")\n\tfmt.Printf(\"unknown=%t\\n\", err != nil)\n\t_, err = capacity(\"-1KB\")\n\tfmt.Printf(\"negative=%t\\n\", err != nil)\n\t_, err = capacity(\"9223372036854775807MiB\")\n\tfmt.Printf(\"overflow=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "2KB=2000\n2MiB=2097152\n512=512\nunknown=true\nnegative=true\noverflow=true",
+    "templateType": "go"
+  }
+}

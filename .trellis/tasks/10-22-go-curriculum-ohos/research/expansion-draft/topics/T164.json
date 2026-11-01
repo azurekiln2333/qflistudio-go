@@ -1,0 +1,71 @@
+{
+  "id": "T164",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "count=8 mean=5.00 sample-variance=4.5714\nverified=true\nsingle-defined=false\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-164",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "在线均值与方差",
+    "summary": "逐条更新均值与样本方差，并和可独立推导的固定数据核对。",
+    "concepts": [
+      "Welford",
+      "样本方差",
+      "math.Abs",
+      "流式统计"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "逐条更新均值与样本方差，并和可独立推导的固定数据核对。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "样本方差分母为 n-1，不能与总体方差混用。",
+      "浮点结果不应随意用精确相等比较，要依据量级选容差。"
+    ],
+    "exercises": [
+      {
+        "prompt": "同时提供总体方差，并分别定义空输入和单样本的行为。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "总体方差在 n>0 时返回 M2/n。单样本为零。n==0 返回未定义标记。样本方差继续要求 n>=2。"
+      }
+    ],
+    "explain": "Welford 每次保存数量、均值和相对均值的平方偏差总和。不必保存完整历史。也避免平方和减均值平方的严重抵消。八个样本的均值为五，偏差平方和为三十二。样本方差为 32/7。总体方差则会除以八。少于两个样本时样本方差没有定义。函数用布尔值显式报告。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\ntype Stats struct {\n\tCount int\n\tMean  float64\n\tM2    float64\n}\n\nfunc (s *Stats) Add(value float64) {\n\ts.Count++\n\tdelta := value - s.Mean\n\ts.Mean += delta / float64(s.Count)\n\ts.M2 += delta * (value - s.Mean)\n}\nfunc (s Stats) Variance() (float64, bool) {\n\tif s.Count < 2 {\n\t\treturn 0, false\n\t}\n\treturn s.M2 / float64(s.Count-1), true\n}\nfunc main() {\n\tstats := Stats{}\n\tfor _, value := range []float64{2, 4, 4, 4, 5, 5, 7, 9} {\n\t\tstats.Add(value)\n\t}\n\tvariance, ok := stats.Variance()\n\tfmt.Printf(\"count=%d mean=%.2f sample-variance=%.4f\\n\", stats.Count, stats.Mean, variance)\n\tfmt.Printf(\"verified=%t\\n\", ok && math.Abs(variance-32.0/7) < 1e-12)\n\tsingle := Stats{}\n\tsingle.Add(9)\n\t_, ok = single.Variance()\n\tfmt.Printf(\"single-defined=%t\\n\", ok)\n}\n",
+    "output": "count=8 mean=5.00 sample-variance=4.5714\nverified=true\nsingle-defined=false"
+  },
+  "example": {
+    "id": "go-example-164",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "在线均值与方差",
+    "summary": "逐条更新均值与样本方差，并和可独立推导的固定数据核对。",
+    "concepts": [
+      "Welford",
+      "样本方差",
+      "math.Abs",
+      "流式统计"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\ntype Stats struct {\n\tCount int\n\tMean  float64\n\tM2    float64\n}\n\nfunc (s *Stats) Add(value float64) {\n\ts.Count++\n\tdelta := value - s.Mean\n\ts.Mean += delta / float64(s.Count)\n\ts.M2 += delta * (value - s.Mean)\n}\nfunc (s Stats) Variance() (float64, bool) {\n\tif s.Count < 2 {\n\t\treturn 0, false\n\t}\n\treturn s.M2 / float64(s.Count-1), true\n}\nfunc main() {\n\tstats := Stats{}\n\tfor _, value := range []float64{2, 4, 4, 4, 5, 5, 7, 9} {\n\t\tstats.Add(value)\n\t}\n\tvariance, ok := stats.Variance()\n\tfmt.Printf(\"count=%d mean=%.2f sample-variance=%.4f\\n\", stats.Count, stats.Mean, variance)\n\tfmt.Printf(\"verified=%t\\n\", ok && math.Abs(variance-32.0/7) < 1e-12)\n\tsingle := Stats{}\n\tsingle.Add(9)\n\t_, ok = single.Variance()\n\tfmt.Printf(\"single-defined=%t\\n\", ok)\n}\n",
+    "expectedOutput": "count=8 mean=5.00 sample-variance=4.5714\nverified=true\nsingle-defined=false",
+    "templateType": "go"
+  }
+}

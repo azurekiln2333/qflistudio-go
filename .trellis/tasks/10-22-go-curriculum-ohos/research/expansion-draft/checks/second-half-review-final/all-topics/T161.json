@@ -1,0 +1,71 @@
+{
+  "id": "T161",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "base=1235 discount=124 tax=92 total=1203\nprecision-rejected=true\nnegative-rejected=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-161",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "整数分币与折扣",
+    "summary": "用整数分表示金额，按逐项四舍五入规则计算折扣与税费。",
+    "concepts": [
+      "整数金额",
+      "strconv.ParseInt",
+      "基点",
+      "四舍五入"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "用整数分表示金额，按逐项四舍五入规则计算折扣与税费。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "整数计算仍可能溢出，所以解析上限必须与后续乘法预算配合。",
+      "先算税再折扣或最后才统一舍入可能得到不同金额，必须固定规则。"
+    ],
+    "exercises": [
+      {
+        "prompt": "支持退款负数，并明确负数恰好半分时的舍入方向。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "不要直接复用加五千公式处理负数；先定义远离零或银行家舍入规则，再对绝对值舍入并恢复符号，同时检查最小整数取绝对值的边界。"
+      }
+    ],
+    "explain": "金额解析要求非负十进制、最多两位小数，并设置明确上限；计算过程中只使用整数分。百分之一基点为万分之一，roundRate 通过加五千再除一万实现非负数的半入舍入。先把折扣取整，再对折后金额计算税费，这个顺序是业务规则的一部分。12.35 的折扣为 1.24，折后 11.11 的税费为 0.92，最终 12.03。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc cents(text string) (int64, error) {\n\tparts := strings.Split(text, \".\")\n\tif len(parts) > 2 || parts[0] == \"\" {\n\t\treturn 0, fmt.Errorf(\"invalid amount\")\n\t}\n\tfraction := \"00\"\n\tif len(parts) == 2 {\n\t\tif len(parts[1]) < 1 || len(parts[1]) > 2 {\n\t\t\treturn 0, fmt.Errorf(\"invalid precision\")\n\t\t}\n\t\tfraction = parts[1]\n\t\tif len(fraction) == 1 {\n\t\t\tfraction += \"0\"\n\t\t}\n\t}\n\tfor _, r := range parts[0] + fraction {\n\t\tif r < '0' || r > '9' {\n\t\t\treturn 0, fmt.Errorf(\"invalid digit\")\n\t\t}\n\t}\n\twhole, err := strconv.ParseInt(parts[0], 10, 64)\n\tif err != nil || whole > 1000000000 {\n\t\treturn 0, fmt.Errorf(\"amount exceeds budget\")\n\t}\n\ttail, err := strconv.ParseInt(fraction, 10, 64)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\treturn whole*100 + tail, nil\n}\nfunc roundRate(amount, basisPoints int64) int64 { return (amount*basisPoints + 5000) / 10000 }\nfunc main() {\n\tbase, err := cents(\"12.35\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdiscount := roundRate(base, 1000)\n\ttax := roundRate(base-discount, 825)\n\tfmt.Printf(\"base=%d discount=%d tax=%d total=%d\\n\", base, discount, tax, base-discount+tax)\n\t_, err = cents(\"12.345\")\n\tfmt.Printf(\"precision-rejected=%t\\n\", err != nil)\n\t_, err = cents(\"-1.00\")\n\tfmt.Printf(\"negative-rejected=%t\\n\", err != nil)\n}\n",
+    "output": "base=1235 discount=124 tax=92 total=1203\nprecision-rejected=true\nnegative-rejected=true"
+  },
+  "example": {
+    "id": "go-example-161",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "整数分币与折扣",
+    "summary": "用整数分表示金额，按逐项四舍五入规则计算折扣与税费。",
+    "concepts": [
+      "整数金额",
+      "strconv.ParseInt",
+      "基点",
+      "四舍五入"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc cents(text string) (int64, error) {\n\tparts := strings.Split(text, \".\")\n\tif len(parts) > 2 || parts[0] == \"\" {\n\t\treturn 0, fmt.Errorf(\"invalid amount\")\n\t}\n\tfraction := \"00\"\n\tif len(parts) == 2 {\n\t\tif len(parts[1]) < 1 || len(parts[1]) > 2 {\n\t\t\treturn 0, fmt.Errorf(\"invalid precision\")\n\t\t}\n\t\tfraction = parts[1]\n\t\tif len(fraction) == 1 {\n\t\t\tfraction += \"0\"\n\t\t}\n\t}\n\tfor _, r := range parts[0] + fraction {\n\t\tif r < '0' || r > '9' {\n\t\t\treturn 0, fmt.Errorf(\"invalid digit\")\n\t\t}\n\t}\n\twhole, err := strconv.ParseInt(parts[0], 10, 64)\n\tif err != nil || whole > 1000000000 {\n\t\treturn 0, fmt.Errorf(\"amount exceeds budget\")\n\t}\n\ttail, err := strconv.ParseInt(fraction, 10, 64)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\treturn whole*100 + tail, nil\n}\nfunc roundRate(amount, basisPoints int64) int64 { return (amount*basisPoints + 5000) / 10000 }\nfunc main() {\n\tbase, err := cents(\"12.35\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdiscount := roundRate(base, 1000)\n\ttax := roundRate(base-discount, 825)\n\tfmt.Printf(\"base=%d discount=%d tax=%d total=%d\\n\", base, discount, tax, base-discount+tax)\n\t_, err = cents(\"12.345\")\n\tfmt.Printf(\"precision-rejected=%t\\n\", err != nil)\n\t_, err = cents(\"-1.00\")\n\tfmt.Printf(\"negative-rejected=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "base=1235 discount=124 tax=92 total=1203\nprecision-rejected=true\nnegative-rejected=true",
+    "templateType": "go"
+  }
+}

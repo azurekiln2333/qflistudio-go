@@ -1,0 +1,69 @@
+{
+  "id": "T274",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "changed.txt:digest\nchanged.txt:size\nmissing.txt:missing\nissues=3\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-274",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "包清单完整性检查",
+    "summary": "能读取包文件清单并校验文件存在、长度和摘要，聚合全部错误。",
+    "concepts": [
+      "encoding/json",
+      "crypto/sha256",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能读取包文件清单并校验文件存在、长度和摘要，聚合全部错误。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "发现首个问题就返回会让用户多轮修复，批量检查应聚合独立错误。",
+      "简单文件名检查不能防止已有符号链接越界，本例独占目录的前提不可省略。"
+    ],
+    "exercises": [
+      {
+        "prompt": "拒绝 JSON 清单中的重复 Name，避免同一文件出现互相冲突元数据。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "解析后先建立 Name 集合；重复即记录清单结构错误，在验证内容之前给出明确结果。"
+      }
+    ],
+    "explain": "程序在独占临时目录实际写入 JSON 清单和两个包文件，再从磁盘读取清单并逐文件验证存在性、字节长度和 SHA256。长度错误不妨碍继续检查摘要，因此同一损坏文件能报告两个问题；缺失文件则不计算虚构内容的摘要，其他读取错误单独归类。所有问题收集后排序，结束时清理目录。本例只允许无子目录的文件名，文件与目录都由程序自身创建；读取外部已有目录还需防止符号链接越界，清单本身也需要可信来源。",
+    "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"sort\"\n)\n\ntype Entry struct {\n\tName   string `json:\"name\"`\n\tSize   int    `json:\"size\"`\n\tDigest string `json:\"sha256\"`\n}\n\nfunc digest(text string) string { sum := sha256.Sum256([]byte(text)); return fmt.Sprintf(\"%x\", sum) }\nfunc main() {\n\tdirectory, err := os.MkdirTemp(\"\", \"qfli-package-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(directory)\n\tfor name, text := range map[string]string{\"ok.txt\": \"ok\", \"changed.txt\": \"NEW!\"} {\n\t\tif err = os.WriteFile(filepath.Join(directory, name), []byte(text), 0600); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tmanifest := []Entry{{\"ok.txt\", 2, digest(\"ok\")}, {\"changed.txt\", 3, digest(\"old\")}, {\"missing.txt\", 1, digest(\"x\")}}\n\twire, err := json.Marshal(manifest)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tmanifestPath := filepath.Join(directory, \"manifest.json\")\n\tif err = os.WriteFile(manifestPath, wire, 0600); err != nil {\n\t\tpanic(err)\n\t}\n\twire, err = os.ReadFile(manifestPath)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar decoded []Entry\n\tif err = json.Unmarshal(wire, &decoded); err != nil {\n\t\tpanic(err)\n\t}\n\tissues := []string{}\n\tfor _, item := range decoded {\n\t\tif item.Name == \".\" || item.Name == \"..\" || filepath.Base(item.Name) != item.Name {\n\t\t\tissues = append(issues, item.Name+\":name\")\n\t\t\tcontinue\n\t\t}\n\t\tdata, err := os.ReadFile(filepath.Join(directory, item.Name))\n\t\tif os.IsNotExist(err) {\n\t\t\tissues = append(issues, item.Name+\":missing\")\n\t\t\tcontinue\n\t\t}\n\t\tif err != nil {\n\t\t\tissues = append(issues, item.Name+\":read\")\n\t\t\tcontinue\n\t\t}\n\t\tif len(data) != item.Size {\n\t\t\tissues = append(issues, item.Name+\":size\")\n\t\t}\n\t\tif digest(string(data)) != item.Digest {\n\t\t\tissues = append(issues, item.Name+\":digest\")\n\t\t}\n\t}\n\tsort.Strings(issues)\n\tfor _, issue := range issues {\n\t\tfmt.Println(issue)\n\t}\n\tfmt.Printf(\"issues=%d\\n\", len(issues))\n}\n",
+    "output": "changed.txt:digest\nchanged.txt:size\nmissing.txt:missing\nissues=3"
+  },
+  "example": {
+    "id": "go-example-274",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "包清单完整性检查",
+    "summary": "能读取包文件清单并校验文件存在、长度和摘要，聚合全部错误。",
+    "concepts": [
+      "encoding/json",
+      "crypto/sha256",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"sort\"\n)\n\ntype Entry struct {\n\tName   string `json:\"name\"`\n\tSize   int    `json:\"size\"`\n\tDigest string `json:\"sha256\"`\n}\n\nfunc digest(text string) string { sum := sha256.Sum256([]byte(text)); return fmt.Sprintf(\"%x\", sum) }\nfunc main() {\n\tdirectory, err := os.MkdirTemp(\"\", \"qfli-package-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(directory)\n\tfor name, text := range map[string]string{\"ok.txt\": \"ok\", \"changed.txt\": \"NEW!\"} {\n\t\tif err = os.WriteFile(filepath.Join(directory, name), []byte(text), 0600); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tmanifest := []Entry{{\"ok.txt\", 2, digest(\"ok\")}, {\"changed.txt\", 3, digest(\"old\")}, {\"missing.txt\", 1, digest(\"x\")}}\n\twire, err := json.Marshal(manifest)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tmanifestPath := filepath.Join(directory, \"manifest.json\")\n\tif err = os.WriteFile(manifestPath, wire, 0600); err != nil {\n\t\tpanic(err)\n\t}\n\twire, err = os.ReadFile(manifestPath)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar decoded []Entry\n\tif err = json.Unmarshal(wire, &decoded); err != nil {\n\t\tpanic(err)\n\t}\n\tissues := []string{}\n\tfor _, item := range decoded {\n\t\tif item.Name == \".\" || item.Name == \"..\" || filepath.Base(item.Name) != item.Name {\n\t\t\tissues = append(issues, item.Name+\":name\")\n\t\t\tcontinue\n\t\t}\n\t\tdata, err := os.ReadFile(filepath.Join(directory, item.Name))\n\t\tif os.IsNotExist(err) {\n\t\t\tissues = append(issues, item.Name+\":missing\")\n\t\t\tcontinue\n\t\t}\n\t\tif err != nil {\n\t\t\tissues = append(issues, item.Name+\":read\")\n\t\t\tcontinue\n\t\t}\n\t\tif len(data) != item.Size {\n\t\t\tissues = append(issues, item.Name+\":size\")\n\t\t}\n\t\tif digest(string(data)) != item.Digest {\n\t\t\tissues = append(issues, item.Name+\":digest\")\n\t\t}\n\t}\n\tsort.Strings(issues)\n\tfor _, issue := range issues {\n\t\tfmt.Println(issue)\n\t}\n\tfmt.Printf(\"issues=%d\\n\", len(issues))\n}\n",
+    "expectedOutput": "changed.txt:digest\nchanged.txt:size\nmissing.txt:missing\nissues=3",
+    "templateType": "go"
+  }
+}

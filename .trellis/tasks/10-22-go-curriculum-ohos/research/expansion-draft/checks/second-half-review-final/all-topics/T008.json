@@ -1,0 +1,66 @@
+{
+  "id": "T008",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "v={3 4} +v={X:3 Y:4}\nd=42 q=\"go\" t=main.point\nf=3.14 e=1.234500e+03\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-008",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "格式化输出与 fmt 谓词",
+    "summary": "用 %v/%+v/%T/%q/%d/%f 等谓词精确控制输出格式。",
+    "concepts": [
+      "fmt",
+      "格式化谓词"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能选用合适的 fmt 谓词打印结构体、字符串、数值与类型。",
+    "prerequisites": [
+      "T004 基础类型"
+    ],
+    "pitfalls": [
+      "%v 与 %+v 的差别：%v 打印结构体字段值，%+v 额外带上字段名，调试结构体时 %+v 更有用。",
+      "对字符串用 %d 之类错误谓词：谓词与参数类型不匹配会打印 %!d(string=...)，go vet 也会告警。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 point 增加一个字段 Z，并分别用 %v 和 %+v 打印，观察输出差异。",
+        "hint": "%+v 会显示字段名。",
+        "answer": "%v 显示 {3 4 5}，%+v 显示 {X:3 Y:4 Z:5}。"
+      }
+    ],
+    "explain": "fmt 用谓词描述如何格式化参数：%v 是通用默认，%+v 为结构体附加字段名，%T 打印类型，%q 给字符串加引号并转义，%d/%f/%e 控制整数与浮点的表示。理解谓词能让你在调试和输出时一次表达清楚意图，而不是手工拼接字符串。\n\n谓词数量或类型不匹配时，fmt 会输出以 %! 开头的诊断占位符（如 %!d(string=go)），而 go vet 能静态发现最常见的这类错误。\n\n本样例对同一结构体分别用 %v 与 %+v，并对字符串、整数、类型使用不同谓词。",
+    "code": "package main\n\nimport \"fmt\"\n\ntype point struct {\n\tX int\n\tY int\n}\n\nfunc main() {\n\tp := point{X: 3, Y: 4}\n\tfmt.Printf(\"v=%v +v=%+v\\n\", p, p)\n\tfmt.Printf(\"d=%d q=%q t=%T\\n\", 42, \"go\", p)\n\tfmt.Printf(\"f=%.2f e=%e\\n\", 3.14159, 1234.5)\n}\n",
+    "output": "v={3 4} +v={X:3 Y:4}\nd=42 q=\"go\" t=main.point\nf=3.14 e=1.234500e+03"
+  },
+  "example": {
+    "id": "go-example-008",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "谓词对比",
+    "summary": "对结构体与标量值展示常用的 fmt 谓词输出。",
+    "concepts": [
+      "fmt",
+      "格式化谓词"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\ntype point struct {\n\tX int\n\tY int\n}\n\nfunc main() {\n\tp := point{X: 3, Y: 4}\n\tfmt.Printf(\"v=%v +v=%+v\\n\", p, p)\n\tfmt.Printf(\"d=%d q=%q t=%T\\n\", 42, \"go\", p)\n\tfmt.Printf(\"f=%.2f e=%e\\n\", 3.14159, 1234.5)\n}\n",
+    "expectedOutput": "v={3 4} +v={X:3 Y:4}\nd=42 q=\"go\" t=main.point\nf=3.14 e=1.234500e+03",
+    "templateType": "go"
+  }
+}

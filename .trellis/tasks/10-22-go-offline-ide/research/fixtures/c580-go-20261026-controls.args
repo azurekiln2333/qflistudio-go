@@ -1,0 +1,7 @@
+--control-only
+--grant
+C580-Go180-20261025
+--next-owner
+c-coordinator
+--output
+.trellis/tasks/10-22-go-offline-ide/research/c580-go-20261026-controls

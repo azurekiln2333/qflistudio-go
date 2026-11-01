@@ -1,0 +1,68 @@
+{
+  "id": "T014",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "sum 12\nn 3\ncount 2\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-014",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "for：三段式、条件式与无限循环",
+    "summary": "掌握 Go 唯一的循环关键字 for 的三种写法与 break/continue。",
+    "concepts": [
+      "for",
+      "break",
+      "continue"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能按需要选择三段式、条件式或无限 for，并正确使用 break 与 continue。",
+    "prerequisites": [
+      "T011 if/else"
+    ],
+    "pitfalls": [
+      "在 go 里找 while：Go 没有 while，条件循环写作 for cond {}，无限循环写作 for {}。",
+      "continue 在 for 后置语句前执行：continue 会跳到后置语句，若把自增写在循环体末尾可能被跳过导致死循环。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把三段式循环的 continue 改成 break，预测并验证 sum 的变化。",
+        "hint": "break 会立刻结束整个循环。",
+        "answer": "sum 变为 1+2=3，因为 i==3 时直接跳出，不再累加 4、5。"
+      }
+    ],
+    "explain": "Go 只有 for 一个循环关键字，但有三种形态：三段式 for i := 1; i <= 5; i++ {}、条件式 for cond {}（替代 while）、无限 for {}（配合 break 退出）。break 结束整个循环，continue 跳过本次剩余部分进入下一次迭代。\n\n一个易错点是 continue 与后置语句的关系：在三段式循环里 continue 会先执行后置语句（i++）再判断条件，因此不会跳过自增；但如果把自增手写在循环体末尾，continue 就会绕过它，可能造成死循环。\n\n本样例分别演示三种 for 形态，并在三段式中用 continue 跳过 i==3。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tsum := 0\n\tfor i := 1; i <= 5; i++ {\n\t\tif i == 3 {\n\t\t\tcontinue\n\t\t}\n\t\tsum += i\n\t}\n\tfmt.Println(\"sum\", sum)\n\n\tn := 0\n\tfor n < 3 {\n\t\tn++\n\t}\n\tfmt.Println(\"n\", n)\n\n\tcount := 0\n\tfor {\n\t\tcount++\n\t\tif count >= 2 {\n\t\t\tbreak\n\t\t}\n\t}\n\tfmt.Println(\"count\", count)\n}\n",
+    "output": "sum 12\nn 3\ncount 2"
+  },
+  "example": {
+    "id": "go-example-014",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "三种 for 写法",
+    "summary": "演示三段式、条件式与无限 for 各自的控制流。",
+    "concepts": [
+      "for",
+      "break",
+      "continue"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tsum := 0\n\tfor i := 1; i <= 5; i++ {\n\t\tif i == 3 {\n\t\t\tcontinue\n\t\t}\n\t\tsum += i\n\t}\n\tfmt.Println(\"sum\", sum)\n\n\tn := 0\n\tfor n < 3 {\n\t\tn++\n\t}\n\tfmt.Println(\"n\", n)\n\n\tcount := 0\n\tfor {\n\t\tcount++\n\t\tif count >= 2 {\n\t\t\tbreak\n\t\t}\n\t}\n\tfmt.Println(\"count\", count)\n}\n",
+    "expectedOutput": "sum 12\nn 3\ncount 2",
+    "templateType": "go"
+  }
+}

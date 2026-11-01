@@ -1,0 +1,56 @@
+[
+  {
+    "name": "vscode-multi-root",
+    "url": "https://code.visualstudio.com/docs/editing/workspaces/multi-root-workspaces",
+    "status": 200,
+    "length": 142514,
+    "file": ".trellis\\tasks\\10-22-standalone-ide-completeness\\research\\vscode-multi-root.html",
+    "sha256": "fd8e3b92296048bb400760e22e301680350a4a1c1a044fe51db6b2630902eb7c",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "vscode-debugging",
+    "url": "https://code.visualstudio.com/docs/debugtest/debugging",
+    "status": 200,
+    "length": 124682,
+    "file": ".trellis\\tasks\\10-22-standalone-ide-completeness\\research\\vscode-debugging.html",
+    "sha256": "f53182c34a6f6d55368b7d9bc813f7dcfa0b16598b690b9db1a54a508cf4317f",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "go-parser",
+    "url": "https://pkg.go.dev/go/parser",
+    "status": 200,
+    "length": 63663,
+    "file": ".trellis\\tasks\\10-22-standalone-ide-completeness\\research\\go-parser.html",
+    "sha256": "c667532a381c4c832b9ff0e811316e928659d7e945522d754e49cb29e284fa4d",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "go-format",
+    "url": "https://pkg.go.dev/go/format",
+    "status": 200,
+    "length": 54602,
+    "file": ".trellis\\tasks\\10-22-standalone-ide-completeness\\research\\go-format.html",
+    "sha256": "89c8a279a1d9c30e19259ec780f96f61b981367e1153931804fa487fcee3acd1",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "pip-offline-install",
+    "url": "https://pip.pypa.io/en/stable/cli/pip_install/",
+    "status": 200,
+    "length": 112505,
+    "file": ".trellis\\tasks\\10-22-standalone-ide-completeness\\research\\pip-offline-install.html",
+    "sha256": "2f9eca0e10a9545d64695bf9c98c0dd64e3c624a04f54228000e9ca6b0ff55a4",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "clion-inspections",
+    "url": "https://www.jetbrains.com/help/clion/code-inspection.html",
+    "status": 200,
+    "length": 13037,
+    "file": ".trellis\\tasks\\10-22-standalone-ide-completeness\\research\\clion-inspections.html",
+    "sha256": "fa37879fb0fc70392e7417a8119c6b56517e1822afe7c27a83fbc69620128057",
+    "rawSnapshotRetained": false
+  }
+]

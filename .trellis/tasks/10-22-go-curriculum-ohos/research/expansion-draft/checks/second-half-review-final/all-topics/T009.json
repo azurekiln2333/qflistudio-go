@@ -1,0 +1,68 @@
+{
+  "id": "T009",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "lines=2 words=3\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-009",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "输入读取：bufio.Scanner 扫描多行",
+    "summary": "用 bufio.Scanner 逐行读取文本并统计行数与词数，正确处理扫描错误。",
+    "concepts": [
+      "bufio",
+      "Scanner",
+      "输入读取"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 bufio.Scanner 逐行读取并以空白分词，同时检查 scanner.Err()。",
+    "prerequisites": [
+      "T007 字符串与 rune"
+    ],
+    "pitfalls": [
+      "忘记检查 scanner.Err()：扫描在出错（如超长行）时会提前停止，不检查就会静默漏读。",
+      "把 Scanner 用于超大 token：默认最大 token 64K，超长行会触发 ErrTooLong，需要手动调 Buffer。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把输入改成三行并预测 lines 与 words，再运行验证。",
+        "hint": "strings.Fields 按任意空白分词，空行不计词。",
+        "answer": "三行分别为若干词时，lines=3，words 等于所有行词数之和；空行 contributes 0。"
+      }
+    ],
+    "explain": "读取输入常用 bufio.Scanner：它把来源抽象成逐 token 读取，默认按行（ScanLines）。每次 Scan() 前进一个 token 并返回是否还有数据，Text() 返回该 token。扫描结束后必须检查 Err()，否则会把错误当成「正常结束」。\n\n本样例用 strings.NewReader 构造一个内存输入源（便于确定性验证），逐行扫描并用 strings.Fields 按空白切词统计。真实场景可把来源换成 os.Stdin 或文件。\n\nScanner 的默认 token 上限是 64K；处理超长行时要显式调用 scanner.Buffer 调大上限，这是常见生产陷阱。",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"os\"\n\t\"strings\"\n)\n\nfunc main() {\n\tin := \"alpha beta\\ngamma\\n\"\n\tscanner := bufio.NewScanner(strings.NewReader(in))\n\tlines := 0\n\twords := 0\n\tfor scanner.Scan() {\n\t\tlines++\n\t\twords += len(strings.Fields(scanner.Text()))\n\t}\n\tif err := scanner.Err(); err != nil {\n\t\tfmt.Fprintln(os.Stderr, err)\n\t\treturn\n\t}\n\tfmt.Printf(\"lines=%d words=%d\\n\", lines, words)\n}\n",
+    "output": "lines=2 words=3"
+  },
+  "example": {
+    "id": "go-example-009",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "逐行扫描统计",
+    "summary": "对固定内存输入逐行扫描并统计行数与词数。",
+    "concepts": [
+      "bufio",
+      "Scanner",
+      "输入读取"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"os\"\n\t\"strings\"\n)\n\nfunc main() {\n\tin := \"alpha beta\\ngamma\\n\"\n\tscanner := bufio.NewScanner(strings.NewReader(in))\n\tlines := 0\n\twords := 0\n\tfor scanner.Scan() {\n\t\tlines++\n\t\twords += len(strings.Fields(scanner.Text()))\n\t}\n\tif err := scanner.Err(); err != nil {\n\t\tfmt.Fprintln(os.Stderr, err)\n\t\treturn\n\t}\n\tfmt.Printf(\"lines=%d words=%d\\n\", lines, words)\n}\n",
+    "expectedOutput": "lines=2 words=3",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "T254",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "valid=true\nvalid=false\nvalid=false\nvalid=false\nvalid=false\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-254",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "主机名词法校验",
+    "summary": "能只校验 ASCII 主机标签长度、连字符位置与字符集。不做 DNS 查询。",
+    "concepts": [
+      "strings",
+      "unicode",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能只校验 ASCII 主机标签长度、连字符位置与字符集。不做 DNS 查询。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "unicode.IsLetter 会接受大量非 ASCII 字母，不符合本例的 ASCII 主机名协议。",
+      "主机名、DNS 通用标签和服务记录名的语法边界不同。不要到处复用同一校验器。"
+    ],
+    "exercises": [
+      {
+        "prompt": "支持一个合法的末尾点，但继续拒绝连续两个点。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "先只移除最后一个点。再执行现有的标签校验。a.. 仍会留下空标签。仍会拒绝空标签。"
+      }
+    ],
+    "explain": "这份校验器只接受不带末尾点的 ASCII 主机名。它逐标签校验长度一到六十三字节。首尾不能是横线。内部只含字母数字或横线。它也限制完整长度。空标签一律拒绝。中文名称要先按协议做国际化域名转换。不要直接放宽成任意 Unicode 字母。校验不做 DNS 查询。结果只描述语法，不描述主机存在性。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc hostname(text string) bool {\n\tif text == \"\" || len(text) > 253 {\n\t\treturn false\n\t}\n\tfor _, label := range strings.Split(text, \".\") {\n\t\tif len(label) == 0 || len(label) > 63 || label[0] == '-' || label[len(label)-1] == '-' {\n\t\t\treturn false\n\t\t}\n\t\tfor _, c := range label {\n\t\t\tif !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '-') {\n\t\t\t\treturn false\n\t\t\t}\n\t\t}\n\t}\n\treturn true\n}\nfunc main() {\n\tfor _, text := range []string{\"api.example.test\", \"-bad.test\", \"a..test\", \"中文.test\", strings.Repeat(\"a\", 64) + \".test\"} {\n\t\tfmt.Printf(\"valid=%t\\n\", hostname(text))\n\t}\n}\n",
+    "output": "valid=true\nvalid=false\nvalid=false\nvalid=false\nvalid=false"
+  },
+  "example": {
+    "id": "go-example-254",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "主机名词法校验",
+    "summary": "能只校验 ASCII 主机标签长度、连字符位置与字符集。不做 DNS 查询。",
+    "concepts": [
+      "strings",
+      "unicode",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc hostname(text string) bool {\n\tif text == \"\" || len(text) > 253 {\n\t\treturn false\n\t}\n\tfor _, label := range strings.Split(text, \".\") {\n\t\tif len(label) == 0 || len(label) > 63 || label[0] == '-' || label[len(label)-1] == '-' {\n\t\t\treturn false\n\t\t}\n\t\tfor _, c := range label {\n\t\t\tif !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '-') {\n\t\t\t\treturn false\n\t\t\t}\n\t\t}\n\t}\n\treturn true\n}\nfunc main() {\n\tfor _, text := range []string{\"api.example.test\", \"-bad.test\", \"a..test\", \"中文.test\", strings.Repeat(\"a\", 64) + \".test\"} {\n\t\tfmt.Printf(\"valid=%t\\n\", hostname(text))\n\t}\n}\n",
+    "expectedOutput": "valid=true\nvalid=false\nvalid=false\nvalid=false\nvalid=false",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "id": "T218",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "type=text/plain\ntitle=QFLI report\nnormalized=text/plain; charset=utf-8; title=\"QFLI report\"\ninvalid=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-218",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "MIME 媒体类型参数",
+    "summary": "能解析带引号参数和字符集的媒体类型，规范重组并处理非法输入。",
+    "concepts": [
+      "mime",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能解析带引号参数和字符集的媒体类型，规范重组并处理非法输入。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "对 Content-Type 直接做字符串相等比较会错误拒绝大小写或合法参数形式。",
+      "解析出 charset 并不代表正文已按该字符集解码。"
+    ],
+    "exercises": [
+      {
+        "prompt": "添加 filename 参数 a;b.txt 并验证格式化后还能正确读回。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "把参数放入映射交给 FormatMediaType；再 ParseMediaType，检查 filename 保留分号而没有被拆成新参数。"
+      }
+    ],
+    "explain": "媒体类型的参数可能包含空格、引号和分号，不能简单按空格拆分。ParseMediaType 规范化主类型并返回参数映射，FormatMediaType 根据需要补上引号，生成稳定字符串。示例读取带空格标题，再处理缺少参数值的错误输入。字符集名是协议声明，这个解析过程不会自动把正文转码。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"mime\"\n)\n\nfunc main() {\n\tmedia, params, err := mime.ParseMediaType(`Text/Plain; charset=utf-8; title=\"QFLI report\"`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"type=%s\\ntitle=%s\\nnormalized=%s\\n\", media, params[\"title\"], mime.FormatMediaType(media, params))\n\t_, _, err = mime.ParseMediaType(\"text/plain; charset\")\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+    "output": "type=text/plain\ntitle=QFLI report\nnormalized=text/plain; charset=utf-8; title=\"QFLI report\"\ninvalid=true"
+  },
+  "example": {
+    "id": "go-example-218",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "MIME 媒体类型参数",
+    "summary": "能解析带引号参数和字符集的媒体类型，规范重组并处理非法输入。",
+    "concepts": [
+      "mime",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"mime\"\n)\n\nfunc main() {\n\tmedia, params, err := mime.ParseMediaType(`Text/Plain; charset=utf-8; title=\"QFLI report\"`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"type=%s\\ntitle=%s\\nnormalized=%s\\n\", media, params[\"title\"], mime.FormatMediaType(media, params))\n\t_, _, err = mime.ParseMediaType(\"text/plain; charset\")\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "type=text/plain\ntitle=QFLI report\nnormalized=text/plain; charset=utf-8; title=\"QFLI report\"\ninvalid=true",
+    "templateType": "go"
+  }
+}

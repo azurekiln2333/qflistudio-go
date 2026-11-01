@@ -1,0 +1,71 @@
+{
+  "id": "T066",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "下午好，gopher\n上午好，gopher"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-066",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "依赖注入：显式传递优于全局",
+    "summary": "把外部依赖（时钟）抽象成接口并由构造函数注入，使业务逻辑可确定性测试。",
+    "concepts": [
+      "依赖注入",
+      "接口",
+      "可测试性",
+      "时钟抽象"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能识别隐式依赖（time.Now、全局单例）并用构造函数显式注入接口依赖。",
+    "prerequisites": [
+      "T041 接口基础与鸭子类型",
+      "T037 结构体定义、字面量与字段访问"
+    ],
+    "pitfalls": [
+      "在业务函数里直接调用 time.Now()：结果随运行时刻变化，测试无法固定。",
+      "注入具体类型而不是接口：仍然无法在测试中用替身替换。"
+    ],
+    "exercises": [
+      {
+        "prompt": "再抽象一个 ID 生成器接口并注入，用固定序列实现让输出确定。",
+        "hint": "接口方法签名如 NextID() int。",
+        "answer": "定义 IDGen 接口，fixedIDGen 每次返回预置序列；Greeter 同时注入 Clock 与 IDGen。"
+      }
+    ],
+    "explain": "依赖注入的核心是“把外部依赖从内部 new 出来，改为从外部传进来”。示例把“现在几点”抽象成 Clock 接口，Greeter 通过 NewGreeter(Clock) 接收它。生产环境传 realClock，测试/演示传 fixedClock，于是同一份业务逻辑既能对接真实时间，又能得到完全确定的输出。这样做的直接好处：业务逻辑不依赖全局状态、便于单测、便于替换实现。反例是直接调用 time.Now() 或读全局变量，那会让测试结果不可控、无法隔离。",
+    "code": "// T066 依赖注入：显式传递优于全局。\n//\n// 反例：handler 里直接调用 time.Now() 或某个全局单例，测试无法替换、结果不可控。\n// 正例：把\"时钟\"抽象成接口，由构造函数注入。生产用 realClock，测试注入固定时钟，\n// 于是同一份业务逻辑既能在真实环境运行，也能在测试中得到确定结果。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\n// Clock 抽象\"现在几点\"，是唯一的外部依赖。\ntype Clock interface {\n\tNow() time.Time\n}\n\n// realClock 是生产实现。\ntype realClock struct{}\n\nfunc (realClock) Now() time.Time { return time.Now() }\n\n// fixedClock 是测试/演示用的确定性实现。\ntype fixedClock struct{ t time.Time }\n\nfunc (c fixedClock) Now() time.Time { return c.t }\n\n// Greeter 通过构造函数接收 Clock，而不是自己去 new 或读全局变量。\ntype Greeter struct {\n\tclock Clock\n}\n\n// NewGreeter 是唯一组装依赖的地方。\nfunc NewGreeter(c Clock) *Greeter { return &Greeter{clock: c} }\n\n// Greeting 使用注入的时钟；逻辑本身不关心时间从哪来。\nfunc (g *Greeter) Greeting(name string) string {\n\thour := g.clock.Now().Hour()\n\tpart := \"上午好\"\n\tswitch {\n\tcase hour < 6:\n\t\tpart = \"凌晨好\"\n\tcase hour < 12:\n\t\tpart = \"上午好\"\n\tcase hour < 18:\n\t\tpart = \"下午好\"\n\tdefault:\n\t\tpart = \"晚上好\"\n\t}\n\treturn fmt.Sprintf(\"%s，%s\", part, name)\n}\n\nfunc main() {\n\t// 演示：注入固定时钟，输出完全确定（不受运行时刻影响）。\n\tnoon := time.Date(2026, 10, 12, 14, 0, 0, 0, time.UTC)\n\tg := NewGreeter(fixedClock{t: noon})\n\tfmt.Println(g.Greeting(\"gopher\"))\n\n\tmorning := NewGreeter(fixedClock{t: time.Date(2026, 10, 12, 8, 0, 0, 0, time.UTC)})\n\tfmt.Println(morning.Greeting(\"gopher\"))\n\n\t// 生产环境换成 realClock 即可，Greeter 代码一行不改。\n\t_ = realClock{}\n}\n",
+    "output": "下午好，gopher\n上午好，gopher"
+  },
+  "example": {
+    "id": "go-example-066",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "依赖注入：显式传递优于全局（示例）",
+    "summary": "对应主题 T066 的可运行示例。",
+    "concepts": [
+      "依赖注入",
+      "接口",
+      "可测试性",
+      "时钟抽象"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T066 依赖注入：显式传递优于全局。\n//\n// 反例：handler 里直接调用 time.Now() 或某个全局单例，测试无法替换、结果不可控。\n// 正例：把\"时钟\"抽象成接口，由构造函数注入。生产用 realClock，测试注入固定时钟，\n// 于是同一份业务逻辑既能在真实环境运行，也能在测试中得到确定结果。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\n// Clock 抽象\"现在几点\"，是唯一的外部依赖。\ntype Clock interface {\n\tNow() time.Time\n}\n\n// realClock 是生产实现。\ntype realClock struct{}\n\nfunc (realClock) Now() time.Time { return time.Now() }\n\n// fixedClock 是测试/演示用的确定性实现。\ntype fixedClock struct{ t time.Time }\n\nfunc (c fixedClock) Now() time.Time { return c.t }\n\n// Greeter 通过构造函数接收 Clock，而不是自己去 new 或读全局变量。\ntype Greeter struct {\n\tclock Clock\n}\n\n// NewGreeter 是唯一组装依赖的地方。\nfunc NewGreeter(c Clock) *Greeter { return &Greeter{clock: c} }\n\n// Greeting 使用注入的时钟；逻辑本身不关心时间从哪来。\nfunc (g *Greeter) Greeting(name string) string {\n\thour := g.clock.Now().Hour()\n\tpart := \"上午好\"\n\tswitch {\n\tcase hour < 6:\n\t\tpart = \"凌晨好\"\n\tcase hour < 12:\n\t\tpart = \"上午好\"\n\tcase hour < 18:\n\t\tpart = \"下午好\"\n\tdefault:\n\t\tpart = \"晚上好\"\n\t}\n\treturn fmt.Sprintf(\"%s，%s\", part, name)\n}\n\nfunc main() {\n\t// 演示：注入固定时钟，输出完全确定（不受运行时刻影响）。\n\tnoon := time.Date(2026, 10, 12, 14, 0, 0, 0, time.UTC)\n\tg := NewGreeter(fixedClock{t: noon})\n\tfmt.Println(g.Greeting(\"gopher\"))\n\n\tmorning := NewGreeter(fixedClock{t: time.Date(2026, 10, 12, 8, 0, 0, 0, time.UTC)})\n\tfmt.Println(morning.Greeting(\"gopher\"))\n\n\t// 生产环境换成 realClock 即可，Greeter 代码一行不改。\n\t_ = realClock{}\n}\n",
+    "expectedOutput": "下午好，gopher\n上午好，gopher",
+    "templateType": "go"
+  }
+}

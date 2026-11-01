@@ -1,0 +1,67 @@
+{
+  "id": "T258",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "fields=3\nfirst=a;b\nsecond=c\\d\nempty-last=true\ninvalid=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-258",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "带转义字段状态机",
+    "summary": "能解析用分号分隔且支持反斜线转义的记录，检测悬空转义。",
+    "concepts": [
+      "strings",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能解析用分号分隔且支持反斜线转义的记录，检测悬空转义。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "直接 strings.Split 无法区分字段分隔符与被转义的分号。",
+      "遇到输入结束时仍处于转义状态必须报错，不能自动吞掉最后一个字符。"
+    ],
+    "exercises": [
+      {
+        "prompt": "实现与 fields 对应的编码器，验证任意字段序列往返。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "对每个字段先转义反斜线和分号，再用分号连接；测试空字段、中文和末尾反斜线。"
+      }
+    ],
+    "explain": "状态机只有普通与转义两种状态。普通分号结束字段，反斜线让下一个分号或反斜线成为内容；其他转义和末尾悬空反斜线都被拒绝。循环按 rune 处理，中文不会被拆成残缺字节。最后总是追加当前字段，保留尾部分号所表达的空字段，而不是悄悄丢弃。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc fields(text string) ([]string, error) {\n\tresult := []string{}\n\tvar current strings.Builder\n\tescaped := false\n\tfor _, c := range text {\n\t\tif escaped {\n\t\t\tif c != ';' && c != '\\\\' {\n\t\t\t\treturn nil, fmt.Errorf(\"bad escape\")\n\t\t\t}\n\t\t\tcurrent.WriteRune(c)\n\t\t\tescaped = false\n\t\t\tcontinue\n\t\t}\n\t\tswitch c {\n\t\tcase '\\\\':\n\t\t\tescaped = true\n\t\tcase ';':\n\t\t\tresult = append(result, current.String())\n\t\t\tcurrent.Reset()\n\t\tdefault:\n\t\t\tcurrent.WriteRune(c)\n\t\t}\n\t}\n\tif escaped {\n\t\treturn nil, fmt.Errorf(\"trailing escape\")\n\t}\n\treturn append(result, current.String()), nil\n}\nfunc main() {\n\tvalues, err := fields(`a\\;b;c\\\\d;`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"fields=%d\\nfirst=%s\\nsecond=%s\\nempty-last=%t\\n\", len(values), values[0], values[1], values[2] == \"\")\n\t_, err = fields(`bad\\x`)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+    "output": "fields=3\nfirst=a;b\nsecond=c\\d\nempty-last=true\ninvalid=true"
+  },
+  "example": {
+    "id": "go-example-258",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "带转义字段状态机",
+    "summary": "能解析用分号分隔且支持反斜线转义的记录，检测悬空转义。",
+    "concepts": [
+      "strings",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc fields(text string) ([]string, error) {\n\tresult := []string{}\n\tvar current strings.Builder\n\tescaped := false\n\tfor _, c := range text {\n\t\tif escaped {\n\t\t\tif c != ';' && c != '\\\\' {\n\t\t\t\treturn nil, fmt.Errorf(\"bad escape\")\n\t\t\t}\n\t\t\tcurrent.WriteRune(c)\n\t\t\tescaped = false\n\t\t\tcontinue\n\t\t}\n\t\tswitch c {\n\t\tcase '\\\\':\n\t\t\tescaped = true\n\t\tcase ';':\n\t\t\tresult = append(result, current.String())\n\t\t\tcurrent.Reset()\n\t\tdefault:\n\t\t\tcurrent.WriteRune(c)\n\t\t}\n\t}\n\tif escaped {\n\t\treturn nil, fmt.Errorf(\"trailing escape\")\n\t}\n\treturn append(result, current.String()), nil\n}\nfunc main() {\n\tvalues, err := fields(`a\\;b;c\\\\d;`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"fields=%d\\nfirst=%s\\nsecond=%s\\nempty-last=%t\\n\", len(values), values[0], values[1], values[2] == \"\")\n\t_, err = fields(`bad\\x`)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "fields=3\nfirst=a;b\nsecond=c\\d\nempty-last=true\ninvalid=true",
+    "templateType": "go"
+  }
+}

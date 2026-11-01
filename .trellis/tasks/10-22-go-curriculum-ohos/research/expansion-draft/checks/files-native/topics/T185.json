@@ -1,0 +1,71 @@
+{
+  "id": "T185",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "content=new source-gone=true\ncleaned=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-185",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "临时文件替换",
+    "summary": "在同一临时目录写替代文件后 Rename，核对新内容、旧临时名消失与目录清理。",
+    "concepts": [
+      "os.CreateTemp",
+      "os.Rename",
+      "同目录替换",
+      "清理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "在同一临时目录写替代文件后 Rename，核对新内容、旧临时名消失与目录清理。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "临时文件放在其他文件系统可能使 Rename 失败。",
+      "忽略 Close 错误或把 Rename 成功当成断电持久性，会夸大写入保证。"
+    ],
+    "exercises": [
+      {
+        "prompt": "让写替代文件的步骤失败时保留原目标内容，并验证目标仍为 old。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "将写入步骤封装为返回错误的函数，只有写入与关闭全部成功后才 Rename；注入写失败并读回目标确认未更改。"
+      }
+    ],
+    "explain": "替代文件与目标在同一目录，避免跨文件系统移动。先检查写入和关闭错误，再 Rename 到目标，之后读回新内容并确认替代名已不存在。目录由程序独立创建，最后显式清理且有 defer 兜底，输出不泄漏随机路径。成功重命名不等同于断电持久性保证；需要持久事务时还应研究平台相关的同步与恢复流程。",
+    "code": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"strings\"\n)\n\nfunc main() {\n\tdirectory, err := os.MkdirTemp(\"\", \"qfli-replace-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(directory)\n\ttarget := filepath.Join(directory, \"state.txt\")\n\tif err := os.WriteFile(target, []byte(\"old\\n\"), 0600); err != nil {\n\t\tpanic(err)\n\t}\n\treplacement, err := os.CreateTemp(directory, \"next-*\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tname := replacement.Name()\n\tif _, err := replacement.WriteString(\"new\\n\"); err != nil {\n\t\treplacement.Close()\n\t\tpanic(err)\n\t}\n\tif err := replacement.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := os.Rename(name, target); err != nil {\n\t\tpanic(err)\n\t}\n\tdata, err := os.ReadFile(target)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\t_, gone := os.Stat(name)\n\tfmt.Printf(\"content=%s source-gone=%t\\n\", strings.TrimSuffix(string(data), \"\\n\"), errors.Is(gone, os.ErrNotExist))\n\tif err := os.RemoveAll(directory); err != nil {\n\t\tpanic(err)\n\t}\n\t_, err = os.Stat(directory)\n\tfmt.Printf(\"cleaned=%t\\n\", errors.Is(err, os.ErrNotExist))\n}\n",
+    "output": "content=new source-gone=true\ncleaned=true"
+  },
+  "example": {
+    "id": "go-example-185",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "临时文件替换",
+    "summary": "在同一临时目录写替代文件后 Rename，核对新内容、旧临时名消失与目录清理。",
+    "concepts": [
+      "os.CreateTemp",
+      "os.Rename",
+      "同目录替换",
+      "清理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"strings\"\n)\n\nfunc main() {\n\tdirectory, err := os.MkdirTemp(\"\", \"qfli-replace-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(directory)\n\ttarget := filepath.Join(directory, \"state.txt\")\n\tif err := os.WriteFile(target, []byte(\"old\\n\"), 0600); err != nil {\n\t\tpanic(err)\n\t}\n\treplacement, err := os.CreateTemp(directory, \"next-*\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tname := replacement.Name()\n\tif _, err := replacement.WriteString(\"new\\n\"); err != nil {\n\t\treplacement.Close()\n\t\tpanic(err)\n\t}\n\tif err := replacement.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := os.Rename(name, target); err != nil {\n\t\tpanic(err)\n\t}\n\tdata, err := os.ReadFile(target)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\t_, gone := os.Stat(name)\n\tfmt.Printf(\"content=%s source-gone=%t\\n\", strings.TrimSuffix(string(data), \"\\n\"), errors.Is(gone, os.ErrNotExist))\n\tif err := os.RemoveAll(directory); err != nil {\n\t\tpanic(err)\n\t}\n\t_, err = os.Stat(directory)\n\tfmt.Printf(\"cleaned=%t\\n\", errors.Is(err, os.ErrNotExist))\n}\n",
+    "expectedOutput": "content=new source-gone=true\ncleaned=true",
+    "templateType": "go"
+  }
+}

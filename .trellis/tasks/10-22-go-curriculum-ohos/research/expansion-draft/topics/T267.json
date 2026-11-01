@@ -1,0 +1,67 @@
+{
+  "id": "T267",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "slots=[0 1 2]\nfull=true\nreused=1\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-267",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "位图空闲槽分配",
+    "summary": "能用 uint64 位图申请、释放资源槽，检测用尽并重用空槽。",
+    "concepts": [
+      "math/bits",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能用 uint64 位图申请、释放资源槽，检测用尽并重用空槽。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "忘记与容量掩码相交会分配到业务范围以外的高位。",
+      "全满时调用 TrailingZeros64 会得到六十四，应先检查 free 是否为零。"
+    ],
+    "exercises": [
+      {
+        "prompt": "检测重复释放并保持位图不变。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "现有 Release 的已分配检查应拒绝第二次释放。保存 Used 并比较变化。错误前后应没有变化。"
+      }
+    ],
+    "explain": "位图的一位表示一个槽位是否占用。取反后与容量掩码相交得到空闲位。TrailingZeros64 找到最小可用编号。分配设置该位。释放清除该位。三个槽填满时明确返回错误。释放一号后下一次会复用它。这个结构不带锁。它仅适合单协程或外部已有锁的场景。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/bits\"\n)\n\ntype Slots struct {\n\tUsed     uint64\n\tCapacity uint\n}\n\nfunc (s *Slots) Allocate() (int, error) {\n\tif s.Capacity == 0 || s.Capacity > 64 {\n\t\treturn -1, fmt.Errorf(\"capacity\")\n\t}\n\tmask := ^uint64(0)\n\tif s.Capacity < 64 {\n\t\tmask = (uint64(1) << s.Capacity) - 1\n\t}\n\tfree := ^s.Used & mask\n\tif free == 0 {\n\t\treturn -1, fmt.Errorf(\"full\")\n\t}\n\tindex := bits.TrailingZeros64(free)\n\ts.Used |= uint64(1) << uint(index)\n\treturn index, nil\n}\nfunc (s *Slots) Release(index uint) error {\n\tif index >= s.Capacity || s.Used&(uint64(1)<<index) == 0 {\n\t\treturn fmt.Errorf(\"not allocated\")\n\t}\n\ts.Used &^= uint64(1) << index\n\treturn nil\n}\nfunc main() {\n\ts := &Slots{Capacity: 3}\n\tvalues := []int{}\n\tfor i := 0; i < 3; i++ {\n\t\tslot, err := s.Allocate()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tvalues = append(values, slot)\n\t}\n\t_, err := s.Allocate()\n\tfmt.Printf(\"slots=%v\\nfull=%t\\n\", values, err != nil)\n\tif err = s.Release(1); err != nil {\n\t\tpanic(err)\n\t}\n\tslot, err := s.Allocate()\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"reused=%d\\n\", slot)\n}\n",
+    "output": "slots=[0 1 2]\nfull=true\nreused=1"
+  },
+  "example": {
+    "id": "go-example-267",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "位图空闲槽分配",
+    "summary": "能用 uint64 位图申请、释放资源槽，检测用尽并重用空槽。",
+    "concepts": [
+      "math/bits",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/bits\"\n)\n\ntype Slots struct {\n\tUsed     uint64\n\tCapacity uint\n}\n\nfunc (s *Slots) Allocate() (int, error) {\n\tif s.Capacity == 0 || s.Capacity > 64 {\n\t\treturn -1, fmt.Errorf(\"capacity\")\n\t}\n\tmask := ^uint64(0)\n\tif s.Capacity < 64 {\n\t\tmask = (uint64(1) << s.Capacity) - 1\n\t}\n\tfree := ^s.Used & mask\n\tif free == 0 {\n\t\treturn -1, fmt.Errorf(\"full\")\n\t}\n\tindex := bits.TrailingZeros64(free)\n\ts.Used |= uint64(1) << uint(index)\n\treturn index, nil\n}\nfunc (s *Slots) Release(index uint) error {\n\tif index >= s.Capacity || s.Used&(uint64(1)<<index) == 0 {\n\t\treturn fmt.Errorf(\"not allocated\")\n\t}\n\ts.Used &^= uint64(1) << index\n\treturn nil\n}\nfunc main() {\n\ts := &Slots{Capacity: 3}\n\tvalues := []int{}\n\tfor i := 0; i < 3; i++ {\n\t\tslot, err := s.Allocate()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tvalues = append(values, slot)\n\t}\n\t_, err := s.Allocate()\n\tfmt.Printf(\"slots=%v\\nfull=%t\\n\", values, err != nil)\n\tif err = s.Release(1); err != nil {\n\t\tpanic(err)\n\t}\n\tslot, err := s.Allocate()\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"reused=%d\\n\", slot)\n}\n",
+    "expectedOutput": "slots=[0 1 2]\nfull=true\nreused=1",
+    "templateType": "go"
+  }
+}

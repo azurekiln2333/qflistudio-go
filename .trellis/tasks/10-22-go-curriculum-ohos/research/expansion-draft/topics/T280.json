@@ -1,0 +1,69 @@
+{
+  "id": "T280",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "2 + 3 * (4 - 1) -> 11\n18 / 3 / 2 -> 3\n4/(2-2) -> error\n1 + -> error\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-280",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "中缀表达式计算器",
+    "summary": "能用操作符栈处理括号与优先级。报告除零及不完整表达式。",
+    "concepts": [
+      "strconv",
+      "unicode",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能用操作符栈处理括号与优先级。报告除零及不完整表达式。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "减法与除法必须让倒数第二个值 op 最后一个值。不能反过来。",
+      "本机 int 的中间算术可能溢出。生产计算器需要边界检查或 math/big。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为一元负号加入独立优先级，支持 -(2+3)*4。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "当 expectValue 为 true 且遇到减号时压入单目操作符。归约时只弹一个数值。不能简单改写所有减号。"
+      }
+    ],
+    "explain": "计算器维护数值栈和运算符栈。遇到更低或相同优先级的二元运算符时先归约栈顶。这样保证乘除优先以及同优先级左结合。括号作为归约边界。expectValue 区分当前应出现数字还是运算符。因此程序拒绝尾部运算符和缺操作数。示例还检测除零。本范围只接受非负整数字面量。算术只支持二元运算，不实现一元负号。整数运算采用 Go 的本机 int 规则。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"unicode\"\n)\n\nfunc precedence(op rune) int {\n\tif op == '+' || op == '-' {\n\t\treturn 1\n\t}\n\tif op == '*' || op == '/' {\n\t\treturn 2\n\t}\n\treturn 0\n}\nfunc evaluate(text string) (int, error) {\n\tvalues := []int{}\n\tops := []rune{}\n\tapply := func() error {\n\t\tif len(values) < 2 || len(ops) == 0 {\n\t\t\treturn fmt.Errorf(\"missing operand\")\n\t\t}\n\t\top := ops[len(ops)-1]\n\t\tops = ops[:len(ops)-1]\n\t\ta, b := values[len(values)-2], values[len(values)-1]\n\t\tvalues = values[:len(values)-2]\n\t\tswitch op {\n\t\tcase '+':\n\t\t\tvalues = append(values, a+b)\n\t\tcase '-':\n\t\t\tvalues = append(values, a-b)\n\t\tcase '*':\n\t\t\tvalues = append(values, a*b)\n\t\tcase '/':\n\t\t\tif b == 0 {\n\t\t\t\treturn fmt.Errorf(\"division by zero\")\n\t\t\t}\n\t\t\tvalues = append(values, a/b)\n\t\tdefault:\n\t\t\treturn fmt.Errorf(\"bad operator\")\n\t\t}\n\t\treturn nil\n\t}\n\tchars := []rune(text)\n\texpectValue := true\n\tfor i := 0; i < len(chars); {\n\t\tc := chars[i]\n\t\tif unicode.IsSpace(c) {\n\t\t\ti++\n\t\t\tcontinue\n\t\t}\n\t\tif c >= '0' && c <= '9' {\n\t\t\tif !expectValue {\n\t\t\t\treturn 0, fmt.Errorf(\"missing operator\")\n\t\t\t}\n\t\t\tstart := i\n\t\t\tfor i < len(chars) && chars[i] >= '0' && chars[i] <= '9' {\n\t\t\t\ti++\n\t\t\t}\n\t\t\tn, err := strconv.Atoi(string(chars[start:i]))\n\t\t\tif err != nil {\n\t\t\t\treturn 0, err\n\t\t\t}\n\t\t\tvalues = append(values, n)\n\t\t\texpectValue = false\n\t\t\tcontinue\n\t\t}\n\t\tif c == '(' {\n\t\t\tif !expectValue {\n\t\t\t\treturn 0, fmt.Errorf(\"missing operator\")\n\t\t\t}\n\t\t\tops = append(ops, c)\n\t\t\ti++\n\t\t\tcontinue\n\t\t}\n\t\tif c == ')' {\n\t\t\tif expectValue {\n\t\t\t\treturn 0, fmt.Errorf(\"empty group\")\n\t\t\t}\n\t\t\tfor len(ops) > 0 && ops[len(ops)-1] != '(' {\n\t\t\t\tif err := apply(); err != nil {\n\t\t\t\t\treturn 0, err\n\t\t\t\t}\n\t\t\t}\n\t\t\tif len(ops) == 0 {\n\t\t\t\treturn 0, fmt.Errorf(\"unmatched close\")\n\t\t\t}\n\t\t\tops = ops[:len(ops)-1]\n\t\t\ti++\n\t\t\tcontinue\n\t\t}\n\t\tif precedence(c) == 0 || expectValue {\n\t\t\treturn 0, fmt.Errorf(\"bad token\")\n\t\t}\n\t\tfor len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(c) {\n\t\t\tif err := apply(); err != nil {\n\t\t\t\treturn 0, err\n\t\t\t}\n\t\t}\n\t\tops = append(ops, c)\n\t\texpectValue = true\n\t\ti++\n\t}\n\tif expectValue {\n\t\treturn 0, fmt.Errorf(\"incomplete\")\n\t}\n\tfor len(ops) > 0 {\n\t\tif ops[len(ops)-1] == '(' {\n\t\t\treturn 0, fmt.Errorf(\"unmatched open\")\n\t\t}\n\t\tif err := apply(); err != nil {\n\t\t\treturn 0, err\n\t\t}\n\t}\n\tif len(values) != 1 {\n\t\treturn 0, fmt.Errorf(\"bad expression\")\n\t}\n\treturn values[0], nil\n}\nfunc main() {\n\tfor _, expression := range []string{\"2 + 3 * (4 - 1)\", \"18 / 3 / 2\", \"4/(2-2)\", \"1 +\"} {\n\t\tvalue, err := evaluate(expression)\n\t\tif err != nil {\n\t\t\tfmt.Printf(\"%s -> error\\n\", expression)\n\t\t} else {\n\t\t\tfmt.Printf(\"%s -> %d\\n\", expression, value)\n\t\t}\n\t}\n}\n",
+    "output": "2 + 3 * (4 - 1) -> 11\n18 / 3 / 2 -> 3\n4/(2-2) -> error\n1 + -> error"
+  },
+  "example": {
+    "id": "go-example-280",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "中缀表达式计算器",
+    "summary": "能用操作符栈处理括号与优先级。报告除零及不完整表达式。",
+    "concepts": [
+      "strconv",
+      "unicode",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"unicode\"\n)\n\nfunc precedence(op rune) int {\n\tif op == '+' || op == '-' {\n\t\treturn 1\n\t}\n\tif op == '*' || op == '/' {\n\t\treturn 2\n\t}\n\treturn 0\n}\nfunc evaluate(text string) (int, error) {\n\tvalues := []int{}\n\tops := []rune{}\n\tapply := func() error {\n\t\tif len(values) < 2 || len(ops) == 0 {\n\t\t\treturn fmt.Errorf(\"missing operand\")\n\t\t}\n\t\top := ops[len(ops)-1]\n\t\tops = ops[:len(ops)-1]\n\t\ta, b := values[len(values)-2], values[len(values)-1]\n\t\tvalues = values[:len(values)-2]\n\t\tswitch op {\n\t\tcase '+':\n\t\t\tvalues = append(values, a+b)\n\t\tcase '-':\n\t\t\tvalues = append(values, a-b)\n\t\tcase '*':\n\t\t\tvalues = append(values, a*b)\n\t\tcase '/':\n\t\t\tif b == 0 {\n\t\t\t\treturn fmt.Errorf(\"division by zero\")\n\t\t\t}\n\t\t\tvalues = append(values, a/b)\n\t\tdefault:\n\t\t\treturn fmt.Errorf(\"bad operator\")\n\t\t}\n\t\treturn nil\n\t}\n\tchars := []rune(text)\n\texpectValue := true\n\tfor i := 0; i < len(chars); {\n\t\tc := chars[i]\n\t\tif unicode.IsSpace(c) {\n\t\t\ti++\n\t\t\tcontinue\n\t\t}\n\t\tif c >= '0' && c <= '9' {\n\t\t\tif !expectValue {\n\t\t\t\treturn 0, fmt.Errorf(\"missing operator\")\n\t\t\t}\n\t\t\tstart := i\n\t\t\tfor i < len(chars) && chars[i] >= '0' && chars[i] <= '9' {\n\t\t\t\ti++\n\t\t\t}\n\t\t\tn, err := strconv.Atoi(string(chars[start:i]))\n\t\t\tif err != nil {\n\t\t\t\treturn 0, err\n\t\t\t}\n\t\t\tvalues = append(values, n)\n\t\t\texpectValue = false\n\t\t\tcontinue\n\t\t}\n\t\tif c == '(' {\n\t\t\tif !expectValue {\n\t\t\t\treturn 0, fmt.Errorf(\"missing operator\")\n\t\t\t}\n\t\t\tops = append(ops, c)\n\t\t\ti++\n\t\t\tcontinue\n\t\t}\n\t\tif c == ')' {\n\t\t\tif expectValue {\n\t\t\t\treturn 0, fmt.Errorf(\"empty group\")\n\t\t\t}\n\t\t\tfor len(ops) > 0 && ops[len(ops)-1] != '(' {\n\t\t\t\tif err := apply(); err != nil {\n\t\t\t\t\treturn 0, err\n\t\t\t\t}\n\t\t\t}\n\t\t\tif len(ops) == 0 {\n\t\t\t\treturn 0, fmt.Errorf(\"unmatched close\")\n\t\t\t}\n\t\t\tops = ops[:len(ops)-1]\n\t\t\ti++\n\t\t\tcontinue\n\t\t}\n\t\tif precedence(c) == 0 || expectValue {\n\t\t\treturn 0, fmt.Errorf(\"bad token\")\n\t\t}\n\t\tfor len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(c) {\n\t\t\tif err := apply(); err != nil {\n\t\t\t\treturn 0, err\n\t\t\t}\n\t\t}\n\t\tops = append(ops, c)\n\t\texpectValue = true\n\t\ti++\n\t}\n\tif expectValue {\n\t\treturn 0, fmt.Errorf(\"incomplete\")\n\t}\n\tfor len(ops) > 0 {\n\t\tif ops[len(ops)-1] == '(' {\n\t\t\treturn 0, fmt.Errorf(\"unmatched open\")\n\t\t}\n\t\tif err := apply(); err != nil {\n\t\t\treturn 0, err\n\t\t}\n\t}\n\tif len(values) != 1 {\n\t\treturn 0, fmt.Errorf(\"bad expression\")\n\t}\n\treturn values[0], nil\n}\nfunc main() {\n\tfor _, expression := range []string{\"2 + 3 * (4 - 1)\", \"18 / 3 / 2\", \"4/(2-2)\", \"1 +\"} {\n\t\tvalue, err := evaluate(expression)\n\t\tif err != nil {\n\t\t\tfmt.Printf(\"%s -> error\\n\", expression)\n\t\t} else {\n\t\t\tfmt.Printf(\"%s -> %d\\n\", expression, value)\n\t\t}\n\t}\n}\n",
+    "expectedOutput": "2 + 3 * (4 - 1) -> 11\n18 / 3 / 2 -> 3\n4/(2-2) -> error\n1 + -> error",
+    "templateType": "go"
+  }
+}

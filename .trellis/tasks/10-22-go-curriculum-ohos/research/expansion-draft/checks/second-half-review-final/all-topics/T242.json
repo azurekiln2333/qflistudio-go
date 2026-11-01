@@ -1,0 +1,69 @@
+{
+  "id": "T242",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "escaped-tags=true\nescaped-quotes=true\nraw-tag-absent=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-242",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "HTML 自动转义",
+    "summary": "能渲染含标签的用户输入，验证正文与属性上下文的自动转义。",
+    "concepts": [
+      "html/template",
+      "bytes",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能渲染含标签的用户输入，验证正文与属性上下文的自动转义。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "text/template 不提供 HTML 上下文安全转义，不能直接替代 html/template。",
+      "将不可信内容标成 template.HTML 会绕过保护，重新引入脚本注入风险。"
+    ],
+    "exercises": [
+      {
+        "prompt": "将用户内容换成带 ampersand 的 A&B，检查最终包含 &amp;。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "保持输入类型为普通 string，让模板负责转义；不要先手工转义导致双重编码。"
+      }
+    ],
+    "explain": "html/template 根据插入位置执行上下文相关转义，同一用户值同时进入正文和带引号属性。示例确认标签尖括号与引号被编码，原始 b 标签没有进入最终 HTML。模板字面量中的 p 标签属于开发者定义的结构，用户输入只是数据。不要为了显示方便把外部输入强制转换为 template.HTML。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"html/template\"\n\t\"strings\"\n)\n\nfunc main() {\n\tt, err := template.New(\"message\").Parse(`<p title=\"{{.}}\">{{.}}</p>`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar out bytes.Buffer\n\tif err = t.Execute(&out, `<b>\"x\"</b>`); err != nil {\n\t\tpanic(err)\n\t}\n\thtml := out.String()\n\tfmt.Printf(\"escaped-tags=%t\\nescaped-quotes=%t\\nraw-tag-absent=%t\\n\", strings.Contains(html, \"&lt;b&gt;\"), strings.Contains(html, \"&#34;\"), !strings.Contains(html, \"<b>\"))\n}\n",
+    "output": "escaped-tags=true\nescaped-quotes=true\nraw-tag-absent=true"
+  },
+  "example": {
+    "id": "go-example-242",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "HTML 自动转义",
+    "summary": "能渲染含标签的用户输入，验证正文与属性上下文的自动转义。",
+    "concepts": [
+      "html/template",
+      "bytes",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"html/template\"\n\t\"strings\"\n)\n\nfunc main() {\n\tt, err := template.New(\"message\").Parse(`<p title=\"{{.}}\">{{.}}</p>`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar out bytes.Buffer\n\tif err = t.Execute(&out, `<b>\"x\"</b>`); err != nil {\n\t\tpanic(err)\n\t}\n\thtml := out.String()\n\tfmt.Printf(\"escaped-tags=%t\\nescaped-quotes=%t\\nraw-tag-absent=%t\\n\", strings.Contains(html, \"&lt;b&gt;\"), strings.Contains(html, \"&#34;\"), !strings.Contains(html, \"<b>\"))\n}\n",
+    "expectedOutput": "escaped-tags=true\nescaped-quotes=true\nraw-tag-absent=true",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,68 @@
+{
+  "id": "T031",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "{Ada 0}\n30\nModified\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-031",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "new、取址与指针安全边界",
+    "summary": "用 new 与 &字面量 创建指针，通过指针修改结构体字段。",
+    "concepts": [
+      "new",
+      "取址字面量",
+      "指针字段访问"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 new(T) 与 &T{} 创建指针，并通过指针直接访问字段。",
+    "prerequisites": [
+      "T030 指针与切片"
+    ],
+    "pitfalls": [
+      "写 (*p).Field 冗余：Go 允许 p.Field 自动解引用，不必显式写 *，但对指针的指针仍需注意。",
+      "对 nil 结构体指针写字段会 panic：&T{} 与 new(T) 都返回有效指针，而 var p *T 是 nil。"
+    ],
+    "exercises": [
+      {
+        "prompt": "用 new 创建一个结构体指针并设置字段，再打印。",
+        "hint": "p := new(person); p.Name = \"X\"。",
+        "answer": "new 返回指向零值结构体的指针，字段可写并打印出设置后的值。"
+      }
+    ],
+    "explain": "获得结构体指针有两种常见写法：new(T) 分配零值并返回 *T；&T{...} 用取址字面量一步创建并初始化。对指针访问字段时 Go 自动解引用，p.Name 等价于 (*p).Name。\n\n安全边界在于指针的有效性：new 与 &字面量 都返回有效指针，而 var p *T 保持 nil，对 nil 写字段会 panic。样例先 new(person) 设置 Name 打印，再用 &person{...} 初始化，最后通过指针参数修改字段。\n\n本样例演示三种指针创建/使用方式。",
+    "code": "package main\n\nimport \"fmt\"\n\ntype person struct {\n\tName string\n\tAge  int\n}\n\nfunc main() {\n\tp := new(person) // 指向零值结构体的指针\n\tp.Name = \"Ada\"\n\tfmt.Println(*p)\n\n\tq := &person{Name: \"Bob\", Age: 30} // 取址字面量\n\tfmt.Println(q.Age)\n\n\tr := person{Name: \"Cy\"}\n\tmodify(&r)\n\tfmt.Println(r.Name)\n}\n\nfunc modify(p *person) { p.Name = \"Modified\" }\n",
+    "output": "{Ada 0}\n30\nModified"
+  },
+  "example": {
+    "id": "go-example-031",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "new、取址与指针安全边界",
+    "summary": "用 new 与 &字面量 创建指针，通过指针修改结构体字段。",
+    "concepts": [
+      "new",
+      "取址字面量",
+      "指针字段访问"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\ntype person struct {\n\tName string\n\tAge  int\n}\n\nfunc main() {\n\tp := new(person) // 指向零值结构体的指针\n\tp.Name = \"Ada\"\n\tfmt.Println(*p)\n\n\tq := &person{Name: \"Bob\", Age: 30} // 取址字面量\n\tfmt.Println(q.Age)\n\n\tr := person{Name: \"Cy\"}\n\tmodify(&r)\n\tfmt.Println(r.Name)\n}\n\nfunc modify(p *person) { p.Name = \"Modified\" }\n",
+    "expectedOutput": "{Ada 0}\n30\nModified",
+    "templateType": "go"
+  }
+}

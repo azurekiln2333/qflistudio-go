@@ -1,0 +1,219 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "go-example-201",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "摘要清单验证",
+      "summary": "能验证两个离线文件的摘要清单，分别报告匹配和被修改文件。",
+      "concepts": [
+        "crypto/sha256",
+        "encoding/hex",
+        "摘要与密码基础"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"encoding/hex\"\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc digest(text string) string {\n\tsum := sha256.Sum256([]byte(text))\n\treturn hex.EncodeToString(sum[:])\n}\nfunc main() {\n\tfiles := map[string]string{\"a.txt\": \"alpha\", \"b.txt\": \"changed\"}\n\tmanifest := map[string]string{\"a.txt\": digest(\"alpha\"), \"b.txt\": digest(\"beta\")}\n\tnames := []string{}\n\tfor name := range manifest {\n\t\tnames = append(names, name)\n\t}\n\tsort.Strings(names)\n\tfor _, name := range names {\n\t\tdata, exists := files[name]\n\t\tfmt.Printf(\"%s exists=%t match=%t\\n\", name, exists, exists && digest(data) == manifest[name])\n\t}\n\t_, err := hex.DecodeString(\"xyz\")\n\tfmt.Printf(\"bad-manifest=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "a.txt exists=true match=true\nb.txt exists=true match=false\nbad-manifest=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-202",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "HMAC 消息认证",
+      "summary": "能为消息生成标签，验证正确消息并拒绝修改后的内容。",
+      "concepts": [
+        "crypto/hmac",
+        "crypto/sha256",
+        "摘要与密码基础"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"crypto/hmac\"\n\t\"crypto/sha256\"\n\t\"fmt\"\n)\n\nfunc tag(key, message []byte) []byte {\n\tmac := hmac.New(sha256.New, key)\n\tmac.Write(message)\n\treturn mac.Sum(nil)\n}\nfunc verify(key, message, want []byte) bool { return hmac.Equal(tag(key, message), want) }\nfunc main() {\n\tkey := []byte(\"lesson-only-shared-key\")\n\tmessage := []byte(\"invoice:7:1250\")\n\tsignature := tag(key, message)\n\tfmt.Printf(\"tag-bytes=%d\\nvalid=%t\\ntampered=%t\\nwrong-key=%t\\n\", len(signature), verify(key, message, signature), verify(key, []byte(\"invoice:7:9250\"), signature), verify([]byte(\"other-key\"), message, signature))\n}\n",
+      "expectedOutput": "tag-bytes=32\nvalid=true\ntampered=false\nwrong-key=false",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-203",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "定长令牌比较",
+      "summary": "能先校验长度再比较固定字节令牌，展示错误输入和有效输入。",
+      "concepts": [
+        "crypto/subtle",
+        "摘要与密码基础"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"crypto/subtle\"\n\t\"encoding/hex\"\n\t\"fmt\"\n)\n\nfunc valid(input string, want []byte) bool {\n\tdecoded, err := hex.DecodeString(input)\n\tif err != nil || len(decoded) != len(want) || len(want) != 4 {\n\t\treturn false\n\t}\n\treturn subtle.ConstantTimeCompare(decoded, want) == 1\n}\nfunc main() {\n\ttoken := []byte{0x21, 0x4a, 0xb0, 0x09}\n\tfor _, input := range []string{\"214ab009\", \"214ab008\", \"21\", \"zzzzzzzz\"} {\n\t\tfmt.Printf(\"%s=%t\\n\", input, valid(input, token))\n\t}\n}\n",
+      "expectedOutput": "214ab009=true\n214ab008=false\n21=false\nzzzzzzzz=false",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-204",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "AES GCM 往返和篡改",
+      "summary": "能每次生成新 nonce，往返验证消息并确认篡改密文会认证失败。",
+      "concepts": [
+        "crypto/aes",
+        "crypto/cipher",
+        "crypto/rand",
+        "摘要与密码基础"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"crypto/aes\"\n\t\"crypto/cipher\"\n\t\"crypto/rand\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tkey := make([]byte, 32)\n\tif _, err := rand.Read(key); err != nil {\n\t\tpanic(err)\n\t}\n\tblock, err := aes.NewCipher(key)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tgcm, err := cipher.NewGCM(block)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tnonce := make([]byte, gcm.NonceSize())\n\tif _, err := rand.Read(nonce); err != nil {\n\t\tpanic(err)\n\t}\n\tmessage := []byte(\"offline report\")\n\taad := []byte(\"report:v1\")\n\tsealed := gcm.Seal(nil, nonce, message, aad)\n\tplain, err := gcm.Open(nil, nonce, sealed, aad)\n\tfmt.Printf(\"roundtrip=%t\\n\", err == nil && bytes.Equal(plain, message))\n\tsealed[len(sealed)-1] ^= 1\n\t_, err = gcm.Open(nil, nonce, sealed, aad)\n\tfmt.Printf(\"tamper-rejected=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "roundtrip=true\ntamper-rejected=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-205",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "Ed25519 签名校验",
+      "summary": "能生成临时密钥，签名本地清单并验证原文与篡改文。",
+      "concepts": [
+        "crypto/ed25519",
+        "crypto/rand",
+        "摘要与密码基础"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"crypto/ed25519\"\n\t\"crypto/rand\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tpublic, private, err := ed25519.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tmanifest := []byte(\"files=2;version=3\")\n\tsignature := ed25519.Sign(private, manifest)\n\tfmt.Printf(\"signature-bytes=%d\\nvalid=%t\\nchanged=%t\\n\", len(signature), ed25519.Verify(public, manifest, signature), ed25519.Verify(public, []byte(\"files=9;version=3\"), signature))\n\tsignature[0] ^= 1\n\tfmt.Printf(\"bad-signature=%t\\n\", ed25519.Verify(public, manifest, signature))\n}\n",
+      "expectedOutput": "signature-bytes=64\nvalid=true\nchanged=false\nbad-signature=false",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-206",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "ECDSA 摘要签名",
+      "summary": "能对 SHA256 摘要进行 ASN1 签名与验证，拒绝另一摘要。",
+      "concepts": [
+        "crypto/ecdsa",
+        "crypto/elliptic",
+        "crypto/rand",
+        "摘要与密码基础"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"crypto/ecdsa\"\n\t\"crypto/elliptic\"\n\t\"crypto/rand\"\n\t\"crypto/sha256\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tkey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdigest := sha256.Sum256([]byte(\"release:42\"))\n\tsignature, err := ecdsa.SignASN1(rand.Reader, key, digest[:])\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tchanged := sha256.Sum256([]byte(\"release:43\"))\n\tfmt.Printf(\"valid=%t\\nchanged=%t\\nmalformed=%t\\n\", ecdsa.VerifyASN1(&key.PublicKey, digest[:], signature), ecdsa.VerifyASN1(&key.PublicKey, changed[:], signature), ecdsa.VerifyASN1(&key.PublicKey, digest[:], []byte{1, 2, 3}))\n}\n",
+      "expectedOutput": "valid=true\nchanged=false\nmalformed=false",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-207",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "密钥协商一致性",
+      "summary": "能两方生成临时 P256 密钥，独立推导共享秘密并比较一致性。",
+      "concepts": [
+        "crypto/ecdh",
+        "crypto/rand",
+        "bytes",
+        "摘要与密码基础"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"crypto/ecdh\"\n\t\"crypto/rand\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tcurve := ecdh.P256()\n\talice, err := curve.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tbob, err := curve.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfirst, err := alice.ECDH(bob.PublicKey())\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tsecond, err := bob.ECDH(alice.PublicKey())\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"same=%t\\nsecret-bytes=%d\\n\", bytes.Equal(first, second), len(first))\n\t_, err = curve.NewPublicKey([]byte{1, 2, 3})\n\tfmt.Printf(\"bad-key-rejected=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "same=true\nsecret-bytes=32\nbad-key-rejected=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-208",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "公钥 PEM 往返",
+      "summary": "能编码和读取公钥 PEM，检查块类型并验证恢复后的公钥。",
+      "concepts": [
+        "crypto/ed25519",
+        "crypto/x509",
+        "encoding/pem",
+        "摘要与密码基础"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"crypto/ed25519\"\n\t\"crypto/rand\"\n\t\"crypto/x509\"\n\t\"encoding/pem\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tpublic, _, err := ed25519.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tder, err := x509.MarshalPKIXPublicKey(public)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tencoded := pem.EncodeToMemory(&pem.Block{Type: \"PUBLIC KEY\", Bytes: der})\n\tblock, rest := pem.Decode(encoded)\n\tif block == nil || block.Type != \"PUBLIC KEY\" || len(rest) != 0 {\n\t\tpanic(\"unexpected PEM\")\n\t}\n\tparsed, err := x509.ParsePKIXPublicKey(block.Bytes)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\trestored, ok := parsed.(ed25519.PublicKey)\n\tfmt.Printf(\"block=%s\\nroundtrip=%t\\n\", block.Type, ok && bytes.Equal(public, restored))\n\tbad, _ := pem.Decode([]byte(\"not a PEM block\"))\n\tfmt.Printf(\"invalid-rejected=%t\\n\", bad == nil)\n}\n",
+      "expectedOutput": "block=PUBLIC KEY\nroundtrip=true\ninvalid-rejected=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-209",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "CRC32 分片校验",
+      "summary": "能分片更新校验和并与一次性校验对比，演示一个字节变化的检测。",
+      "concepts": [
+        "hash/crc32",
+        "摘要与密码基础"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"hash/crc32\"\n)\n\nfunc main() {\n\tchunks := [][]byte{[]byte(\"sensor:\"), []byte(\"north:\"), []byte(\"21.5\")}\n\trolling := uint32(0)\n\tall := []byte{}\n\tfor _, chunk := range chunks {\n\t\trolling = crc32.Update(rolling, crc32.IEEETable, chunk)\n\t\tall = append(all, chunk...)\n\t}\n\tfmt.Printf(\"same=%t\\n\", rolling == crc32.ChecksumIEEE(all))\n\tall[len(all)-1] ^= 1\n\tfmt.Printf(\"changed=%t\\n\", rolling != crc32.ChecksumIEEE(all))\n\tfmt.Printf(\"empty=%d\\n\", crc32.ChecksumIEEE(nil))\n}\n",
+      "expectedOutput": "same=true\nchanged=true\nempty=0",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-210",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "流式多摘要",
+      "summary": "能用 MultiWriter 一次消费输入同时计算两类摘要并验证长度与一致性。",
+      "concepts": [
+        "hash",
+        "crypto/sha256",
+        "crypto/sha512",
+        "io",
+        "摘要与密码基础"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"crypto/sha512\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc main() {\n\tinput := \"alpha\\nbeta\\n\"\n\tsmall := sha256.New()\n\tlarge := sha512.New()\n\tcopied, err := io.Copy(io.MultiWriter(small, large), strings.NewReader(input))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\texpected := sha256.Sum256([]byte(input))\n\tfmt.Printf(\"bytes=%d\\nlengths=%d,%d\\nsha256-match=%t\\n\", copied, len(small.Sum(nil)), len(large.Sum(nil)), fmt.Sprintf(\"%x\", small.Sum(nil)) == fmt.Sprintf(\"%x\", expected))\n}\n",
+      "expectedOutput": "bytes=11\nlengths=32,64\nsha256-match=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    }
+  ]
+}

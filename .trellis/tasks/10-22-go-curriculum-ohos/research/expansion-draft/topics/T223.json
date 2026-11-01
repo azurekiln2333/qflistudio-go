@@ -1,0 +1,69 @@
+{
+  "id": "T223",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "header=provided-7 body=provided-7\nheader=local-1 body=local-1\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-223",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "请求标识中间件",
+    "summary": "能从请求头取 ID 或确定性创建 ID。传入 context。回写响应头。",
+    "concepts": [
+      "net/http",
+      "net/http/httptest",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能从请求头取 ID 或确定性创建 ID。传入 context。回写响应头。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "WithContext 返回新请求，忽略返回值会让后续处理器看不到标识。",
+      "示例闭包计数器仅适用于这里的顺序调用，直接用于并发服务会产生数据竞争。"
+    ],
+    "exercises": [
+      {
+        "prompt": "限制传入标识只含 ASCII 字母数字和横线且不超过 40 字节。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "校验通过才沿用，否则创建新标识。不要直接把未校验头部写进日志。"
+      }
+    ],
+    "explain": "中间件将请求标识放进 context。再把带新 context 的请求交给下一层。它同时回写响应头。调用方提供标识时沿用它，缺失时使用确定性本地序号，便于本例断言。上下文键使用专用类型，避免与其他库的字符串键冲突。演示为顺序执行。若服务并发处理，请把计数器换成原子操作或锁保护。",
+    "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n)\n\ntype requestKey struct{}\n\nfunc identify(next http.Handler) http.Handler {\n\tcounter := 0\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tid := r.Header.Get(\"X-Request-ID\")\n\t\tif id == \"\" {\n\t\t\tcounter++\n\t\t\tid = fmt.Sprintf(\"local-%d\", counter)\n\t\t}\n\t\tw.Header().Set(\"X-Request-ID\", id)\n\t\tnext.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), requestKey{}, id)))\n\t})\n}\nfunc main() {\n\tapp := identify(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tid, ok := r.Context().Value(requestKey{}).(string)\n\t\tif !ok {\n\t\t\tpanic(\"missing ID\")\n\t\t}\n\t\tfmt.Fprint(w, id)\n\t}))\n\tfor _, id := range []string{\"provided-7\", \"\"} {\n\t\tr := httptest.NewRequest(\"GET\", \"/\", nil)\n\t\tif id != \"\" {\n\t\t\tr.Header.Set(\"X-Request-ID\", id)\n\t\t}\n\t\tw := httptest.NewRecorder()\n\t\tapp.ServeHTTP(w, r)\n\t\tfmt.Printf(\"header=%s body=%s\\n\", w.Header().Get(\"X-Request-ID\"), w.Body.String())\n\t}\n}\n",
+    "output": "header=provided-7 body=provided-7\nheader=local-1 body=local-1"
+  },
+  "example": {
+    "id": "go-example-223",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "请求标识中间件",
+    "summary": "能从请求头取 ID 或确定性创建 ID。传入 context。回写响应头。",
+    "concepts": [
+      "net/http",
+      "net/http/httptest",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n)\n\ntype requestKey struct{}\n\nfunc identify(next http.Handler) http.Handler {\n\tcounter := 0\n\treturn http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tid := r.Header.Get(\"X-Request-ID\")\n\t\tif id == \"\" {\n\t\t\tcounter++\n\t\t\tid = fmt.Sprintf(\"local-%d\", counter)\n\t\t}\n\t\tw.Header().Set(\"X-Request-ID\", id)\n\t\tnext.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), requestKey{}, id)))\n\t})\n}\nfunc main() {\n\tapp := identify(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {\n\t\tid, ok := r.Context().Value(requestKey{}).(string)\n\t\tif !ok {\n\t\t\tpanic(\"missing ID\")\n\t\t}\n\t\tfmt.Fprint(w, id)\n\t}))\n\tfor _, id := range []string{\"provided-7\", \"\"} {\n\t\tr := httptest.NewRequest(\"GET\", \"/\", nil)\n\t\tif id != \"\" {\n\t\t\tr.Header.Set(\"X-Request-ID\", id)\n\t\t}\n\t\tw := httptest.NewRecorder()\n\t\tapp.ServeHTTP(w, r)\n\t\tfmt.Printf(\"header=%s body=%s\\n\", w.Header().Get(\"X-Request-ID\"), w.Body.String())\n\t}\n}\n",
+    "expectedOutput": "header=provided-7 body=provided-7\nheader=local-1 body=local-1",
+    "templateType": "go"
+  }
+}

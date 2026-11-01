@@ -1,0 +1,70 @@
+{
+  "id": "T092",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "formatted: 2026-10-12 14:30:45\ndate only: 2026-10-12\nRFC3339:   2026-10-12T14:30:45Z\nparsed: 2020-01-02T03:04:05Z\nduration: 1h30m0s\nduration minutes: 90\nadd 90m -> 16:00:45\ndiff == 90m: true"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-092",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "时间一：time.Time、Duration 与格式化",
+    "summary": "用参考布局格式化/解析时间，并做 Duration 运算；全部使用固定时区与固定时间点。",
+    "concepts": [
+      "time.Time",
+      "Duration",
+      "布局",
+      "固定时区"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 2006-01-02 15:04:05 参考布局格式化与解析时间，并解释 Duration 是纯时长。",
+    "prerequisites": [
+      "T008 格式化输出与 fmt 谓词"
+    ],
+    "pitfalls": [
+      "用 yyyy-MM-dd 之类的格式串：Go 用参考时间布局，写错会原样输出。",
+      "用 time.Now 作为断言输入：结果随时间变化；应使用固定时间点（本示例如此）。"
+    ],
+    "exercises": [
+      {
+        "prompt": "解析 '2026-01-02T03:04:05Z' 并输出其 Unix 秒。",
+        "hint": "time.Parse(time.RFC3339, s)，再 .Unix()。",
+        "answer": "t,_ := time.Parse(time.RFC3339, s); fmt.Println(t.Unix())。"
+      }
+    ],
+    "explain": "Go 的时间格式化不用 yyyy-MM-dd，而用参考时间 2006-01-02 15:04:05（Mon Jan 2 15:04:05 MST 2006）作为布局：布局字符串里对应位置写什么，输出就是什么格式。time.Duration 表示纯时长（与墙钟无关），可相加相减、转成 Minutes 等。示例刻意使用固定时区 UTC 与固定时间点，因此输出完全确定、不依赖运行时刻——这符合本课程的确定性约束。解析用 ParseInLocation，布局必须与输入严格一致。未知时区因素被固定，避免跨机器差异。",
+    "code": "// T092 时间一：time.Time、Duration 与格式化。\n//\n// Go 的时间格式化不使用格式串（如 yyyy-MM-dd），而是用一个\"参考时间\"\n// 2006-01-02 15:04:05 作为布局。本示例使用固定时区与固定时间，\n// 因此输出完全确定，不依赖当前时刻。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc main() {\n\t// 固定时区 UTC，构造一个确定的时间点。\n\tloc := time.UTC\n\tt := time.Date(2026, 10, 12, 14, 30, 45, 0, loc)\n\n\t// 参考布局 \"2006-01-02 15:04:05\"。\n\tfmt.Println(\"formatted:\", t.Format(\"2006-01-02 15:04:05\"))\n\tfmt.Println(\"date only:\", t.Format(\"2006-01-02\"))\n\tfmt.Println(\"RFC3339:  \", t.Format(time.RFC3339))\n\n\t// 解析：布局必须与实际字符串一致，否则报错。\n\tparsed, err := time.ParseInLocation(\"2006-01-02 15:04:05\", \"2020-01-02 03:04:05\", loc)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"parsed:\", parsed.Format(time.RFC3339))\n\n\t// Duration 运算：纯时长加减，与墙钟无关。\n\td := 90 * time.Minute\n\tfmt.Println(\"duration:\", d)\n\tfmt.Println(\"duration minutes:\", d.Minutes())\n\n\tlater := t.Add(d)\n\tdiff := later.Sub(t)\n\tfmt.Println(\"add 90m ->\", later.Format(\"15:04:05\"))\n\tfmt.Println(\"diff == 90m:\", diff == d)\n}\n",
+    "output": "formatted: 2026-10-12 14:30:45\ndate only: 2026-10-12\nRFC3339:   2026-10-12T14:30:45Z\nparsed: 2020-01-02T03:04:05Z\nduration: 1h30m0s\nduration minutes: 90\nadd 90m -> 16:00:45\ndiff == 90m: true"
+  },
+  "example": {
+    "id": "go-example-092",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "时间一：time.Time、Duration 与格式化（示例）",
+    "summary": "对应主题 T092 的可运行示例。",
+    "concepts": [
+      "time.Time",
+      "Duration",
+      "布局",
+      "固定时区"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T092 时间一：time.Time、Duration 与格式化。\n//\n// Go 的时间格式化不使用格式串（如 yyyy-MM-dd），而是用一个\"参考时间\"\n// 2006-01-02 15:04:05 作为布局。本示例使用固定时区与固定时间，\n// 因此输出完全确定，不依赖当前时刻。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc main() {\n\t// 固定时区 UTC，构造一个确定的时间点。\n\tloc := time.UTC\n\tt := time.Date(2026, 10, 12, 14, 30, 45, 0, loc)\n\n\t// 参考布局 \"2006-01-02 15:04:05\"。\n\tfmt.Println(\"formatted:\", t.Format(\"2006-01-02 15:04:05\"))\n\tfmt.Println(\"date only:\", t.Format(\"2006-01-02\"))\n\tfmt.Println(\"RFC3339:  \", t.Format(time.RFC3339))\n\n\t// 解析：布局必须与实际字符串一致，否则报错。\n\tparsed, err := time.ParseInLocation(\"2006-01-02 15:04:05\", \"2020-01-02 03:04:05\", loc)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"parsed:\", parsed.Format(time.RFC3339))\n\n\t// Duration 运算：纯时长加减，与墙钟无关。\n\td := 90 * time.Minute\n\tfmt.Println(\"duration:\", d)\n\tfmt.Println(\"duration minutes:\", d.Minutes())\n\n\tlater := t.Add(d)\n\tdiff := later.Sub(t)\n\tfmt.Println(\"add 90m ->\", later.Format(\"15:04:05\"))\n\tfmt.Println(\"diff == 90m:\", diff == d)\n}\n",
+    "expectedOutput": "formatted: 2026-10-12 14:30:45\ndate only: 2026-10-12\nRFC3339:   2026-10-12T14:30:45Z\nparsed: 2020-01-02T03:04:05Z\nduration: 1h30m0s\nduration minutes: 90\nadd 90m -> 16:00:45\ndiff == 90m: true",
+    "templateType": "go"
+  }
+}

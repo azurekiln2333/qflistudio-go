@@ -1,0 +1,71 @@
+{
+  "id": "T188",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "link=../images/logo.svg\nrebased=true inside=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-188",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "相对路径重定位",
+    "summary": "计算文档到资源的相对链接。移动工程根目录后验证链接仍指向同一相对目标。",
+    "concepts": [
+      "filepath.Rel",
+      "filepath.Join",
+      "根目录移动",
+      "ToSlash"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "计算文档到资源的相对链接。移动工程根目录后验证链接仍指向同一相对目标。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "以来源文件路径而非其目录作为 Rel 基准，会多出一级回退。",
+      "展示斜线统一与实际路径计算是两件事。不能用字符串替换代替 Join/Rel。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把目标移动到另一个子目录。重新计算链接并证明旧链接不再指向新目标。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "构造新的目标相对位置。先用旧链接 Join 算出旧位置。比较结果为 false。再用 Rel 生成新链接。验证结果为 true。"
+      }
+    ],
+    "explain": "链接以来源文件所在目录为基准，而不是工程根。Rel 从 docs/guides 到 docs/images 算出 ../images/logo.svg。移动根目录后仍能由新来源目录重建正确目标。输出使用 ToSlash 统一展示。内部计算保留平台路径规则。这个例子只研究词法重定位，不打开文件。也不将相等路径字符串等同于符号链接解析后的对象身份。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"path/filepath\"\n\t\"strings\"\n)\n\nfunc main() {\n\toldRoot := \"workspace-old\"\n\tsource := filepath.Join(oldRoot, \"docs\", \"guides\", \"start.md\")\n\ttarget := filepath.Join(oldRoot, \"docs\", \"images\", \"logo.svg\")\n\trelative, err := filepath.Rel(filepath.Dir(source), target)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tnewRoot := \"workspace-new\"\n\tnewSource := filepath.Join(newRoot, \"docs\", \"guides\", \"start.md\")\n\tresolved := filepath.Clean(filepath.Join(filepath.Dir(newSource), relative))\n\texpected := filepath.Join(newRoot, \"docs\", \"images\", \"logo.svg\")\n\tcontained, err := filepath.Rel(newRoot, resolved)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tinside := contained != \"..\" && !strings.HasPrefix(contained, \"..\"+string(filepath.Separator)) && !filepath.IsAbs(contained)\n\tfmt.Printf(\"link=%s\\nrebased=%t inside=%t\\n\", filepath.ToSlash(relative), resolved == expected, inside)\n}\n",
+    "output": "link=../images/logo.svg\nrebased=true inside=true"
+  },
+  "example": {
+    "id": "go-example-188",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "相对路径重定位",
+    "summary": "计算文档到资源的相对链接。移动工程根目录后验证链接仍指向同一相对目标。",
+    "concepts": [
+      "filepath.Rel",
+      "filepath.Join",
+      "根目录移动",
+      "ToSlash"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"path/filepath\"\n\t\"strings\"\n)\n\nfunc main() {\n\toldRoot := \"workspace-old\"\n\tsource := filepath.Join(oldRoot, \"docs\", \"guides\", \"start.md\")\n\ttarget := filepath.Join(oldRoot, \"docs\", \"images\", \"logo.svg\")\n\trelative, err := filepath.Rel(filepath.Dir(source), target)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tnewRoot := \"workspace-new\"\n\tnewSource := filepath.Join(newRoot, \"docs\", \"guides\", \"start.md\")\n\tresolved := filepath.Clean(filepath.Join(filepath.Dir(newSource), relative))\n\texpected := filepath.Join(newRoot, \"docs\", \"images\", \"logo.svg\")\n\tcontained, err := filepath.Rel(newRoot, resolved)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tinside := contained != \"..\" && !strings.HasPrefix(contained, \"..\"+string(filepath.Separator)) && !filepath.IsAbs(contained)\n\tfmt.Printf(\"link=%s\\nrebased=%t inside=%t\\n\", filepath.ToSlash(relative), resolved == expected, inside)\n}\n",
+    "expectedOutput": "link=../images/logo.svg\nrebased=true inside=true",
+    "templateType": "go"
+  }
+}

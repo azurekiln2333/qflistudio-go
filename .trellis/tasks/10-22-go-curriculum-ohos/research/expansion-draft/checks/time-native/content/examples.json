@@ -1,0 +1,218 @@
+[
+  {
+    "id": "go-example-171",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "时区与同一时刻",
+    "summary": "解析带偏移的时间，转换 UTC，并验证不同时区文本表示同一时刻。",
+    "concepts": [
+      "time.Parse",
+      "RFC3339",
+      "time.Equal",
+      "FixedZone"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc mustTime(text string) time.Time {\n\tvalue, err := time.Parse(time.RFC3339, text)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\treturn value\n}\nfunc main() {\n\teast := mustTime(\"2026-03-12T09:30:00+08:00\")\n\tutc := mustTime(\"2026-03-12T01:30:00Z\")\n\tfmt.Printf(\"utc=%s equal=%t\\n\", east.UTC().Format(time.RFC3339), east.Equal(utc))\n\twest := east.In(time.FixedZone(\"WEST\", -5*60*60))\n\tfmt.Printf(\"west=%s\\n\", west.Format(time.RFC3339))\n}\n",
+    "expectedOutput": "utc=2026-03-12T01:30:00Z equal=true\nwest=2026-03-11T20:30:00-05:00",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-172",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "UTC 时间桶聚合",
+    "summary": "把乱序事件归入十五分钟 UTC 桶，稳定输出空桶与非空桶并拒绝范围外事件。",
+    "concepts": [
+      "time.Truncate",
+      "UTC 归一",
+      "空桶",
+      "排序聚合"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"time\"\n)\n\ntype Bucket struct {\n\tCount int\n\tSum   int\n}\n\nfunc parse(text string) time.Time {\n\tvalue, err := time.Parse(time.RFC3339, text)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\treturn value\n}\nfunc main() {\n\tstart := parse(\"2026-03-12T09:00:00Z\")\n\tend := start.Add(time.Hour)\n\tbuckets := map[time.Time]Bucket{}\n\tfor at := start; at.Before(end); at = at.Add(15 * time.Minute) {\n\t\tbuckets[at] = Bucket{}\n\t}\n\trejected := 0\n\tfor _, event := range []struct {\n\t\tText  string\n\t\tValue int\n\t}{{\"2026-03-12T09:34:00Z\", 3}, {\"2026-03-12T09:03:00Z\", 2}, {\"2026-03-12T09:29:00Z\", 4}, {\"2026-03-12T17:03:00+08:00\", 5}, {\"2026-03-12T10:00:00Z\", 9}} {\n\t\tat := parse(event.Text).UTC()\n\t\tif at.Before(start) || !at.Before(end) {\n\t\t\trejected++\n\t\t\tcontinue\n\t\t}\n\t\tkey := at.Truncate(15 * time.Minute)\n\t\tbucket := buckets[key]\n\t\tbucket.Count++\n\t\tbucket.Sum += event.Value\n\t\tbuckets[key] = bucket\n\t}\n\tkeys := []time.Time{}\n\tfor key := range buckets {\n\t\tkeys = append(keys, key)\n\t}\n\tsort.Slice(keys, func(i, j int) bool { return keys[i].Before(keys[j]) })\n\tfor _, key := range keys {\n\t\tbucket := buckets[key]\n\t\tfmt.Printf(\"%s count=%d sum=%d\\n\", key.Format(\"15:04\"), bucket.Count, bucket.Sum)\n\t}\n\tfmt.Printf(\"rejected=%d\\n\", rejected)\n}\n",
+    "expectedOutput": "09:00 count=2 sum=7\n09:15 count=1 sum=4\n09:30 count=1 sum=3\n09:45 count=0 sum=0\nrejected=1",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-173",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "工作日日期推进",
+    "summary": "从给定日期推进第三个工作日，跳过周末并保留钟面时间。",
+    "concepts": [
+      "time.AddDate",
+      "Weekday",
+      "日历语义"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc advance(start time.Time, days int) (time.Time, error) {\n\tif days < 0 {\n\t\treturn time.Time{}, fmt.Errorf(\"negative workdays\")\n\t}\n\tat := start\n\tfor days > 0 {\n\t\tat = at.AddDate(0, 0, 1)\n\t\tif at.Weekday() != time.Saturday && at.Weekday() != time.Sunday {\n\t\t\tdays--\n\t\t}\n\t}\n\treturn at, nil\n}\nfunc main() {\n\tstart := time.Date(2026, time.January, 30, 9, 0, 0, 0, time.UTC)\n\tthird, err := advance(start, 3)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"start=%s %s\\n\", start.Format(\"2006-01-02\"), start.Weekday().String())\n\tfmt.Printf(\"third=%s %s\\n\", third.Format(\"2006-01-02\"), third.Weekday().String())\n\tzero, err := advance(start, 0)\n\tfmt.Printf(\"zero=%t\\n\", err == nil && zero.Equal(start))\n\t_, err = advance(start, -1)\n\tfmt.Printf(\"negative=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "start=2026-01-30 Friday\nthird=2026-02-04 Wednesday\nzero=true\nnegative=true",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-174",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "跨午夜区间拆分",
+    "summary": "把跨午夜会话按自然日拆分，核对各段时长之和等于原始会话。",
+    "concepts": [
+      "time.Date",
+      "自然日边界",
+      "时长守恒"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\ntype Usage struct {\n\tDate     string\n\tDuration time.Duration\n}\n\nfunc split(start, end time.Time) ([]Usage, error) {\n\tif end.Before(start) {\n\t\treturn nil, fmt.Errorf(\"reversed interval\")\n\t}\n\tend = end.In(start.Location())\n\tresult := []Usage{}\n\tfor cursor := start; cursor.Before(end); {\n\t\tmidnight := time.Date(cursor.Year(), cursor.Month(), cursor.Day()+1, 0, 0, 0, 0, cursor.Location())\n\t\tstop := midnight\n\t\tif end.Before(stop) {\n\t\t\tstop = end\n\t\t}\n\t\tresult = append(result, Usage{cursor.Format(\"2006-01-02\"), stop.Sub(cursor)})\n\t\tcursor = stop\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tstart := time.Date(2026, time.March, 12, 23, 40, 0, 0, time.UTC)\n\tend := start.Add(45 * time.Minute)\n\tparts, err := split(start, end)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar total time.Duration\n\tfor _, part := range parts {\n\t\tfmt.Printf(\"%s=%.0fm\\n\", part.Date, part.Duration.Minutes())\n\t\ttotal += part.Duration\n\t}\n\tfmt.Printf(\"total=%.0fm preserved=%t\\n\", total.Minutes(), total == end.Sub(start))\n\t_, err = split(end, start)\n\tfmt.Printf(\"reversed=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "2026-03-12=20m\n2026-03-13=25m\ntotal=45m preserved=true\nreversed=true",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-175",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "可预测指数退避",
+    "summary": "计算带上限的退避序列，预防翻倍溢出，并输出累计等待预算。",
+    "concepts": [
+      "time.Duration",
+      "饱和增长",
+      "重试预算"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc plan(base, cap time.Duration, count int) ([]time.Duration, error) {\n\tif base <= 0 || cap < base || count < 0 || count > 100 {\n\t\treturn nil, fmt.Errorf(\"invalid retry plan\")\n\t}\n\tresult := []time.Duration{}\n\tdelay := base\n\tfor i := 0; i < count; i++ {\n\t\tresult = append(result, delay)\n\t\tif delay > cap/2 {\n\t\t\tdelay = cap\n\t\t} else {\n\t\t\tdelay *= 2\n\t\t}\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tdelays, err := plan(100*time.Millisecond, 750*time.Millisecond, 6)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar total time.Duration\n\tfor _, delay := range delays {\n\t\ttotal += delay\n\t}\n\tfmt.Printf(\"delays=%v\\ntotal=%s\\n\", delays, total.String())\n\t_, err = plan(0, time.Second, 2)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "delays=[100ms 200ms 400ms 750ms 750ms 750ms]\ntotal=2.95s\ninvalid=true",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-176",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "逻辑时钟 TTL 缓存",
+    "summary": "显式传入 now 验证 TTL 到期与清理，无需任何真实等待。",
+    "concepts": [
+      "显式时钟",
+      "到期边界",
+      "time.Before",
+      "清理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"time\"\n)\n\ntype Entry struct {\n\tValue   int\n\tExpires time.Time\n}\ntype Cache map[string]Entry\n\nfunc (c Cache) Put(key string, value int, now time.Time, ttl time.Duration) {\n\tif ttl <= 0 {\n\t\tpanic(\"invalid ttl\")\n\t}\n\tc[key] = Entry{value, now.Add(ttl)}\n}\nfunc (c Cache) Get(key string, now time.Time) (int, bool) {\n\tentry, ok := c[key]\n\tif !ok || !now.Before(entry.Expires) {\n\t\treturn 0, false\n\t}\n\treturn entry.Value, true\n}\nfunc (c Cache) Purge(now time.Time) int {\n\tremoved := 0\n\tfor key, entry := range c {\n\t\tif !now.Before(entry.Expires) {\n\t\t\tdelete(c, key)\n\t\t\tremoved++\n\t\t}\n\t}\n\treturn removed\n}\nfunc (c Cache) Keys() []string {\n\tkeys := []string{}\n\tfor key := range c {\n\t\tkeys = append(keys, key)\n\t}\n\tsort.Strings(keys)\n\treturn keys\n}\nfunc main() {\n\tnow := time.Date(2026, time.March, 12, 9, 0, 0, 0, time.UTC)\n\tcache := Cache{}\n\tcache.Put(\"a\", 1, now, 5*time.Minute)\n\tcache.Put(\"b\", 2, now, 10*time.Minute)\n\tvalue, found := cache.Get(\"a\", now.Add(4*time.Minute))\n\tfmt.Printf(\"early=%d found=%t\\n\", value, found)\n\t_, found = cache.Get(\"a\", now.Add(5*time.Minute))\n\tfmt.Printf(\"at-expiry=%t\\n\", found)\n\tremoved := cache.Purge(now.Add(5 * time.Minute))\n\tfmt.Printf(\"purged=%d remaining=%v\\n\", removed, cache.Keys())\n\tremoved = cache.Purge(now.Add(10 * time.Minute))\n\tfmt.Printf(\"final=%d remaining=%v\\n\", removed, cache.Keys())\n}\n",
+    "expectedOutput": "early=1 found=true\nat-expiry=false\npurged=1 remaining=[b]\nfinal=1 remaining=[]",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-177",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "每日定点计划",
+    "summary": "从固定 now 求下一次每日执行时刻，处理当天未到、已过与恰好相等三种情况。",
+    "concepts": [
+      "time.Date",
+      "AddDate",
+      "严格未来时刻"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc next(now time.Time, hour, minute int) (time.Time, error) {\n\tif hour < 0 || hour > 23 || minute < 0 || minute > 59 {\n\t\treturn time.Time{}, fmt.Errorf(\"invalid daily clock\")\n\t}\n\tcandidate := time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, now.Location())\n\tif !candidate.After(now) {\n\t\tcandidate = candidate.AddDate(0, 0, 1)\n\t}\n\treturn candidate, nil\n}\nfunc main() {\n\tfor _, item := range []struct {\n\t\tLabel string\n\t\tHour  int\n\t}{{\"before\", 8}, {\"after\", 10}, {\"equal\", 9}} {\n\t\tnow := time.Date(2026, time.March, 12, item.Hour, 0, 0, 0, time.UTC)\n\t\tcandidate, err := next(now, 9, 0)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s=%s\\n\", item.Label, candidate.Format(time.RFC3339))\n\t}\n}\n",
+    "expectedOutput": "before=2026-03-12T09:00:00Z\nafter=2026-03-13T09:00:00Z\nequal=2026-03-13T09:00:00Z",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-178",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "日期严格校验",
+    "summary": "严格验证日期与格式，区分闰年合法日期和 Date 构造时的自动归一化。",
+    "concepts": [
+      "time.Parse",
+      "规范往返",
+      "闰年",
+      "Date 归一化"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc strict(text string) (time.Time, error) {\n\tvalue, err := time.Parse(\"2006-01-02\", text)\n\tif err != nil {\n\t\treturn time.Time{}, err\n\t}\n\tif value.Format(\"2006-01-02\") != text {\n\t\treturn time.Time{}, fmt.Errorf(\"noncanonical date\")\n\t}\n\treturn value, nil\n}\nfunc main() {\n\tleap, err := strict(\"2024-02-29\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"leap=%s\\n\", leap.Format(\"2006-01-02\"))\n\tnormalized := time.Date(2025, time.February, 29, 0, 0, 0, 0, time.UTC)\n\t_, err = strict(\"2025-02-29\")\n\tfmt.Printf(\"normalized=%s rejected=%t\\n\", normalized.Format(\"2006-01-02\"), err != nil)\n\t_, err = strict(\"2026-04-31\")\n\tfmt.Printf(\"april-rejected=%t\\n\", err != nil)\n\t_, err = strict(\"2026-4-01\")\n\tfmt.Printf(\"nonpadded-rejected=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "leap=2024-02-29\nnormalized=2025-03-01 rejected=true\napril-rejected=true\nnonpadded-rejected=true",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-179",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "计费时长向上取整",
+    "summary": "把使用时长按十五分钟计费，比较逐段取整与总时长取整并拒绝负数。",
+    "concepts": [
+      "time.Duration",
+      "商与余数",
+      "分段计费",
+      "溢出保护"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc charge(duration, unit time.Duration) (time.Duration, error) {\n\tif duration < 0 || unit <= 0 {\n\t\treturn 0, fmt.Errorf(\"invalid duration\")\n\t}\n\tblocks := duration / unit\n\tif duration%unit != 0 {\n\t\tblocks++\n\t}\n\tconst maximum time.Duration = 1<<63 - 1\n\tif blocks > maximum/unit {\n\t\treturn 0, fmt.Errorf(\"charge overflow\")\n\t}\n\treturn blocks * unit, nil\n}\nfunc main() {\n\tvar separate, total time.Duration\n\tfor _, duration := range []time.Duration{time.Minute, 14 * time.Minute, 16 * time.Minute} {\n\t\tcost, err := charge(duration, 15*time.Minute)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tseparate += cost\n\t\ttotal += duration\n\t}\n\tcombined, err := charge(total, 15*time.Minute)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"separate-minutes=%.0f combined-minutes=%.0f\\n\", separate.Minutes(), combined.Minutes())\n\tzero, err := charge(0, 15*time.Minute)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"zero=%d\\n\", zero)\n\t_, err = charge(-time.Second, 15*time.Minute)\n\tfmt.Printf(\"negative-rejected=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "separate-minutes=60 combined-minutes=45\nzero=0\nnegative-rejected=true",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-180",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "多来源日志归并",
+    "summary": "归并三条已排序日志流，以时间、来源序号和来源内位置保持稳定顺序。",
+    "concepts": [
+      "container/heap",
+      "time.Before",
+      "多路归并",
+      "稳定并列"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n\t\"time\"\n)\n\ntype Event struct {\n\tAt   time.Time\n\tText string\n}\ntype Cursor struct {\n\tEvent  Event\n\tSource int\n\tIndex  int\n}\ntype Queue []Cursor\n\nfunc (q Queue) Len() int { return len(q) }\nfunc (q Queue) Less(i, j int) bool {\n\tif !q[i].Event.At.Equal(q[j].Event.At) {\n\t\treturn q[i].Event.At.Before(q[j].Event.At)\n\t}\n\tif q[i].Source != q[j].Source {\n\t\treturn q[i].Source < q[j].Source\n\t}\n\treturn q[i].Index < q[j].Index\n}\nfunc (q Queue) Swap(i, j int)           { q[i], q[j] = q[j], q[i] }\nfunc (q *Queue) Push(value interface{}) { *q = append(*q, value.(Cursor)) }\nfunc (q *Queue) Pop() interface{} {\n\told := *q\n\tvalue := old[len(old)-1]\n\t*q = old[:len(old)-1]\n\treturn value\n}\nfunc merge(streams [][]Event) ([]Cursor, error) {\n\tqueue := &Queue{}\n\tfor source, stream := range streams {\n\t\tfor i := 1; i < len(stream); i++ {\n\t\t\tif stream[i].At.Before(stream[i-1].At) {\n\t\t\t\treturn nil, fmt.Errorf(\"unsorted stream\")\n\t\t\t}\n\t\t}\n\t\tif len(stream) > 0 {\n\t\t\theap.Push(queue, Cursor{stream[0], source, 0})\n\t\t}\n\t}\n\tresult := []Cursor{}\n\tfor queue.Len() > 0 {\n\t\tcurrent := heap.Pop(queue).(Cursor)\n\t\tresult = append(result, current)\n\t\tnext := current.Index + 1\n\t\tif next < len(streams[current.Source]) {\n\t\t\theap.Push(queue, Cursor{streams[current.Source][next], current.Source, next})\n\t\t}\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tbase := time.Date(2026, time.March, 12, 10, 0, 0, 0, time.UTC)\n\tstreams := [][]Event{{{base, \"a0\"}, {base.Add(2 * time.Minute), \"a1\"}}, {{base, \"b0\"}, {base.Add(time.Minute), \"b1\"}}, {{base.Add(time.Minute), \"c0\"}, {base.Add(2 * time.Minute), \"c1\"}}}\n\tresult, err := merge(streams)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, item := range result {\n\t\tfmt.Printf(\"%s source=%d %s\\n\", item.Event.At.Format(\"15:04\"), item.Source, item.Event.Text)\n\t}\n}\n",
+    "expectedOutput": "10:00 source=0 a0\n10:00 source=1 b0\n10:01 source=1 b1\n10:01 source=2 c0\n10:02 source=0 a1\n10:02 source=2 c1",
+    "templateType": "go",
+    "inputFixtures": {}
+  }
+]

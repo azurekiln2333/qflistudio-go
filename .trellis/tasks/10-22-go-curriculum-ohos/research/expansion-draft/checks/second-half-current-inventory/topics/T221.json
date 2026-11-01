@@ -1,0 +1,69 @@
+{
+  "id": "T221",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "GET /health=200 allow=\"\"\nPOST /health=405 allow=\"GET\"\nGET /missing=404 allow=\"\"\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-221",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内存路由与方法约束",
+    "summary": "能直接对 Handler 发送本地请求，区分合法 GET、404 和 405。",
+    "concepts": [
+      "net/http",
+      "net/http/httptest",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能直接对 Handler 发送本地请求，区分合法 GET、404 和 405。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "资源不存在和方法不允许应分别报告，错误的检查顺序会混淆两者。",
+      "开始写正文后再改变状态码或头部通常已经太晚。"
+    ],
+    "exercises": [
+      {
+        "prompt": "允许 HEAD 请求并确保它不写正文。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "在方法检查中接受 GET 和 HEAD；设置相同头部后，仅 GET 调用 Write。"
+      }
+    ],
+    "explain": "Handler 接口可以直接接收内存请求，Recorder 收集状态、头部和正文，不需要监听端口。路由先判断资源路径，再判断允许的方法，因此未知路径是 404，已知资源的方法错误是 405，并附带 Allow。健康检查成功时写入 ready。这样的测试隔离了协议逻辑，不把网络连通性混入路由验证。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n)\n\nfunc handler(w http.ResponseWriter, r *http.Request) {\n\tif r.URL.Path != \"/health\" {\n\t\thttp.NotFound(w, r)\n\t\treturn\n\t}\n\tif r.Method != http.MethodGet {\n\t\tw.Header().Set(\"Allow\", \"GET\")\n\t\thttp.Error(w, \"method\", http.StatusMethodNotAllowed)\n\t\treturn\n\t}\n\tw.Header().Set(\"Content-Type\", \"text/plain\")\n\tw.Write([]byte(\"ready\"))\n}\nfunc main() {\n\tfor _, item := range []struct{ method, path string }{{\"GET\", \"/health\"}, {\"POST\", \"/health\"}, {\"GET\", \"/missing\"}} {\n\t\tr := httptest.NewRequest(item.method, item.path, nil)\n\t\tw := httptest.NewRecorder()\n\t\thandler(w, r)\n\t\tfmt.Printf(\"%s %s=%d allow=%q\\n\", item.method, item.path, w.Code, w.Header().Get(\"Allow\"))\n\t}\n}\n",
+    "output": "GET /health=200 allow=\"\"\nPOST /health=405 allow=\"GET\"\nGET /missing=404 allow=\"\""
+  },
+  "example": {
+    "id": "go-example-221",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内存路由与方法约束",
+    "summary": "能直接对 Handler 发送本地请求，区分合法 GET、404 和 405。",
+    "concepts": [
+      "net/http",
+      "net/http/httptest",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n)\n\nfunc handler(w http.ResponseWriter, r *http.Request) {\n\tif r.URL.Path != \"/health\" {\n\t\thttp.NotFound(w, r)\n\t\treturn\n\t}\n\tif r.Method != http.MethodGet {\n\t\tw.Header().Set(\"Allow\", \"GET\")\n\t\thttp.Error(w, \"method\", http.StatusMethodNotAllowed)\n\t\treturn\n\t}\n\tw.Header().Set(\"Content-Type\", \"text/plain\")\n\tw.Write([]byte(\"ready\"))\n}\nfunc main() {\n\tfor _, item := range []struct{ method, path string }{{\"GET\", \"/health\"}, {\"POST\", \"/health\"}, {\"GET\", \"/missing\"}} {\n\t\tr := httptest.NewRequest(item.method, item.path, nil)\n\t\tw := httptest.NewRecorder()\n\t\thandler(w, r)\n\t\tfmt.Printf(\"%s %s=%d allow=%q\\n\", item.method, item.path, w.Code, w.Header().Get(\"Allow\"))\n\t}\n}\n",
+    "expectedOutput": "GET /health=200 allow=\"\"\nPOST /health=405 allow=\"GET\"\nGET /missing=404 allow=\"\"",
+    "templateType": "go"
+  }
+}

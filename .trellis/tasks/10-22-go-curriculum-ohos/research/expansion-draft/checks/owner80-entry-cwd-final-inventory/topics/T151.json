@@ -1,0 +1,69 @@
+{
+  "id": "T151",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "hit=1 found=true\nb-evicted=true order=[c a]\nupdated=10 order=[a c]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-151",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "LRU 缓存淘汰",
+    "summary": "实现容量二的缓存，命中提升热度，更新既有项并淘汰最久未使用键。",
+    "concepts": [
+      "container/list",
+      "索引映射",
+      "最近使用策略"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "实现容量二的缓存，命中提升热度，更新既有项并淘汰最久未使用键。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "只删链表不删索引会留下已淘汰的幽灵命中。",
+      "更新已有键应复用元素，重复插入会造成同键多节点。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加 Delete 方法，并让删除不存在键返回 false。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "先查 map，存在时从链表 Remove 并 delete map，返回 true；不存在时不改变链表顺序。"
+      }
+    ],
+    "explain": "链表前端表示最近使用，map 将键定位到链表元素，命中与更新都移动到前端。新增后若超容量，只移除尾部并同步删除 map 项。程序先访问 a，再插入 c，验证 b 被淘汰；再次更新 a 不会增加元素数量。这个缓存只约束项数且没有并发保护，若共享给多个 goroutine，需要在完整操作周围统一同步。",
+    "code": "package main\n\nimport (\n\t\"container/list\"\n\t\"fmt\"\n)\n\ntype Entry struct {\n\tKey   string\n\tValue int\n}\ntype Cache struct {\n\tCapacity int\n\tOrder    *list.List\n\tEntries  map[string]*list.Element\n}\n\nfunc newCache(capacity int) *Cache {\n\tif capacity < 1 {\n\t\tpanic(\"invalid capacity\")\n\t}\n\treturn &Cache{capacity, list.New(), map[string]*list.Element{}}\n}\nfunc (c *Cache) Get(key string) (int, bool) {\n\telement, ok := c.Entries[key]\n\tif !ok {\n\t\treturn 0, false\n\t}\n\tc.Order.MoveToFront(element)\n\treturn element.Value.(Entry).Value, true\n}\nfunc (c *Cache) Put(key string, value int) {\n\tif element, ok := c.Entries[key]; ok {\n\t\telement.Value = Entry{key, value}\n\t\tc.Order.MoveToFront(element)\n\t\treturn\n\t}\n\tc.Entries[key] = c.Order.PushFront(Entry{key, value})\n\tif c.Order.Len() > c.Capacity {\n\t\tlast := c.Order.Back()\n\t\tdelete(c.Entries, last.Value.(Entry).Key)\n\t\tc.Order.Remove(last)\n\t}\n}\nfunc (c *Cache) Keys() []string {\n\tkeys := []string{}\n\tfor element := c.Order.Front(); element != nil; element = element.Next() {\n\t\tkeys = append(keys, element.Value.(Entry).Key)\n\t}\n\treturn keys\n}\nfunc main() {\n\tcache := newCache(2)\n\tcache.Put(\"a\", 1)\n\tcache.Put(\"b\", 2)\n\tvalue, ok := cache.Get(\"a\")\n\tfmt.Printf(\"hit=%d found=%t\\n\", value, ok)\n\tcache.Put(\"c\", 3)\n\t_, ok = cache.Get(\"b\")\n\tfmt.Printf(\"b-evicted=%t order=%v\\n\", !ok, cache.Keys())\n\tcache.Put(\"a\", 10)\n\tvalue, _ = cache.Get(\"a\")\n\tfmt.Printf(\"updated=%d order=%v\\n\", value, cache.Keys())\n}\n",
+    "output": "hit=1 found=true\nb-evicted=true order=[c a]\nupdated=10 order=[a c]"
+  },
+  "example": {
+    "id": "go-example-151",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "LRU 缓存淘汰",
+    "summary": "实现容量二的缓存，命中提升热度，更新既有项并淘汰最久未使用键。",
+    "concepts": [
+      "container/list",
+      "索引映射",
+      "最近使用策略"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"container/list\"\n\t\"fmt\"\n)\n\ntype Entry struct {\n\tKey   string\n\tValue int\n}\ntype Cache struct {\n\tCapacity int\n\tOrder    *list.List\n\tEntries  map[string]*list.Element\n}\n\nfunc newCache(capacity int) *Cache {\n\tif capacity < 1 {\n\t\tpanic(\"invalid capacity\")\n\t}\n\treturn &Cache{capacity, list.New(), map[string]*list.Element{}}\n}\nfunc (c *Cache) Get(key string) (int, bool) {\n\telement, ok := c.Entries[key]\n\tif !ok {\n\t\treturn 0, false\n\t}\n\tc.Order.MoveToFront(element)\n\treturn element.Value.(Entry).Value, true\n}\nfunc (c *Cache) Put(key string, value int) {\n\tif element, ok := c.Entries[key]; ok {\n\t\telement.Value = Entry{key, value}\n\t\tc.Order.MoveToFront(element)\n\t\treturn\n\t}\n\tc.Entries[key] = c.Order.PushFront(Entry{key, value})\n\tif c.Order.Len() > c.Capacity {\n\t\tlast := c.Order.Back()\n\t\tdelete(c.Entries, last.Value.(Entry).Key)\n\t\tc.Order.Remove(last)\n\t}\n}\nfunc (c *Cache) Keys() []string {\n\tkeys := []string{}\n\tfor element := c.Order.Front(); element != nil; element = element.Next() {\n\t\tkeys = append(keys, element.Value.(Entry).Key)\n\t}\n\treturn keys\n}\nfunc main() {\n\tcache := newCache(2)\n\tcache.Put(\"a\", 1)\n\tcache.Put(\"b\", 2)\n\tvalue, ok := cache.Get(\"a\")\n\tfmt.Printf(\"hit=%d found=%t\\n\", value, ok)\n\tcache.Put(\"c\", 3)\n\t_, ok = cache.Get(\"b\")\n\tfmt.Printf(\"b-evicted=%t order=%v\\n\", !ok, cache.Keys())\n\tcache.Put(\"a\", 10)\n\tvalue, _ = cache.Get(\"a\")\n\tfmt.Printf(\"updated=%d order=%v\\n\", value, cache.Keys())\n}\n",
+    "expectedOutput": "hit=1 found=true\nb-evicted=true order=[c a]\nupdated=10 order=[a c]",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "T278",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "t= 0.0 allow=true\nt= 0.0 allow=true\nt= 0.0 allow=false\nt= 0.5 allow=false\nt= 1.0 allow=true\nt= 1.0 allow=false\nt= 3.0 allow=true\nclock-backwards=false\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-278",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "逻辑时钟令牌桶",
+    "summary": "能用显式 now 更新令牌余额。验证突发、补充与拒绝，不必实际睡眠。",
+    "concepts": [
+      "time",
+      "math",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能用显式 now 更新令牌余额。验证突发、补充与拒绝，不必实际睡眠。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "每次拒绝都把令牌归零，会丢失不足一枚的累计补充。",
+      "并发请求必须同步更新 Tokens 和 Last。两个字段分开修改会破坏限流。"
+    ],
+    "exercises": [
+      {
+        "prompt": "让每个请求携带 cost，且 cost 大于容量时明确拒绝。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "在更新前验证 cost>0 且 cost<=Capacity。足额后一次性扣除 cost。继续保留小数余额。"
+      }
+    ],
+    "explain": "令牌桶把突发容量与长期补充速率分开。每次调用显式传入逻辑时间。先按经过秒数补充并限制到容量。再判断能否扣除一枚令牌。连续三次零时刻请求只能通过两个。半秒还不够一枚。一秒恢复一次机会。请求即使失败，已补充余额和 Last 也要保留。时钟倒退直接拒绝。此时不修改状态。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n\t\"time\"\n)\n\ntype Bucket struct {\n\tCapacity, Tokens, PerSecond float64\n\tLast                        time.Time\n}\n\nfunc (b *Bucket) Allow(now time.Time) bool {\n\tif now.Before(b.Last) {\n\t\treturn false\n\t}\n\tb.Tokens = math.Min(b.Capacity, b.Tokens+now.Sub(b.Last).Seconds()*b.PerSecond)\n\tb.Last = now\n\tif b.Tokens < 1 {\n\t\treturn false\n\t}\n\tb.Tokens--\n\treturn true\n}\nfunc main() {\n\tstart := time.Date(2026, 10, 23, 0, 0, 0, 0, time.UTC)\n\tb := &Bucket{Capacity: 2, Tokens: 2, PerSecond: 1, Last: start}\n\tfor _, offset := range []time.Duration{0, 0, 0, 500 * time.Millisecond, time.Second, time.Second, 3 * time.Second} {\n\t\tfmt.Printf(\"t=%4.1f allow=%t\\n\", offset.Seconds(), b.Allow(start.Add(offset)))\n\t}\n\tfmt.Printf(\"clock-backwards=%t\\n\", b.Allow(start))\n}\n",
+    "output": "t= 0.0 allow=true\nt= 0.0 allow=true\nt= 0.0 allow=false\nt= 0.5 allow=false\nt= 1.0 allow=true\nt= 1.0 allow=false\nt= 3.0 allow=true\nclock-backwards=false"
+  },
+  "example": {
+    "id": "go-example-278",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "逻辑时钟令牌桶",
+    "summary": "能用显式 now 更新令牌余额。验证突发、补充与拒绝，不必实际睡眠。",
+    "concepts": [
+      "time",
+      "math",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n\t\"time\"\n)\n\ntype Bucket struct {\n\tCapacity, Tokens, PerSecond float64\n\tLast                        time.Time\n}\n\nfunc (b *Bucket) Allow(now time.Time) bool {\n\tif now.Before(b.Last) {\n\t\treturn false\n\t}\n\tb.Tokens = math.Min(b.Capacity, b.Tokens+now.Sub(b.Last).Seconds()*b.PerSecond)\n\tb.Last = now\n\tif b.Tokens < 1 {\n\t\treturn false\n\t}\n\tb.Tokens--\n\treturn true\n}\nfunc main() {\n\tstart := time.Date(2026, 10, 23, 0, 0, 0, 0, time.UTC)\n\tb := &Bucket{Capacity: 2, Tokens: 2, PerSecond: 1, Last: start}\n\tfor _, offset := range []time.Duration{0, 0, 0, 500 * time.Millisecond, time.Second, time.Second, 3 * time.Second} {\n\t\tfmt.Printf(\"t=%4.1f allow=%t\\n\", offset.Seconds(), b.Allow(start.Add(offset)))\n\t}\n\tfmt.Printf(\"clock-backwards=%t\\n\", b.Allow(start))\n}\n",
+    "expectedOutput": "t= 0.0 allow=true\nt= 0.0 allow=true\nt= 0.0 allow=false\nt= 0.5 allow=false\nt= 1.0 allow=true\nt= 1.0 allow=false\nt= 3.0 allow=true\nclock-backwards=false",
+    "templateType": "go"
+  }
+}

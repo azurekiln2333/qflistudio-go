@@ -1,0 +1,69 @@
+{
+  "id": "T201",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "a.txt exists=true match=true\nb.txt exists=true match=false\nbad-manifest=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-201",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "摘要清单验证",
+    "summary": "能验证两个离线文件的摘要清单。分别报告匹配文件与已改动文件。",
+    "concepts": [
+      "crypto/sha256",
+      "encoding/hex",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能验证两个离线文件的摘要清单。分别报告匹配文件与已改动文件。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "文件不存在和摘要不符是不同问题，不能把空内容当成不存在。",
+      "攻击者若能同时修改文件和清单，普通摘要不能提供身份认证。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加清单中存在但临时目录缺失的 c.txt。仍保持按文件名排序。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "只向 manifest 加入 c.txt。不创建对应文件。用 os.IsNotExist 区分缺失与其他读取错误。缺失项输出 exists=false、match=false。"
+      }
+    ],
+    "explain": "程序先创建独占临时目录。再写入两个真实文件。验证阶段用 ReadFile 读取磁盘内容。随后重新计算 SHA256。再与清单比较。结束时清理目录。a.txt 保持原内容。程序替换了 b.txt 的内容。因此分别报告匹配与不匹配。程序先排序文件名再输出。这样 map 遍历顺序不影响审计记录。摘要条目必须是恰好三十二字节的十六进制编码。摘要可以检测变化。但摘要不能证明清单来自可信发布者。本例文件名由程序固定。外部清单还需要独立的路径包含关系验证。",
+    "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"encoding/hex\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"sort\"\n)\n\nfunc digest(text string) string {\n\tsum := sha256.Sum256([]byte(text))\n\treturn hex.EncodeToString(sum[:])\n}\nfunc validDigest(text string) bool {\n\tdecoded, err := hex.DecodeString(text)\n\treturn err == nil && len(decoded) == sha256.Size\n}\nfunc main() {\n\tdirectory, err := os.MkdirTemp(\"\", \"qfli-integrity-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(directory)\n\tfor name, text := range map[string]string{\"a.txt\": \"alpha\", \"b.txt\": \"changed\"} {\n\t\tif err = os.WriteFile(filepath.Join(directory, name), []byte(text), 0600); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tmanifest := map[string]string{\"a.txt\": digest(\"alpha\"), \"b.txt\": digest(\"beta\")}\n\tnames := []string{}\n\tfor name := range manifest {\n\t\tnames = append(names, name)\n\t}\n\tsort.Strings(names)\n\tfor _, name := range names {\n\t\tif !validDigest(manifest[name]) {\n\t\t\tpanic(\"invalid manifest digest\")\n\t\t}\n\t\tdata, err := os.ReadFile(filepath.Join(directory, name))\n\t\tif err != nil && !os.IsNotExist(err) {\n\t\t\tpanic(err)\n\t\t}\n\t\texists := err == nil\n\t\tfmt.Printf(\"%s exists=%t match=%t\\n\", name, exists, exists && digest(string(data)) == manifest[name])\n\t}\n\tfmt.Printf(\"bad-manifest=%t\\n\", !validDigest(\"xyz\"))\n}\n",
+    "output": "a.txt exists=true match=true\nb.txt exists=true match=false\nbad-manifest=true"
+  },
+  "example": {
+    "id": "go-example-201",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "摘要清单验证",
+    "summary": "能验证两个离线文件的摘要清单。分别报告匹配文件与已改动文件。",
+    "concepts": [
+      "crypto/sha256",
+      "encoding/hex",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"encoding/hex\"\n\t\"fmt\"\n\t\"os\"\n\t\"path/filepath\"\n\t\"sort\"\n)\n\nfunc digest(text string) string {\n\tsum := sha256.Sum256([]byte(text))\n\treturn hex.EncodeToString(sum[:])\n}\nfunc validDigest(text string) bool {\n\tdecoded, err := hex.DecodeString(text)\n\treturn err == nil && len(decoded) == sha256.Size\n}\nfunc main() {\n\tdirectory, err := os.MkdirTemp(\"\", \"qfli-integrity-\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefer os.RemoveAll(directory)\n\tfor name, text := range map[string]string{\"a.txt\": \"alpha\", \"b.txt\": \"changed\"} {\n\t\tif err = os.WriteFile(filepath.Join(directory, name), []byte(text), 0600); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tmanifest := map[string]string{\"a.txt\": digest(\"alpha\"), \"b.txt\": digest(\"beta\")}\n\tnames := []string{}\n\tfor name := range manifest {\n\t\tnames = append(names, name)\n\t}\n\tsort.Strings(names)\n\tfor _, name := range names {\n\t\tif !validDigest(manifest[name]) {\n\t\t\tpanic(\"invalid manifest digest\")\n\t\t}\n\t\tdata, err := os.ReadFile(filepath.Join(directory, name))\n\t\tif err != nil && !os.IsNotExist(err) {\n\t\t\tpanic(err)\n\t\t}\n\t\texists := err == nil\n\t\tfmt.Printf(\"%s exists=%t match=%t\\n\", name, exists, exists && digest(string(data)) == manifest[name])\n\t}\n\tfmt.Printf(\"bad-manifest=%t\\n\", !validDigest(\"xyz\"))\n}\n",
+    "expectedOutput": "a.txt exists=true match=true\nb.txt exists=true match=false\nbad-manifest=true",
+    "templateType": "go"
+  }
+}

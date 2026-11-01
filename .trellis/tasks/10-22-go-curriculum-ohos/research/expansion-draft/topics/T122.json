@@ -1,0 +1,71 @@
+{
+  "id": "T122",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "go-工具-离线-版本-2\nmerged=a-b-c\nempty=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-122",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Unicode 标识清洗",
+    "summary": "把含中文、空白和标点的标题清洗为稳定标识，合并分隔符。",
+    "concepts": [
+      "unicode.IsLetter",
+      "unicode.IsNumber",
+      "rune",
+      "strings.Builder"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "把含中文、空白和标点的标题清洗为稳定标识，合并分隔符。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "按字节判断会拆开中文的 UTF-8 编码。",
+      "这里采用 Unicode 小写映射，不宣称执行音译或 Unicode 规范化。"
+    ],
+    "exercises": [
+      {
+        "prompt": "让调用者在清洗结果为空时返回错误。同时保持中文标题的结果。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "保留清洗函数，在包装函数中检查 result == 空字符串并返回 errors.New。不要用默认编号悄悄覆盖非法输入。"
+      }
+    ],
+    "explain": "标识清洗按 Unicode 字符遍历。它保留各语言字母和数字。它还会把字母转成小写。pending 标记记录是否见过分隔符。只有遇到下一个有效字符，才写入横线。因此结果不会出现首尾横线或连续横线。中文不是 ASCII，却仍是合法字母。全是标点的输入会得到空字符串。调用者决定是否拒绝它。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"unicode\"\n)\n\nfunc identifier(text string) string {\n\tvar out strings.Builder\n\tpending := false\n\tfor _, r := range text {\n\t\tif unicode.IsLetter(r) || unicode.IsNumber(r) {\n\t\t\tif pending && out.Len() > 0 {\n\t\t\t\tout.WriteByte('-')\n\t\t\t}\n\t\t\tout.WriteRune(unicode.ToLower(r))\n\t\t\tpending = false\n\t\t} else {\n\t\t\tpending = true\n\t\t}\n\t}\n\treturn out.String()\n}\n\nfunc main() {\n\tfmt.Println(identifier(\"  Go 工具：离线 / 版本 2! \"))\n\tfmt.Printf(\"merged=%s\\n\", identifier(\"A---B__C\"))\n\tfmt.Printf(\"empty=%t\\n\", identifier(\" !? \") == \"\")\n}\n",
+    "output": "go-工具-离线-版本-2\nmerged=a-b-c\nempty=true"
+  },
+  "example": {
+    "id": "go-example-122",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Unicode 标识清洗",
+    "summary": "把含中文、空白和标点的标题清洗为稳定标识，合并分隔符。",
+    "concepts": [
+      "unicode.IsLetter",
+      "unicode.IsNumber",
+      "rune",
+      "strings.Builder"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"unicode\"\n)\n\nfunc identifier(text string) string {\n\tvar out strings.Builder\n\tpending := false\n\tfor _, r := range text {\n\t\tif unicode.IsLetter(r) || unicode.IsNumber(r) {\n\t\t\tif pending && out.Len() > 0 {\n\t\t\t\tout.WriteByte('-')\n\t\t\t}\n\t\t\tout.WriteRune(unicode.ToLower(r))\n\t\t\tpending = false\n\t\t} else {\n\t\t\tpending = true\n\t\t}\n\t}\n\treturn out.String()\n}\n\nfunc main() {\n\tfmt.Println(identifier(\"  Go 工具：离线 / 版本 2! \"))\n\tfmt.Printf(\"merged=%s\\n\", identifier(\"A---B__C\"))\n\tfmt.Printf(\"empty=%t\\n\", identifier(\" !? \") == \"\")\n}\n",
+    "expectedOutput": "go-工具-离线-版本-2\nmerged=a-b-c\nempty=true",
+    "templateType": "go"
+  }
+}

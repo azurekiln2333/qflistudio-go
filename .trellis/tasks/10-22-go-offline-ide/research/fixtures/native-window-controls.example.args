@@ -1,0 +1,7 @@
+--control-only
+--grant
+REPLACE_WITH_NEW_EXPLICIT_GRANT
+--next-owner
+REPLACE_WITH_ACTUAL_NEXT_OWNER
+--output
+.trellis/tasks/10-22-go-offline-ide/research/REPLACE_WITH_NEW_EVIDENCE_PREFIX-controls

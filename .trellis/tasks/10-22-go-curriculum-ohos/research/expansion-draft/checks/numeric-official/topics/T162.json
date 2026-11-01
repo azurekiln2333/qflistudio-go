@@ -1,0 +1,71 @@
+{
+  "id": "T162",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "share=10/3 displayed=3.33\nexact-total=10 preserved=true\ndisplayed-total=9.99\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-162",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "精确分数分账",
+    "summary": "把十元均分三份，验证精确总和与两位小数显示总和的差别。",
+    "concepts": [
+      "math/big.Rat",
+      "有理数",
+      "显示精度",
+      "守恒"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "把十元均分三份，验证精确总和与两位小数显示总和的差别。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "FloatString 是显示转换，不能保证每项独立舍入后的总额守恒。",
+      "big.Rat 的接收者是可变对象，复用错误会意外覆盖原值。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把实际一千分分配为三笔整数分，保证总和一千且任意两笔差不超过一分。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "先取商三百三十三和余数一，把多出的一分按固定账号顺序分给第一笔，结果为 334、333、333。"
+      }
+    ],
+    "explain": "Rat 用分子分母保存精确有理数，三份 10/3 相加仍精确等于十。FloatString(2) 只是为每份生成 3.33 的显示文本，三个显示数相加却是 9.99。显示舍入没有改变 Rat 本身，但真正支付时必须制定余分分配规则，不能把每份显示值当作总额守恒的证明。Rat 运算会修改接收者，累加使用独立 sum 避免改写 share。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/big\"\n)\n\nfunc main() {\n\tshare := big.NewRat(10, 3)\n\tsum := new(big.Rat)\n\tfor i := 0; i < 3; i++ {\n\t\tsum.Add(sum, share)\n\t}\n\tfmt.Printf(\"share=%s displayed=%s\\n\", share.RatString(), share.FloatString(2))\n\tfmt.Printf(\"exact-total=%s preserved=%t\\n\", sum.RatString(), sum.Cmp(big.NewRat(10, 1)) == 0)\n\tfmt.Printf(\"displayed-total=%d.%02d\\n\", (333*3)/100, (333*3)%100)\n}\n",
+    "output": "share=10/3 displayed=3.33\nexact-total=10 preserved=true\ndisplayed-total=9.99"
+  },
+  "example": {
+    "id": "go-example-162",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "精确分数分账",
+    "summary": "把十元均分三份，验证精确总和与两位小数显示总和的差别。",
+    "concepts": [
+      "math/big.Rat",
+      "有理数",
+      "显示精度",
+      "守恒"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/big\"\n)\n\nfunc main() {\n\tshare := big.NewRat(10, 3)\n\tsum := new(big.Rat)\n\tfor i := 0; i < 3; i++ {\n\t\tsum.Add(sum, share)\n\t}\n\tfmt.Printf(\"share=%s displayed=%s\\n\", share.RatString(), share.FloatString(2))\n\tfmt.Printf(\"exact-total=%s preserved=%t\\n\", sum.RatString(), sum.Cmp(big.NewRat(10, 1)) == 0)\n\tfmt.Printf(\"displayed-total=%d.%02d\\n\", (333*3)/100, (333*3)%100)\n}\n",
+    "expectedOutput": "share=10/3 displayed=3.33\nexact-total=10 preserved=true\ndisplayed-total=9.99",
+    "templateType": "go"
+  }
+}

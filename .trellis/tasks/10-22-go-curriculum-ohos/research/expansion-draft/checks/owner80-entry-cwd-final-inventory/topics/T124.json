@@ -1,0 +1,71 @@
+{
+  "id": "T124",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "beta=3\nalpha=2\ngamma=2\nzero=0 all=4\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-124",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "词频 Top N 与并列规则",
+    "summary": "统计多行文档的词频，按次数降序、单词字典序处理并列并取前三名。",
+    "concepts": [
+      "bufio.Scanner",
+      "词频映射",
+      "sort.Slice",
+      "稳定并列规则"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "统计多行文档的词频，按次数降序、单词字典序处理并列并取前三名。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "直接从 map 取前三项没有确定顺序。",
+      "比较器缺少次数相同时的规则，会让并列结果不稳定。"
+    ],
+    "exercises": [
+      {
+        "prompt": "支持负数 N 并将其作为错误返回，而不是触发切片越界。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "让 top 接受 N 后先判断 N < 0 并返回错误；保留 N==0 的空结果，不把负值自动改成零。"
+      }
+    ],
+    "explain": "Scanner 使用 ScanWords 把文档按空白拆词，统一小写后累加计数，再将 map 转成可排序的记录切片。比较器首先比较次数，次数相同时比较单词，因此 map 的遍历顺序不会影响结果。输入刻意让 alpha 和 gamma 次数相同，输出验证字典序决胜；N 超过词数时自动收缩，N 为零时不访问首项。标点归一化不属于此处的空白词元规则。",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n)\n\ntype Word struct {\n\tText  string\n\tCount int\n}\n\nfunc top(text string, n int) []Word {\n\tcounts := map[string]int{}\n\tscanner := bufio.NewScanner(strings.NewReader(text))\n\tscanner.Split(bufio.ScanWords)\n\tfor scanner.Scan() {\n\t\tcounts[strings.ToLower(scanner.Text())]++\n\t}\n\tif err := scanner.Err(); err != nil {\n\t\tpanic(err)\n\t}\n\twords := make([]Word, 0, len(counts))\n\tfor word, count := range counts {\n\t\twords = append(words, Word{word, count})\n\t}\n\tsort.Slice(words, func(i, j int) bool {\n\t\tif words[i].Count != words[j].Count {\n\t\t\treturn words[i].Count > words[j].Count\n\t\t}\n\t\treturn words[i].Text < words[j].Text\n\t})\n\tif n > len(words) {\n\t\tn = len(words)\n\t}\n\treturn words[:n]\n}\n\nfunc main() {\n\ttext := \"Beta alpha beta\\ngamma ALPHA gamma beta delta\"\n\tfor _, word := range top(text, 3) {\n\t\tfmt.Printf(\"%s=%d\\n\", word.Text, word.Count)\n\t}\n\tfmt.Printf(\"zero=%d all=%d\\n\", len(top(text, 0)), len(top(text, 99)))\n}\n",
+    "output": "beta=3\nalpha=2\ngamma=2\nzero=0 all=4"
+  },
+  "example": {
+    "id": "go-example-124",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "词频 Top N 与并列规则",
+    "summary": "统计多行文档的词频，按次数降序、单词字典序处理并列并取前三名。",
+    "concepts": [
+      "bufio.Scanner",
+      "词频映射",
+      "sort.Slice",
+      "稳定并列规则"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n)\n\ntype Word struct {\n\tText  string\n\tCount int\n}\n\nfunc top(text string, n int) []Word {\n\tcounts := map[string]int{}\n\tscanner := bufio.NewScanner(strings.NewReader(text))\n\tscanner.Split(bufio.ScanWords)\n\tfor scanner.Scan() {\n\t\tcounts[strings.ToLower(scanner.Text())]++\n\t}\n\tif err := scanner.Err(); err != nil {\n\t\tpanic(err)\n\t}\n\twords := make([]Word, 0, len(counts))\n\tfor word, count := range counts {\n\t\twords = append(words, Word{word, count})\n\t}\n\tsort.Slice(words, func(i, j int) bool {\n\t\tif words[i].Count != words[j].Count {\n\t\t\treturn words[i].Count > words[j].Count\n\t\t}\n\t\treturn words[i].Text < words[j].Text\n\t})\n\tif n > len(words) {\n\t\tn = len(words)\n\t}\n\treturn words[:n]\n}\n\nfunc main() {\n\ttext := \"Beta alpha beta\\ngamma ALPHA gamma beta delta\"\n\tfor _, word := range top(text, 3) {\n\t\tfmt.Printf(\"%s=%d\\n\", word.Text, word.Count)\n\t}\n\tfmt.Printf(\"zero=%d all=%d\\n\", len(top(text, 0)), len(top(text, 99)))\n}\n",
+    "expectedOutput": "beta=3\nalpha=2\ngamma=2\nzero=0 all=4",
+    "templateType": "go"
+  }
+}

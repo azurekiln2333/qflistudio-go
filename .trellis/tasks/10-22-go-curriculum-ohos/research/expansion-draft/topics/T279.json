@@ -1,0 +1,67 @@
+{
+  "id": "T279",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "failed-at=2\ncommitted=[A B C D E]\ncheckpoint={\"next\":5}\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-279",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "批处理检查点恢复",
+    "summary": "能按批保存已完成偏移。模拟失败后从检查点恢复。避免重复提交。",
+    "concepts": [
+      "encoding/json",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能按批保存已完成偏移。模拟失败后从检查点恢复。避免重复提交。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "先推进检查点再提交数据，崩溃后会永久漏掉该批次。",
+      "提交与保存检查点之间发生真实崩溃仍可能重复。此时需要事务或幂等写入。单个 JSON 文件不自动提供 exactly-once。"
+    ],
+    "exercises": [
+      {
+        "prompt": "用记录 ID 集合让重复提交同一批也不会新增重复结果。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "提交时先检查稳定 ID 是否已存在。只追加新记录。检查点只用于加速定位。它不能替代幂等约束。"
+      }
+    ],
+    "explain": "批处理把未提交批次先放在 pending 中。示例模拟第二批在提交前失败。然后从已保存 Next 偏移恢复。只有批次成功提交才推进检查点。推进后再序列化检查点。因此恢复不会重复追加已完成的 A、B。示例是在同一内存进程中的教学模拟。真实崩溃恢复必须保证提交与检查点原子关联。另一种做法是用稳定任务 ID 实现幂等。",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Checkpoint struct {\n\tNext int `json:\"next\"`\n}\n\nfunc main() {\n\trecords := []string{\"A\", \"B\", \"C\", \"D\", \"E\"}\n\tcommitted := []string{}\n\tcheckpoint := Checkpoint{}\n\twire := []byte{}\n\tfailOnce := true\n\tfor checkpoint.Next < len(records) {\n\t\tstart := checkpoint.Next\n\t\tend := start + 2\n\t\tif end > len(records) {\n\t\t\tend = len(records)\n\t\t}\n\t\tpending := append([]string(nil), records[start:end]...)\n\t\tif start == 2 && failOnce {\n\t\t\tfailOnce = false\n\t\t\tfmt.Printf(\"failed-at=%d\\n\", start)\n\t\t\tif err := json.Unmarshal(wire, &checkpoint); err != nil {\n\t\t\t\tpanic(err)\n\t\t\t}\n\t\t\tcontinue\n\t\t}\n\t\tcommitted = append(committed, pending...)\n\t\tcheckpoint.Next = end\n\t\tvar err error\n\t\twire, err = json.Marshal(checkpoint)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tfmt.Printf(\"committed=%v\\ncheckpoint=%s\\n\", committed, wire)\n}\n",
+    "output": "failed-at=2\ncommitted=[A B C D E]\ncheckpoint={\"next\":5}"
+  },
+  "example": {
+    "id": "go-example-279",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "批处理检查点恢复",
+    "summary": "能按批保存已完成偏移。模拟失败后从检查点恢复。避免重复提交。",
+    "concepts": [
+      "encoding/json",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Checkpoint struct {\n\tNext int `json:\"next\"`\n}\n\nfunc main() {\n\trecords := []string{\"A\", \"B\", \"C\", \"D\", \"E\"}\n\tcommitted := []string{}\n\tcheckpoint := Checkpoint{}\n\twire := []byte{}\n\tfailOnce := true\n\tfor checkpoint.Next < len(records) {\n\t\tstart := checkpoint.Next\n\t\tend := start + 2\n\t\tif end > len(records) {\n\t\t\tend = len(records)\n\t\t}\n\t\tpending := append([]string(nil), records[start:end]...)\n\t\tif start == 2 && failOnce {\n\t\t\tfailOnce = false\n\t\t\tfmt.Printf(\"failed-at=%d\\n\", start)\n\t\t\tif err := json.Unmarshal(wire, &checkpoint); err != nil {\n\t\t\t\tpanic(err)\n\t\t\t}\n\t\t\tcontinue\n\t\t}\n\t\tcommitted = append(committed, pending...)\n\t\tcheckpoint.Next = end\n\t\tvar err error\n\t\twire, err = json.Marshal(checkpoint)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tfmt.Printf(\"committed=%v\\ncheckpoint=%s\\n\", committed, wire)\n}\n",
+    "expectedOutput": "failed-at=2\ncommitted=[A B C D E]\ncheckpoint={\"next\":5}",
+    "templateType": "go"
+  }
+}

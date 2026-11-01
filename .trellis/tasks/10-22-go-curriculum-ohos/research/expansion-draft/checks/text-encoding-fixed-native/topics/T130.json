@@ -1,0 +1,71 @@
+{
+  "id": "T130",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "go=[1 2]\ngo+local=[1]\nlocal+offline=[3]\nmissing=[]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-130",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "词边界倒排索引",
+    "summary": "为三篇离线文档建立去重词索引，并求多个查询词对应文档的交集。",
+    "concepts": [
+      "unicode",
+      "倒排索引",
+      "集合交集",
+      "sort.Ints"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "为三篇离线文档建立去重词索引，并求多个查询词对应文档的交集。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "把出现次数当作索引列表会重复返回同一文档。",
+      "map 集合无稳定顺序，输出前应排序 ID。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加三个词的 AND 查询，并保证某个词不存在时快速返回空结果。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "现有 query 已循环检查其余词，可直接传三个词；查询前检查每个词的集合是否为空，若为空立即返回空切片。"
+      }
+    ],
+    "explain": "FieldsFunc 按非字母、非数字划分词元，小写归一后把文档 ID 写入集合。同一文档里重复出现 go 仍只产生一个索引成员。查询先遍历第一个词的候选文档，再要求每个后续词都包含该 ID，最后排序输出，保证确定性。查询缺失词返回空切片；零词查询也被定义为空结果，而不是所有文档。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n\t\"unicode\"\n)\n\ntype Index map[string]map[int]bool\n\nfunc build(documents []string) Index {\n\tindex := Index{}\n\tfor i, document := range documents {\n\t\twords := strings.FieldsFunc(strings.ToLower(document), func(r rune) bool {\n\t\t\treturn !unicode.IsLetter(r) && !unicode.IsNumber(r)\n\t\t})\n\t\tfor _, word := range words {\n\t\t\tif index[word] == nil {\n\t\t\t\tindex[word] = map[int]bool{}\n\t\t\t}\n\t\t\tindex[word][i+1] = true\n\t\t}\n\t}\n\treturn index\n}\n\nfunc query(index Index, words ...string) []int {\n\tresult := []int{}\n\tif len(words) == 0 {\n\t\treturn result\n\t}\n\tfor id := range index[strings.ToLower(words[0])] {\n\t\tfound := true\n\t\tfor _, word := range words[1:] {\n\t\t\tif !index[strings.ToLower(word)][id] {\n\t\t\t\tfound = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t}\n\t\tif found {\n\t\t\tresult = append(result, id)\n\t\t}\n\t}\n\tsort.Ints(result)\n\treturn result\n}\n\nfunc main() {\n\tindex := build([]string{\"Go local tools go\", \"Go offline docs\", \"local offline data\"})\n\tfmt.Printf(\"go=%v\\n\", query(index, \"go\"))\n\tfmt.Printf(\"go+local=%v\\n\", query(index, \"go\", \"local\"))\n\tfmt.Printf(\"local+offline=%v\\n\", query(index, \"local\", \"offline\"))\n\tfmt.Printf(\"missing=%v\\n\", query(index, \"absent\"))\n}\n",
+    "output": "go=[1 2]\ngo+local=[1]\nlocal+offline=[3]\nmissing=[]"
+  },
+  "example": {
+    "id": "go-example-130",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "词边界倒排索引",
+    "summary": "为三篇离线文档建立去重词索引，并求多个查询词对应文档的交集。",
+    "concepts": [
+      "unicode",
+      "倒排索引",
+      "集合交集",
+      "sort.Ints"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n\t\"unicode\"\n)\n\ntype Index map[string]map[int]bool\n\nfunc build(documents []string) Index {\n\tindex := Index{}\n\tfor i, document := range documents {\n\t\twords := strings.FieldsFunc(strings.ToLower(document), func(r rune) bool {\n\t\t\treturn !unicode.IsLetter(r) && !unicode.IsNumber(r)\n\t\t})\n\t\tfor _, word := range words {\n\t\t\tif index[word] == nil {\n\t\t\t\tindex[word] = map[int]bool{}\n\t\t\t}\n\t\t\tindex[word][i+1] = true\n\t\t}\n\t}\n\treturn index\n}\n\nfunc query(index Index, words ...string) []int {\n\tresult := []int{}\n\tif len(words) == 0 {\n\t\treturn result\n\t}\n\tfor id := range index[strings.ToLower(words[0])] {\n\t\tfound := true\n\t\tfor _, word := range words[1:] {\n\t\t\tif !index[strings.ToLower(word)][id] {\n\t\t\t\tfound = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t}\n\t\tif found {\n\t\t\tresult = append(result, id)\n\t\t}\n\t}\n\tsort.Ints(result)\n\treturn result\n}\n\nfunc main() {\n\tindex := build([]string{\"Go local tools go\", \"Go offline docs\", \"local offline data\"})\n\tfmt.Printf(\"go=%v\\n\", query(index, \"go\"))\n\tfmt.Printf(\"go+local=%v\\n\", query(index, \"go\", \"local\"))\n\tfmt.Printf(\"local+offline=%v\\n\", query(index, \"local\", \"offline\"))\n\tfmt.Printf(\"missing=%v\\n\", query(index, \"absent\"))\n}\n",
+    "expectedOutput": "go=[1 2]\ngo+local=[1]\nlocal+offline=[3]\nmissing=[]",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,70 @@
+{
+  "id": "T095",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "doubled: a2 b44 c666\nmasked:  a# b# c#\nsplit count: 4\n  [0]=one\n  [1]=two\n  [2]=three\n  [3]=four"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-095",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "正则二：替换、分割与预编译复用",
+    "summary": "用 ReplaceAllStringFunc 做条件替换、用 Split 切分，并复用预编译正则。",
+    "concepts": [
+      "regexp",
+      "ReplaceAllStringFunc",
+      "Split",
+      "预编译"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 ReplaceAllStringFunc 动态替换，并说明预编译正则的复用价值。",
+    "prerequisites": [
+      "T094 正则一：regexp 匹配与子匹配"
+    ],
+    "pitfalls": [
+      "在替换函数里假设输入格式：replace 回调只拿到匹配串，需自行校验/转换。",
+      "用 Split 空匹配：可能产生空字符串元素，需按需过滤。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把所有单词首字母大写（用 ReplaceAllStringFunc）。",
+        "hint": "回调里对首字符 ToUpper，拼接剩余。",
+        "answer": "re.ReplaceAllStringFunc(s, func(w string) string { return strings.ToUpper(w[:1])+w[1:] })。"
+      }
+    ],
+    "explain": "ReplaceAllStringFunc 允许用函数动态决定每个匹配的替换值，适合“按内容计算”的替换；ReplaceAllString 则用于固定替换串。Split 按正则切分，-1 表示不限制数量（返回全部字段）。示例把包级预编译的正则复用于两次替换与一次切分，体现预编译的意义：编译一次、多处使用，避免热路径重复编译。所有输出基于固定输入，因而确定。",
+    "code": "// T095 正则二：替换、分割与预编译复用。\n//\n// ReplaceAllStringFunc 允许用函数动态决定每个匹配的替换值；\n// Split 用正则切分；预编译（MustCompile 到包级变量）避免重复编译。\n// 本示例输出确定。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"regexp\"\n)\n\n// 包级预编译：只编译一次，整个程序复用。\nvar (\n\tnumberRe = regexp.MustCompile(`\\d+`)\n\tspaceRe  = regexp.MustCompile(`\\s+`)\n)\n\nfunc main() {\n\tsrc := \"a1 b22 c333\"\n\n\t// 条件替换：把每个数字 n 替换为 n*2 的字符串。\n\tdoubled := numberRe.ReplaceAllStringFunc(src, func(m string) string {\n\t\t// m 一定是数字串，这里手工解析以避免引入 strconv 干扰阅读。\n\t\tn := 0\n\t\tfor _, r := range m {\n\t\t\tn = n*10 + int(r-'0')\n\t\t}\n\t\treturn fmt.Sprint(n * 2)\n\t})\n\tfmt.Println(\"doubled:\", doubled)\n\n\t// 简单替换：把所有数字替换为 \"#\"。\n\tmasked := numberRe.ReplaceAllString(src, \"#\")\n\tfmt.Println(\"masked: \", masked)\n\n\t// 用连续空白分割。\n\tparts := spaceRe.Split(\"one   two\\tthree  four\", -1)\n\tfmt.Println(\"split count:\", len(parts))\n\tfor i, p := range parts {\n\t\tfmt.Printf(\"  [%d]=%s\\n\", i, p)\n\t}\n}\n",
+    "output": "doubled: a2 b44 c666\nmasked:  a# b# c#\nsplit count: 4\n  [0]=one\n  [1]=two\n  [2]=three\n  [3]=four"
+  },
+  "example": {
+    "id": "go-example-095",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "正则二：替换、分割与预编译复用（示例）",
+    "summary": "对应主题 T095 的可运行示例。",
+    "concepts": [
+      "regexp",
+      "ReplaceAllStringFunc",
+      "Split",
+      "预编译"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T095 正则二：替换、分割与预编译复用。\n//\n// ReplaceAllStringFunc 允许用函数动态决定每个匹配的替换值；\n// Split 用正则切分；预编译（MustCompile 到包级变量）避免重复编译。\n// 本示例输出确定。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"regexp\"\n)\n\n// 包级预编译：只编译一次，整个程序复用。\nvar (\n\tnumberRe = regexp.MustCompile(`\\d+`)\n\tspaceRe  = regexp.MustCompile(`\\s+`)\n)\n\nfunc main() {\n\tsrc := \"a1 b22 c333\"\n\n\t// 条件替换：把每个数字 n 替换为 n*2 的字符串。\n\tdoubled := numberRe.ReplaceAllStringFunc(src, func(m string) string {\n\t\t// m 一定是数字串，这里手工解析以避免引入 strconv 干扰阅读。\n\t\tn := 0\n\t\tfor _, r := range m {\n\t\t\tn = n*10 + int(r-'0')\n\t\t}\n\t\treturn fmt.Sprint(n * 2)\n\t})\n\tfmt.Println(\"doubled:\", doubled)\n\n\t// 简单替换：把所有数字替换为 \"#\"。\n\tmasked := numberRe.ReplaceAllString(src, \"#\")\n\tfmt.Println(\"masked: \", masked)\n\n\t// 用连续空白分割。\n\tparts := spaceRe.Split(\"one   two\\tthree  four\", -1)\n\tfmt.Println(\"split count:\", len(parts))\n\tfor i, p := range parts {\n\t\tfmt.Printf(\"  [%d]=%s\\n\", i, p)\n\t}\n}\n",
+    "expectedOutput": "doubled: a2 b44 c666\nmasked:  a# b# c#\nsplit count: 4\n  [0]=one\n  [1]=two\n  [2]=three\n  [3]=four",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "id": "T193",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "port=9000 source=environment\ndebug=false source=cli\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-193",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "多来源配置优先级",
+    "summary": "按默认、文件、环境和命令行顺序覆盖配置，并记录每个最终字段的来源。",
+    "concepts": [
+      "JSON 部分配置",
+      "显式 false",
+      "来源追踪",
+      "覆盖顺序"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "按默认、文件、环境和命令行顺序覆盖配置，并记录每个最终字段的来源。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "用零值判断字段是否提供会丢掉用户明确设置的 false。",
+      "来源记录必须跟随成功赋值更新，解析失败不能先修改来源。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加来源文件的错误聚合，失败来源不得覆盖之前的有效值。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "先在 candidate 和复制的 provenance 上验证当前来源全部字段，全部成功后同时提交配置与来源映射；错误另行返回给调用者。"
+      }
+    ],
+    "explain": "各来源被转换为只包含实际提供字段的 JSON 对象，再通过同一个 apply 函数依次覆盖。字段是否存在由 RawMessage map 判断，所以命令行明确给出的 false 能覆盖文件中的 true，而未给出的 port 不会重置环境端口。每次成功赋值同步记录来源，最终可解释为何端口为九千、调试为 false。示例环境与命令行已经是固定解析输入，不访问宿主状态。",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Config struct {\n\tPort  int\n\tDebug bool\n}\n\nfunc apply(cfg *Config, sources map[string]string, origin, text string) error {\n\tvar fields map[string]json.RawMessage\n\tif err := json.Unmarshal([]byte(text), &fields); err != nil {\n\t\treturn err\n\t}\n\tcandidate := *cfg\n\tfor name, raw := range fields {\n\t\tswitch name {\n\t\tcase \"port\":\n\t\t\tif err := json.Unmarshal(raw, &candidate.Port); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\t\tif candidate.Port < 1 || candidate.Port > 65535 {\n\t\t\t\treturn fmt.Errorf(\"invalid port\")\n\t\t\t}\n\t\tcase \"debug\":\n\t\t\tif err := json.Unmarshal(raw, &candidate.Debug); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\tdefault:\n\t\t\treturn fmt.Errorf(\"unknown field\")\n\t\t}\n\t}\n\t*cfg = candidate\n\tfor name := range fields {\n\t\tsources[name] = origin\n\t}\n\treturn nil\n}\nfunc main() {\n\tcfg := Config{8080, false}\n\tsources := map[string]string{\"port\": \"default\", \"debug\": \"default\"}\n\tfor _, layer := range []struct {\n\t\tName string\n\t\tJSON string\n\t}{{\"file\", `{\"port\":7000,\"debug\":true}`}, {\"environment\", `{\"port\":9000}`}, {\"cli\", `{\"debug\":false}`}} {\n\t\tif err := apply(&cfg, sources, layer.Name, layer.JSON); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tfmt.Printf(\"port=%d source=%s\\ndebug=%t source=%s\\n\", cfg.Port, sources[\"port\"], cfg.Debug, sources[\"debug\"])\n}\n",
+    "output": "port=9000 source=environment\ndebug=false source=cli"
+  },
+  "example": {
+    "id": "go-example-193",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "多来源配置优先级",
+    "summary": "按默认、文件、环境和命令行顺序覆盖配置，并记录每个最终字段的来源。",
+    "concepts": [
+      "JSON 部分配置",
+      "显式 false",
+      "来源追踪",
+      "覆盖顺序"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Config struct {\n\tPort  int\n\tDebug bool\n}\n\nfunc apply(cfg *Config, sources map[string]string, origin, text string) error {\n\tvar fields map[string]json.RawMessage\n\tif err := json.Unmarshal([]byte(text), &fields); err != nil {\n\t\treturn err\n\t}\n\tcandidate := *cfg\n\tfor name, raw := range fields {\n\t\tswitch name {\n\t\tcase \"port\":\n\t\t\tif err := json.Unmarshal(raw, &candidate.Port); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\t\tif candidate.Port < 1 || candidate.Port > 65535 {\n\t\t\t\treturn fmt.Errorf(\"invalid port\")\n\t\t\t}\n\t\tcase \"debug\":\n\t\t\tif err := json.Unmarshal(raw, &candidate.Debug); err != nil {\n\t\t\t\treturn err\n\t\t\t}\n\t\tdefault:\n\t\t\treturn fmt.Errorf(\"unknown field\")\n\t\t}\n\t}\n\t*cfg = candidate\n\tfor name := range fields {\n\t\tsources[name] = origin\n\t}\n\treturn nil\n}\nfunc main() {\n\tcfg := Config{8080, false}\n\tsources := map[string]string{\"port\": \"default\", \"debug\": \"default\"}\n\tfor _, layer := range []struct {\n\t\tName string\n\t\tJSON string\n\t}{{\"file\", `{\"port\":7000,\"debug\":true}`}, {\"environment\", `{\"port\":9000}`}, {\"cli\", `{\"debug\":false}`}} {\n\t\tif err := apply(&cfg, sources, layer.Name, layer.JSON); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tfmt.Printf(\"port=%d source=%s\\ndebug=%t source=%s\\n\", cfg.Port, sources[\"port\"], cfg.Debug, sources[\"debug\"])\n}\n",
+    "expectedOutput": "port=9000 source=environment\ndebug=false source=cli",
+    "templateType": "go"
+  }
+}

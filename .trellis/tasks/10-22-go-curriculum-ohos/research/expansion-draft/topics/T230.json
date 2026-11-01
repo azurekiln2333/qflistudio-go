@@ -1,0 +1,71 @@
+{
+  "id": "T230",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "status=200\nbody=go!ok\ntrailer-before=\"\"\ntrailer-after=5\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-230",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "HTTP 响应报文读取",
+    "summary": "能读取内存 chunked 响应。验证解码正文与 trailer 字段。",
+    "concepts": [
+      "net/http",
+      "bufio",
+      "strings",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能读取内存 chunked 响应。验证解码正文与 trailer 字段。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "未读到 EOF 就使用 Trailer，可能只看到空值。",
+      "Body 需要关闭。ReadAll 的错误必须检查。不能把截断报文当成成功。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把一个分块声明长度改得比实际数据更大。确认读取正文时返回错误。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "保持 HTTP 头合法。仅破坏 chunk 长度。区分 ReadResponse 的头部错误和 ReadAll 的分块解析错误。"
+      }
+    ],
+    "explain": "ReadResponse 解析完整 HTTP/1.1 报文，Body 自动移除 chunked 的长度行和分隔符。Trailer 的字段名先声明在头部，真正值要读到正文末尾才可用。示例在读取前后分别取 X-Total，证明尾部数据的时机。分块长度以十六进制表示，不能把它当作正文内容。",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"io\"\n\t\"net/http\"\n\t\"strings\"\n)\n\nfunc main() {\n\twire := \"HTTP/1.1 200 OK\\r\\nTransfer-Encoding: chunked\\r\\nTrailer: X-Total\\r\\n\\r\\n3\\r\\ngo!\\r\\n2\\r\\nok\\r\\n0\\r\\nX-Total: 5\\r\\n\\r\\n\"\n\tr, err := http.ReadResponse(bufio.NewReader(strings.NewReader(wire)), nil)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tbefore := r.Trailer.Get(\"X-Total\")\n\tbody, err := io.ReadAll(r.Body)\n\tr.Body.Close()\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"status=%d\\nbody=%s\\ntrailer-before=%q\\ntrailer-after=%s\\n\", r.StatusCode, body, before, r.Trailer.Get(\"X-Total\"))\n}\n",
+    "output": "status=200\nbody=go!ok\ntrailer-before=\"\"\ntrailer-after=5"
+  },
+  "example": {
+    "id": "go-example-230",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "HTTP 响应报文读取",
+    "summary": "能读取内存 chunked 响应。验证解码正文与 trailer 字段。",
+    "concepts": [
+      "net/http",
+      "bufio",
+      "strings",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"io\"\n\t\"net/http\"\n\t\"strings\"\n)\n\nfunc main() {\n\twire := \"HTTP/1.1 200 OK\\r\\nTransfer-Encoding: chunked\\r\\nTrailer: X-Total\\r\\n\\r\\n3\\r\\ngo!\\r\\n2\\r\\nok\\r\\n0\\r\\nX-Total: 5\\r\\n\\r\\n\"\n\tr, err := http.ReadResponse(bufio.NewReader(strings.NewReader(wire)), nil)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tbefore := r.Trailer.Get(\"X-Total\")\n\tbody, err := io.ReadAll(r.Body)\n\tr.Body.Close()\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"status=%d\\nbody=%s\\ntrailer-before=%q\\ntrailer-after=%s\\n\", r.StatusCode, body, before, r.Trailer.Get(\"X-Total\"))\n}\n",
+    "expectedOutput": "status=200\nbody=go!ok\ntrailer-before=\"\"\ntrailer-after=5",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "T264",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "frames=[\"cat\" \"\" \"中文\"]\nbad=true\nbad=true\nbad=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-264",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Netstring 消息解析",
+    "summary": "能解析 length:data, 格式的连续消息，验证长度与结尾逗号。",
+    "concepts": [
+      "strconv",
+      "strings",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能解析 length:data, 格式的连续消息，验证长度与结尾逗号。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "中文的长度应按 UTF8 字节计算，不能把两个汉字声明成长度二。",
+      "只检查载荷够长而不检查末尾逗号，会接受错误帧边界。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加包含冒号与逗号的数据 a:b,c，验证长度五能正常解析。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "构造 5:a:b,c,；解析依赖长度定位结束逗号，载荷中的标点无需转义。"
+      }
+    ],
+    "explain": "Netstring 用十进制字节长度、冒号、原始数据和逗号连接多条消息。长度使载荷可以包含分隔符或中文，零长度也有独立表示。解析器先限制长度，再验证数据后确实存在逗号，最后推进到下一帧。本例不允许长度前导零，避免同一消息存在多种可比较的文本编码。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc parse(wire string) ([]string, error) {\n\tframes := []string{}\n\tfor wire != \"\" {\n\t\tcolon := strings.IndexByte(wire, ':')\n\t\tif colon <= 0 {\n\t\t\treturn nil, fmt.Errorf(\"missing length\")\n\t\t}\n\t\tprefix := wire[:colon]\n\t\tif len(prefix) > 1 && prefix[0] == '0' {\n\t\t\treturn nil, fmt.Errorf(\"leading zero\")\n\t\t}\n\t\tfor _, c := range prefix {\n\t\t\tif c < '0' || c > '9' {\n\t\t\t\treturn nil, fmt.Errorf(\"bad length\")\n\t\t\t}\n\t\t}\n\t\tn, err := strconv.Atoi(prefix)\n\t\tif err != nil || n > 64 {\n\t\t\treturn nil, fmt.Errorf(\"length budget\")\n\t\t}\n\t\tstart := colon + 1\n\t\tif n >= len(wire)-start || wire[start+n] != ',' {\n\t\t\treturn nil, fmt.Errorf(\"truncated or missing comma\")\n\t\t}\n\t\tframes = append(frames, wire[start:start+n])\n\t\twire = wire[start+n+1:]\n\t}\n\treturn frames, nil\n}\nfunc main() {\n\tframes, err := parse(\"3:cat,0:,6:中文,\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"frames=%q\\n\", frames)\n\tfor _, bad := range []string{\"4:cat,\", \"3:cat;\", \"03:cat,\"} {\n\t\t_, err := parse(bad)\n\t\tfmt.Printf(\"bad=%t\\n\", err != nil)\n\t}\n}\n",
+    "output": "frames=[\"cat\" \"\" \"中文\"]\nbad=true\nbad=true\nbad=true"
+  },
+  "example": {
+    "id": "go-example-264",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Netstring 消息解析",
+    "summary": "能解析 length:data, 格式的连续消息，验证长度与结尾逗号。",
+    "concepts": [
+      "strconv",
+      "strings",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc parse(wire string) ([]string, error) {\n\tframes := []string{}\n\tfor wire != \"\" {\n\t\tcolon := strings.IndexByte(wire, ':')\n\t\tif colon <= 0 {\n\t\t\treturn nil, fmt.Errorf(\"missing length\")\n\t\t}\n\t\tprefix := wire[:colon]\n\t\tif len(prefix) > 1 && prefix[0] == '0' {\n\t\t\treturn nil, fmt.Errorf(\"leading zero\")\n\t\t}\n\t\tfor _, c := range prefix {\n\t\t\tif c < '0' || c > '9' {\n\t\t\t\treturn nil, fmt.Errorf(\"bad length\")\n\t\t\t}\n\t\t}\n\t\tn, err := strconv.Atoi(prefix)\n\t\tif err != nil || n > 64 {\n\t\t\treturn nil, fmt.Errorf(\"length budget\")\n\t\t}\n\t\tstart := colon + 1\n\t\tif n >= len(wire)-start || wire[start+n] != ',' {\n\t\t\treturn nil, fmt.Errorf(\"truncated or missing comma\")\n\t\t}\n\t\tframes = append(frames, wire[start:start+n])\n\t\twire = wire[start+n+1:]\n\t}\n\treturn frames, nil\n}\nfunc main() {\n\tframes, err := parse(\"3:cat,0:,6:中文,\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"frames=%q\\n\", frames)\n\tfor _, bad := range []string{\"4:cat,\", \"3:cat;\", \"03:cat,\"} {\n\t\t_, err := parse(bad)\n\t\tfmt.Printf(\"bad=%t\\n\", err != nil)\n\t}\n}\n",
+    "expectedOutput": "frames=[\"cat\" \"\" \"中文\"]\nbad=true\nbad=true\nbad=true",
+    "templateType": "go"
+  }
+}

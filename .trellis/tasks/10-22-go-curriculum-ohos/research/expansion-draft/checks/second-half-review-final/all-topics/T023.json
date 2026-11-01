@@ -1,0 +1,68 @@
+{
+  "id": "T023",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "q,r 3 2\nsplit 40 50\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-023",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "函数签名、多返回值与命名返回",
+    "summary": "用多返回值返回结果与状态，用命名返回简化 return。",
+    "concepts": [
+      "多返回值",
+      "命名返回值",
+      "裸 return"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能定义返回多个值的函数，并用命名返回值配合裸 return。",
+    "prerequisites": [
+      "T002 main 函数"
+    ],
+    "pitfalls": [
+      "混淆返回顺序：多个同类型返回值顺序写错编译器不会报错，调用方会静默拿到错误的值。",
+      "在命名返回函数里用 := 遮蔽返回变量：x, y := ... 会创建新局部变量，裸 return 返回的仍是命名变量的旧值。"
+    ],
+    "exercises": [
+      {
+        "prompt": "写一个函数返回切片的最小值与最大值，并用命名返回实现。",
+        "hint": "min, max 作为命名返回，遍历后 return。",
+        "answer": "func minmax(s []int) (min, max int) 初始化后遍历比较，裸 return 返回两值。"
+      }
+    ],
+    "explain": "Go 的函数可返回多个值，最常用于「结果 + 错误」模式。命名返回值在签名里给返回值起名，函数体内可直接赋值，末尾用裸 return 返回它们；具名返回还能配合 defer 修改返回值（见 T028）。\n\n要注意命名返回变量就是函数作用域里的普通变量：如果用 := 重新声明同名变量，会遮蔽命名返回，导致裸 return 返回旧值。多个同类型返回值顺序写错，编译器无法发现，需靠命名或注释表达意图。\n\n本样例演示 divmod 的多返回值与 split 的命名返回。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc divmod(a, b int) (int, int) {\n\treturn a / b, a % b\n}\n\nfunc split(sum int) (x, y int) {\n\tx = sum * 4 / 9\n\ty = sum - x\n\treturn // 命名返回：裸 return\n}\n\nfunc main() {\n\tq, r := divmod(17, 5)\n\tfmt.Println(\"q,r\", q, r)\n\tx, y := split(90)\n\tfmt.Println(\"split\", x, y)\n}\n",
+    "output": "q,r 3 2\nsplit 40 50"
+  },
+  "example": {
+    "id": "go-example-023",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "多返回值与命名返回",
+    "summary": "演示 divmod 的多返回值与 split 的命名返回。",
+    "concepts": [
+      "多返回值",
+      "命名返回值",
+      "裸 return"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc divmod(a, b int) (int, int) {\n\treturn a / b, a % b\n}\n\nfunc split(sum int) (x, y int) {\n\tx = sum * 4 / 9\n\ty = sum - x\n\treturn // 命名返回：裸 return\n}\n\nfunc main() {\n\tq, r := divmod(17, 5)\n\tfmt.Println(\"q,r\", q, r)\n\tx, y := split(90)\n\tfmt.Println(\"split\", x, y)\n}\n",
+    "expectedOutput": "q,r 3 2\nsplit 40 50",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "T250",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "[--------] 0/8\n[###-----] 3/8\n[########] 8/8\n[--------] 0/8\n[--------] n/a\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-250",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "进度条纯函数",
+    "summary": "能将已完成量和总量转换为固定宽度进度条，处理越界与零总量。",
+    "concepts": [
+      "strings",
+      "strconv",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能将已完成量和总量转换为固定宽度进度条，处理越界与零总量。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "直接 done*width 可能整数溢出，不能只在乘法之后检查结果。",
+      "总量为零可能表示未知任务数，不能自动宣称已经完成百分之百。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加百分数文本，并保持零总量仍显示 n/a。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "只在 total>0 分支计算比例，使用明确舍入规则格式化百分比，先完成边界归一化。"
+      }
+    ],
+    "explain": "进度条是一个纯函数，不依赖光标控制、实际时间或输出设备。先处理无总量和越界输入，再把完成比例映射到固定八格，已完成数量向下取整。超额完成被限制到总量，负数归零，总量为零显示未知而不是除零。浮点比例适合这里的小计数，极大精确整数场景应另设范围或采用防溢出整数算法。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc progress(done, total, width int) string {\n\tif width <= 0 {\n\t\treturn \"[]\"\n\t}\n\tif total <= 0 {\n\t\treturn \"[\" + strings.Repeat(\"-\", width) + \"] n/a\"\n\t}\n\tif done < 0 {\n\t\tdone = 0\n\t}\n\tif done > total {\n\t\tdone = total\n\t}\n\tfilled := int(float64(done) / float64(total) * float64(width))\n\treturn fmt.Sprintf(\"[%s%s] %d/%d\", strings.Repeat(\"#\", filled), strings.Repeat(\"-\", width-filled), done, total)\n}\nfunc main() {\n\tfor _, pair := range [][2]int{{0, 8}, {3, 8}, {10, 8}, {-2, 8}, {0, 0}} {\n\t\tfmt.Println(progress(pair[0], pair[1], 8))\n\t}\n}\n",
+    "output": "[--------] 0/8\n[###-----] 3/8\n[########] 8/8\n[--------] 0/8\n[--------] n/a"
+  },
+  "example": {
+    "id": "go-example-250",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "进度条纯函数",
+    "summary": "能将已完成量和总量转换为固定宽度进度条，处理越界与零总量。",
+    "concepts": [
+      "strings",
+      "strconv",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc progress(done, total, width int) string {\n\tif width <= 0 {\n\t\treturn \"[]\"\n\t}\n\tif total <= 0 {\n\t\treturn \"[\" + strings.Repeat(\"-\", width) + \"] n/a\"\n\t}\n\tif done < 0 {\n\t\tdone = 0\n\t}\n\tif done > total {\n\t\tdone = total\n\t}\n\tfilled := int(float64(done) / float64(total) * float64(width))\n\treturn fmt.Sprintf(\"[%s%s] %d/%d\", strings.Repeat(\"#\", filled), strings.Repeat(\"-\", width-filled), done, total)\n}\nfunc main() {\n\tfor _, pair := range [][2]int{{0, 8}, {3, 8}, {10, 8}, {-2, 8}, {0, 0}} {\n\t\tfmt.Println(progress(pair[0], pair[1], 8))\n\t}\n}\n",
+    "expectedOutput": "[--------] 0/8\n[###-----] 3/8\n[########] 8/8\n[--------] 0/8\n[--------] n/a",
+    "templateType": "go"
+  }
+}

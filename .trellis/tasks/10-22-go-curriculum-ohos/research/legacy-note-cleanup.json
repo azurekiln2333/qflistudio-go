@@ -1,0 +1,376 @@
+{
+  "description": "Obsolete import/runtime notes removed; all changed Go lines are comments and all expected results are preserved.",
+  "changedTopics": 43,
+  "changes": [
+    {
+      "topicId": "T040",
+      "sampleChanges": []
+    },
+    {
+      "topicId": "T047",
+      "sampleChanges": []
+    },
+    {
+      "topicId": "T052",
+      "sampleChanges": []
+    },
+    {
+      "topicId": "T053",
+      "sampleChanges": []
+    },
+    {
+      "topicId": "T059",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T059/main.go",
+          "beforeSha256": "d4fc859d8bfed9ff8b188fd5d8316ca03aaddffcd34de8cbe2e7d6e18013bd1c",
+          "afterSha256": "373f7b0e4574319a3fa5776b6467638b1042f940d5807c9affdfe97cd1938939"
+        }
+      ]
+    },
+    {
+      "topicId": "T060",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T060/main.go",
+          "beforeSha256": "891f46be38b06b9a2b00792452ae90f83894c8655f35da1aa1af99e8bdce8cd6",
+          "afterSha256": "65d5f8f95559f6cb7a1a9e6ab2c8c979d4e91fa44b5aa19ad9d9d2cc80e18eff"
+        }
+      ]
+    },
+    {
+      "topicId": "T061",
+      "sampleChanges": []
+    },
+    {
+      "topicId": "T062",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T062/main.go",
+          "beforeSha256": "377156c5e8ff074e6381d0f5604f91c871b98a5840fcc8c239a93765074080a0",
+          "afterSha256": "755e253a4dd8d75119222d6f4007ba8993e157f13a208f264f29e4d3f78b0f6a"
+        }
+      ]
+    },
+    {
+      "topicId": "T063",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T063/main.go",
+          "beforeSha256": "282f4c58183f5c2d282ba74b02a111ef7d3c020160431938c34438dc82a0186c",
+          "afterSha256": "21931c1b875869dd5ab2f09703239b77262832bc7aa22ad49204d19561d9e740"
+        }
+      ]
+    },
+    {
+      "topicId": "T064",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T064/main.go",
+          "beforeSha256": "d99de1fe026a79a2b50de104ebe613647fd1786b4e4f0e2d7a08e201bb98b704",
+          "afterSha256": "7ac0bdd219d84bc3a03514b89f52793c75c269bf2c803f372411e0de6b03301d"
+        }
+      ]
+    },
+    {
+      "topicId": "T065",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T065/main.go",
+          "beforeSha256": "42c7b8b34d40c927c4282ea197a5eafa82dc90e22b59122d90a6ed845eadd584",
+          "afterSha256": "c60ab82254a9786e9a6877c2aeacd065bfd65576558c43f573152b1d7835cc1b"
+        }
+      ]
+    },
+    {
+      "topicId": "T068",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T068/main.go",
+          "beforeSha256": "6cdd8ed669656c91314c611622e2ac5167725903c60d90914c317bec91ab9f8f",
+          "afterSha256": "2a0fa73d37ebe91b738a7d7e36f1970b78f48cc72c58f24009ccf4f83da32fbd"
+        }
+      ]
+    },
+    {
+      "topicId": "T069",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T069/main.go",
+          "beforeSha256": "13aac478f9d38a60f19640af4f1ebf185579201c81c11f397dd952551f581a25",
+          "afterSha256": "b9618300f2586f360ab397b08886d2ea020c572622d1a6bf28b5b7d5c5cd0bea"
+        }
+      ]
+    },
+    {
+      "topicId": "T070",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T070/main.go",
+          "beforeSha256": "e1380632756632c2bf0673c655c2bb61b81bfc9ba6c1d0b96daaa9667d3cba6d",
+          "afterSha256": "599d0a72b4897f3137e4a4bada18710d4b0edb20e81727618344108bc6077658"
+        }
+      ]
+    },
+    {
+      "topicId": "T077",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T077/counter_test.go",
+          "beforeSha256": "168e987ad06e13505ddd5060106aabd12c7bdf546d97bc0a1f0d31982e371f0c",
+          "afterSha256": "78b3f76fd3f04dc880ffa6152730ca49a5f0a5203d1cbcdced76947bcd8cd89d"
+        }
+      ]
+    },
+    {
+      "topicId": "T078",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T078/config_test.go",
+          "beforeSha256": "993f6f048c8b55924685654c9998c072b766381609e8db7b90d96071ea57c2ed",
+          "afterSha256": "8667964d12ad39ac5dfca3ece4ee041c14d766a03c3f8119e3554c516aac761b"
+        }
+      ]
+    },
+    {
+      "topicId": "T080",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T080/pool_test.go",
+          "beforeSha256": "019e4b20eebc59a01ca99919ee8a66cf9f834433be730fc95aafbbd8a9def731",
+          "afterSha256": "166f8cfbd96320579dfd7d5739faea551e22e6a8e97beab0f87b915aa7549035"
+        }
+      ]
+    },
+    {
+      "topicId": "T081",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T081/atomic_test.go",
+          "beforeSha256": "dd31be30681be5a966edaf781c792da6f67a7df0853210c9d3b511c881219db5",
+          "afterSha256": "272c0bae11cb44880391158b18d03f197c451669d71ca5e684f4faf1ec87bc80"
+        }
+      ]
+    },
+    {
+      "topicId": "T086",
+      "sampleChanges": []
+    },
+    {
+      "topicId": "T088",
+      "sampleChanges": []
+    },
+    {
+      "topicId": "T093",
+      "sampleChanges": []
+    },
+    {
+      "topicId": "T096",
+      "sampleChanges": []
+    },
+    {
+      "topicId": "T099",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T099/client_test.go",
+          "beforeSha256": "9e8fb158c3d5fda72acf72b1c8776a76dfd7eaa3c3b43767af72549d69ba2ead",
+          "afterSha256": "a557e8188b883896b4fcd6be277071b5f84cc41f179b999b11fa783c330d4231"
+        }
+      ]
+    },
+    {
+      "topicId": "T100",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T100/server_test.go",
+          "beforeSha256": "1bbcab62615926fb29d565b0749da7ddb96911e2735a2314e171242abfff567d",
+          "afterSha256": "c7345bd284b61ca6d3eb73773bd012a54a6525ba2b0c45bbc33484690a75efda"
+        }
+      ]
+    },
+    {
+      "topicId": "T101",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T101/method_test.go",
+          "beforeSha256": "4f271174d38264775e17b7a393c41f50bfda790bd10112a16b192d6a7bd2898d",
+          "afterSha256": "6b2734e15c736d5ecbe1242ef2cbf66afe979d34dc3b053b82ea873bd53a9ace"
+        }
+      ]
+    },
+    {
+      "topicId": "T102",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T102/api_test.go",
+          "beforeSha256": "eeaccf2b9c47ac4ddd3d73dff97e4a2e71e209d1412601275ad2e2c4c8f8ea29",
+          "afterSha256": "a08032a1e54278dbea0d56c48a00f59a847a32c5ce5d5f13a9cda84813e3d6fe"
+        }
+      ]
+    },
+    {
+      "topicId": "T103",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T103/mw_test.go",
+          "beforeSha256": "fee88577b6a2ac28738bc32ffa58209bb791af7e868c91a3cecb68b1cc47c83b",
+          "afterSha256": "606db6d0c54749ee8a7387bb82c6269ec00cd14bf66e784fb4481e688204ce28"
+        }
+      ]
+    },
+    {
+      "topicId": "T104",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T104/timeout_test.go",
+          "beforeSha256": "f2411a3c759ae18207248b039f1685582e2e664eafdb35ca63086469850f4794",
+          "afterSha256": "18fdc160f0d082399bd91c270df98ce1aaea16631d825d2a0d0400ee47658512"
+        }
+      ]
+    },
+    {
+      "topicId": "T105",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T105/calc_test.go",
+          "beforeSha256": "2eeb52c9c86252e9f042564f5482f2f26cc3d195244eaa165e9d63fa62dd8969",
+          "afterSha256": "505bf593e607af9d95b8e98c251730da47186ad67f7a5236278c1893245f937a"
+        }
+      ]
+    },
+    {
+      "topicId": "T106",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T106/assert_test.go",
+          "beforeSha256": "a6be48731c0d5c7d3890763b04ecc824bdab45ec7f7133f402ee0e30bb52dbe4",
+          "afterSha256": "abfd3ddb197429465849c367c871b005f5f9687fa25f3392813bf6aa57b92de3"
+        }
+      ]
+    },
+    {
+      "topicId": "T107",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T107/fixture_test.go",
+          "beforeSha256": "30a05f52cf59522ed730431f8664c2bef1c46b8f3f361aabd6bebf9f07c5252b",
+          "afterSha256": "0bbddd06eb6a301f35b1183aafdc1e67e9622a4b8f035f311c0dd38522dcb49c"
+        }
+      ]
+    },
+    {
+      "topicId": "T108",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T108/bench_test.go",
+          "beforeSha256": "10dc4218980e46dd85575b577129a39ca3a88ae9aeca94b1a28e9ec5727e5b81",
+          "afterSha256": "efc2ce2285249d2ce901f9f8c2e5e1f9d3850faa21cd3e61b7575c8d6cad4931"
+        }
+      ]
+    },
+    {
+      "topicId": "T109",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T109/calc_test.go",
+          "beforeSha256": "8f326882241cebe2301f81f8c6afbde68093696d1fea4433c25d1f2a344a5be0",
+          "afterSha256": "a19e64e85dabffcdb64c2cadff5a614d29d0e2cd240f5ef605da36302313f1a7"
+        }
+      ]
+    },
+    {
+      "topicId": "T110",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T110/fuzz_test.go",
+          "beforeSha256": "84194ba7c1f76688f3fd60264c5f785b8f1ec28488657570a6bfb1829008c5e8",
+          "afterSha256": "24980637e00d736e50f594fe790b9e8d677cd55200adba72bc030185fa18fb6b"
+        }
+      ]
+    },
+    {
+      "topicId": "T111",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T111/stub_test.go",
+          "beforeSha256": "626a0b84803239b1fa9f1abe696a3753bbdbb3e00bafaeb4ddc280e8ca36bf8c",
+          "afterSha256": "116fceb7129f4f1cfba2d9e206e25a7175ea46e6f60af7740a4e23a3dd9db02b"
+        }
+      ]
+    },
+    {
+      "topicId": "T112",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T112/main.go",
+          "beforeSha256": "181a843f2087985b5a9a73dd459bd69c0b29a03a46a8503334e39bc08574b572",
+          "afterSha256": "0aa60e83a7a3b9526b0a3b95225a0d745a730e8b30d2386742ff2302ea2384b9"
+        }
+      ]
+    },
+    {
+      "topicId": "T113",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T113/main.go",
+          "beforeSha256": "14ec50173b5985232a85a426c981139332305f39eefe5a7b41cb83f900637c7a",
+          "afterSha256": "4b81f3233ae3a36f46e49b6b57e2c6beb5e3aff5c1b94413482c92fada19e3da"
+        }
+      ]
+    },
+    {
+      "topicId": "T114",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T114/patterns_test.go",
+          "beforeSha256": "f802c5c05b49009109af3a505a071ea7735dc7b5c236d7dccebfa880302b1fbb",
+          "afterSha256": "9c8ad168e8c78e9bc5d91226c6a860b6016f90b54673586e836d56c4c42956ad"
+        }
+      ]
+    },
+    {
+      "topicId": "T115",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T115/main.go",
+          "beforeSha256": "9f5d125a8da0b926d2690dfb80db85f547d825488d95862b21d9581c9d6fd4b4",
+          "afterSha256": "5d28a0ca46f0fafa5143946a659dc23675a1bdf6fd4102a87ea4792cf9ffccbd"
+        }
+      ]
+    },
+    {
+      "topicId": "T116",
+      "sampleChanges": []
+    },
+    {
+      "topicId": "T118",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T118/main.go",
+          "beforeSha256": "5802bac7b0ddcc8a7ee84e63f199e2fbd5bbe7eaa00052ef6a10456169283f4c",
+          "afterSha256": "eb1ab8102a353ed857aa3e66698b750eaaf9979cdbd6cb4b057af2be60b16023"
+        }
+      ]
+    },
+    {
+      "topicId": "T119",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T119/main.go",
+          "beforeSha256": "e257891c419fdcaa446d1b4042a16f4c856cb88b32053bf69d2a9c91c54c7eb0",
+          "afterSha256": "245db8965fd90d2f8164abefb5d7c9d75b4adec191201a528e89e4919f1a1cf1"
+        }
+      ]
+    },
+    {
+      "topicId": "T120",
+      "sampleChanges": [
+        {
+          "path": "tool/go_curriculum/samples/T120/main.go",
+          "beforeSha256": "03f8082770bc1d3e65176816b96f61f6883b3c71528fd527b50912981bf18496",
+          "afterSha256": "15d32d7652c933c784b1af77e42518ad61e49fa566b1cef4776fbb31d120a869"
+        }
+      ]
+    }
+  ]
+}

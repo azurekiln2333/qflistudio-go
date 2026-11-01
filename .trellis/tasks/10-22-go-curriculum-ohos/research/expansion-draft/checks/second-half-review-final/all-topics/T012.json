@@ -1,0 +1,66 @@
+{
+  "id": "T012",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "-1=negative\n0=zero\n5=small\n99=large\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-012",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "switch：表达式与无表达式形式",
+    "summary": "用无表达式 switch 替代冗长的 if-else 链，按区间分类。",
+    "concepts": [
+      "switch",
+      "无表达式 switch"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能写出无表达式 switch 并让每个 case 表达一个布尔条件。",
+    "prerequisites": [
+      "T011 if/else"
+    ],
+    "pitfalls": [
+      "以为 case 需要 break：Go 的 case 默认不贯穿，不需要 break；需要贯穿时才写 fallthrough。",
+      "在无表达式 switch 里误用常量：无表达式 switch 等价于 switch true，case 应是布尔表达式。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加一个 100..999 的 case 返回 'hundreds'，并调整 default。",
+        "hint": "无表达式 switch 的 case 从上到下匹配第一个为真的条件。",
+        "answer": "加入 case n < 1000: return \"hundreds\" 后，99 仍落入 small、100..999 落入 hundreds。"
+      }
+    ],
+    "explain": "switch 有两种形态：带表达式（switch x {}）按 x 的值匹配；无表达式（switch {}）等价于 switch true，按第一个为真的 case 匹配，适合写区间判断，比长 if-else 链更清晰。\n\n与 C 不同，Go 的 case 默认不贯穿（每个 case 结束后自动跳出），因此不再需要显式 break，也避免了忘记 break 的经典 bug；确需贯穿时才用 fallthrough。\n\n本样例用无表达式 switch 把整数分到 negative/zero/small/large 四类。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc bucket(n int) string {\n\tswitch {\n\tcase n < 0:\n\t\treturn \"negative\"\n\tcase n == 0:\n\t\treturn \"zero\"\n\tcase n < 10:\n\t\treturn \"small\"\n\tdefault:\n\t\treturn \"large\"\n\t}\n}\n\nfunc main() {\n\tfor _, n := range []int{-1, 0, 5, 99} {\n\t\tfmt.Printf(\"%d=%s\\n\", n, bucket(n))\n\t}\n}\n",
+    "output": "-1=negative\n0=zero\n5=small\n99=large"
+  },
+  "example": {
+    "id": "go-example-012",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "区间分类",
+    "summary": "用无表达式 switch 把整数按区间分类。",
+    "concepts": [
+      "switch",
+      "无表达式 switch"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc bucket(n int) string {\n\tswitch {\n\tcase n < 0:\n\t\treturn \"negative\"\n\tcase n == 0:\n\t\treturn \"zero\"\n\tcase n < 10:\n\t\treturn \"small\"\n\tdefault:\n\t\treturn \"large\"\n\t}\n}\n\nfunc main() {\n\tfor _, n := range []int{-1, 0, 5, 99} {\n\t\tfmt.Printf(\"%d=%s\\n\", n, bucket(n))\n\t}\n}\n",
+    "expectedOutput": "-1=negative\n0=zero\n5=small\n99=large",
+    "templateType": "go"
+  }
+}

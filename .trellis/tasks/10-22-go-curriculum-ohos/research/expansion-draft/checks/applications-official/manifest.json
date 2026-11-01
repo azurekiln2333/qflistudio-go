@@ -1,0 +1,939 @@
+{
+  "schemaVersion": 1,
+  "catalogs": {
+    "tutorial": {
+      "sha256": "cef437552b23a4d795a16110ee9c65b3a00c460f5e727c6ed07d985e629a7e0a",
+      "fileName": "tutorials.json",
+      "goEntries": 10
+    },
+    "example": {
+      "sha256": "f85dc621af6cd504ab4271db0f1470205c11389c7073c0c22312479504121443",
+      "fileName": "examples.json",
+      "goEntries": 10
+    }
+  },
+  "cases": [
+    {
+      "id": "tutorial/go-tutorial-271/go-tutorial-271-lesson",
+      "topic": "T271",
+      "entryId": "go-tutorial-271",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImVuY29kaW5nL2NzdiIKCSJmbXQiCgkic29ydCIKCSJzdHJjb252IgoJInN0cmluZ3MiCikKCmZ1bmMgbGVkZ2VyKHRleHQgc3RyaW5nKSAobWFwW3N0cmluZ11pbnQsIG1hcFtzdHJpbmddYm9vbCkgewoJcm93cywgZXJyIDo9IGNzdi5OZXdSZWFkZXIoc3RyaW5ncy5OZXdSZWFkZXIodGV4dCkpLlJlYWRBbGwoKQoJaWYgZXJyICE9IG5pbCB7CgkJcGFuaWMoZXJyKQoJfQoJdmFsdWVzIDo9IG1hcFtzdHJpbmddaW50e30KCWR1cGxpY2F0ZXMgOj0gbWFwW3N0cmluZ11ib29se30KCWZvciBfLCByb3cgOj0gcmFuZ2Ugcm93c1sxOl0gewoJCWlmIGxlbihyb3cpICE9IDIgewoJCQlwYW5pYygiYmFkIGNvbHVtbnMiKQoJCX0KCQlhbW91bnQsIGVyciA6PSBzdHJjb252LkF0b2kocm93WzFdKQoJCWlmIGVyciAhPSBuaWwgewoJCQlwYW5pYyhlcnIpCgkJfQoJCWlmIF8sIGV4aXN0cyA6PSB2YWx1ZXNbcm93WzBdXTsgZXhpc3RzIHsKCQkJZHVwbGljYXRlc1tyb3dbMF1dID0gdHJ1ZQoJCX0gZWxzZSB7CgkJCXZhbHVlc1tyb3dbMF1dID0gYW1vdW50CgkJfQoJfQoJcmV0dXJuIHZhbHVlcywgZHVwbGljYXRlcwp9CmZ1bmMgbWFpbigpIHsKCWxlZnQsIGxkIDo9IGxlZGdlcigiaWQsY2VudHNcbnQxLDEwMFxudDIsMjAwXG50MywzMDBcbiIpCglyaWdodCwgcmQgOj0gbGVkZ2VyKCJpZCxjZW50c1xudDEsMTEwXG50MiwyMDBcbnQyLDIwMFxudDQsNDAwXG4iKQoJc2V0IDo9IG1hcFtzdHJpbmddYm9vbHt9Cglmb3IgaWQgOj0gcmFuZ2UgbGVmdCB7CgkJc2V0W2lkXSA9IHRydWUKCX0KCWZvciBpZCA6PSByYW5nZSByaWdodCB7CgkJc2V0W2lkXSA9IHRydWUKCX0KCWlkcyA6PSBbXXN0cmluZ3t9Cglmb3IgaWQgOj0gcmFuZ2Ugc2V0IHsKCQlpZHMgPSBhcHBlbmQoaWRzLCBpZCkKCX0KCXNvcnQuU3RyaW5ncyhpZHMpCglmb3IgXywgaWQgOj0gcmFuZ2UgaWRzIHsKCQlhLCBoYXNBIDo9IGxlZnRbaWRdCgkJYiwgaGFzQiA6PSByaWdodFtpZF0KCQlpZiBsZFtpZF0gewoJCQlmbXQuUHJpbnRmKCIlcyBkdXBsaWNhdGUtbGVmdFxuIiwgaWQpCgkJfQoJCWlmIHJkW2lkXSB7CgkJCWZtdC5QcmludGYoIiVzIGR1cGxpY2F0ZS1yaWdodFxuIiwgaWQpCgkJfQoJCXN3aXRjaCB7CgkJY2FzZSAhaGFzQToKCQkJZm10LlByaW50ZigiJXMgbWlzc2luZy1sZWZ0XG4iLCBpZCkKCQljYXNlICFoYXNCOgoJCQlmbXQuUHJpbnRmKCIlcyBtaXNzaW5nLXJpZ2h0XG4iLCBpZCkKCQljYXNlIGEgIT0gYjoKCQkJZm10LlByaW50ZigiJXMgbWlzbWF0Y2g9JWQvJWRcbiIsIGlkLCBhLCBiKQoJCX0KCX0KfQo=",
+          "sha256": "46c349c123217efc21502cf9822ad9a87461f5d6c80fd5048c0b4b9d0caa8aef"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "t1 mismatch=100/110\nt2 duplicate-right\nt3 missing-right\nt4 missing-left"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "46c349c123217efc21502cf9822ad9a87461f5d6c80fd5048c0b4b9d0caa8aef",
+      "authoringSha256": "08b042ccb9c4a3b8f57d3d1fbb6c2c9c03cecc3b9fb7c49eb37fbaa16dad2158",
+      "projectSha256": "9759b5947167bc805c13e6453f90b38b8053f7252a77971e12c114ec2cf846a2",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "tutorial/go-tutorial-272/go-tutorial-272-lesson",
+      "topic": "T272",
+      "entryId": "go-tutorial-272",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImNvbnRhaW5lci9oZWFwIgoJImZtdCIKCSJzb3J0IgopCgp0eXBlIE5hbWVzIFtdc3RyaW5nCgpmdW5jIChoIE5hbWVzKSBMZW4oKSBpbnQgICAgICAgICAgICB7IHJldHVybiBsZW4oaCkgfQpmdW5jIChoIE5hbWVzKSBMZXNzKGksIGogaW50KSBib29sICB7IHJldHVybiBoW2ldIDwgaFtqXSB9CmZ1bmMgKGggTmFtZXMpIFN3YXAoaSwgaiBpbnQpICAgICAgIHsgaFtpXSwgaFtqXSA9IGhbal0sIGhbaV0gfQpmdW5jIChoICpOYW1lcykgUHVzaCh2IGludGVyZmFjZXt9KSB7ICpoID0gYXBwZW5kKCpoLCB2LihzdHJpbmcpKSB9CmZ1bmMgKGggKk5hbWVzKSBQb3AoKSBpbnRlcmZhY2V7fSB7CglvbGQgOj0gKmgKCWxhc3QgOj0gb2xkW2xlbihvbGQpLTFdCgkqaCA9IG9sZFs6bGVuKG9sZCktMV0KCXJldHVybiBsYXN0Cn0KZnVuYyBwbGFuKGRlcHMgbWFwW3N0cmluZ11bXXN0cmluZykgKFtdc3RyaW5nLCBbXXN0cmluZykgewoJZGVncmVlIDo9IG1hcFtzdHJpbmddaW50e30KCW5leHQgOj0gbWFwW3N0cmluZ11bXXN0cmluZ3t9Cglmb3IgbmFtZSwgaW5wdXRzIDo9IHJhbmdlIGRlcHMgewoJCWlmIF8sIG9rIDo9IGRlZ3JlZVtuYW1lXTsgIW9rIHsKCQkJZGVncmVlW25hbWVdID0gMAoJCX0KCQlmb3IgXywgaW5wdXQgOj0gcmFuZ2UgaW5wdXRzIHsKCQkJZGVncmVlW25hbWVdKysKCQkJaWYgXywgb2sgOj0gZGVncmVlW2lucHV0XTsgIW9rIHsKCQkJCWRlZ3JlZVtpbnB1dF0gPSAwCgkJCX0KCQkJbmV4dFtpbnB1dF0gPSBhcHBlbmQobmV4dFtpbnB1dF0sIG5hbWUpCgkJfQoJfQoJcmVhZHkgOj0gJk5hbWVze30KCWhlYXAuSW5pdChyZWFkeSkKCWZvciBuYW1lLCBuIDo9IHJhbmdlIGRlZ3JlZSB7CgkJaWYgbiA9PSAwIHsKCQkJaGVhcC5QdXNoKHJlYWR5LCBuYW1lKQoJCX0KCX0KCW9yZGVyIDo9IFtdc3RyaW5ne30KCWZvciByZWFkeS5MZW4oKSA+IDAgewoJCW5hbWUgOj0gaGVhcC5Qb3AocmVhZHkpLihzdHJpbmcpCgkJb3JkZXIgPSBhcHBlbmQob3JkZXIsIG5hbWUpCgkJZm9yIF8sIGRlcGVuZGVudCA6PSByYW5nZSBuZXh0W25hbWVdIHsKCQkJZGVncmVlW2RlcGVuZGVudF0tLQoJCQlpZiBkZWdyZWVbZGVwZW5kZW50XSA9PSAwIHsKCQkJCWhlYXAuUHVzaChyZWFkeSwgZGVwZW5kZW50KQoJCQl9CgkJfQoJfQoJcmVtYWluaW5nIDo9IFtdc3RyaW5ne30KCWZvciBuYW1lLCBuIDo9IHJhbmdlIGRlZ3JlZSB7CgkJaWYgbiA+IDAgewoJCQlyZW1haW5pbmcgPSBhcHBlbmQocmVtYWluaW5nLCBuYW1lKQoJCX0KCX0KCXNvcnQuU3RyaW5ncyhyZW1haW5pbmcpCglyZXR1cm4gb3JkZXIsIHJlbWFpbmluZwp9CmZ1bmMgbWFpbigpIHsKCW9yZGVyLCBjeWNsZSA6PSBwbGFuKG1hcFtzdHJpbmddW11zdHJpbmd7InBhcnNlIjoge30sICJjb21waWxlIjogeyJwYXJzZSJ9LCAidGVzdCI6IHsiY29tcGlsZSJ9LCAibGluayI6IHsiY29tcGlsZSJ9fSkKCWZtdC5QcmludGYoIm9yZGVyPSV2IHJlbWFpbmluZz0ldlxuIiwgb3JkZXIsIGN5Y2xlKQoJXywgY3ljbGUgPSBwbGFuKG1hcFtzdHJpbmddW11zdHJpbmd7ImEiOiB7ImIifSwgImIiOiB7ImEifX0pCglmbXQuUHJpbnRmKCJjeWNsZT0ldlxuIiwgY3ljbGUpCn0K",
+          "sha256": "4371aea2a57bcf8a4995e366eedd160656a5c30469daac8bec7413349d8f841c"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "order=[parse compile link test] remaining=[]\ncycle=[a b]"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "4371aea2a57bcf8a4995e366eedd160656a5c30469daac8bec7413349d8f841c",
+      "authoringSha256": "90a0b322b95cc267d8e03f14f44809c64118ae51173e0e9823b0d7a01bc45bf3",
+      "projectSha256": "31cbafeeebcfbec42ca1dec79f64c2d2c3d3eb8fcab11077b147c16c98a9cbf7",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "tutorial/go-tutorial-273/go-tutorial-273-lesson",
+      "topic": "T273",
+      "entryId": "go-tutorial-273",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImNvbnRhaW5lci9oZWFwIgoJImZtdCIKCSJzb3J0IgopCgp0eXBlIEJvb2tpbmcgc3RydWN0IHsKCUlEICAgICAgICAgc3RyaW5nCglTdGFydCwgRW5kIGludAp9CnR5cGUgUm9vbSBzdHJ1Y3R7IEVuZCwgSUQgaW50IH0KdHlwZSBBY3RpdmUgW11Sb29tCgpmdW5jIChoIEFjdGl2ZSkgTGVuKCkgaW50IHsgcmV0dXJuIGxlbihoKSB9CmZ1bmMgKGggQWN0aXZlKSBMZXNzKGksIGogaW50KSBib29sIHsKCWlmIGhbaV0uRW5kICE9IGhbal0uRW5kIHsKCQlyZXR1cm4gaFtpXS5FbmQgPCBoW2pdLkVuZAoJfQoJcmV0dXJuIGhbaV0uSUQgPCBoW2pdLklECn0KZnVuYyAoaCBBY3RpdmUpIFN3YXAoaSwgaiBpbnQpICAgICAgIHsgaFtpXSwgaFtqXSA9IGhbal0sIGhbaV0gfQpmdW5jIChoICpBY3RpdmUpIFB1c2godiBpbnRlcmZhY2V7fSkgeyAqaCA9IGFwcGVuZCgqaCwgdi4oUm9vbSkpIH0KZnVuYyAoaCAqQWN0aXZlKSBQb3AoKSBpbnRlcmZhY2V7fSAgIHsgb2xkIDo9ICpoOyB2IDo9IG9sZFtsZW4ob2xkKS0xXTsgKmggPSBvbGRbOmxlbihvbGQpLTFdOyByZXR1cm4gdiB9CmZ1bmMgbWFpbigpIHsKCWJvb2tpbmdzIDo9IFtdQm9va2luZ3t7IkEiLCAwLCAzMH0sIHsiQiIsIDUsIDEwfSwgeyJDIiwgMTAsIDIwfSwgeyJEIiwgMzAsIDQwfX0KCXNvcnQuU2xpY2VTdGFibGUoYm9va2luZ3MsIGZ1bmMoaSwgaiBpbnQpIGJvb2wgeyByZXR1cm4gYm9va2luZ3NbaV0uU3RhcnQgPCBib29raW5nc1tqXS5TdGFydCB9KQoJYWN0aXZlIDo9ICZBY3RpdmV7fQoJaGVhcC5Jbml0KGFjdGl2ZSkKCXJvb21zIDo9IDAKCWZvciBfLCBib29raW5nIDo9IHJhbmdlIGJvb2tpbmdzIHsKCQlpZiBib29raW5nLlN0YXJ0ID49IGJvb2tpbmcuRW5kIHsKCQkJcGFuaWMoImJhZCBpbnRlcnZhbCIpCgkJfQoJCXJvb20gOj0gMAoJCWlmIGFjdGl2ZS5MZW4oKSA+IDAgJiYgKCphY3RpdmUpWzBdLkVuZCA8PSBib29raW5nLlN0YXJ0IHsKCQkJcm9vbSA9IGhlYXAuUG9wKGFjdGl2ZSkuKFJvb20pLklECgkJfSBlbHNlIHsKCQkJcm9vbXMrKwoJCQlyb29tID0gcm9vbXMKCQl9CgkJaGVhcC5QdXNoKGFjdGl2ZSwgUm9vbXtib29raW5nLkVuZCwgcm9vbX0pCgkJZm10LlByaW50ZigiJXM9cm9vbSVkXG4iLCBib29raW5nLklELCByb29tKQoJfQoJZm10LlByaW50Zigicm9vbXM9JWRcbiIsIHJvb21zKQp9Cg==",
+          "sha256": "6199f1986095fd6da5b96da2ce4c0993fad61420aa2d1280b6f9f046408e5e06"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "A=room1\nB=room2\nC=room2\nD=room2\nrooms=2"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "6199f1986095fd6da5b96da2ce4c0993fad61420aa2d1280b6f9f046408e5e06",
+      "authoringSha256": "bb64c2f9e053591ca208adebfb4cb66b0091c385d67c5fc847f9ca2fe9da56dc",
+      "projectSha256": "6bf2f5edc53c06280d7830c5136ccdc75f306abd60a35630886064378d377e91",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "tutorial/go-tutorial-274/go-tutorial-274-lesson",
+      "topic": "T274",
+      "entryId": "go-tutorial-274",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImNyeXB0by9zaGEyNTYiCgkiZW5jb2RpbmcvanNvbiIKCSJmbXQiCgkic29ydCIKKQoKdHlwZSBFbnRyeSBzdHJ1Y3QgewoJTmFtZSAgIHN0cmluZyBganNvbjoibmFtZSJgCglTaXplICAgaW50ICAgIGBqc29uOiJzaXplImAKCURpZ2VzdCBzdHJpbmcgYGpzb246InNoYTI1NiJgCn0KCmZ1bmMgZGlnZXN0KHRleHQgc3RyaW5nKSBzdHJpbmcgeyBzdW0gOj0gc2hhMjU2LlN1bTI1NihbXWJ5dGUodGV4dCkpOyByZXR1cm4gZm10LlNwcmludGYoIiV4Iiwgc3VtKSB9CmZ1bmMgbWFpbigpIHsKCW1hbmlmZXN0IDo9IFtdRW50cnl7eyJvay50eHQiLCAyLCBkaWdlc3QoIm9rIil9LCB7ImNoYW5nZWQudHh0IiwgMywgZGlnZXN0KCJvbGQiKX0sIHsibWlzc2luZy50eHQiLCAxLCBkaWdlc3QoIngiKX19Cgl3aXJlLCBlcnIgOj0ganNvbi5NYXJzaGFsKG1hbmlmZXN0KQoJaWYgZXJyICE9IG5pbCB7CgkJcGFuaWMoZXJyKQoJfQoJdmFyIGRlY29kZWQgW11FbnRyeQoJaWYgZXJyID0ganNvbi5Vbm1hcnNoYWwod2lyZSwgJmRlY29kZWQpOyBlcnIgIT0gbmlsIHsKCQlwYW5pYyhlcnIpCgl9CglmaWxlcyA6PSBtYXBbc3RyaW5nXXN0cmluZ3sib2sudHh0IjogIm9rIiwgImNoYW5nZWQudHh0IjogIk5FVyEifQoJaXNzdWVzIDo9IFtdc3RyaW5ne30KCWZvciBfLCBpdGVtIDo9IHJhbmdlIGRlY29kZWQgewoJCWRhdGEsIGV4aXN0cyA6PSBmaWxlc1tpdGVtLk5hbWVdCgkJaWYgIWV4aXN0cyB7CgkJCWlzc3VlcyA9IGFwcGVuZChpc3N1ZXMsIGl0ZW0uTmFtZSsiOm1pc3NpbmciKQoJCQljb250aW51ZQoJCX0KCQlpZiBsZW4oZGF0YSkgIT0gaXRlbS5TaXplIHsKCQkJaXNzdWVzID0gYXBwZW5kKGlzc3VlcywgaXRlbS5OYW1lKyI6c2l6ZSIpCgkJfQoJCWlmIGRpZ2VzdChkYXRhKSAhPSBpdGVtLkRpZ2VzdCB7CgkJCWlzc3VlcyA9IGFwcGVuZChpc3N1ZXMsIGl0ZW0uTmFtZSsiOmRpZ2VzdCIpCgkJfQoJfQoJc29ydC5TdHJpbmdzKGlzc3VlcykKCWZvciBfLCBpc3N1ZSA6PSByYW5nZSBpc3N1ZXMgewoJCWZtdC5QcmludGxuKGlzc3VlKQoJfQoJZm10LlByaW50ZigiaXNzdWVzPSVkXG4iLCBsZW4oaXNzdWVzKSkKfQo=",
+          "sha256": "44c4de875386c4d9248c2aaa8a8736c0a31cfafd3b5ae835749b2004628d395c"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "changed.txt:digest\nchanged.txt:size\nmissing.txt:missing\nissues=3"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "44c4de875386c4d9248c2aaa8a8736c0a31cfafd3b5ae835749b2004628d395c",
+      "authoringSha256": "2b41076e658b812847d593c64db9219268207ea261f608219e095675ea687e0d",
+      "projectSha256": "514f20e9c8cbeb62018130a1d3091f109eb445291d82df3a31bf6472f2b2147f",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "tutorial/go-tutorial-275/go-tutorial-275-lesson",
+      "topic": "T275",
+      "entryId": "go-tutorial-275",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImZtdCIKCSJzb3J0IgoJInN0cmluZ3MiCikKCnR5cGUgT3JkZXIgc3RydWN0IHsKCURlcGFydG1lbnQsIFN0YXRlIHN0cmluZwoJQ2VudHMgICAgICAgICAgICAgaW50Cn0KdHlwZSBUb3RhbCBzdHJ1Y3R7IENvdW50LCBDZW50cyBpbnQgfQoKZnVuYyBtYWluKCkgewoJb3JkZXJzIDo9IFtdT3JkZXJ7eyJOb3J0aCIsICJwYWlkIiwgMTIwMH0sIHsic291dGgiLCAicGFpZCIsIDkwMH0sIHsibm9ydGgiLCAiZHJhZnQiLCAzMDB9LCB7Ik5PUlRIIiwgInBhaWQiLCA3MDB9LCB7InNvdXRoIiwgInBhaWQiLCAxMDB9fQoJZ3JvdXBzIDo9IG1hcFtzdHJpbmddVG90YWx7fQoJZm9yIF8sIG9yZGVyIDo9IHJhbmdlIG9yZGVycyB7CgkJaWYgb3JkZXIuU3RhdGUgIT0gInBhaWQiIHx8IG9yZGVyLkNlbnRzIDwgNTAwIHsKCQkJY29udGludWUKCQl9CgkJa2V5IDo9IHN0cmluZ3MuVG9Mb3dlcihvcmRlci5EZXBhcnRtZW50KQoJCXRvdGFsIDo9IGdyb3Vwc1trZXldCgkJdG90YWwuQ291bnQrKwoJCXRvdGFsLkNlbnRzICs9IG9yZGVyLkNlbnRzCgkJZ3JvdXBzW2tleV0gPSB0b3RhbAoJfQoJbmFtZXMgOj0gW11zdHJpbmd7fQoJZm9yIG5hbWUgOj0gcmFuZ2UgZ3JvdXBzIHsKCQluYW1lcyA9IGFwcGVuZChuYW1lcywgbmFtZSkKCX0KCXNvcnQuU3RyaW5ncyhuYW1lcykKCWZvciBfLCBuYW1lIDo9IHJhbmdlIG5hbWVzIHsKCQl0b3RhbCA6PSBncm91cHNbbmFtZV0KCQlmbXQuUHJpbnRmKCIlcyBjb3VudD0lZCBjZW50cz0lZFxuIiwgbmFtZSwgdG90YWwuQ291bnQsIHRvdGFsLkNlbnRzKQoJfQp9Cg==",
+          "sha256": "51f900da316c2308ecd37cb07e7ec32433c5624656362b31c3430f0510982eb5"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "north count=2 cents=1900\nsouth count=1 cents=900"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "51f900da316c2308ecd37cb07e7ec32433c5624656362b31c3430f0510982eb5",
+      "authoringSha256": "33a738783c3d9325190ee8d8838aa7060acf6d4781252d272bdd0c84f6910292",
+      "projectSha256": "02e813d8a22887c7526b74da0de6c2bf5ccfd085153cc9c34d646dc041c86739",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "tutorial/go-tutorial-276/go-tutorial-276-lesson",
+      "topic": "T276",
+      "entryId": "go-tutorial-276",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImVuY29kaW5nL2pzb24iCgkiZm10IgopCgp0eXBlIEV2ZW50IHN0cnVjdCB7CglLaW5kICAgc3RyaW5nIGBqc29uOiJraW5kImAKCUFtb3VudCBpbnQgICAgYGpzb246ImFtb3VudCJgCn0KdHlwZSBTdGF0ZSBzdHJ1Y3QgewoJT3BlbiAgICBib29sCglCYWxhbmNlIGludAp9CgpmdW5jIGFwcGx5KHN0YXRlIFN0YXRlLCBldmVudCBFdmVudCkgKFN0YXRlLCBlcnJvcikgewoJbmV4dCA6PSBzdGF0ZQoJc3dpdGNoIGV2ZW50LktpbmQgewoJY2FzZSAib3BlbiI6CgkJaWYgc3RhdGUuT3BlbiB7CgkJCXJldHVybiBzdGF0ZSwgZm10LkVycm9yZigiYWxyZWFkeSBvcGVuIikKCQl9CgkJbmV4dC5PcGVuID0gdHJ1ZQoJY2FzZSAiY3JlZGl0IiwgImRlYml0IjoKCQlpZiAhc3RhdGUuT3BlbiB8fCBldmVudC5BbW91bnQgPD0gMCB7CgkJCXJldHVybiBzdGF0ZSwgZm10LkVycm9yZigiaW52YWxpZCBhbW91bnQvc3RhdGUiKQoJCX0KCQlpZiBldmVudC5LaW5kID09ICJjcmVkaXQiIHsKCQkJbmV4dC5CYWxhbmNlICs9IGV2ZW50LkFtb3VudAoJCX0gZWxzZSB7CgkJCWlmIGV2ZW50LkFtb3VudCA+IHN0YXRlLkJhbGFuY2UgewoJCQkJcmV0dXJuIHN0YXRlLCBmbXQuRXJyb3JmKCJpbnN1ZmZpY2llbnQgZnVuZHMiKQoJCQl9CgkJCW5leHQuQmFsYW5jZSAtPSBldmVudC5BbW91bnQKCQl9CglkZWZhdWx0OgoJCXJldHVybiBzdGF0ZSwgZm10LkVycm9yZigidW5rbm93biBldmVudCIpCgl9CglyZXR1cm4gbmV4dCwgbmlsCn0KZnVuYyBtYWluKCkgewoJdmFyIGV2ZW50cyBbXUV2ZW50CglpZiBlcnIgOj0ganNvbi5Vbm1hcnNoYWwoW11ieXRlKGBbeyJraW5kIjoib3BlbiJ9LHsia2luZCI6ImNyZWRpdCIsImFtb3VudCI6MTAwfSx7ImtpbmQiOiJkZWJpdCIsImFtb3VudCI6MzB9LHsia2luZCI6ImRlYml0IiwiYW1vdW50Ijo5MH0seyJraW5kIjoib3RoZXIifV1gKSwgJmV2ZW50cyk7IGVyciAhPSBuaWwgewoJCXBhbmljKGVycikKCX0KCXN0YXRlIDo9IFN0YXRle30KCWZvciBpbmRleCwgZXZlbnQgOj0gcmFuZ2UgZXZlbnRzIHsKCQluZXh0LCBlcnIgOj0gYXBwbHkoc3RhdGUsIGV2ZW50KQoJCWlmIGVyciAhPSBuaWwgewoJCQlmbXQuUHJpbnRmKCJldmVudCVkIHJlamVjdGVkIGJhbGFuY2U9JWRcbiIsIGluZGV4LCBzdGF0ZS5CYWxhbmNlKQoJCQljb250aW51ZQoJCX0KCQlzdGF0ZSA9IG5leHQKCX0KCWZtdC5QcmludGYoImZpbmFsPSVkXG4iLCBzdGF0ZS5CYWxhbmNlKQp9Cg==",
+          "sha256": "7728fefd5b774ad30135a670950c4e4c422380966fe43017532451845c816c9f"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "event3 rejected balance=70\nevent4 rejected balance=70\nfinal=70"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "7728fefd5b774ad30135a670950c4e4c422380966fe43017532451845c816c9f",
+      "authoringSha256": "a12aec6b06e7706ff7c140f0b7bf8f27e42ea12ec85e53243fdad466a25c4e7f",
+      "projectSha256": "13be777575378fb283a34ba65c47480dde7065d2c2ae05cdc6c0df34c8809a69",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "tutorial/go-tutorial-277/go-tutorial-277-lesson",
+      "topic": "T277",
+      "entryId": "go-tutorial-277",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImZtdCIKKQoKdHlwZSBDaGFuZ2Ugc3RydWN0IHsKCUl0ZW0gIHN0cmluZwoJRGVsdGEgaW50Cn0KCmZ1bmMgdHJhbnNhY3Qoc3RvY2sgbWFwW3N0cmluZ11pbnQsIGNoYW5nZXMgW11DaGFuZ2UpIGVycm9yIHsKCW5leHQgOj0gbWFwW3N0cmluZ11pbnR7fQoJZm9yIGl0ZW0sIHZhbHVlIDo9IHJhbmdlIHN0b2NrIHsKCQluZXh0W2l0ZW1dID0gdmFsdWUKCX0KCWZvciBfLCBjaGFuZ2UgOj0gcmFuZ2UgY2hhbmdlcyB7CgkJdmFsdWUsIGV4aXN0cyA6PSBuZXh0W2NoYW5nZS5JdGVtXQoJCWlmICFleGlzdHMgewoJCQlyZXR1cm4gZm10LkVycm9yZigidW5rbm93biBpdGVtIikKCQl9CgkJdmFsdWUgKz0gY2hhbmdlLkRlbHRhCgkJaWYgdmFsdWUgPCAwIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoIm5lZ2F0aXZlIHN0b2NrIikKCQl9CgkJbmV4dFtjaGFuZ2UuSXRlbV0gPSB2YWx1ZQoJfQoJZm9yIGl0ZW0sIHZhbHVlIDo9IHJhbmdlIG5leHQgewoJCXN0b2NrW2l0ZW1dID0gdmFsdWUKCX0KCXJldHVybiBuaWwKfQpmdW5jIG1haW4oKSB7CglzdG9jayA6PSBtYXBbc3RyaW5nXWludHsicGVuIjogMTAsICJwYWQiOiA0fQoJZXJyIDo9IHRyYW5zYWN0KHN0b2NrLCBbXUNoYW5nZXt7InBlbiIsIC0zfSwgeyJwYWQiLCAtOX19KQoJZm10LlByaW50ZigiZmFpbGVkPSV0IHBlbj0lZCBwYWQ9JWRcbiIsIGVyciAhPSBuaWwsIHN0b2NrWyJwZW4iXSwgc3RvY2tbInBhZCJdKQoJZXJyID0gdHJhbnNhY3Qoc3RvY2ssIFtdQ2hhbmdle3sicGVuIiwgLTN9LCB7InBhZCIsIDJ9fSkKCWZtdC5QcmludGYoImNvbW1pdHRlZD0ldCBwZW49JWQgcGFkPSVkXG4iLCBlcnIgPT0gbmlsLCBzdG9ja1sicGVuIl0sIHN0b2NrWyJwYWQiXSkKfQo=",
+          "sha256": "8904a1078ec7c685b0a43541970f6475d99577222f417cdee95d35d2f7eea5a9"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "failed=true pen=10 pad=4\ncommitted=true pen=7 pad=6"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "8904a1078ec7c685b0a43541970f6475d99577222f417cdee95d35d2f7eea5a9",
+      "authoringSha256": "a8267c5d35ef2fe16a7c2c1ae7887f097cc3620e98d3f5c9b368af8bf3ff4b6a",
+      "projectSha256": "c641b22b33d5a4aacfe0a672e997e862ec480da6d8b7c13c251637ae43c287f1",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "tutorial/go-tutorial-278/go-tutorial-278-lesson",
+      "topic": "T278",
+      "entryId": "go-tutorial-278",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImZtdCIKCSJtYXRoIgoJInRpbWUiCikKCnR5cGUgQnVja2V0IHN0cnVjdCB7CglDYXBhY2l0eSwgVG9rZW5zLCBQZXJTZWNvbmQgZmxvYXQ2NAoJTGFzdCAgICAgICAgICAgICAgICAgICAgICAgIHRpbWUuVGltZQp9CgpmdW5jIChiICpCdWNrZXQpIEFsbG93KG5vdyB0aW1lLlRpbWUpIGJvb2wgewoJaWYgbm93LkJlZm9yZShiLkxhc3QpIHsKCQlyZXR1cm4gZmFsc2UKCX0KCWIuVG9rZW5zID0gbWF0aC5NaW4oYi5DYXBhY2l0eSwgYi5Ub2tlbnMrbm93LlN1YihiLkxhc3QpLlNlY29uZHMoKSpiLlBlclNlY29uZCkKCWIuTGFzdCA9IG5vdwoJaWYgYi5Ub2tlbnMgPCAxIHsKCQlyZXR1cm4gZmFsc2UKCX0KCWIuVG9rZW5zLS0KCXJldHVybiB0cnVlCn0KZnVuYyBtYWluKCkgewoJc3RhcnQgOj0gdGltZS5EYXRlKDIwMjYsIDEwLCAyMywgMCwgMCwgMCwgMCwgdGltZS5VVEMpCgliIDo9ICZCdWNrZXR7Q2FwYWNpdHk6IDIsIFRva2VuczogMiwgUGVyU2Vjb25kOiAxLCBMYXN0OiBzdGFydH0KCWZvciBfLCBvZmZzZXQgOj0gcmFuZ2UgW110aW1lLkR1cmF0aW9uezAsIDAsIDAsIDUwMCAqIHRpbWUuTWlsbGlzZWNvbmQsIHRpbWUuU2Vjb25kLCB0aW1lLlNlY29uZCwgMyAqIHRpbWUuU2Vjb25kfSB7CgkJZm10LlByaW50ZigidD0lNC4xZiBhbGxvdz0ldFxuIiwgb2Zmc2V0LlNlY29uZHMoKSwgYi5BbGxvdyhzdGFydC5BZGQob2Zmc2V0KSkpCgl9CglmbXQuUHJpbnRmKCJjbG9jay1iYWNrd2FyZHM9JXRcbiIsIGIuQWxsb3coc3RhcnQpKQp9Cg==",
+          "sha256": "1cdd09b967abdc4eae30b14cd54bfea6a607f02402eaad20afe2701b3b26cc41"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "t= 0.0 allow=true\nt= 0.0 allow=true\nt= 0.0 allow=false\nt= 0.5 allow=false\nt= 1.0 allow=true\nt= 1.0 allow=false\nt= 3.0 allow=true\nclock-backwards=false"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "1cdd09b967abdc4eae30b14cd54bfea6a607f02402eaad20afe2701b3b26cc41",
+      "authoringSha256": "0242b712e93570ff1a615fee8db888a6ce86a159ad6339f3466acc7f8284b0d8",
+      "projectSha256": "8cbd59e76085431b364a26c4990e0a64e252367afe19126b5b6c7ccb15a6f533",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "tutorial/go-tutorial-279/go-tutorial-279-lesson",
+      "topic": "T279",
+      "entryId": "go-tutorial-279",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImVuY29kaW5nL2pzb24iCgkiZm10IgopCgp0eXBlIENoZWNrcG9pbnQgc3RydWN0IHsKCU5leHQgaW50IGBqc29uOiJuZXh0ImAKfQoKZnVuYyBtYWluKCkgewoJcmVjb3JkcyA6PSBbXXN0cmluZ3siQSIsICJCIiwgIkMiLCAiRCIsICJFIn0KCWNvbW1pdHRlZCA6PSBbXXN0cmluZ3t9CgljaGVja3BvaW50IDo9IENoZWNrcG9pbnR7fQoJd2lyZSA6PSBbXWJ5dGV7fQoJZmFpbE9uY2UgOj0gdHJ1ZQoJZm9yIGNoZWNrcG9pbnQuTmV4dCA8IGxlbihyZWNvcmRzKSB7CgkJc3RhcnQgOj0gY2hlY2twb2ludC5OZXh0CgkJZW5kIDo9IHN0YXJ0ICsgMgoJCWlmIGVuZCA+IGxlbihyZWNvcmRzKSB7CgkJCWVuZCA9IGxlbihyZWNvcmRzKQoJCX0KCQlwZW5kaW5nIDo9IGFwcGVuZChbXXN0cmluZyhuaWwpLCByZWNvcmRzW3N0YXJ0OmVuZF0uLi4pCgkJaWYgc3RhcnQgPT0gMiAmJiBmYWlsT25jZSB7CgkJCWZhaWxPbmNlID0gZmFsc2UKCQkJZm10LlByaW50ZigiZmFpbGVkLWF0PSVkXG4iLCBzdGFydCkKCQkJaWYgZXJyIDo9IGpzb24uVW5tYXJzaGFsKHdpcmUsICZjaGVja3BvaW50KTsgZXJyICE9IG5pbCB7CgkJCQlwYW5pYyhlcnIpCgkJCX0KCQkJY29udGludWUKCQl9CgkJY29tbWl0dGVkID0gYXBwZW5kKGNvbW1pdHRlZCwgcGVuZGluZy4uLikKCQljaGVja3BvaW50Lk5leHQgPSBlbmQKCQl2YXIgZXJyIGVycm9yCgkJd2lyZSwgZXJyID0ganNvbi5NYXJzaGFsKGNoZWNrcG9pbnQpCgkJaWYgZXJyICE9IG5pbCB7CgkJCXBhbmljKGVycikKCQl9Cgl9CglmbXQuUHJpbnRmKCJjb21taXR0ZWQ9JXZcbmNoZWNrcG9pbnQ9JXNcbiIsIGNvbW1pdHRlZCwgd2lyZSkKfQo=",
+          "sha256": "fd9cd028c2cd886828b482625bc37b27ae70fa0360a84d49ff61c7a37b7e1be4"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "failed-at=2\ncommitted=[A B C D E]\ncheckpoint={\"next\":5}"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "fd9cd028c2cd886828b482625bc37b27ae70fa0360a84d49ff61c7a37b7e1be4",
+      "authoringSha256": "1c515b1681c848a5e2564d4af3172c14b6f06b0350aae5e6d8906e743ae4345f",
+      "projectSha256": "fb8e45ffb81220ac98e25c1675e71dfff7d2484670d54cc43f235fd978ffb89e",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "tutorial/go-tutorial-280/go-tutorial-280-lesson",
+      "topic": "T280",
+      "entryId": "go-tutorial-280",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImZtdCIKCSJzdHJjb252IgoJInVuaWNvZGUiCikKCmZ1bmMgcHJlY2VkZW5jZShvcCBydW5lKSBpbnQgewoJaWYgb3AgPT0gJysnIHx8IG9wID09ICctJyB7CgkJcmV0dXJuIDEKCX0KCWlmIG9wID09ICcqJyB8fCBvcCA9PSAnLycgewoJCXJldHVybiAyCgl9CglyZXR1cm4gMAp9CmZ1bmMgZXZhbHVhdGUodGV4dCBzdHJpbmcpIChpbnQsIGVycm9yKSB7Cgl2YWx1ZXMgOj0gW11pbnR7fQoJb3BzIDo9IFtdcnVuZXt9CglhcHBseSA6PSBmdW5jKCkgZXJyb3IgewoJCWlmIGxlbih2YWx1ZXMpIDwgMiB8fCBsZW4ob3BzKSA9PSAwIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoIm1pc3Npbmcgb3BlcmFuZCIpCgkJfQoJCW9wIDo9IG9wc1tsZW4ob3BzKS0xXQoJCW9wcyA9IG9wc1s6bGVuKG9wcyktMV0KCQlhLCBiIDo9IHZhbHVlc1tsZW4odmFsdWVzKS0yXSwgdmFsdWVzW2xlbih2YWx1ZXMpLTFdCgkJdmFsdWVzID0gdmFsdWVzWzpsZW4odmFsdWVzKS0yXQoJCXN3aXRjaCBvcCB7CgkJY2FzZSAnKyc6CgkJCXZhbHVlcyA9IGFwcGVuZCh2YWx1ZXMsIGErYikKCQljYXNlICctJzoKCQkJdmFsdWVzID0gYXBwZW5kKHZhbHVlcywgYS1iKQoJCWNhc2UgJyonOgoJCQl2YWx1ZXMgPSBhcHBlbmQodmFsdWVzLCBhKmIpCgkJY2FzZSAnLyc6CgkJCWlmIGIgPT0gMCB7CgkJCQlyZXR1cm4gZm10LkVycm9yZigiZGl2aXNpb24gYnkgemVybyIpCgkJCX0KCQkJdmFsdWVzID0gYXBwZW5kKHZhbHVlcywgYS9iKQoJCWRlZmF1bHQ6CgkJCXJldHVybiBmbXQuRXJyb3JmKCJiYWQgb3BlcmF0b3IiKQoJCX0KCQlyZXR1cm4gbmlsCgl9CgljaGFycyA6PSBbXXJ1bmUodGV4dCkKCWV4cGVjdFZhbHVlIDo9IHRydWUKCWZvciBpIDo9IDA7IGkgPCBsZW4oY2hhcnMpOyB7CgkJYyA6PSBjaGFyc1tpXQoJCWlmIHVuaWNvZGUuSXNTcGFjZShjKSB7CgkJCWkrKwoJCQljb250aW51ZQoJCX0KCQlpZiBjID49ICcwJyAmJiBjIDw9ICc5JyB7CgkJCWlmICFleHBlY3RWYWx1ZSB7CgkJCQlyZXR1cm4gMCwgZm10LkVycm9yZigibWlzc2luZyBvcGVyYXRvciIpCgkJCX0KCQkJc3RhcnQgOj0gaQoJCQlmb3IgaSA8IGxlbihjaGFycykgJiYgY2hhcnNbaV0gPj0gJzAnICYmIGNoYXJzW2ldIDw9ICc5JyB7CgkJCQlpKysKCQkJfQoJCQluLCBlcnIgOj0gc3RyY29udi5BdG9pKHN0cmluZyhjaGFyc1tzdGFydDppXSkpCgkJCWlmIGVyciAhPSBuaWwgewoJCQkJcmV0dXJuIDAsIGVycgoJCQl9CgkJCXZhbHVlcyA9IGFwcGVuZCh2YWx1ZXMsIG4pCgkJCWV4cGVjdFZhbHVlID0gZmFsc2UKCQkJY29udGludWUKCQl9CgkJaWYgYyA9PSAnKCcgewoJCQlpZiAhZXhwZWN0VmFsdWUgewoJCQkJcmV0dXJuIDAsIGZtdC5FcnJvcmYoIm1pc3Npbmcgb3BlcmF0b3IiKQoJCQl9CgkJCW9wcyA9IGFwcGVuZChvcHMsIGMpCgkJCWkrKwoJCQljb250aW51ZQoJCX0KCQlpZiBjID09ICcpJyB7CgkJCWlmIGV4cGVjdFZhbHVlIHsKCQkJCXJldHVybiAwLCBmbXQuRXJyb3JmKCJlbXB0eSBncm91cCIpCgkJCX0KCQkJZm9yIGxlbihvcHMpID4gMCAmJiBvcHNbbGVuKG9wcyktMV0gIT0gJygnIHsKCQkJCWlmIGVyciA6PSBhcHBseSgpOyBlcnIgIT0gbmlsIHsKCQkJCQlyZXR1cm4gMCwgZXJyCgkJCQl9CgkJCX0KCQkJaWYgbGVuKG9wcykgPT0gMCB7CgkJCQlyZXR1cm4gMCwgZm10LkVycm9yZigidW5tYXRjaGVkIGNsb3NlIikKCQkJfQoJCQlvcHMgPSBvcHNbOmxlbihvcHMpLTFdCgkJCWkrKwoJCQljb250aW51ZQoJCX0KCQlpZiBwcmVjZWRlbmNlKGMpID09IDAgfHwgZXhwZWN0VmFsdWUgewoJCQlyZXR1cm4gMCwgZm10LkVycm9yZigiYmFkIHRva2VuIikKCQl9CgkJZm9yIGxlbihvcHMpID4gMCAmJiBwcmVjZWRlbmNlKG9wc1tsZW4ob3BzKS0xXSkgPj0gcHJlY2VkZW5jZShjKSB7CgkJCWlmIGVyciA6PSBhcHBseSgpOyBlcnIgIT0gbmlsIHsKCQkJCXJldHVybiAwLCBlcnIKCQkJfQoJCX0KCQlvcHMgPSBhcHBlbmQob3BzLCBjKQoJCWV4cGVjdFZhbHVlID0gdHJ1ZQoJCWkrKwoJfQoJaWYgZXhwZWN0VmFsdWUgewoJCXJldHVybiAwLCBmbXQuRXJyb3JmKCJpbmNvbXBsZXRlIikKCX0KCWZvciBsZW4ob3BzKSA+IDAgewoJCWlmIG9wc1tsZW4ob3BzKS0xXSA9PSAnKCcgewoJCQlyZXR1cm4gMCwgZm10LkVycm9yZigidW5tYXRjaGVkIG9wZW4iKQoJCX0KCQlpZiBlcnIgOj0gYXBwbHkoKTsgZXJyICE9IG5pbCB7CgkJCXJldHVybiAwLCBlcnIKCQl9Cgl9CglpZiBsZW4odmFsdWVzKSAhPSAxIHsKCQlyZXR1cm4gMCwgZm10LkVycm9yZigiYmFkIGV4cHJlc3Npb24iKQoJfQoJcmV0dXJuIHZhbHVlc1swXSwgbmlsCn0KZnVuYyBtYWluKCkgewoJZm9yIF8sIGV4cHJlc3Npb24gOj0gcmFuZ2UgW11zdHJpbmd7IjIgKyAzICogKDQgLSAxKSIsICIxOCAvIDMgLyAyIiwgIjQvKDItMikiLCAiMSArIn0gewoJCXZhbHVlLCBlcnIgOj0gZXZhbHVhdGUoZXhwcmVzc2lvbikKCQlpZiBlcnIgIT0gbmlsIHsKCQkJZm10LlByaW50ZigiJXMgLT4gZXJyb3JcbiIsIGV4cHJlc3Npb24pCgkJfSBlbHNlIHsKCQkJZm10LlByaW50ZigiJXMgLT4gJWRcbiIsIGV4cHJlc3Npb24sIHZhbHVlKQoJCX0KCX0KfQo=",
+          "sha256": "f14d575c52a0843e7848a35dea12215e0cae246fe9a6e08a44306be6be694a37"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "2 + 3 * (4 - 1) -> 11\n18 / 3 / 2 -> 3\n4/(2-2) -> error\n1 + -> error"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "f14d575c52a0843e7848a35dea12215e0cae246fe9a6e08a44306be6be694a37",
+      "authoringSha256": "23174c166a0805d48a4fc80f0aa5fbcf8f9072408df115621e27664d89ec8447",
+      "projectSha256": "7dc759530b9b562d4699c45759f59dd0f4f28b98ac9cbd263233f96edc23b412",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "example/go-example-271",
+      "topic": "T271",
+      "entryId": "go-example-271",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImVuY29kaW5nL2NzdiIKCSJmbXQiCgkic29ydCIKCSJzdHJjb252IgoJInN0cmluZ3MiCikKCmZ1bmMgbGVkZ2VyKHRleHQgc3RyaW5nKSAobWFwW3N0cmluZ11pbnQsIG1hcFtzdHJpbmddYm9vbCkgewoJcm93cywgZXJyIDo9IGNzdi5OZXdSZWFkZXIoc3RyaW5ncy5OZXdSZWFkZXIodGV4dCkpLlJlYWRBbGwoKQoJaWYgZXJyICE9IG5pbCB7CgkJcGFuaWMoZXJyKQoJfQoJdmFsdWVzIDo9IG1hcFtzdHJpbmddaW50e30KCWR1cGxpY2F0ZXMgOj0gbWFwW3N0cmluZ11ib29se30KCWZvciBfLCByb3cgOj0gcmFuZ2Ugcm93c1sxOl0gewoJCWlmIGxlbihyb3cpICE9IDIgewoJCQlwYW5pYygiYmFkIGNvbHVtbnMiKQoJCX0KCQlhbW91bnQsIGVyciA6PSBzdHJjb252LkF0b2kocm93WzFdKQoJCWlmIGVyciAhPSBuaWwgewoJCQlwYW5pYyhlcnIpCgkJfQoJCWlmIF8sIGV4aXN0cyA6PSB2YWx1ZXNbcm93WzBdXTsgZXhpc3RzIHsKCQkJZHVwbGljYXRlc1tyb3dbMF1dID0gdHJ1ZQoJCX0gZWxzZSB7CgkJCXZhbHVlc1tyb3dbMF1dID0gYW1vdW50CgkJfQoJfQoJcmV0dXJuIHZhbHVlcywgZHVwbGljYXRlcwp9CmZ1bmMgbWFpbigpIHsKCWxlZnQsIGxkIDo9IGxlZGdlcigiaWQsY2VudHNcbnQxLDEwMFxudDIsMjAwXG50MywzMDBcbiIpCglyaWdodCwgcmQgOj0gbGVkZ2VyKCJpZCxjZW50c1xudDEsMTEwXG50MiwyMDBcbnQyLDIwMFxudDQsNDAwXG4iKQoJc2V0IDo9IG1hcFtzdHJpbmddYm9vbHt9Cglmb3IgaWQgOj0gcmFuZ2UgbGVmdCB7CgkJc2V0W2lkXSA9IHRydWUKCX0KCWZvciBpZCA6PSByYW5nZSByaWdodCB7CgkJc2V0W2lkXSA9IHRydWUKCX0KCWlkcyA6PSBbXXN0cmluZ3t9Cglmb3IgaWQgOj0gcmFuZ2Ugc2V0IHsKCQlpZHMgPSBhcHBlbmQoaWRzLCBpZCkKCX0KCXNvcnQuU3RyaW5ncyhpZHMpCglmb3IgXywgaWQgOj0gcmFuZ2UgaWRzIHsKCQlhLCBoYXNBIDo9IGxlZnRbaWRdCgkJYiwgaGFzQiA6PSByaWdodFtpZF0KCQlpZiBsZFtpZF0gewoJCQlmbXQuUHJpbnRmKCIlcyBkdXBsaWNhdGUtbGVmdFxuIiwgaWQpCgkJfQoJCWlmIHJkW2lkXSB7CgkJCWZtdC5QcmludGYoIiVzIGR1cGxpY2F0ZS1yaWdodFxuIiwgaWQpCgkJfQoJCXN3aXRjaCB7CgkJY2FzZSAhaGFzQToKCQkJZm10LlByaW50ZigiJXMgbWlzc2luZy1sZWZ0XG4iLCBpZCkKCQljYXNlICFoYXNCOgoJCQlmbXQuUHJpbnRmKCIlcyBtaXNzaW5nLXJpZ2h0XG4iLCBpZCkKCQljYXNlIGEgIT0gYjoKCQkJZm10LlByaW50ZigiJXMgbWlzbWF0Y2g9JWQvJWRcbiIsIGlkLCBhLCBiKQoJCX0KCX0KfQo=",
+          "sha256": "46c349c123217efc21502cf9822ad9a87461f5d6c80fd5048c0b4b9d0caa8aef"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "t1 mismatch=100/110\nt2 duplicate-right\nt3 missing-right\nt4 missing-left"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "46c349c123217efc21502cf9822ad9a87461f5d6c80fd5048c0b4b9d0caa8aef",
+      "authoringSha256": "08b042ccb9c4a3b8f57d3d1fbb6c2c9c03cecc3b9fb7c49eb37fbaa16dad2158",
+      "projectSha256": "9759b5947167bc805c13e6453f90b38b8053f7252a77971e12c114ec2cf846a2",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "example/go-example-272",
+      "topic": "T272",
+      "entryId": "go-example-272",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImNvbnRhaW5lci9oZWFwIgoJImZtdCIKCSJzb3J0IgopCgp0eXBlIE5hbWVzIFtdc3RyaW5nCgpmdW5jIChoIE5hbWVzKSBMZW4oKSBpbnQgICAgICAgICAgICB7IHJldHVybiBsZW4oaCkgfQpmdW5jIChoIE5hbWVzKSBMZXNzKGksIGogaW50KSBib29sICB7IHJldHVybiBoW2ldIDwgaFtqXSB9CmZ1bmMgKGggTmFtZXMpIFN3YXAoaSwgaiBpbnQpICAgICAgIHsgaFtpXSwgaFtqXSA9IGhbal0sIGhbaV0gfQpmdW5jIChoICpOYW1lcykgUHVzaCh2IGludGVyZmFjZXt9KSB7ICpoID0gYXBwZW5kKCpoLCB2LihzdHJpbmcpKSB9CmZ1bmMgKGggKk5hbWVzKSBQb3AoKSBpbnRlcmZhY2V7fSB7CglvbGQgOj0gKmgKCWxhc3QgOj0gb2xkW2xlbihvbGQpLTFdCgkqaCA9IG9sZFs6bGVuKG9sZCktMV0KCXJldHVybiBsYXN0Cn0KZnVuYyBwbGFuKGRlcHMgbWFwW3N0cmluZ11bXXN0cmluZykgKFtdc3RyaW5nLCBbXXN0cmluZykgewoJZGVncmVlIDo9IG1hcFtzdHJpbmddaW50e30KCW5leHQgOj0gbWFwW3N0cmluZ11bXXN0cmluZ3t9Cglmb3IgbmFtZSwgaW5wdXRzIDo9IHJhbmdlIGRlcHMgewoJCWlmIF8sIG9rIDo9IGRlZ3JlZVtuYW1lXTsgIW9rIHsKCQkJZGVncmVlW25hbWVdID0gMAoJCX0KCQlmb3IgXywgaW5wdXQgOj0gcmFuZ2UgaW5wdXRzIHsKCQkJZGVncmVlW25hbWVdKysKCQkJaWYgXywgb2sgOj0gZGVncmVlW2lucHV0XTsgIW9rIHsKCQkJCWRlZ3JlZVtpbnB1dF0gPSAwCgkJCX0KCQkJbmV4dFtpbnB1dF0gPSBhcHBlbmQobmV4dFtpbnB1dF0sIG5hbWUpCgkJfQoJfQoJcmVhZHkgOj0gJk5hbWVze30KCWhlYXAuSW5pdChyZWFkeSkKCWZvciBuYW1lLCBuIDo9IHJhbmdlIGRlZ3JlZSB7CgkJaWYgbiA9PSAwIHsKCQkJaGVhcC5QdXNoKHJlYWR5LCBuYW1lKQoJCX0KCX0KCW9yZGVyIDo9IFtdc3RyaW5ne30KCWZvciByZWFkeS5MZW4oKSA+IDAgewoJCW5hbWUgOj0gaGVhcC5Qb3AocmVhZHkpLihzdHJpbmcpCgkJb3JkZXIgPSBhcHBlbmQob3JkZXIsIG5hbWUpCgkJZm9yIF8sIGRlcGVuZGVudCA6PSByYW5nZSBuZXh0W25hbWVdIHsKCQkJZGVncmVlW2RlcGVuZGVudF0tLQoJCQlpZiBkZWdyZWVbZGVwZW5kZW50XSA9PSAwIHsKCQkJCWhlYXAuUHVzaChyZWFkeSwgZGVwZW5kZW50KQoJCQl9CgkJfQoJfQoJcmVtYWluaW5nIDo9IFtdc3RyaW5ne30KCWZvciBuYW1lLCBuIDo9IHJhbmdlIGRlZ3JlZSB7CgkJaWYgbiA+IDAgewoJCQlyZW1haW5pbmcgPSBhcHBlbmQocmVtYWluaW5nLCBuYW1lKQoJCX0KCX0KCXNvcnQuU3RyaW5ncyhyZW1haW5pbmcpCglyZXR1cm4gb3JkZXIsIHJlbWFpbmluZwp9CmZ1bmMgbWFpbigpIHsKCW9yZGVyLCBjeWNsZSA6PSBwbGFuKG1hcFtzdHJpbmddW11zdHJpbmd7InBhcnNlIjoge30sICJjb21waWxlIjogeyJwYXJzZSJ9LCAidGVzdCI6IHsiY29tcGlsZSJ9LCAibGluayI6IHsiY29tcGlsZSJ9fSkKCWZtdC5QcmludGYoIm9yZGVyPSV2IHJlbWFpbmluZz0ldlxuIiwgb3JkZXIsIGN5Y2xlKQoJXywgY3ljbGUgPSBwbGFuKG1hcFtzdHJpbmddW11zdHJpbmd7ImEiOiB7ImIifSwgImIiOiB7ImEifX0pCglmbXQuUHJpbnRmKCJjeWNsZT0ldlxuIiwgY3ljbGUpCn0K",
+          "sha256": "4371aea2a57bcf8a4995e366eedd160656a5c30469daac8bec7413349d8f841c"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "order=[parse compile link test] remaining=[]\ncycle=[a b]"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "4371aea2a57bcf8a4995e366eedd160656a5c30469daac8bec7413349d8f841c",
+      "authoringSha256": "90a0b322b95cc267d8e03f14f44809c64118ae51173e0e9823b0d7a01bc45bf3",
+      "projectSha256": "31cbafeeebcfbec42ca1dec79f64c2d2c3d3eb8fcab11077b147c16c98a9cbf7",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "example/go-example-273",
+      "topic": "T273",
+      "entryId": "go-example-273",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImNvbnRhaW5lci9oZWFwIgoJImZtdCIKCSJzb3J0IgopCgp0eXBlIEJvb2tpbmcgc3RydWN0IHsKCUlEICAgICAgICAgc3RyaW5nCglTdGFydCwgRW5kIGludAp9CnR5cGUgUm9vbSBzdHJ1Y3R7IEVuZCwgSUQgaW50IH0KdHlwZSBBY3RpdmUgW11Sb29tCgpmdW5jIChoIEFjdGl2ZSkgTGVuKCkgaW50IHsgcmV0dXJuIGxlbihoKSB9CmZ1bmMgKGggQWN0aXZlKSBMZXNzKGksIGogaW50KSBib29sIHsKCWlmIGhbaV0uRW5kICE9IGhbal0uRW5kIHsKCQlyZXR1cm4gaFtpXS5FbmQgPCBoW2pdLkVuZAoJfQoJcmV0dXJuIGhbaV0uSUQgPCBoW2pdLklECn0KZnVuYyAoaCBBY3RpdmUpIFN3YXAoaSwgaiBpbnQpICAgICAgIHsgaFtpXSwgaFtqXSA9IGhbal0sIGhbaV0gfQpmdW5jIChoICpBY3RpdmUpIFB1c2godiBpbnRlcmZhY2V7fSkgeyAqaCA9IGFwcGVuZCgqaCwgdi4oUm9vbSkpIH0KZnVuYyAoaCAqQWN0aXZlKSBQb3AoKSBpbnRlcmZhY2V7fSAgIHsgb2xkIDo9ICpoOyB2IDo9IG9sZFtsZW4ob2xkKS0xXTsgKmggPSBvbGRbOmxlbihvbGQpLTFdOyByZXR1cm4gdiB9CmZ1bmMgbWFpbigpIHsKCWJvb2tpbmdzIDo9IFtdQm9va2luZ3t7IkEiLCAwLCAzMH0sIHsiQiIsIDUsIDEwfSwgeyJDIiwgMTAsIDIwfSwgeyJEIiwgMzAsIDQwfX0KCXNvcnQuU2xpY2VTdGFibGUoYm9va2luZ3MsIGZ1bmMoaSwgaiBpbnQpIGJvb2wgeyByZXR1cm4gYm9va2luZ3NbaV0uU3RhcnQgPCBib29raW5nc1tqXS5TdGFydCB9KQoJYWN0aXZlIDo9ICZBY3RpdmV7fQoJaGVhcC5Jbml0KGFjdGl2ZSkKCXJvb21zIDo9IDAKCWZvciBfLCBib29raW5nIDo9IHJhbmdlIGJvb2tpbmdzIHsKCQlpZiBib29raW5nLlN0YXJ0ID49IGJvb2tpbmcuRW5kIHsKCQkJcGFuaWMoImJhZCBpbnRlcnZhbCIpCgkJfQoJCXJvb20gOj0gMAoJCWlmIGFjdGl2ZS5MZW4oKSA+IDAgJiYgKCphY3RpdmUpWzBdLkVuZCA8PSBib29raW5nLlN0YXJ0IHsKCQkJcm9vbSA9IGhlYXAuUG9wKGFjdGl2ZSkuKFJvb20pLklECgkJfSBlbHNlIHsKCQkJcm9vbXMrKwoJCQlyb29tID0gcm9vbXMKCQl9CgkJaGVhcC5QdXNoKGFjdGl2ZSwgUm9vbXtib29raW5nLkVuZCwgcm9vbX0pCgkJZm10LlByaW50ZigiJXM9cm9vbSVkXG4iLCBib29raW5nLklELCByb29tKQoJfQoJZm10LlByaW50Zigicm9vbXM9JWRcbiIsIHJvb21zKQp9Cg==",
+          "sha256": "6199f1986095fd6da5b96da2ce4c0993fad61420aa2d1280b6f9f046408e5e06"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "A=room1\nB=room2\nC=room2\nD=room2\nrooms=2"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "6199f1986095fd6da5b96da2ce4c0993fad61420aa2d1280b6f9f046408e5e06",
+      "authoringSha256": "bb64c2f9e053591ca208adebfb4cb66b0091c385d67c5fc847f9ca2fe9da56dc",
+      "projectSha256": "6bf2f5edc53c06280d7830c5136ccdc75f306abd60a35630886064378d377e91",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "example/go-example-274",
+      "topic": "T274",
+      "entryId": "go-example-274",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImNyeXB0by9zaGEyNTYiCgkiZW5jb2RpbmcvanNvbiIKCSJmbXQiCgkic29ydCIKKQoKdHlwZSBFbnRyeSBzdHJ1Y3QgewoJTmFtZSAgIHN0cmluZyBganNvbjoibmFtZSJgCglTaXplICAgaW50ICAgIGBqc29uOiJzaXplImAKCURpZ2VzdCBzdHJpbmcgYGpzb246InNoYTI1NiJgCn0KCmZ1bmMgZGlnZXN0KHRleHQgc3RyaW5nKSBzdHJpbmcgeyBzdW0gOj0gc2hhMjU2LlN1bTI1NihbXWJ5dGUodGV4dCkpOyByZXR1cm4gZm10LlNwcmludGYoIiV4Iiwgc3VtKSB9CmZ1bmMgbWFpbigpIHsKCW1hbmlmZXN0IDo9IFtdRW50cnl7eyJvay50eHQiLCAyLCBkaWdlc3QoIm9rIil9LCB7ImNoYW5nZWQudHh0IiwgMywgZGlnZXN0KCJvbGQiKX0sIHsibWlzc2luZy50eHQiLCAxLCBkaWdlc3QoIngiKX19Cgl3aXJlLCBlcnIgOj0ganNvbi5NYXJzaGFsKG1hbmlmZXN0KQoJaWYgZXJyICE9IG5pbCB7CgkJcGFuaWMoZXJyKQoJfQoJdmFyIGRlY29kZWQgW11FbnRyeQoJaWYgZXJyID0ganNvbi5Vbm1hcnNoYWwod2lyZSwgJmRlY29kZWQpOyBlcnIgIT0gbmlsIHsKCQlwYW5pYyhlcnIpCgl9CglmaWxlcyA6PSBtYXBbc3RyaW5nXXN0cmluZ3sib2sudHh0IjogIm9rIiwgImNoYW5nZWQudHh0IjogIk5FVyEifQoJaXNzdWVzIDo9IFtdc3RyaW5ne30KCWZvciBfLCBpdGVtIDo9IHJhbmdlIGRlY29kZWQgewoJCWRhdGEsIGV4aXN0cyA6PSBmaWxlc1tpdGVtLk5hbWVdCgkJaWYgIWV4aXN0cyB7CgkJCWlzc3VlcyA9IGFwcGVuZChpc3N1ZXMsIGl0ZW0uTmFtZSsiOm1pc3NpbmciKQoJCQljb250aW51ZQoJCX0KCQlpZiBsZW4oZGF0YSkgIT0gaXRlbS5TaXplIHsKCQkJaXNzdWVzID0gYXBwZW5kKGlzc3VlcywgaXRlbS5OYW1lKyI6c2l6ZSIpCgkJfQoJCWlmIGRpZ2VzdChkYXRhKSAhPSBpdGVtLkRpZ2VzdCB7CgkJCWlzc3VlcyA9IGFwcGVuZChpc3N1ZXMsIGl0ZW0uTmFtZSsiOmRpZ2VzdCIpCgkJfQoJfQoJc29ydC5TdHJpbmdzKGlzc3VlcykKCWZvciBfLCBpc3N1ZSA6PSByYW5nZSBpc3N1ZXMgewoJCWZtdC5QcmludGxuKGlzc3VlKQoJfQoJZm10LlByaW50ZigiaXNzdWVzPSVkXG4iLCBsZW4oaXNzdWVzKSkKfQo=",
+          "sha256": "44c4de875386c4d9248c2aaa8a8736c0a31cfafd3b5ae835749b2004628d395c"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "changed.txt:digest\nchanged.txt:size\nmissing.txt:missing\nissues=3"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "44c4de875386c4d9248c2aaa8a8736c0a31cfafd3b5ae835749b2004628d395c",
+      "authoringSha256": "2b41076e658b812847d593c64db9219268207ea261f608219e095675ea687e0d",
+      "projectSha256": "514f20e9c8cbeb62018130a1d3091f109eb445291d82df3a31bf6472f2b2147f",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "example/go-example-275",
+      "topic": "T275",
+      "entryId": "go-example-275",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImZtdCIKCSJzb3J0IgoJInN0cmluZ3MiCikKCnR5cGUgT3JkZXIgc3RydWN0IHsKCURlcGFydG1lbnQsIFN0YXRlIHN0cmluZwoJQ2VudHMgICAgICAgICAgICAgaW50Cn0KdHlwZSBUb3RhbCBzdHJ1Y3R7IENvdW50LCBDZW50cyBpbnQgfQoKZnVuYyBtYWluKCkgewoJb3JkZXJzIDo9IFtdT3JkZXJ7eyJOb3J0aCIsICJwYWlkIiwgMTIwMH0sIHsic291dGgiLCAicGFpZCIsIDkwMH0sIHsibm9ydGgiLCAiZHJhZnQiLCAzMDB9LCB7Ik5PUlRIIiwgInBhaWQiLCA3MDB9LCB7InNvdXRoIiwgInBhaWQiLCAxMDB9fQoJZ3JvdXBzIDo9IG1hcFtzdHJpbmddVG90YWx7fQoJZm9yIF8sIG9yZGVyIDo9IHJhbmdlIG9yZGVycyB7CgkJaWYgb3JkZXIuU3RhdGUgIT0gInBhaWQiIHx8IG9yZGVyLkNlbnRzIDwgNTAwIHsKCQkJY29udGludWUKCQl9CgkJa2V5IDo9IHN0cmluZ3MuVG9Mb3dlcihvcmRlci5EZXBhcnRtZW50KQoJCXRvdGFsIDo9IGdyb3Vwc1trZXldCgkJdG90YWwuQ291bnQrKwoJCXRvdGFsLkNlbnRzICs9IG9yZGVyLkNlbnRzCgkJZ3JvdXBzW2tleV0gPSB0b3RhbAoJfQoJbmFtZXMgOj0gW11zdHJpbmd7fQoJZm9yIG5hbWUgOj0gcmFuZ2UgZ3JvdXBzIHsKCQluYW1lcyA9IGFwcGVuZChuYW1lcywgbmFtZSkKCX0KCXNvcnQuU3RyaW5ncyhuYW1lcykKCWZvciBfLCBuYW1lIDo9IHJhbmdlIG5hbWVzIHsKCQl0b3RhbCA6PSBncm91cHNbbmFtZV0KCQlmbXQuUHJpbnRmKCIlcyBjb3VudD0lZCBjZW50cz0lZFxuIiwgbmFtZSwgdG90YWwuQ291bnQsIHRvdGFsLkNlbnRzKQoJfQp9Cg==",
+          "sha256": "51f900da316c2308ecd37cb07e7ec32433c5624656362b31c3430f0510982eb5"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "north count=2 cents=1900\nsouth count=1 cents=900"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "51f900da316c2308ecd37cb07e7ec32433c5624656362b31c3430f0510982eb5",
+      "authoringSha256": "33a738783c3d9325190ee8d8838aa7060acf6d4781252d272bdd0c84f6910292",
+      "projectSha256": "02e813d8a22887c7526b74da0de6c2bf5ccfd085153cc9c34d646dc041c86739",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "example/go-example-276",
+      "topic": "T276",
+      "entryId": "go-example-276",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImVuY29kaW5nL2pzb24iCgkiZm10IgopCgp0eXBlIEV2ZW50IHN0cnVjdCB7CglLaW5kICAgc3RyaW5nIGBqc29uOiJraW5kImAKCUFtb3VudCBpbnQgICAgYGpzb246ImFtb3VudCJgCn0KdHlwZSBTdGF0ZSBzdHJ1Y3QgewoJT3BlbiAgICBib29sCglCYWxhbmNlIGludAp9CgpmdW5jIGFwcGx5KHN0YXRlIFN0YXRlLCBldmVudCBFdmVudCkgKFN0YXRlLCBlcnJvcikgewoJbmV4dCA6PSBzdGF0ZQoJc3dpdGNoIGV2ZW50LktpbmQgewoJY2FzZSAib3BlbiI6CgkJaWYgc3RhdGUuT3BlbiB7CgkJCXJldHVybiBzdGF0ZSwgZm10LkVycm9yZigiYWxyZWFkeSBvcGVuIikKCQl9CgkJbmV4dC5PcGVuID0gdHJ1ZQoJY2FzZSAiY3JlZGl0IiwgImRlYml0IjoKCQlpZiAhc3RhdGUuT3BlbiB8fCBldmVudC5BbW91bnQgPD0gMCB7CgkJCXJldHVybiBzdGF0ZSwgZm10LkVycm9yZigiaW52YWxpZCBhbW91bnQvc3RhdGUiKQoJCX0KCQlpZiBldmVudC5LaW5kID09ICJjcmVkaXQiIHsKCQkJbmV4dC5CYWxhbmNlICs9IGV2ZW50LkFtb3VudAoJCX0gZWxzZSB7CgkJCWlmIGV2ZW50LkFtb3VudCA+IHN0YXRlLkJhbGFuY2UgewoJCQkJcmV0dXJuIHN0YXRlLCBmbXQuRXJyb3JmKCJpbnN1ZmZpY2llbnQgZnVuZHMiKQoJCQl9CgkJCW5leHQuQmFsYW5jZSAtPSBldmVudC5BbW91bnQKCQl9CglkZWZhdWx0OgoJCXJldHVybiBzdGF0ZSwgZm10LkVycm9yZigidW5rbm93biBldmVudCIpCgl9CglyZXR1cm4gbmV4dCwgbmlsCn0KZnVuYyBtYWluKCkgewoJdmFyIGV2ZW50cyBbXUV2ZW50CglpZiBlcnIgOj0ganNvbi5Vbm1hcnNoYWwoW11ieXRlKGBbeyJraW5kIjoib3BlbiJ9LHsia2luZCI6ImNyZWRpdCIsImFtb3VudCI6MTAwfSx7ImtpbmQiOiJkZWJpdCIsImFtb3VudCI6MzB9LHsia2luZCI6ImRlYml0IiwiYW1vdW50Ijo5MH0seyJraW5kIjoib3RoZXIifV1gKSwgJmV2ZW50cyk7IGVyciAhPSBuaWwgewoJCXBhbmljKGVycikKCX0KCXN0YXRlIDo9IFN0YXRle30KCWZvciBpbmRleCwgZXZlbnQgOj0gcmFuZ2UgZXZlbnRzIHsKCQluZXh0LCBlcnIgOj0gYXBwbHkoc3RhdGUsIGV2ZW50KQoJCWlmIGVyciAhPSBuaWwgewoJCQlmbXQuUHJpbnRmKCJldmVudCVkIHJlamVjdGVkIGJhbGFuY2U9JWRcbiIsIGluZGV4LCBzdGF0ZS5CYWxhbmNlKQoJCQljb250aW51ZQoJCX0KCQlzdGF0ZSA9IG5leHQKCX0KCWZtdC5QcmludGYoImZpbmFsPSVkXG4iLCBzdGF0ZS5CYWxhbmNlKQp9Cg==",
+          "sha256": "7728fefd5b774ad30135a670950c4e4c422380966fe43017532451845c816c9f"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "event3 rejected balance=70\nevent4 rejected balance=70\nfinal=70"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "7728fefd5b774ad30135a670950c4e4c422380966fe43017532451845c816c9f",
+      "authoringSha256": "a12aec6b06e7706ff7c140f0b7bf8f27e42ea12ec85e53243fdad466a25c4e7f",
+      "projectSha256": "13be777575378fb283a34ba65c47480dde7065d2c2ae05cdc6c0df34c8809a69",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "example/go-example-277",
+      "topic": "T277",
+      "entryId": "go-example-277",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImZtdCIKKQoKdHlwZSBDaGFuZ2Ugc3RydWN0IHsKCUl0ZW0gIHN0cmluZwoJRGVsdGEgaW50Cn0KCmZ1bmMgdHJhbnNhY3Qoc3RvY2sgbWFwW3N0cmluZ11pbnQsIGNoYW5nZXMgW11DaGFuZ2UpIGVycm9yIHsKCW5leHQgOj0gbWFwW3N0cmluZ11pbnR7fQoJZm9yIGl0ZW0sIHZhbHVlIDo9IHJhbmdlIHN0b2NrIHsKCQluZXh0W2l0ZW1dID0gdmFsdWUKCX0KCWZvciBfLCBjaGFuZ2UgOj0gcmFuZ2UgY2hhbmdlcyB7CgkJdmFsdWUsIGV4aXN0cyA6PSBuZXh0W2NoYW5nZS5JdGVtXQoJCWlmICFleGlzdHMgewoJCQlyZXR1cm4gZm10LkVycm9yZigidW5rbm93biBpdGVtIikKCQl9CgkJdmFsdWUgKz0gY2hhbmdlLkRlbHRhCgkJaWYgdmFsdWUgPCAwIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoIm5lZ2F0aXZlIHN0b2NrIikKCQl9CgkJbmV4dFtjaGFuZ2UuSXRlbV0gPSB2YWx1ZQoJfQoJZm9yIGl0ZW0sIHZhbHVlIDo9IHJhbmdlIG5leHQgewoJCXN0b2NrW2l0ZW1dID0gdmFsdWUKCX0KCXJldHVybiBuaWwKfQpmdW5jIG1haW4oKSB7CglzdG9jayA6PSBtYXBbc3RyaW5nXWludHsicGVuIjogMTAsICJwYWQiOiA0fQoJZXJyIDo9IHRyYW5zYWN0KHN0b2NrLCBbXUNoYW5nZXt7InBlbiIsIC0zfSwgeyJwYWQiLCAtOX19KQoJZm10LlByaW50ZigiZmFpbGVkPSV0IHBlbj0lZCBwYWQ9JWRcbiIsIGVyciAhPSBuaWwsIHN0b2NrWyJwZW4iXSwgc3RvY2tbInBhZCJdKQoJZXJyID0gdHJhbnNhY3Qoc3RvY2ssIFtdQ2hhbmdle3sicGVuIiwgLTN9LCB7InBhZCIsIDJ9fSkKCWZtdC5QcmludGYoImNvbW1pdHRlZD0ldCBwZW49JWQgcGFkPSVkXG4iLCBlcnIgPT0gbmlsLCBzdG9ja1sicGVuIl0sIHN0b2NrWyJwYWQiXSkKfQo=",
+          "sha256": "8904a1078ec7c685b0a43541970f6475d99577222f417cdee95d35d2f7eea5a9"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "failed=true pen=10 pad=4\ncommitted=true pen=7 pad=6"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "8904a1078ec7c685b0a43541970f6475d99577222f417cdee95d35d2f7eea5a9",
+      "authoringSha256": "a8267c5d35ef2fe16a7c2c1ae7887f097cc3620e98d3f5c9b368af8bf3ff4b6a",
+      "projectSha256": "c641b22b33d5a4aacfe0a672e997e862ec480da6d8b7c13c251637ae43c287f1",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "example/go-example-278",
+      "topic": "T278",
+      "entryId": "go-example-278",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImZtdCIKCSJtYXRoIgoJInRpbWUiCikKCnR5cGUgQnVja2V0IHN0cnVjdCB7CglDYXBhY2l0eSwgVG9rZW5zLCBQZXJTZWNvbmQgZmxvYXQ2NAoJTGFzdCAgICAgICAgICAgICAgICAgICAgICAgIHRpbWUuVGltZQp9CgpmdW5jIChiICpCdWNrZXQpIEFsbG93KG5vdyB0aW1lLlRpbWUpIGJvb2wgewoJaWYgbm93LkJlZm9yZShiLkxhc3QpIHsKCQlyZXR1cm4gZmFsc2UKCX0KCWIuVG9rZW5zID0gbWF0aC5NaW4oYi5DYXBhY2l0eSwgYi5Ub2tlbnMrbm93LlN1YihiLkxhc3QpLlNlY29uZHMoKSpiLlBlclNlY29uZCkKCWIuTGFzdCA9IG5vdwoJaWYgYi5Ub2tlbnMgPCAxIHsKCQlyZXR1cm4gZmFsc2UKCX0KCWIuVG9rZW5zLS0KCXJldHVybiB0cnVlCn0KZnVuYyBtYWluKCkgewoJc3RhcnQgOj0gdGltZS5EYXRlKDIwMjYsIDEwLCAyMywgMCwgMCwgMCwgMCwgdGltZS5VVEMpCgliIDo9ICZCdWNrZXR7Q2FwYWNpdHk6IDIsIFRva2VuczogMiwgUGVyU2Vjb25kOiAxLCBMYXN0OiBzdGFydH0KCWZvciBfLCBvZmZzZXQgOj0gcmFuZ2UgW110aW1lLkR1cmF0aW9uezAsIDAsIDAsIDUwMCAqIHRpbWUuTWlsbGlzZWNvbmQsIHRpbWUuU2Vjb25kLCB0aW1lLlNlY29uZCwgMyAqIHRpbWUuU2Vjb25kfSB7CgkJZm10LlByaW50ZigidD0lNC4xZiBhbGxvdz0ldFxuIiwgb2Zmc2V0LlNlY29uZHMoKSwgYi5BbGxvdyhzdGFydC5BZGQob2Zmc2V0KSkpCgl9CglmbXQuUHJpbnRmKCJjbG9jay1iYWNrd2FyZHM9JXRcbiIsIGIuQWxsb3coc3RhcnQpKQp9Cg==",
+          "sha256": "1cdd09b967abdc4eae30b14cd54bfea6a607f02402eaad20afe2701b3b26cc41"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "t= 0.0 allow=true\nt= 0.0 allow=true\nt= 0.0 allow=false\nt= 0.5 allow=false\nt= 1.0 allow=true\nt= 1.0 allow=false\nt= 3.0 allow=true\nclock-backwards=false"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "1cdd09b967abdc4eae30b14cd54bfea6a607f02402eaad20afe2701b3b26cc41",
+      "authoringSha256": "0242b712e93570ff1a615fee8db888a6ce86a159ad6339f3466acc7f8284b0d8",
+      "projectSha256": "8cbd59e76085431b364a26c4990e0a64e252367afe19126b5b6c7ccb15a6f533",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "example/go-example-279",
+      "topic": "T279",
+      "entryId": "go-example-279",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImVuY29kaW5nL2pzb24iCgkiZm10IgopCgp0eXBlIENoZWNrcG9pbnQgc3RydWN0IHsKCU5leHQgaW50IGBqc29uOiJuZXh0ImAKfQoKZnVuYyBtYWluKCkgewoJcmVjb3JkcyA6PSBbXXN0cmluZ3siQSIsICJCIiwgIkMiLCAiRCIsICJFIn0KCWNvbW1pdHRlZCA6PSBbXXN0cmluZ3t9CgljaGVja3BvaW50IDo9IENoZWNrcG9pbnR7fQoJd2lyZSA6PSBbXWJ5dGV7fQoJZmFpbE9uY2UgOj0gdHJ1ZQoJZm9yIGNoZWNrcG9pbnQuTmV4dCA8IGxlbihyZWNvcmRzKSB7CgkJc3RhcnQgOj0gY2hlY2twb2ludC5OZXh0CgkJZW5kIDo9IHN0YXJ0ICsgMgoJCWlmIGVuZCA+IGxlbihyZWNvcmRzKSB7CgkJCWVuZCA9IGxlbihyZWNvcmRzKQoJCX0KCQlwZW5kaW5nIDo9IGFwcGVuZChbXXN0cmluZyhuaWwpLCByZWNvcmRzW3N0YXJ0OmVuZF0uLi4pCgkJaWYgc3RhcnQgPT0gMiAmJiBmYWlsT25jZSB7CgkJCWZhaWxPbmNlID0gZmFsc2UKCQkJZm10LlByaW50ZigiZmFpbGVkLWF0PSVkXG4iLCBzdGFydCkKCQkJaWYgZXJyIDo9IGpzb24uVW5tYXJzaGFsKHdpcmUsICZjaGVja3BvaW50KTsgZXJyICE9IG5pbCB7CgkJCQlwYW5pYyhlcnIpCgkJCX0KCQkJY29udGludWUKCQl9CgkJY29tbWl0dGVkID0gYXBwZW5kKGNvbW1pdHRlZCwgcGVuZGluZy4uLikKCQljaGVja3BvaW50Lk5leHQgPSBlbmQKCQl2YXIgZXJyIGVycm9yCgkJd2lyZSwgZXJyID0ganNvbi5NYXJzaGFsKGNoZWNrcG9pbnQpCgkJaWYgZXJyICE9IG5pbCB7CgkJCXBhbmljKGVycikKCQl9Cgl9CglmbXQuUHJpbnRmKCJjb21taXR0ZWQ9JXZcbmNoZWNrcG9pbnQ9JXNcbiIsIGNvbW1pdHRlZCwgd2lyZSkKfQo=",
+          "sha256": "fd9cd028c2cd886828b482625bc37b27ae70fa0360a84d49ff61c7a37b7e1be4"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "failed-at=2\ncommitted=[A B C D E]\ncheckpoint={\"next\":5}"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "fd9cd028c2cd886828b482625bc37b27ae70fa0360a84d49ff61c7a37b7e1be4",
+      "authoringSha256": "1c515b1681c848a5e2564d4af3172c14b6f06b0350aae5e6d8906e743ae4345f",
+      "projectSha256": "fb8e45ffb81220ac98e25c1675e71dfff7d2484670d54cc43f235fd978ffb89e",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "example/go-example-280",
+      "topic": "T280",
+      "entryId": "go-example-280",
+      "shape": "displayed-import",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "src/main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "src/main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImZtdCIKCSJzdHJjb252IgoJInVuaWNvZGUiCikKCmZ1bmMgcHJlY2VkZW5jZShvcCBydW5lKSBpbnQgewoJaWYgb3AgPT0gJysnIHx8IG9wID09ICctJyB7CgkJcmV0dXJuIDEKCX0KCWlmIG9wID09ICcqJyB8fCBvcCA9PSAnLycgewoJCXJldHVybiAyCgl9CglyZXR1cm4gMAp9CmZ1bmMgZXZhbHVhdGUodGV4dCBzdHJpbmcpIChpbnQsIGVycm9yKSB7Cgl2YWx1ZXMgOj0gW11pbnR7fQoJb3BzIDo9IFtdcnVuZXt9CglhcHBseSA6PSBmdW5jKCkgZXJyb3IgewoJCWlmIGxlbih2YWx1ZXMpIDwgMiB8fCBsZW4ob3BzKSA9PSAwIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoIm1pc3Npbmcgb3BlcmFuZCIpCgkJfQoJCW9wIDo9IG9wc1tsZW4ob3BzKS0xXQoJCW9wcyA9IG9wc1s6bGVuKG9wcyktMV0KCQlhLCBiIDo9IHZhbHVlc1tsZW4odmFsdWVzKS0yXSwgdmFsdWVzW2xlbih2YWx1ZXMpLTFdCgkJdmFsdWVzID0gdmFsdWVzWzpsZW4odmFsdWVzKS0yXQoJCXN3aXRjaCBvcCB7CgkJY2FzZSAnKyc6CgkJCXZhbHVlcyA9IGFwcGVuZCh2YWx1ZXMsIGErYikKCQljYXNlICctJzoKCQkJdmFsdWVzID0gYXBwZW5kKHZhbHVlcywgYS1iKQoJCWNhc2UgJyonOgoJCQl2YWx1ZXMgPSBhcHBlbmQodmFsdWVzLCBhKmIpCgkJY2FzZSAnLyc6CgkJCWlmIGIgPT0gMCB7CgkJCQlyZXR1cm4gZm10LkVycm9yZigiZGl2aXNpb24gYnkgemVybyIpCgkJCX0KCQkJdmFsdWVzID0gYXBwZW5kKHZhbHVlcywgYS9iKQoJCWRlZmF1bHQ6CgkJCXJldHVybiBmbXQuRXJyb3JmKCJiYWQgb3BlcmF0b3IiKQoJCX0KCQlyZXR1cm4gbmlsCgl9CgljaGFycyA6PSBbXXJ1bmUodGV4dCkKCWV4cGVjdFZhbHVlIDo9IHRydWUKCWZvciBpIDo9IDA7IGkgPCBsZW4oY2hhcnMpOyB7CgkJYyA6PSBjaGFyc1tpXQoJCWlmIHVuaWNvZGUuSXNTcGFjZShjKSB7CgkJCWkrKwoJCQljb250aW51ZQoJCX0KCQlpZiBjID49ICcwJyAmJiBjIDw9ICc5JyB7CgkJCWlmICFleHBlY3RWYWx1ZSB7CgkJCQlyZXR1cm4gMCwgZm10LkVycm9yZigibWlzc2luZyBvcGVyYXRvciIpCgkJCX0KCQkJc3RhcnQgOj0gaQoJCQlmb3IgaSA8IGxlbihjaGFycykgJiYgY2hhcnNbaV0gPj0gJzAnICYmIGNoYXJzW2ldIDw9ICc5JyB7CgkJCQlpKysKCQkJfQoJCQluLCBlcnIgOj0gc3RyY29udi5BdG9pKHN0cmluZyhjaGFyc1tzdGFydDppXSkpCgkJCWlmIGVyciAhPSBuaWwgewoJCQkJcmV0dXJuIDAsIGVycgoJCQl9CgkJCXZhbHVlcyA9IGFwcGVuZCh2YWx1ZXMsIG4pCgkJCWV4cGVjdFZhbHVlID0gZmFsc2UKCQkJY29udGludWUKCQl9CgkJaWYgYyA9PSAnKCcgewoJCQlpZiAhZXhwZWN0VmFsdWUgewoJCQkJcmV0dXJuIDAsIGZtdC5FcnJvcmYoIm1pc3Npbmcgb3BlcmF0b3IiKQoJCQl9CgkJCW9wcyA9IGFwcGVuZChvcHMsIGMpCgkJCWkrKwoJCQljb250aW51ZQoJCX0KCQlpZiBjID09ICcpJyB7CgkJCWlmIGV4cGVjdFZhbHVlIHsKCQkJCXJldHVybiAwLCBmbXQuRXJyb3JmKCJlbXB0eSBncm91cCIpCgkJCX0KCQkJZm9yIGxlbihvcHMpID4gMCAmJiBvcHNbbGVuKG9wcyktMV0gIT0gJygnIHsKCQkJCWlmIGVyciA6PSBhcHBseSgpOyBlcnIgIT0gbmlsIHsKCQkJCQlyZXR1cm4gMCwgZXJyCgkJCQl9CgkJCX0KCQkJaWYgbGVuKG9wcykgPT0gMCB7CgkJCQlyZXR1cm4gMCwgZm10LkVycm9yZigidW5tYXRjaGVkIGNsb3NlIikKCQkJfQoJCQlvcHMgPSBvcHNbOmxlbihvcHMpLTFdCgkJCWkrKwoJCQljb250aW51ZQoJCX0KCQlpZiBwcmVjZWRlbmNlKGMpID09IDAgfHwgZXhwZWN0VmFsdWUgewoJCQlyZXR1cm4gMCwgZm10LkVycm9yZigiYmFkIHRva2VuIikKCQl9CgkJZm9yIGxlbihvcHMpID4gMCAmJiBwcmVjZWRlbmNlKG9wc1tsZW4ob3BzKS0xXSkgPj0gcHJlY2VkZW5jZShjKSB7CgkJCWlmIGVyciA6PSBhcHBseSgpOyBlcnIgIT0gbmlsIHsKCQkJCXJldHVybiAwLCBlcnIKCQkJfQoJCX0KCQlvcHMgPSBhcHBlbmQob3BzLCBjKQoJCWV4cGVjdFZhbHVlID0gdHJ1ZQoJCWkrKwoJfQoJaWYgZXhwZWN0VmFsdWUgewoJCXJldHVybiAwLCBmbXQuRXJyb3JmKCJpbmNvbXBsZXRlIikKCX0KCWZvciBsZW4ob3BzKSA+IDAgewoJCWlmIG9wc1tsZW4ob3BzKS0xXSA9PSAnKCcgewoJCQlyZXR1cm4gMCwgZm10LkVycm9yZigidW5tYXRjaGVkIG9wZW4iKQoJCX0KCQlpZiBlcnIgOj0gYXBwbHkoKTsgZXJyICE9IG5pbCB7CgkJCXJldHVybiAwLCBlcnIKCQl9Cgl9CglpZiBsZW4odmFsdWVzKSAhPSAxIHsKCQlyZXR1cm4gMCwgZm10LkVycm9yZigiYmFkIGV4cHJlc3Npb24iKQoJfQoJcmV0dXJuIHZhbHVlc1swXSwgbmlsCn0KZnVuYyBtYWluKCkgewoJZm9yIF8sIGV4cHJlc3Npb24gOj0gcmFuZ2UgW11zdHJpbmd7IjIgKyAzICogKDQgLSAxKSIsICIxOCAvIDMgLyAyIiwgIjQvKDItMikiLCAiMSArIn0gewoJCXZhbHVlLCBlcnIgOj0gZXZhbHVhdGUoZXhwcmVzc2lvbikKCQlpZiBlcnIgIT0gbmlsIHsKCQkJZm10LlByaW50ZigiJXMgLT4gZXJyb3JcbiIsIGV4cHJlc3Npb24pCgkJfSBlbHNlIHsKCQkJZm10LlByaW50ZigiJXMgLT4gJWRcbiIsIGV4cHJlc3Npb24sIHZhbHVlKQoJCX0KCX0KfQo=",
+          "sha256": "f14d575c52a0843e7848a35dea12215e0cae246fe9a6e08a44306be6be694a37"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "2 + 3 * (4 - 1) -> 11\n18 / 3 / 2 -> 3\n4/(2-2) -> error\n1 + -> error"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "f14d575c52a0843e7848a35dea12215e0cae246fe9a6e08a44306be6be694a37",
+      "authoringSha256": "23174c166a0805d48a4fc80f0aa5fbcf8f9072408df115621e27664d89ec8447",
+      "projectSha256": "7dc759530b9b562d4699c45759f59dd0f4f28b98ac9cbd263233f96edc23b412",
+      "workingDirectory": "src"
+    },
+    {
+      "id": "canonical/T271",
+      "topic": "T271",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImVuY29kaW5nL2NzdiIKCSJmbXQiCgkic29ydCIKCSJzdHJjb252IgoJInN0cmluZ3MiCikKCmZ1bmMgbGVkZ2VyKHRleHQgc3RyaW5nKSAobWFwW3N0cmluZ11pbnQsIG1hcFtzdHJpbmddYm9vbCkgewoJcm93cywgZXJyIDo9IGNzdi5OZXdSZWFkZXIoc3RyaW5ncy5OZXdSZWFkZXIodGV4dCkpLlJlYWRBbGwoKQoJaWYgZXJyICE9IG5pbCB7CgkJcGFuaWMoZXJyKQoJfQoJdmFsdWVzIDo9IG1hcFtzdHJpbmddaW50e30KCWR1cGxpY2F0ZXMgOj0gbWFwW3N0cmluZ11ib29se30KCWZvciBfLCByb3cgOj0gcmFuZ2Ugcm93c1sxOl0gewoJCWlmIGxlbihyb3cpICE9IDIgewoJCQlwYW5pYygiYmFkIGNvbHVtbnMiKQoJCX0KCQlhbW91bnQsIGVyciA6PSBzdHJjb252LkF0b2kocm93WzFdKQoJCWlmIGVyciAhPSBuaWwgewoJCQlwYW5pYyhlcnIpCgkJfQoJCWlmIF8sIGV4aXN0cyA6PSB2YWx1ZXNbcm93WzBdXTsgZXhpc3RzIHsKCQkJZHVwbGljYXRlc1tyb3dbMF1dID0gdHJ1ZQoJCX0gZWxzZSB7CgkJCXZhbHVlc1tyb3dbMF1dID0gYW1vdW50CgkJfQoJfQoJcmV0dXJuIHZhbHVlcywgZHVwbGljYXRlcwp9CmZ1bmMgbWFpbigpIHsKCWxlZnQsIGxkIDo9IGxlZGdlcigiaWQsY2VudHNcbnQxLDEwMFxudDIsMjAwXG50MywzMDBcbiIpCglyaWdodCwgcmQgOj0gbGVkZ2VyKCJpZCxjZW50c1xudDEsMTEwXG50MiwyMDBcbnQyLDIwMFxudDQsNDAwXG4iKQoJc2V0IDo9IG1hcFtzdHJpbmddYm9vbHt9Cglmb3IgaWQgOj0gcmFuZ2UgbGVmdCB7CgkJc2V0W2lkXSA9IHRydWUKCX0KCWZvciBpZCA6PSByYW5nZSByaWdodCB7CgkJc2V0W2lkXSA9IHRydWUKCX0KCWlkcyA6PSBbXXN0cmluZ3t9Cglmb3IgaWQgOj0gcmFuZ2Ugc2V0IHsKCQlpZHMgPSBhcHBlbmQoaWRzLCBpZCkKCX0KCXNvcnQuU3RyaW5ncyhpZHMpCglmb3IgXywgaWQgOj0gcmFuZ2UgaWRzIHsKCQlhLCBoYXNBIDo9IGxlZnRbaWRdCgkJYiwgaGFzQiA6PSByaWdodFtpZF0KCQlpZiBsZFtpZF0gewoJCQlmbXQuUHJpbnRmKCIlcyBkdXBsaWNhdGUtbGVmdFxuIiwgaWQpCgkJfQoJCWlmIHJkW2lkXSB7CgkJCWZtdC5QcmludGYoIiVzIGR1cGxpY2F0ZS1yaWdodFxuIiwgaWQpCgkJfQoJCXN3aXRjaCB7CgkJY2FzZSAhaGFzQToKCQkJZm10LlByaW50ZigiJXMgbWlzc2luZy1sZWZ0XG4iLCBpZCkKCQljYXNlICFoYXNCOgoJCQlmbXQuUHJpbnRmKCIlcyBtaXNzaW5nLXJpZ2h0XG4iLCBpZCkKCQljYXNlIGEgIT0gYjoKCQkJZm10LlByaW50ZigiJXMgbWlzbWF0Y2g9JWQvJWRcbiIsIGlkLCBhLCBiKQoJCX0KCX0KfQo=",
+          "sha256": "46c349c123217efc21502cf9822ad9a87461f5d6c80fd5048c0b4b9d0caa8aef"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "t1 mismatch=100/110\nt2 duplicate-right\nt3 missing-right\nt4 missing-left\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "3ddd8af12bd6bacc84e116ead90702843217eb9ae6f6558be2664be9ff2f5663",
+      "authoringSha256": "08b042ccb9c4a3b8f57d3d1fbb6c2c9c03cecc3b9fb7c49eb37fbaa16dad2158",
+      "workingDirectory": ".",
+      "projectSha256": "3ddd8af12bd6bacc84e116ead90702843217eb9ae6f6558be2664be9ff2f5663"
+    },
+    {
+      "id": "canonical/T272",
+      "topic": "T272",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImNvbnRhaW5lci9oZWFwIgoJImZtdCIKCSJzb3J0IgopCgp0eXBlIE5hbWVzIFtdc3RyaW5nCgpmdW5jIChoIE5hbWVzKSBMZW4oKSBpbnQgICAgICAgICAgICB7IHJldHVybiBsZW4oaCkgfQpmdW5jIChoIE5hbWVzKSBMZXNzKGksIGogaW50KSBib29sICB7IHJldHVybiBoW2ldIDwgaFtqXSB9CmZ1bmMgKGggTmFtZXMpIFN3YXAoaSwgaiBpbnQpICAgICAgIHsgaFtpXSwgaFtqXSA9IGhbal0sIGhbaV0gfQpmdW5jIChoICpOYW1lcykgUHVzaCh2IGludGVyZmFjZXt9KSB7ICpoID0gYXBwZW5kKCpoLCB2LihzdHJpbmcpKSB9CmZ1bmMgKGggKk5hbWVzKSBQb3AoKSBpbnRlcmZhY2V7fSB7CglvbGQgOj0gKmgKCWxhc3QgOj0gb2xkW2xlbihvbGQpLTFdCgkqaCA9IG9sZFs6bGVuKG9sZCktMV0KCXJldHVybiBsYXN0Cn0KZnVuYyBwbGFuKGRlcHMgbWFwW3N0cmluZ11bXXN0cmluZykgKFtdc3RyaW5nLCBbXXN0cmluZykgewoJZGVncmVlIDo9IG1hcFtzdHJpbmddaW50e30KCW5leHQgOj0gbWFwW3N0cmluZ11bXXN0cmluZ3t9Cglmb3IgbmFtZSwgaW5wdXRzIDo9IHJhbmdlIGRlcHMgewoJCWlmIF8sIG9rIDo9IGRlZ3JlZVtuYW1lXTsgIW9rIHsKCQkJZGVncmVlW25hbWVdID0gMAoJCX0KCQlmb3IgXywgaW5wdXQgOj0gcmFuZ2UgaW5wdXRzIHsKCQkJZGVncmVlW25hbWVdKysKCQkJaWYgXywgb2sgOj0gZGVncmVlW2lucHV0XTsgIW9rIHsKCQkJCWRlZ3JlZVtpbnB1dF0gPSAwCgkJCX0KCQkJbmV4dFtpbnB1dF0gPSBhcHBlbmQobmV4dFtpbnB1dF0sIG5hbWUpCgkJfQoJfQoJcmVhZHkgOj0gJk5hbWVze30KCWhlYXAuSW5pdChyZWFkeSkKCWZvciBuYW1lLCBuIDo9IHJhbmdlIGRlZ3JlZSB7CgkJaWYgbiA9PSAwIHsKCQkJaGVhcC5QdXNoKHJlYWR5LCBuYW1lKQoJCX0KCX0KCW9yZGVyIDo9IFtdc3RyaW5ne30KCWZvciByZWFkeS5MZW4oKSA+IDAgewoJCW5hbWUgOj0gaGVhcC5Qb3AocmVhZHkpLihzdHJpbmcpCgkJb3JkZXIgPSBhcHBlbmQob3JkZXIsIG5hbWUpCgkJZm9yIF8sIGRlcGVuZGVudCA6PSByYW5nZSBuZXh0W25hbWVdIHsKCQkJZGVncmVlW2RlcGVuZGVudF0tLQoJCQlpZiBkZWdyZWVbZGVwZW5kZW50XSA9PSAwIHsKCQkJCWhlYXAuUHVzaChyZWFkeSwgZGVwZW5kZW50KQoJCQl9CgkJfQoJfQoJcmVtYWluaW5nIDo9IFtdc3RyaW5ne30KCWZvciBuYW1lLCBuIDo9IHJhbmdlIGRlZ3JlZSB7CgkJaWYgbiA+IDAgewoJCQlyZW1haW5pbmcgPSBhcHBlbmQocmVtYWluaW5nLCBuYW1lKQoJCX0KCX0KCXNvcnQuU3RyaW5ncyhyZW1haW5pbmcpCglyZXR1cm4gb3JkZXIsIHJlbWFpbmluZwp9CmZ1bmMgbWFpbigpIHsKCW9yZGVyLCBjeWNsZSA6PSBwbGFuKG1hcFtzdHJpbmddW11zdHJpbmd7InBhcnNlIjoge30sICJjb21waWxlIjogeyJwYXJzZSJ9LCAidGVzdCI6IHsiY29tcGlsZSJ9LCAibGluayI6IHsiY29tcGlsZSJ9fSkKCWZtdC5QcmludGYoIm9yZGVyPSV2IHJlbWFpbmluZz0ldlxuIiwgb3JkZXIsIGN5Y2xlKQoJXywgY3ljbGUgPSBwbGFuKG1hcFtzdHJpbmddW11zdHJpbmd7ImEiOiB7ImIifSwgImIiOiB7ImEifX0pCglmbXQuUHJpbnRmKCJjeWNsZT0ldlxuIiwgY3ljbGUpCn0K",
+          "sha256": "4371aea2a57bcf8a4995e366eedd160656a5c30469daac8bec7413349d8f841c"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "order=[parse compile link test] remaining=[]\ncycle=[a b]\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "d80bc6a5183ce08b8e26c8b3c10c6d28dfc073e6770a68366886013ac10d8596",
+      "authoringSha256": "90a0b322b95cc267d8e03f14f44809c64118ae51173e0e9823b0d7a01bc45bf3",
+      "workingDirectory": ".",
+      "projectSha256": "d80bc6a5183ce08b8e26c8b3c10c6d28dfc073e6770a68366886013ac10d8596"
+    },
+    {
+      "id": "canonical/T273",
+      "topic": "T273",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImNvbnRhaW5lci9oZWFwIgoJImZtdCIKCSJzb3J0IgopCgp0eXBlIEJvb2tpbmcgc3RydWN0IHsKCUlEICAgICAgICAgc3RyaW5nCglTdGFydCwgRW5kIGludAp9CnR5cGUgUm9vbSBzdHJ1Y3R7IEVuZCwgSUQgaW50IH0KdHlwZSBBY3RpdmUgW11Sb29tCgpmdW5jIChoIEFjdGl2ZSkgTGVuKCkgaW50IHsgcmV0dXJuIGxlbihoKSB9CmZ1bmMgKGggQWN0aXZlKSBMZXNzKGksIGogaW50KSBib29sIHsKCWlmIGhbaV0uRW5kICE9IGhbal0uRW5kIHsKCQlyZXR1cm4gaFtpXS5FbmQgPCBoW2pdLkVuZAoJfQoJcmV0dXJuIGhbaV0uSUQgPCBoW2pdLklECn0KZnVuYyAoaCBBY3RpdmUpIFN3YXAoaSwgaiBpbnQpICAgICAgIHsgaFtpXSwgaFtqXSA9IGhbal0sIGhbaV0gfQpmdW5jIChoICpBY3RpdmUpIFB1c2godiBpbnRlcmZhY2V7fSkgeyAqaCA9IGFwcGVuZCgqaCwgdi4oUm9vbSkpIH0KZnVuYyAoaCAqQWN0aXZlKSBQb3AoKSBpbnRlcmZhY2V7fSAgIHsgb2xkIDo9ICpoOyB2IDo9IG9sZFtsZW4ob2xkKS0xXTsgKmggPSBvbGRbOmxlbihvbGQpLTFdOyByZXR1cm4gdiB9CmZ1bmMgbWFpbigpIHsKCWJvb2tpbmdzIDo9IFtdQm9va2luZ3t7IkEiLCAwLCAzMH0sIHsiQiIsIDUsIDEwfSwgeyJDIiwgMTAsIDIwfSwgeyJEIiwgMzAsIDQwfX0KCXNvcnQuU2xpY2VTdGFibGUoYm9va2luZ3MsIGZ1bmMoaSwgaiBpbnQpIGJvb2wgeyByZXR1cm4gYm9va2luZ3NbaV0uU3RhcnQgPCBib29raW5nc1tqXS5TdGFydCB9KQoJYWN0aXZlIDo9ICZBY3RpdmV7fQoJaGVhcC5Jbml0KGFjdGl2ZSkKCXJvb21zIDo9IDAKCWZvciBfLCBib29raW5nIDo9IHJhbmdlIGJvb2tpbmdzIHsKCQlpZiBib29raW5nLlN0YXJ0ID49IGJvb2tpbmcuRW5kIHsKCQkJcGFuaWMoImJhZCBpbnRlcnZhbCIpCgkJfQoJCXJvb20gOj0gMAoJCWlmIGFjdGl2ZS5MZW4oKSA+IDAgJiYgKCphY3RpdmUpWzBdLkVuZCA8PSBib29raW5nLlN0YXJ0IHsKCQkJcm9vbSA9IGhlYXAuUG9wKGFjdGl2ZSkuKFJvb20pLklECgkJfSBlbHNlIHsKCQkJcm9vbXMrKwoJCQlyb29tID0gcm9vbXMKCQl9CgkJaGVhcC5QdXNoKGFjdGl2ZSwgUm9vbXtib29raW5nLkVuZCwgcm9vbX0pCgkJZm10LlByaW50ZigiJXM9cm9vbSVkXG4iLCBib29raW5nLklELCByb29tKQoJfQoJZm10LlByaW50Zigicm9vbXM9JWRcbiIsIHJvb21zKQp9Cg==",
+          "sha256": "6199f1986095fd6da5b96da2ce4c0993fad61420aa2d1280b6f9f046408e5e06"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "A=room1\nB=room2\nC=room2\nD=room2\nrooms=2\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "b375069d21886792bea27114c33149313d59c53a9bf05e7333424e86ee8c1b75",
+      "authoringSha256": "bb64c2f9e053591ca208adebfb4cb66b0091c385d67c5fc847f9ca2fe9da56dc",
+      "workingDirectory": ".",
+      "projectSha256": "b375069d21886792bea27114c33149313d59c53a9bf05e7333424e86ee8c1b75"
+    },
+    {
+      "id": "canonical/T274",
+      "topic": "T274",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImNyeXB0by9zaGEyNTYiCgkiZW5jb2RpbmcvanNvbiIKCSJmbXQiCgkic29ydCIKKQoKdHlwZSBFbnRyeSBzdHJ1Y3QgewoJTmFtZSAgIHN0cmluZyBganNvbjoibmFtZSJgCglTaXplICAgaW50ICAgIGBqc29uOiJzaXplImAKCURpZ2VzdCBzdHJpbmcgYGpzb246InNoYTI1NiJgCn0KCmZ1bmMgZGlnZXN0KHRleHQgc3RyaW5nKSBzdHJpbmcgeyBzdW0gOj0gc2hhMjU2LlN1bTI1NihbXWJ5dGUodGV4dCkpOyByZXR1cm4gZm10LlNwcmludGYoIiV4Iiwgc3VtKSB9CmZ1bmMgbWFpbigpIHsKCW1hbmlmZXN0IDo9IFtdRW50cnl7eyJvay50eHQiLCAyLCBkaWdlc3QoIm9rIil9LCB7ImNoYW5nZWQudHh0IiwgMywgZGlnZXN0KCJvbGQiKX0sIHsibWlzc2luZy50eHQiLCAxLCBkaWdlc3QoIngiKX19Cgl3aXJlLCBlcnIgOj0ganNvbi5NYXJzaGFsKG1hbmlmZXN0KQoJaWYgZXJyICE9IG5pbCB7CgkJcGFuaWMoZXJyKQoJfQoJdmFyIGRlY29kZWQgW11FbnRyeQoJaWYgZXJyID0ganNvbi5Vbm1hcnNoYWwod2lyZSwgJmRlY29kZWQpOyBlcnIgIT0gbmlsIHsKCQlwYW5pYyhlcnIpCgl9CglmaWxlcyA6PSBtYXBbc3RyaW5nXXN0cmluZ3sib2sudHh0IjogIm9rIiwgImNoYW5nZWQudHh0IjogIk5FVyEifQoJaXNzdWVzIDo9IFtdc3RyaW5ne30KCWZvciBfLCBpdGVtIDo9IHJhbmdlIGRlY29kZWQgewoJCWRhdGEsIGV4aXN0cyA6PSBmaWxlc1tpdGVtLk5hbWVdCgkJaWYgIWV4aXN0cyB7CgkJCWlzc3VlcyA9IGFwcGVuZChpc3N1ZXMsIGl0ZW0uTmFtZSsiOm1pc3NpbmciKQoJCQljb250aW51ZQoJCX0KCQlpZiBsZW4oZGF0YSkgIT0gaXRlbS5TaXplIHsKCQkJaXNzdWVzID0gYXBwZW5kKGlzc3VlcywgaXRlbS5OYW1lKyI6c2l6ZSIpCgkJfQoJCWlmIGRpZ2VzdChkYXRhKSAhPSBpdGVtLkRpZ2VzdCB7CgkJCWlzc3VlcyA9IGFwcGVuZChpc3N1ZXMsIGl0ZW0uTmFtZSsiOmRpZ2VzdCIpCgkJfQoJfQoJc29ydC5TdHJpbmdzKGlzc3VlcykKCWZvciBfLCBpc3N1ZSA6PSByYW5nZSBpc3N1ZXMgewoJCWZtdC5QcmludGxuKGlzc3VlKQoJfQoJZm10LlByaW50ZigiaXNzdWVzPSVkXG4iLCBsZW4oaXNzdWVzKSkKfQo=",
+          "sha256": "44c4de875386c4d9248c2aaa8a8736c0a31cfafd3b5ae835749b2004628d395c"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "changed.txt:digest\nchanged.txt:size\nmissing.txt:missing\nissues=3\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "a97615d13a29013aaa0efc4c3fba63fba75f3f4606f8d6032d9a528dccb6d8be",
+      "authoringSha256": "2b41076e658b812847d593c64db9219268207ea261f608219e095675ea687e0d",
+      "workingDirectory": ".",
+      "projectSha256": "a97615d13a29013aaa0efc4c3fba63fba75f3f4606f8d6032d9a528dccb6d8be"
+    },
+    {
+      "id": "canonical/T275",
+      "topic": "T275",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImZtdCIKCSJzb3J0IgoJInN0cmluZ3MiCikKCnR5cGUgT3JkZXIgc3RydWN0IHsKCURlcGFydG1lbnQsIFN0YXRlIHN0cmluZwoJQ2VudHMgICAgICAgICAgICAgaW50Cn0KdHlwZSBUb3RhbCBzdHJ1Y3R7IENvdW50LCBDZW50cyBpbnQgfQoKZnVuYyBtYWluKCkgewoJb3JkZXJzIDo9IFtdT3JkZXJ7eyJOb3J0aCIsICJwYWlkIiwgMTIwMH0sIHsic291dGgiLCAicGFpZCIsIDkwMH0sIHsibm9ydGgiLCAiZHJhZnQiLCAzMDB9LCB7Ik5PUlRIIiwgInBhaWQiLCA3MDB9LCB7InNvdXRoIiwgInBhaWQiLCAxMDB9fQoJZ3JvdXBzIDo9IG1hcFtzdHJpbmddVG90YWx7fQoJZm9yIF8sIG9yZGVyIDo9IHJhbmdlIG9yZGVycyB7CgkJaWYgb3JkZXIuU3RhdGUgIT0gInBhaWQiIHx8IG9yZGVyLkNlbnRzIDwgNTAwIHsKCQkJY29udGludWUKCQl9CgkJa2V5IDo9IHN0cmluZ3MuVG9Mb3dlcihvcmRlci5EZXBhcnRtZW50KQoJCXRvdGFsIDo9IGdyb3Vwc1trZXldCgkJdG90YWwuQ291bnQrKwoJCXRvdGFsLkNlbnRzICs9IG9yZGVyLkNlbnRzCgkJZ3JvdXBzW2tleV0gPSB0b3RhbAoJfQoJbmFtZXMgOj0gW11zdHJpbmd7fQoJZm9yIG5hbWUgOj0gcmFuZ2UgZ3JvdXBzIHsKCQluYW1lcyA9IGFwcGVuZChuYW1lcywgbmFtZSkKCX0KCXNvcnQuU3RyaW5ncyhuYW1lcykKCWZvciBfLCBuYW1lIDo9IHJhbmdlIG5hbWVzIHsKCQl0b3RhbCA6PSBncm91cHNbbmFtZV0KCQlmbXQuUHJpbnRmKCIlcyBjb3VudD0lZCBjZW50cz0lZFxuIiwgbmFtZSwgdG90YWwuQ291bnQsIHRvdGFsLkNlbnRzKQoJfQp9Cg==",
+          "sha256": "51f900da316c2308ecd37cb07e7ec32433c5624656362b31c3430f0510982eb5"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "north count=2 cents=1900\nsouth count=1 cents=900\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "3966724def3cd02850b192ed04f624f6a26f6c3fe89a51f2f3cf8cd0fdd605eb",
+      "authoringSha256": "33a738783c3d9325190ee8d8838aa7060acf6d4781252d272bdd0c84f6910292",
+      "workingDirectory": ".",
+      "projectSha256": "3966724def3cd02850b192ed04f624f6a26f6c3fe89a51f2f3cf8cd0fdd605eb"
+    },
+    {
+      "id": "canonical/T276",
+      "topic": "T276",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImVuY29kaW5nL2pzb24iCgkiZm10IgopCgp0eXBlIEV2ZW50IHN0cnVjdCB7CglLaW5kICAgc3RyaW5nIGBqc29uOiJraW5kImAKCUFtb3VudCBpbnQgICAgYGpzb246ImFtb3VudCJgCn0KdHlwZSBTdGF0ZSBzdHJ1Y3QgewoJT3BlbiAgICBib29sCglCYWxhbmNlIGludAp9CgpmdW5jIGFwcGx5KHN0YXRlIFN0YXRlLCBldmVudCBFdmVudCkgKFN0YXRlLCBlcnJvcikgewoJbmV4dCA6PSBzdGF0ZQoJc3dpdGNoIGV2ZW50LktpbmQgewoJY2FzZSAib3BlbiI6CgkJaWYgc3RhdGUuT3BlbiB7CgkJCXJldHVybiBzdGF0ZSwgZm10LkVycm9yZigiYWxyZWFkeSBvcGVuIikKCQl9CgkJbmV4dC5PcGVuID0gdHJ1ZQoJY2FzZSAiY3JlZGl0IiwgImRlYml0IjoKCQlpZiAhc3RhdGUuT3BlbiB8fCBldmVudC5BbW91bnQgPD0gMCB7CgkJCXJldHVybiBzdGF0ZSwgZm10LkVycm9yZigiaW52YWxpZCBhbW91bnQvc3RhdGUiKQoJCX0KCQlpZiBldmVudC5LaW5kID09ICJjcmVkaXQiIHsKCQkJbmV4dC5CYWxhbmNlICs9IGV2ZW50LkFtb3VudAoJCX0gZWxzZSB7CgkJCWlmIGV2ZW50LkFtb3VudCA+IHN0YXRlLkJhbGFuY2UgewoJCQkJcmV0dXJuIHN0YXRlLCBmbXQuRXJyb3JmKCJpbnN1ZmZpY2llbnQgZnVuZHMiKQoJCQl9CgkJCW5leHQuQmFsYW5jZSAtPSBldmVudC5BbW91bnQKCQl9CglkZWZhdWx0OgoJCXJldHVybiBzdGF0ZSwgZm10LkVycm9yZigidW5rbm93biBldmVudCIpCgl9CglyZXR1cm4gbmV4dCwgbmlsCn0KZnVuYyBtYWluKCkgewoJdmFyIGV2ZW50cyBbXUV2ZW50CglpZiBlcnIgOj0ganNvbi5Vbm1hcnNoYWwoW11ieXRlKGBbeyJraW5kIjoib3BlbiJ9LHsia2luZCI6ImNyZWRpdCIsImFtb3VudCI6MTAwfSx7ImtpbmQiOiJkZWJpdCIsImFtb3VudCI6MzB9LHsia2luZCI6ImRlYml0IiwiYW1vdW50Ijo5MH0seyJraW5kIjoib3RoZXIifV1gKSwgJmV2ZW50cyk7IGVyciAhPSBuaWwgewoJCXBhbmljKGVycikKCX0KCXN0YXRlIDo9IFN0YXRle30KCWZvciBpbmRleCwgZXZlbnQgOj0gcmFuZ2UgZXZlbnRzIHsKCQluZXh0LCBlcnIgOj0gYXBwbHkoc3RhdGUsIGV2ZW50KQoJCWlmIGVyciAhPSBuaWwgewoJCQlmbXQuUHJpbnRmKCJldmVudCVkIHJlamVjdGVkIGJhbGFuY2U9JWRcbiIsIGluZGV4LCBzdGF0ZS5CYWxhbmNlKQoJCQljb250aW51ZQoJCX0KCQlzdGF0ZSA9IG5leHQKCX0KCWZtdC5QcmludGYoImZpbmFsPSVkXG4iLCBzdGF0ZS5CYWxhbmNlKQp9Cg==",
+          "sha256": "7728fefd5b774ad30135a670950c4e4c422380966fe43017532451845c816c9f"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "event3 rejected balance=70\nevent4 rejected balance=70\nfinal=70\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "f15ec8aef33e95684959848ec1de6f262e5d1aae2ccfdbdd6a6431b31d7d8782",
+      "authoringSha256": "a12aec6b06e7706ff7c140f0b7bf8f27e42ea12ec85e53243fdad466a25c4e7f",
+      "workingDirectory": ".",
+      "projectSha256": "f15ec8aef33e95684959848ec1de6f262e5d1aae2ccfdbdd6a6431b31d7d8782"
+    },
+    {
+      "id": "canonical/T277",
+      "topic": "T277",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImZtdCIKKQoKdHlwZSBDaGFuZ2Ugc3RydWN0IHsKCUl0ZW0gIHN0cmluZwoJRGVsdGEgaW50Cn0KCmZ1bmMgdHJhbnNhY3Qoc3RvY2sgbWFwW3N0cmluZ11pbnQsIGNoYW5nZXMgW11DaGFuZ2UpIGVycm9yIHsKCW5leHQgOj0gbWFwW3N0cmluZ11pbnR7fQoJZm9yIGl0ZW0sIHZhbHVlIDo9IHJhbmdlIHN0b2NrIHsKCQluZXh0W2l0ZW1dID0gdmFsdWUKCX0KCWZvciBfLCBjaGFuZ2UgOj0gcmFuZ2UgY2hhbmdlcyB7CgkJdmFsdWUsIGV4aXN0cyA6PSBuZXh0W2NoYW5nZS5JdGVtXQoJCWlmICFleGlzdHMgewoJCQlyZXR1cm4gZm10LkVycm9yZigidW5rbm93biBpdGVtIikKCQl9CgkJdmFsdWUgKz0gY2hhbmdlLkRlbHRhCgkJaWYgdmFsdWUgPCAwIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoIm5lZ2F0aXZlIHN0b2NrIikKCQl9CgkJbmV4dFtjaGFuZ2UuSXRlbV0gPSB2YWx1ZQoJfQoJZm9yIGl0ZW0sIHZhbHVlIDo9IHJhbmdlIG5leHQgewoJCXN0b2NrW2l0ZW1dID0gdmFsdWUKCX0KCXJldHVybiBuaWwKfQpmdW5jIG1haW4oKSB7CglzdG9jayA6PSBtYXBbc3RyaW5nXWludHsicGVuIjogMTAsICJwYWQiOiA0fQoJZXJyIDo9IHRyYW5zYWN0KHN0b2NrLCBbXUNoYW5nZXt7InBlbiIsIC0zfSwgeyJwYWQiLCAtOX19KQoJZm10LlByaW50ZigiZmFpbGVkPSV0IHBlbj0lZCBwYWQ9JWRcbiIsIGVyciAhPSBuaWwsIHN0b2NrWyJwZW4iXSwgc3RvY2tbInBhZCJdKQoJZXJyID0gdHJhbnNhY3Qoc3RvY2ssIFtdQ2hhbmdle3sicGVuIiwgLTN9LCB7InBhZCIsIDJ9fSkKCWZtdC5QcmludGYoImNvbW1pdHRlZD0ldCBwZW49JWQgcGFkPSVkXG4iLCBlcnIgPT0gbmlsLCBzdG9ja1sicGVuIl0sIHN0b2NrWyJwYWQiXSkKfQo=",
+          "sha256": "8904a1078ec7c685b0a43541970f6475d99577222f417cdee95d35d2f7eea5a9"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "failed=true pen=10 pad=4\ncommitted=true pen=7 pad=6\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "4500fcc631daf95776c65e35fbebf470883e4f33a1b4bdfb823e830fb30f018b",
+      "authoringSha256": "a8267c5d35ef2fe16a7c2c1ae7887f097cc3620e98d3f5c9b368af8bf3ff4b6a",
+      "workingDirectory": ".",
+      "projectSha256": "4500fcc631daf95776c65e35fbebf470883e4f33a1b4bdfb823e830fb30f018b"
+    },
+    {
+      "id": "canonical/T278",
+      "topic": "T278",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImZtdCIKCSJtYXRoIgoJInRpbWUiCikKCnR5cGUgQnVja2V0IHN0cnVjdCB7CglDYXBhY2l0eSwgVG9rZW5zLCBQZXJTZWNvbmQgZmxvYXQ2NAoJTGFzdCAgICAgICAgICAgICAgICAgICAgICAgIHRpbWUuVGltZQp9CgpmdW5jIChiICpCdWNrZXQpIEFsbG93KG5vdyB0aW1lLlRpbWUpIGJvb2wgewoJaWYgbm93LkJlZm9yZShiLkxhc3QpIHsKCQlyZXR1cm4gZmFsc2UKCX0KCWIuVG9rZW5zID0gbWF0aC5NaW4oYi5DYXBhY2l0eSwgYi5Ub2tlbnMrbm93LlN1YihiLkxhc3QpLlNlY29uZHMoKSpiLlBlclNlY29uZCkKCWIuTGFzdCA9IG5vdwoJaWYgYi5Ub2tlbnMgPCAxIHsKCQlyZXR1cm4gZmFsc2UKCX0KCWIuVG9rZW5zLS0KCXJldHVybiB0cnVlCn0KZnVuYyBtYWluKCkgewoJc3RhcnQgOj0gdGltZS5EYXRlKDIwMjYsIDEwLCAyMywgMCwgMCwgMCwgMCwgdGltZS5VVEMpCgliIDo9ICZCdWNrZXR7Q2FwYWNpdHk6IDIsIFRva2VuczogMiwgUGVyU2Vjb25kOiAxLCBMYXN0OiBzdGFydH0KCWZvciBfLCBvZmZzZXQgOj0gcmFuZ2UgW110aW1lLkR1cmF0aW9uezAsIDAsIDAsIDUwMCAqIHRpbWUuTWlsbGlzZWNvbmQsIHRpbWUuU2Vjb25kLCB0aW1lLlNlY29uZCwgMyAqIHRpbWUuU2Vjb25kfSB7CgkJZm10LlByaW50ZigidD0lNC4xZiBhbGxvdz0ldFxuIiwgb2Zmc2V0LlNlY29uZHMoKSwgYi5BbGxvdyhzdGFydC5BZGQob2Zmc2V0KSkpCgl9CglmbXQuUHJpbnRmKCJjbG9jay1iYWNrd2FyZHM9JXRcbiIsIGIuQWxsb3coc3RhcnQpKQp9Cg==",
+          "sha256": "1cdd09b967abdc4eae30b14cd54bfea6a607f02402eaad20afe2701b3b26cc41"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "t= 0.0 allow=true\nt= 0.0 allow=true\nt= 0.0 allow=false\nt= 0.5 allow=false\nt= 1.0 allow=true\nt= 1.0 allow=false\nt= 3.0 allow=true\nclock-backwards=false\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "2b047a8944fa0a760cc6379a1e3c996e76e4396d5218810f7c338191d661fe94",
+      "authoringSha256": "0242b712e93570ff1a615fee8db888a6ce86a159ad6339f3466acc7f8284b0d8",
+      "workingDirectory": ".",
+      "projectSha256": "2b047a8944fa0a760cc6379a1e3c996e76e4396d5218810f7c338191d661fe94"
+    },
+    {
+      "id": "canonical/T279",
+      "topic": "T279",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImVuY29kaW5nL2pzb24iCgkiZm10IgopCgp0eXBlIENoZWNrcG9pbnQgc3RydWN0IHsKCU5leHQgaW50IGBqc29uOiJuZXh0ImAKfQoKZnVuYyBtYWluKCkgewoJcmVjb3JkcyA6PSBbXXN0cmluZ3siQSIsICJCIiwgIkMiLCAiRCIsICJFIn0KCWNvbW1pdHRlZCA6PSBbXXN0cmluZ3t9CgljaGVja3BvaW50IDo9IENoZWNrcG9pbnR7fQoJd2lyZSA6PSBbXWJ5dGV7fQoJZmFpbE9uY2UgOj0gdHJ1ZQoJZm9yIGNoZWNrcG9pbnQuTmV4dCA8IGxlbihyZWNvcmRzKSB7CgkJc3RhcnQgOj0gY2hlY2twb2ludC5OZXh0CgkJZW5kIDo9IHN0YXJ0ICsgMgoJCWlmIGVuZCA+IGxlbihyZWNvcmRzKSB7CgkJCWVuZCA9IGxlbihyZWNvcmRzKQoJCX0KCQlwZW5kaW5nIDo9IGFwcGVuZChbXXN0cmluZyhuaWwpLCByZWNvcmRzW3N0YXJ0OmVuZF0uLi4pCgkJaWYgc3RhcnQgPT0gMiAmJiBmYWlsT25jZSB7CgkJCWZhaWxPbmNlID0gZmFsc2UKCQkJZm10LlByaW50ZigiZmFpbGVkLWF0PSVkXG4iLCBzdGFydCkKCQkJaWYgZXJyIDo9IGpzb24uVW5tYXJzaGFsKHdpcmUsICZjaGVja3BvaW50KTsgZXJyICE9IG5pbCB7CgkJCQlwYW5pYyhlcnIpCgkJCX0KCQkJY29udGludWUKCQl9CgkJY29tbWl0dGVkID0gYXBwZW5kKGNvbW1pdHRlZCwgcGVuZGluZy4uLikKCQljaGVja3BvaW50Lk5leHQgPSBlbmQKCQl2YXIgZXJyIGVycm9yCgkJd2lyZSwgZXJyID0ganNvbi5NYXJzaGFsKGNoZWNrcG9pbnQpCgkJaWYgZXJyICE9IG5pbCB7CgkJCXBhbmljKGVycikKCQl9Cgl9CglmbXQuUHJpbnRmKCJjb21taXR0ZWQ9JXZcbmNoZWNrcG9pbnQ9JXNcbiIsIGNvbW1pdHRlZCwgd2lyZSkKfQo=",
+          "sha256": "fd9cd028c2cd886828b482625bc37b27ae70fa0360a84d49ff61c7a37b7e1be4"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "failed-at=2\ncommitted=[A B C D E]\ncheckpoint={\"next\":5}\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "47f376398bbe43af68bcfd559a4916042d15feb0274de2190057d6a9d7ac726e",
+      "authoringSha256": "1c515b1681c848a5e2564d4af3172c14b6f06b0350aae5e6d8906e743ae4345f",
+      "workingDirectory": ".",
+      "projectSha256": "47f376398bbe43af68bcfd559a4916042d15feb0274de2190057d6a9d7ac726e"
+    },
+    {
+      "id": "canonical/T280",
+      "topic": "T280",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "declaredImportKind": "single-file",
+      "entryFile": "main.go",
+      "command": [
+        "run",
+        "."
+      ],
+      "files": [
+        {
+          "path": "main.go",
+          "contentBase64": "cGFja2FnZSBtYWluCgppbXBvcnQgKAoJImZtdCIKCSJzdHJjb252IgoJInVuaWNvZGUiCikKCmZ1bmMgcHJlY2VkZW5jZShvcCBydW5lKSBpbnQgewoJaWYgb3AgPT0gJysnIHx8IG9wID09ICctJyB7CgkJcmV0dXJuIDEKCX0KCWlmIG9wID09ICcqJyB8fCBvcCA9PSAnLycgewoJCXJldHVybiAyCgl9CglyZXR1cm4gMAp9CmZ1bmMgZXZhbHVhdGUodGV4dCBzdHJpbmcpIChpbnQsIGVycm9yKSB7Cgl2YWx1ZXMgOj0gW11pbnR7fQoJb3BzIDo9IFtdcnVuZXt9CglhcHBseSA6PSBmdW5jKCkgZXJyb3IgewoJCWlmIGxlbih2YWx1ZXMpIDwgMiB8fCBsZW4ob3BzKSA9PSAwIHsKCQkJcmV0dXJuIGZtdC5FcnJvcmYoIm1pc3Npbmcgb3BlcmFuZCIpCgkJfQoJCW9wIDo9IG9wc1tsZW4ob3BzKS0xXQoJCW9wcyA9IG9wc1s6bGVuKG9wcyktMV0KCQlhLCBiIDo9IHZhbHVlc1tsZW4odmFsdWVzKS0yXSwgdmFsdWVzW2xlbih2YWx1ZXMpLTFdCgkJdmFsdWVzID0gdmFsdWVzWzpsZW4odmFsdWVzKS0yXQoJCXN3aXRjaCBvcCB7CgkJY2FzZSAnKyc6CgkJCXZhbHVlcyA9IGFwcGVuZCh2YWx1ZXMsIGErYikKCQljYXNlICctJzoKCQkJdmFsdWVzID0gYXBwZW5kKHZhbHVlcywgYS1iKQoJCWNhc2UgJyonOgoJCQl2YWx1ZXMgPSBhcHBlbmQodmFsdWVzLCBhKmIpCgkJY2FzZSAnLyc6CgkJCWlmIGIgPT0gMCB7CgkJCQlyZXR1cm4gZm10LkVycm9yZigiZGl2aXNpb24gYnkgemVybyIpCgkJCX0KCQkJdmFsdWVzID0gYXBwZW5kKHZhbHVlcywgYS9iKQoJCWRlZmF1bHQ6CgkJCXJldHVybiBmbXQuRXJyb3JmKCJiYWQgb3BlcmF0b3IiKQoJCX0KCQlyZXR1cm4gbmlsCgl9CgljaGFycyA6PSBbXXJ1bmUodGV4dCkKCWV4cGVjdFZhbHVlIDo9IHRydWUKCWZvciBpIDo9IDA7IGkgPCBsZW4oY2hhcnMpOyB7CgkJYyA6PSBjaGFyc1tpXQoJCWlmIHVuaWNvZGUuSXNTcGFjZShjKSB7CgkJCWkrKwoJCQljb250aW51ZQoJCX0KCQlpZiBjID49ICcwJyAmJiBjIDw9ICc5JyB7CgkJCWlmICFleHBlY3RWYWx1ZSB7CgkJCQlyZXR1cm4gMCwgZm10LkVycm9yZigibWlzc2luZyBvcGVyYXRvciIpCgkJCX0KCQkJc3RhcnQgOj0gaQoJCQlmb3IgaSA8IGxlbihjaGFycykgJiYgY2hhcnNbaV0gPj0gJzAnICYmIGNoYXJzW2ldIDw9ICc5JyB7CgkJCQlpKysKCQkJfQoJCQluLCBlcnIgOj0gc3RyY29udi5BdG9pKHN0cmluZyhjaGFyc1tzdGFydDppXSkpCgkJCWlmIGVyciAhPSBuaWwgewoJCQkJcmV0dXJuIDAsIGVycgoJCQl9CgkJCXZhbHVlcyA9IGFwcGVuZCh2YWx1ZXMsIG4pCgkJCWV4cGVjdFZhbHVlID0gZmFsc2UKCQkJY29udGludWUKCQl9CgkJaWYgYyA9PSAnKCcgewoJCQlpZiAhZXhwZWN0VmFsdWUgewoJCQkJcmV0dXJuIDAsIGZtdC5FcnJvcmYoIm1pc3Npbmcgb3BlcmF0b3IiKQoJCQl9CgkJCW9wcyA9IGFwcGVuZChvcHMsIGMpCgkJCWkrKwoJCQljb250aW51ZQoJCX0KCQlpZiBjID09ICcpJyB7CgkJCWlmIGV4cGVjdFZhbHVlIHsKCQkJCXJldHVybiAwLCBmbXQuRXJyb3JmKCJlbXB0eSBncm91cCIpCgkJCX0KCQkJZm9yIGxlbihvcHMpID4gMCAmJiBvcHNbbGVuKG9wcyktMV0gIT0gJygnIHsKCQkJCWlmIGVyciA6PSBhcHBseSgpOyBlcnIgIT0gbmlsIHsKCQkJCQlyZXR1cm4gMCwgZXJyCgkJCQl9CgkJCX0KCQkJaWYgbGVuKG9wcykgPT0gMCB7CgkJCQlyZXR1cm4gMCwgZm10LkVycm9yZigidW5tYXRjaGVkIGNsb3NlIikKCQkJfQoJCQlvcHMgPSBvcHNbOmxlbihvcHMpLTFdCgkJCWkrKwoJCQljb250aW51ZQoJCX0KCQlpZiBwcmVjZWRlbmNlKGMpID09IDAgfHwgZXhwZWN0VmFsdWUgewoJCQlyZXR1cm4gMCwgZm10LkVycm9yZigiYmFkIHRva2VuIikKCQl9CgkJZm9yIGxlbihvcHMpID4gMCAmJiBwcmVjZWRlbmNlKG9wc1tsZW4ob3BzKS0xXSkgPj0gcHJlY2VkZW5jZShjKSB7CgkJCWlmIGVyciA6PSBhcHBseSgpOyBlcnIgIT0gbmlsIHsKCQkJCXJldHVybiAwLCBlcnIKCQkJfQoJCX0KCQlvcHMgPSBhcHBlbmQob3BzLCBjKQoJCWV4cGVjdFZhbHVlID0gdHJ1ZQoJCWkrKwoJfQoJaWYgZXhwZWN0VmFsdWUgewoJCXJldHVybiAwLCBmbXQuRXJyb3JmKCJpbmNvbXBsZXRlIikKCX0KCWZvciBsZW4ob3BzKSA+IDAgewoJCWlmIG9wc1tsZW4ob3BzKS0xXSA9PSAnKCcgewoJCQlyZXR1cm4gMCwgZm10LkVycm9yZigidW5tYXRjaGVkIG9wZW4iKQoJCX0KCQlpZiBlcnIgOj0gYXBwbHkoKTsgZXJyICE9IG5pbCB7CgkJCXJldHVybiAwLCBlcnIKCQl9Cgl9CglpZiBsZW4odmFsdWVzKSAhPSAxIHsKCQlyZXR1cm4gMCwgZm10LkVycm9yZigiYmFkIGV4cHJlc3Npb24iKQoJfQoJcmV0dXJuIHZhbHVlc1swXSwgbmlsCn0KZnVuYyBtYWluKCkgewoJZm9yIF8sIGV4cHJlc3Npb24gOj0gcmFuZ2UgW11zdHJpbmd7IjIgKyAzICogKDQgLSAxKSIsICIxOCAvIDMgLyAyIiwgIjQvKDItMikiLCAiMSArIn0gewoJCXZhbHVlLCBlcnIgOj0gZXZhbHVhdGUoZXhwcmVzc2lvbikKCQlpZiBlcnIgIT0gbmlsIHsKCQkJZm10LlByaW50ZigiJXMgLT4gZXJyb3JcbiIsIGV4cHJlc3Npb24pCgkJfSBlbHNlIHsKCQkJZm10LlByaW50ZigiJXMgLT4gJWRcbiIsIGV4cHJlc3Npb24sIHZhbHVlKQoJCX0KCX0KfQo=",
+          "sha256": "f14d575c52a0843e7848a35dea12215e0cae246fe9a6e08a44306be6be694a37"
+        }
+      ],
+      "stdin": "",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "2 + 3 * (4 - 1) -> 11\n18 / 3 / 2 -> 3\n4/(2-2) -> error\n1 + -> error\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "contentSha256": "544e497cb497982156e92971bbb6bbe7a31862bd39fea325e424330eca213ff8",
+      "authoringSha256": "23174c166a0805d48a4fc80f0aa5fbcf8f9072408df115621e27664d89ec8447",
+      "workingDirectory": ".",
+      "projectSha256": "544e497cb497982156e92971bbb6bbe7a31862bd39fea325e424330eca213ff8"
+    }
+  ],
+  "inventoryIssues": [],
+  "inventorySha256": "23f4ba8586dc17447db3559ec45eb1f063edf60ad11b1fa0636269127d1acf5b"
+}

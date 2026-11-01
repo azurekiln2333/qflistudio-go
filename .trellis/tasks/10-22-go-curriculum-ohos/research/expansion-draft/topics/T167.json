@@ -1,0 +1,71 @@
+{
+  "id": "T167",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "under10=2 under50=2 under100=2 overflow=2\nnegative-rejected=1\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-167",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "按区间直方图",
+    "summary": "为延迟读数分桶。明确上界不包含的规则。独立统计负数拒绝和溢出桶。",
+    "concepts": [
+      "sort.Search",
+      "半开分桶",
+      "溢出桶",
+      "无效读数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "为延迟读数分桶。明确上界不包含的规则。独立统计负数拒绝和溢出桶。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "使用大于等于查找会改变端点归属，指标解释也随之变化。",
+      "边界未排序或重复会破坏二分前提，应在接收数据前验证。"
+    ],
+    "exercises": [
+      {
+        "prompt": "将普通桶计数转换为累计桶，并同时保留原始非累计计数。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "复制 counts 到新切片。对新切片做前缀和。不要就地覆盖原始计数。溢出桶的累计值应等于有效样本总数。"
+      }
+    ],
+    "explain": "每个上界定义一个左闭右开桶。Search 找第一个严格大于读数的上界。所以恰好十进入第二桶，恰好一百进入溢出桶。先确认边界严格递增且为正。随后把负读数计入 rejected。其余每条恰好进入一个桶。固定输入覆盖每个端点附近。四个桶均为两条。可以独立核对计数守恒。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc histogram(values, bounds []int) ([]int, int, error) {\n\tfor i, bound := range bounds {\n\t\tif bound <= 0 || (i > 0 && bound <= bounds[i-1]) {\n\t\t\treturn nil, 0, fmt.Errorf(\"invalid bounds\")\n\t\t}\n\t}\n\tcounts := make([]int, len(bounds)+1)\n\trejected := 0\n\tfor _, value := range values {\n\t\tif value < 0 {\n\t\t\trejected++\n\t\t\tcontinue\n\t\t}\n\t\tbucket := sort.Search(len(bounds), func(i int) bool { return value < bounds[i] })\n\t\tcounts[bucket]++\n\t}\n\treturn counts, rejected, nil\n}\nfunc main() {\n\tcounts, rejected, err := histogram([]int{0, 9, 10, 49, 50, 99, 100, 150, -1}, []int{10, 50, 100})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"under10=%d under50=%d under100=%d overflow=%d\\n\", counts[0], counts[1], counts[2], counts[3])\n\tfmt.Printf(\"negative-rejected=%d\\n\", rejected)\n}\n",
+    "output": "under10=2 under50=2 under100=2 overflow=2\nnegative-rejected=1"
+  },
+  "example": {
+    "id": "go-example-167",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "按区间直方图",
+    "summary": "为延迟读数分桶。明确上界不包含的规则。独立统计负数拒绝和溢出桶。",
+    "concepts": [
+      "sort.Search",
+      "半开分桶",
+      "溢出桶",
+      "无效读数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc histogram(values, bounds []int) ([]int, int, error) {\n\tfor i, bound := range bounds {\n\t\tif bound <= 0 || (i > 0 && bound <= bounds[i-1]) {\n\t\t\treturn nil, 0, fmt.Errorf(\"invalid bounds\")\n\t\t}\n\t}\n\tcounts := make([]int, len(bounds)+1)\n\trejected := 0\n\tfor _, value := range values {\n\t\tif value < 0 {\n\t\t\trejected++\n\t\t\tcontinue\n\t\t}\n\t\tbucket := sort.Search(len(bounds), func(i int) bool { return value < bounds[i] })\n\t\tcounts[bucket]++\n\t}\n\treturn counts, rejected, nil\n}\nfunc main() {\n\tcounts, rejected, err := histogram([]int{0, 9, 10, 49, 50, 99, 100, 150, -1}, []int{10, 50, 100})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"under10=%d under50=%d under100=%d overflow=%d\\n\", counts[0], counts[1], counts[2], counts[3])\n\tfmt.Printf(\"negative-rejected=%d\\n\", rejected)\n}\n",
+    "expectedOutput": "under10=2 under50=2 under100=2 overflow=2\nnegative-rejected=1",
+    "templateType": "go"
+  }
+}

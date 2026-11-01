@@ -1,0 +1,67 @@
+{
+  "id": "T229",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "../api.html -> https://example.test/docs/api.html\n?lang=zh -> https://example.test/docs/guide/index.html?lang=zh\n#usage -> https://example.test/docs/guide/index.html?lang=en#usage\n/assets/a.png -> https://example.test/assets/a.png\nbase-unchanged=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-229",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "相对 URL 解析",
+    "summary": "能以目录 URL 为基准解析相对链接，比较路径、查询和片段变化。",
+    "concepts": [
+      "net/url",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能以目录 URL 为基准解析相对链接，比较路径、查询和片段变化。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "基准 URL 末尾是否有斜线会影响它被视为文件还是目录。",
+      "相对引用也可能以双斜线更换主机，处理用户链接时应验证最终主机。"
+    ],
+    "exercises": [
+      {
+        "prompt": "将基准改成 https://example.test/docs/guide/，比较 api.html 的结果。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "目录基准下结果是 /docs/guide/api.html；原来的 index.html 基准解析同名引用时同样替换文件名。"
+      }
+    ],
+    "explain": "ResolveReference 按 URL 规则合并相对引用，而不是按文件路径简单拼接。上级路径会替换当前文档所在目录，单独查询只更新查询部分，片段引用保留原查询，斜线开头从站点根路径开始。示例检查基准 URL 未被修改。example.test 只作为语法数据，程序没有发起任何网络请求。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/url\"\n)\n\nfunc main() {\n\tbase, err := url.Parse(\"https://example.test/docs/guide/index.html?lang=en\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, text := range []string{\"../api.html\", \"?lang=zh\", \"#usage\", \"/assets/a.png\"} {\n\t\tref, err := url.Parse(text)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tresolved := base.ResolveReference(ref)\n\t\tfmt.Printf(\"%s -> %s\\n\", text, resolved.String())\n\t}\n\tfmt.Printf(\"base-unchanged=%t\\n\", base.RawQuery == \"lang=en\")\n}\n",
+    "output": "../api.html -> https://example.test/docs/api.html\n?lang=zh -> https://example.test/docs/guide/index.html?lang=zh\n#usage -> https://example.test/docs/guide/index.html?lang=en#usage\n/assets/a.png -> https://example.test/assets/a.png\nbase-unchanged=true"
+  },
+  "example": {
+    "id": "go-example-229",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "相对 URL 解析",
+    "summary": "能以目录 URL 为基准解析相对链接，比较路径、查询和片段变化。",
+    "concepts": [
+      "net/url",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/url\"\n)\n\nfunc main() {\n\tbase, err := url.Parse(\"https://example.test/docs/guide/index.html?lang=en\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, text := range []string{\"../api.html\", \"?lang=zh\", \"#usage\", \"/assets/a.png\"} {\n\t\tref, err := url.Parse(text)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tresolved := base.ResolveReference(ref)\n\t\tfmt.Printf(\"%s -> %s\\n\", text, resolved.String())\n\t}\n\tfmt.Printf(\"base-unchanged=%t\\n\", base.RawQuery == \"lang=en\")\n}\n",
+    "expectedOutput": "../api.html -> https://example.test/docs/api.html\n?lang=zh -> https://example.test/docs/guide/index.html?lang=zh\n#usage -> https://example.test/docs/guide/index.html?lang=en#usage\n/assets/a.png -> https://example.test/assets/a.png\nbase-unchanged=true",
+    "templateType": "go"
+  }
+}

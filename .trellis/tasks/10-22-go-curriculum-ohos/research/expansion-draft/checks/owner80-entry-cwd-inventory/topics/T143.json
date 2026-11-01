@@ -1,0 +1,69 @@
+{
+  "id": "T143",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "combined=HDR:go offline\nbytes=14\nempty-fragments=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-143",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "串联分片流",
+    "summary": "把头部与多个分片串成一个读取流，用小缓冲逐步核对完整内容。",
+    "concepts": [
+      "io.MultiReader",
+      "增量读取",
+      "n 与 err"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "把头部与多个分片串成一个读取流，用小缓冲逐步核对完整内容。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "收到 EOF 时仍应先处理同次调用返回的有效字节。",
+      "MultiReader 只负责串联，不会替应用验证消息长度或内容边界。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在读取过程中比较固定预期字节，发现第一个不同位置立即报错。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "维护已消费偏移，对每次 n 字节检查是否超出预期以及逐字节相等；EOF 时再确认偏移等于总长度。"
+      }
+    ],
+    "explain": "MultiReader 依次消费各 Reader，让调用者不必先拼接全部字节。空分片不会生成额外数据，三个字节的小缓冲让完整内容跨多次读取。循环先处理 n 个有效字节，再检查错误，因为 Reader 可以同时返回数据和 EOF。最终的十四字节由四字节头、三字节中间段和七字节尾段组成，输出顺序与各分片定义一致。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc main() {\n\treader := io.MultiReader(strings.NewReader(\"\"), strings.NewReader(\"HDR:\"), strings.NewReader(\"go \"), strings.NewReader(\"offline\"), strings.NewReader(\"\"))\n\tvar output strings.Builder\n\tbuffer := make([]byte, 3)\n\tfor {\n\t\tn, err := reader.Read(buffer)\n\t\tif n > 0 {\n\t\t\toutput.Write(buffer[:n])\n\t\t}\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tfmt.Printf(\"combined=%s\\n\", output.String())\n\tfmt.Printf(\"bytes=%d\\n\", output.Len())\n\tfmt.Printf(\"empty-fragments=%t\\n\", output.String() == \"HDR:go offline\")\n}\n",
+    "output": "combined=HDR:go offline\nbytes=14\nempty-fragments=true"
+  },
+  "example": {
+    "id": "go-example-143",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "串联分片流",
+    "summary": "把头部与多个分片串成一个读取流，用小缓冲逐步核对完整内容。",
+    "concepts": [
+      "io.MultiReader",
+      "增量读取",
+      "n 与 err"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc main() {\n\treader := io.MultiReader(strings.NewReader(\"\"), strings.NewReader(\"HDR:\"), strings.NewReader(\"go \"), strings.NewReader(\"offline\"), strings.NewReader(\"\"))\n\tvar output strings.Builder\n\tbuffer := make([]byte, 3)\n\tfor {\n\t\tn, err := reader.Read(buffer)\n\t\tif n > 0 {\n\t\t\toutput.Write(buffer[:n])\n\t\t}\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tfmt.Printf(\"combined=%s\\n\", output.String())\n\tfmt.Printf(\"bytes=%d\\n\", output.Len())\n\tfmt.Printf(\"empty-fragments=%t\\n\", output.String() == \"HDR:go offline\")\n}\n",
+    "expectedOutput": "combined=HDR:go offline\nbytes=14\nempty-fragments=true",
+    "templateType": "go"
+  }
+}

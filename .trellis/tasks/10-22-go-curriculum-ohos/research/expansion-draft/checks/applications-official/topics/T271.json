@@ -1,0 +1,69 @@
+{
+  "id": "T271",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "t1 mismatch=100/110\nt2 duplicate-right\nt3 missing-right\nt4 missing-left\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-271",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "账本对账器",
+    "summary": "能按交易 ID 对比两份账本，输出缺失、重复与金额不一致记录。",
+    "concepts": [
+      "encoding/csv",
+      "sort",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能按交易 ID 对比两份账本，输出缺失、重复与金额不一致记录。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "把重复 ID 直接覆盖会丢失重复交易证据。",
+      "两份账本总额相同也可能有不同的缺失或错账，不能只比较总和。"
+    ],
+    "exercises": [
+      {
+        "prompt": "对同一 ID 的重复金额不一致单独报告冲突。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "加载函数除重复集合外记录第一次金额与冲突标记，避免覆盖原始值，再按稳定 ID 顺序展示。"
+      }
+    ],
+    "explain": "对账不是比较文件总金额，而是按交易 ID 对应逐笔记录。加载时先保留第一笔并记录重复 ID，比较时取两边键集合的并集，按 ID 排序报告金额不符、重复和缺失。金额统一用整数分，避免浮点格式差异掩盖实际金额问题。示例刻意让重复记录金额相同，证明仅看汇总仍会漏掉结构错误。",
+    "code": "package main\n\nimport (\n\t\"encoding/csv\"\n\t\"fmt\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc ledger(text string) (map[string]int, map[string]bool) {\n\trows, err := csv.NewReader(strings.NewReader(text)).ReadAll()\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvalues := map[string]int{}\n\tduplicates := map[string]bool{}\n\tfor _, row := range rows[1:] {\n\t\tif len(row) != 2 {\n\t\t\tpanic(\"bad columns\")\n\t\t}\n\t\tamount, err := strconv.Atoi(row[1])\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif _, exists := values[row[0]]; exists {\n\t\t\tduplicates[row[0]] = true\n\t\t} else {\n\t\t\tvalues[row[0]] = amount\n\t\t}\n\t}\n\treturn values, duplicates\n}\nfunc main() {\n\tleft, ld := ledger(\"id,cents\\nt1,100\\nt2,200\\nt3,300\\n\")\n\tright, rd := ledger(\"id,cents\\nt1,110\\nt2,200\\nt2,200\\nt4,400\\n\")\n\tset := map[string]bool{}\n\tfor id := range left {\n\t\tset[id] = true\n\t}\n\tfor id := range right {\n\t\tset[id] = true\n\t}\n\tids := []string{}\n\tfor id := range set {\n\t\tids = append(ids, id)\n\t}\n\tsort.Strings(ids)\n\tfor _, id := range ids {\n\t\ta, hasA := left[id]\n\t\tb, hasB := right[id]\n\t\tif ld[id] {\n\t\t\tfmt.Printf(\"%s duplicate-left\\n\", id)\n\t\t}\n\t\tif rd[id] {\n\t\t\tfmt.Printf(\"%s duplicate-right\\n\", id)\n\t\t}\n\t\tswitch {\n\t\tcase !hasA:\n\t\t\tfmt.Printf(\"%s missing-left\\n\", id)\n\t\tcase !hasB:\n\t\t\tfmt.Printf(\"%s missing-right\\n\", id)\n\t\tcase a != b:\n\t\t\tfmt.Printf(\"%s mismatch=%d/%d\\n\", id, a, b)\n\t\t}\n\t}\n}\n",
+    "output": "t1 mismatch=100/110\nt2 duplicate-right\nt3 missing-right\nt4 missing-left"
+  },
+  "example": {
+    "id": "go-example-271",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "账本对账器",
+    "summary": "能按交易 ID 对比两份账本，输出缺失、重复与金额不一致记录。",
+    "concepts": [
+      "encoding/csv",
+      "sort",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/csv\"\n\t\"fmt\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc ledger(text string) (map[string]int, map[string]bool) {\n\trows, err := csv.NewReader(strings.NewReader(text)).ReadAll()\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvalues := map[string]int{}\n\tduplicates := map[string]bool{}\n\tfor _, row := range rows[1:] {\n\t\tif len(row) != 2 {\n\t\t\tpanic(\"bad columns\")\n\t\t}\n\t\tamount, err := strconv.Atoi(row[1])\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif _, exists := values[row[0]]; exists {\n\t\t\tduplicates[row[0]] = true\n\t\t} else {\n\t\t\tvalues[row[0]] = amount\n\t\t}\n\t}\n\treturn values, duplicates\n}\nfunc main() {\n\tleft, ld := ledger(\"id,cents\\nt1,100\\nt2,200\\nt3,300\\n\")\n\tright, rd := ledger(\"id,cents\\nt1,110\\nt2,200\\nt2,200\\nt4,400\\n\")\n\tset := map[string]bool{}\n\tfor id := range left {\n\t\tset[id] = true\n\t}\n\tfor id := range right {\n\t\tset[id] = true\n\t}\n\tids := []string{}\n\tfor id := range set {\n\t\tids = append(ids, id)\n\t}\n\tsort.Strings(ids)\n\tfor _, id := range ids {\n\t\ta, hasA := left[id]\n\t\tb, hasB := right[id]\n\t\tif ld[id] {\n\t\t\tfmt.Printf(\"%s duplicate-left\\n\", id)\n\t\t}\n\t\tif rd[id] {\n\t\t\tfmt.Printf(\"%s duplicate-right\\n\", id)\n\t\t}\n\t\tswitch {\n\t\tcase !hasA:\n\t\t\tfmt.Printf(\"%s missing-left\\n\", id)\n\t\tcase !hasB:\n\t\t\tfmt.Printf(\"%s missing-right\\n\", id)\n\t\tcase a != b:\n\t\t\tfmt.Printf(\"%s mismatch=%d/%d\\n\", id, a, b)\n\t\t}\n\t}\n}\n",
+    "expectedOutput": "t1 mismatch=100/110\nt2 duplicate-right\nt3 missing-right\nt4 missing-left",
+    "templateType": "go"
+  }
+}

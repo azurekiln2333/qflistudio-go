@@ -1,0 +1,9 @@
+{"file": ".trellis/spec/frontend/content-code-import.md", "reason": "Content import, actual displayed code, source ownership and editor navigation"}
+{"file": ".trellis/spec/frontend/editor-terminal-run.md", "reason": "Existing terminal/editor behavior to preserve"}
+{"file": ".trellis/spec/backend/native-go-runtime.md", "reason": "Native FFI, Yaegi boundaries, target proof and rebuild gates"}
+{"file": ".trellis/spec/backend/go-entry-selection.md", "reason": "Selected entry and multi-file source view"}
+{"file": ".trellis/spec/backend/go-curriculum-tooling.md", "reason": "Source verification, dedup and shared-slice integration"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "Cross-layer model and contract review"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Existing abstraction reuse and safe edits"}
+{"file": ".trellis/tasks/10-22-standalone-ide-completeness/research/official-sources.md", "reason": "Retrieved primary-source capabilities and offline boundaries"}
+{"file": ".trellis/tasks/10-22-standalone-ide-completeness/research/acceptance.md", "reason": "Full original scope and evidence requirements"}

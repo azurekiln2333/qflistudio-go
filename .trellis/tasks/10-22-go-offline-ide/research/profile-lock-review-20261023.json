@@ -1,0 +1,93 @@
+{
+  "realFlutterOrGoInvoked": false,
+  "wrapperSha256": "462894fc2f90b81a7df13536d6ee330df8a06b8ad6786225a6bf495e71d9c40f",
+  "readers": {
+    "dart": "D:\\ProgramFiles\\flutter_ohos\\bin\\cache\\dart-sdk\\bin\\dart.exe",
+    "java": "D:\\ProgramFiles\\Huawei\\DevEco Studio\\jbr\\bin\\java.exe",
+    "node": "D:\\ProgramFiles\\nodejs\\node.exe"
+  },
+  "failedBuildRuns": [
+    {
+      "exitCode": 1,
+      "fakeFlutterExitCode": 7,
+      "originalBytesRestored": true
+    },
+    {
+      "exitCode": 1,
+      "fakeFlutterExitCode": 7,
+      "originalBytesRestored": true
+    }
+  ],
+  "uniqueRecoveryBackups": 2,
+  "fakeFlutterChecks": [
+    {
+      "checks": [
+        {
+          "reader": "dart",
+          "exitCode": 0,
+          "stdout": "dart-reader-ok",
+          "stderr": ""
+        },
+        {
+          "reader": "java",
+          "exitCode": 0,
+          "stdout": "java-reader-ok",
+          "stderr": ""
+        },
+        {
+          "reader": "node",
+          "exitCode": 0,
+          "stdout": "node-reader-ok",
+          "stderr": ""
+        },
+        {
+          "rawWriterRefused": true
+        },
+        {
+          "secondWrapperRefused": true,
+          "secondFlutterInvoked": false,
+          "exitCode": 1,
+          "stderr": "ParentContainsErrorRecordException: D:\\AppData\\Local\\Temp\\go_profile_lock_review_vu4aij0_\\tool\\build_go_catalog_audit.ps1:46\nLine |\n  46 |    $profileStream = [IO.File]::Open($profilePath, [IO.FileMode]::Open,\n     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Exception calling \"Open\" with \"4\" argument(s): \"The process cannot access the file\n     | 'D:\\AppData\\Local\\Temp\\go_profile_lock_review_vu4aij0_\\ohos\\entry\\build-profile.json5' because it is being used\n     | by another process.\"\n"
+        }
+      ],
+      "temporaryProfileSha256": "fc91657b6f74d8d52da3c47674c4069fa099df0749a83fdce3e8363bde67a7f1"
+    },
+    {
+      "checks": [
+        {
+          "reader": "dart",
+          "exitCode": 0,
+          "stdout": "dart-reader-ok",
+          "stderr": ""
+        },
+        {
+          "reader": "java",
+          "exitCode": 0,
+          "stdout": "java-reader-ok",
+          "stderr": ""
+        },
+        {
+          "reader": "node",
+          "exitCode": 0,
+          "stdout": "node-reader-ok",
+          "stderr": ""
+        },
+        {
+          "rawWriterRefused": true
+        },
+        {
+          "secondWrapperRefused": true,
+          "secondFlutterInvoked": false,
+          "exitCode": 1,
+          "stderr": "ParentContainsErrorRecordException: D:\\AppData\\Local\\Temp\\go_profile_lock_review_vu4aij0_\\tool\\build_go_catalog_audit.ps1:46\nLine |\n  46 |    $profileStream = [IO.File]::Open($profilePath, [IO.FileMode]::Open,\n     |    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n     | Exception calling \"Open\" with \"4\" argument(s): \"The process cannot access the file\n     | 'D:\\AppData\\Local\\Temp\\go_profile_lock_review_vu4aij0_\\ohos\\entry\\build-profile.json5' because it is being used\n     | by another process.\"\n"
+        }
+      ],
+      "temporaryProfileSha256": "fc91657b6f74d8d52da3c47674c4069fa099df0749a83fdce3e8363bde67a7f1"
+    }
+  ],
+  "injectedPartialWrite": {
+    "reachedFlutter": false,
+    "originalBytesRestored": true
+  },
+  "success": true
+}

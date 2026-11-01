@@ -1,0 +1,67 @@
+{
+  "id": "T276",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "event3 rejected balance=70\nevent4 rejected balance=70\nfinal=70\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-276",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "事件溯源余额",
+    "summary": "能依序重放开户、入账、扣款事件，拒绝非法事件且保留此前状态。",
+    "concepts": [
+      "encoding/json",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能依序重放开户、入账、扣款事件，拒绝非法事件且保留此前状态。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "在检查余额前先扣款再返回错误，会破坏重放确定性。",
+      "事件顺序属于业务数据，不能为了输出排序而重排入账和扣款事件。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为事件增加序号，拒绝重复或不连续序号。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "在 State 增加最后已应用序号；只有事件验证和状态更新都成功后才推进，明确失败事件的恢复策略。"
+      }
+    ],
+    "explain": "事件重放把当前状态和一个事件交给纯 apply 函数，先在副本上检查并修改，成功才提交。开户、入账和扣款依次得到余额七十，超额扣款和未知事件被拒绝，之前有效状态保留。示例选择记录坏事件后继续扫描，这是一种明确的导入策略；正式事件日志通常还要定义损坏日志是否立即终止。",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Event struct {\n\tKind   string `json:\"kind\"`\n\tAmount int    `json:\"amount\"`\n}\ntype State struct {\n\tOpen    bool\n\tBalance int\n}\n\nfunc apply(state State, event Event) (State, error) {\n\tnext := state\n\tswitch event.Kind {\n\tcase \"open\":\n\t\tif state.Open {\n\t\t\treturn state, fmt.Errorf(\"already open\")\n\t\t}\n\t\tnext.Open = true\n\tcase \"credit\", \"debit\":\n\t\tif !state.Open || event.Amount <= 0 {\n\t\t\treturn state, fmt.Errorf(\"invalid amount/state\")\n\t\t}\n\t\tif event.Kind == \"credit\" {\n\t\t\tnext.Balance += event.Amount\n\t\t} else {\n\t\t\tif event.Amount > state.Balance {\n\t\t\t\treturn state, fmt.Errorf(\"insufficient funds\")\n\t\t\t}\n\t\t\tnext.Balance -= event.Amount\n\t\t}\n\tdefault:\n\t\treturn state, fmt.Errorf(\"unknown event\")\n\t}\n\treturn next, nil\n}\nfunc main() {\n\tvar events []Event\n\tif err := json.Unmarshal([]byte(`[{\"kind\":\"open\"},{\"kind\":\"credit\",\"amount\":100},{\"kind\":\"debit\",\"amount\":30},{\"kind\":\"debit\",\"amount\":90},{\"kind\":\"other\"}]`), &events); err != nil {\n\t\tpanic(err)\n\t}\n\tstate := State{}\n\tfor index, event := range events {\n\t\tnext, err := apply(state, event)\n\t\tif err != nil {\n\t\t\tfmt.Printf(\"event%d rejected balance=%d\\n\", index, state.Balance)\n\t\t\tcontinue\n\t\t}\n\t\tstate = next\n\t}\n\tfmt.Printf(\"final=%d\\n\", state.Balance)\n}\n",
+    "output": "event3 rejected balance=70\nevent4 rejected balance=70\nfinal=70"
+  },
+  "example": {
+    "id": "go-example-276",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "事件溯源余额",
+    "summary": "能依序重放开户、入账、扣款事件，拒绝非法事件且保留此前状态。",
+    "concepts": [
+      "encoding/json",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Event struct {\n\tKind   string `json:\"kind\"`\n\tAmount int    `json:\"amount\"`\n}\ntype State struct {\n\tOpen    bool\n\tBalance int\n}\n\nfunc apply(state State, event Event) (State, error) {\n\tnext := state\n\tswitch event.Kind {\n\tcase \"open\":\n\t\tif state.Open {\n\t\t\treturn state, fmt.Errorf(\"already open\")\n\t\t}\n\t\tnext.Open = true\n\tcase \"credit\", \"debit\":\n\t\tif !state.Open || event.Amount <= 0 {\n\t\t\treturn state, fmt.Errorf(\"invalid amount/state\")\n\t\t}\n\t\tif event.Kind == \"credit\" {\n\t\t\tnext.Balance += event.Amount\n\t\t} else {\n\t\t\tif event.Amount > state.Balance {\n\t\t\t\treturn state, fmt.Errorf(\"insufficient funds\")\n\t\t\t}\n\t\t\tnext.Balance -= event.Amount\n\t\t}\n\tdefault:\n\t\treturn state, fmt.Errorf(\"unknown event\")\n\t}\n\treturn next, nil\n}\nfunc main() {\n\tvar events []Event\n\tif err := json.Unmarshal([]byte(`[{\"kind\":\"open\"},{\"kind\":\"credit\",\"amount\":100},{\"kind\":\"debit\",\"amount\":30},{\"kind\":\"debit\",\"amount\":90},{\"kind\":\"other\"}]`), &events); err != nil {\n\t\tpanic(err)\n\t}\n\tstate := State{}\n\tfor index, event := range events {\n\t\tnext, err := apply(state, event)\n\t\tif err != nil {\n\t\t\tfmt.Printf(\"event%d rejected balance=%d\\n\", index, state.Balance)\n\t\t\tcontinue\n\t\t}\n\t\tstate = next\n\t}\n\tfmt.Printf(\"final=%d\\n\", state.Balance)\n}\n",
+    "expectedOutput": "event3 rejected balance=70\nevent4 rejected balance=70\nfinal=70",
+    "templateType": "go"
+  }
+}

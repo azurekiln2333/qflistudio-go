@@ -1,0 +1,4196 @@
+[
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T121.md",
+    "line": 27,
+    "col": 16,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T121.md",
+    "line": 39,
+    "col": 30,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T121.md",
+    "line": 43,
+    "col": 122,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T122.md",
+    "line": 31,
+    "col": 45,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T122.md",
+    "line": 35,
+    "col": 39,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T122.md",
+    "line": 35,
+    "col": 110,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T123.md",
+    "line": 23,
+    "col": 10,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T123.md",
+    "line": 39,
+    "col": 19,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 49 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "49 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T123.md",
+    "line": 39,
+    "col": 57,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T124.md",
+    "line": 39,
+    "col": 28,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T124.md",
+    "line": 43,
+    "col": 132,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T125.md",
+    "line": 43,
+    "col": 51,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T125.md",
+    "line": 47,
+    "col": 16,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 47 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "47 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T125.md",
+    "line": 47,
+    "col": 33,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被反斜杠保护的"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T125.md",
+    "line": 47,
+    "col": 76,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T126.md",
+    "line": 23,
+    "col": 13,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T126.md",
+    "line": 35,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 45 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "45 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T126.md",
+    "line": 35,
+    "col": 31,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T126.md",
+    "line": 39,
+    "col": 61,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T127.md",
+    "line": 47,
+    "col": 28,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 44 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "44 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T127.md",
+    "line": 47,
+    "col": 59,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T128.md",
+    "line": 19,
+    "col": 42,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被接受"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T128.md",
+    "line": 23,
+    "col": 28,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T128.md",
+    "line": 35,
+    "col": 60,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T128.md",
+    "line": 39,
+    "col": 22,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 47 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "47 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T128.md",
+    "line": 39,
+    "col": 54,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T129.md",
+    "line": 39,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T129.md",
+    "line": 39,
+    "col": 35,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T129.md",
+    "line": 43,
+    "col": 50,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被反斜杠规则再"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T129.md",
+    "line": 43,
+    "col": 102,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T130.md",
+    "line": 39,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T130.md",
+    "line": 39,
+    "col": 26,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T130.md",
+    "line": 43,
+    "col": 120,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T130.md",
+    "line": 43,
+    "col": 126,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被定义为空结果"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T131.md",
+    "line": 39,
+    "col": 67,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T131.md",
+    "line": 43,
+    "col": 42,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 42 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "42 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T131.md",
+    "line": 43,
+    "col": 72,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T132.md",
+    "line": 3,
+    "col": 10,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：核对×3、校验×5 混用。定一个名字全篇用它，建议「校验」。",
+    "match": "核对"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T132.md",
+    "line": 23,
+    "col": 17,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T132.md",
+    "line": 35,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 42 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "42 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T132.md",
+    "line": 35,
+    "col": 30,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T132.md",
+    "line": 39,
+    "col": 67,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 45 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "45 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T132.md",
+    "line": 39,
+    "col": 88,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拒绝"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T133.md",
+    "line": 39,
+    "col": 88,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T133.md",
+    "line": 43,
+    "col": 112,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T133.md",
+    "line": 43,
+    "col": 123,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拒绝"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T134.md",
+    "line": 39,
+    "col": 27,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T134.md",
+    "line": 39,
+    "col": 41,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被业务检查掩盖"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T134.md",
+    "line": 43,
+    "col": 48,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 41 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "41 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T134.md",
+    "line": 43,
+    "col": 76,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被静默忽略"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T134.md",
+    "line": 43,
+    "col": 81,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T134.md",
+    "line": 43,
+    "col": 136,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×3、校验×2 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "校验"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T135.md",
+    "line": 39,
+    "col": 41,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T135.md",
+    "line": 43,
+    "col": 86,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 45 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "45 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T135.md",
+    "line": 43,
+    "col": 109,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T135.md",
+    "line": 43,
+    "col": 120,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：错误×3、报错×1 混用。定一个名字全篇用它，建议「错误」。",
+    "match": "报错"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T135.md",
+    "line": 43,
+    "col": 127,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被写成字符串也"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T136.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 49 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "49 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T136.md",
+    "line": 43,
+    "col": 53,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T137.md",
+    "line": 27,
+    "col": 15,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T137.md",
+    "line": 39,
+    "col": 66,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T138.md",
+    "line": 31,
+    "col": 17,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T138.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 53 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "53 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T138.md",
+    "line": 43,
+    "col": 47,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T138.md",
+    "line": 47,
+    "col": 128,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T139.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 44 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "44 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T139.md",
+    "line": 43,
+    "col": 33,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T139.md",
+    "line": 47,
+    "col": 128,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 44 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "44 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T139.md",
+    "line": 47,
+    "col": 145,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被丢弃"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T140.md",
+    "line": 31,
+    "col": 18,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T140.md",
+    "line": 43,
+    "col": 47,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T140.md",
+    "line": 47,
+    "col": 68,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T140.md",
+    "line": 47,
+    "col": 115,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T141.md",
+    "line": 35,
+    "col": 26,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T142.md",
+    "line": 31,
+    "col": 3,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：保存×3、存储×1 混用。定一个名字全篇用它，建议「保存」。",
+    "match": "存储"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T142.md",
+    "line": 43,
+    "col": 33,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T142.md",
+    "line": 47,
+    "col": 60,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被覆盖"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T142.md",
+    "line": 47,
+    "col": 106,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T143.md",
+    "line": 31,
+    "col": 27,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：报错×1、错误×1 混用。定一个名字全篇用它，建议「错误」。",
+    "match": "报错"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T143.md",
+    "line": 39,
+    "col": 17,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：核对×3、检查×2 混用。定一个名字全篇用它，建议「核对」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T143.md",
+    "line": 39,
+    "col": 32,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T144.md",
+    "line": 11,
+    "col": 3,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×2、检查×2 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "校验"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T144.md",
+    "line": 35,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 45 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "45 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T144.md",
+    "line": 35,
+    "col": 33,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T145.md",
+    "line": 35,
+    "col": 58,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T145.md",
+    "line": 39,
+    "col": 79,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T146.md",
+    "line": 35,
+    "col": 22,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 48 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "48 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T146.md",
+    "line": 35,
+    "col": 54,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T146.md",
+    "line": 35,
+    "col": 89,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被截断"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T146.md",
+    "line": 35,
+    "col": 112,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 42 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "42 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T147.md",
+    "line": 7,
+    "col": 25,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被静默截断"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T147.md",
+    "line": 19,
+    "col": 25,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被静默截断"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T147.md",
+    "line": 43,
+    "col": 78,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T147.md",
+    "line": 51,
+    "col": 25,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被静默截断"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T148.md",
+    "line": 23,
+    "col": 12,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被使用"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T148.md",
+    "line": 39,
+    "col": 38,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T148.md",
+    "line": 39,
+    "col": 43,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：核对×3、检查×2 混用。定一个名字全篇用它，建议「核对」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T148.md",
+    "line": 43,
+    "col": 95,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T149.md",
+    "line": 39,
+    "col": 37,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T150.md",
+    "line": 31,
+    "col": 36,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被后续"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T150.md",
+    "line": 39,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 41 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "41 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T150.md",
+    "line": 39,
+    "col": 44,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T150.md",
+    "line": 43,
+    "col": 163,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T151.md",
+    "line": 39,
+    "col": 42,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T151.md",
+    "line": 43,
+    "col": 47,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：删除×2、移除×1 混用。定一个名字全篇用它，建议「删除」。",
+    "match": "移除"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T151.md",
+    "line": 43,
+    "col": 82,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被淘汰"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T151.md",
+    "line": 43,
+    "col": 85,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T152.md",
+    "line": 27,
+    "col": 3,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：修改×2、更改×1 混用。定一个名字全篇用它，建议「修改」。",
+    "match": "更改"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T152.md",
+    "line": 39,
+    "col": 54,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T153.md",
+    "line": 51,
+    "col": 63,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T154.md",
+    "line": 23,
+    "col": 16,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被重复入队"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T154.md",
+    "line": 39,
+    "col": 21,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T155.md",
+    "line": 7,
+    "col": 19,
+    "rule": "marketing-adjective",
+    "severity": "hard",
+    "message": "营销形容词。删掉，或换成撑得起这句话的测量值。",
+    "match": "闭环"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T155.md",
+    "line": 27,
+    "col": 19,
+    "rule": "marketing-adjective",
+    "severity": "hard",
+    "message": "营销形容词。删掉，或换成撑得起这句话的测量值。",
+    "match": "闭环"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T155.md",
+    "line": 35,
+    "col": 17,
+    "rule": "marketing-adjective",
+    "severity": "hard",
+    "message": "营销形容词。删掉，或换成撑得起这句话的测量值。",
+    "match": "闭环"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T155.md",
+    "line": 47,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 51 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "51 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T155.md",
+    "line": 47,
+    "col": 44,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T155.md",
+    "line": 51,
+    "col": 32,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T155.md",
+    "line": 51,
+    "col": 58,
+    "rule": "marketing-adjective",
+    "severity": "hard",
+    "message": "营销形容词。删掉，或换成撑得起这句话的测量值。",
+    "match": "闭环"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T155.md",
+    "line": 51,
+    "col": 60,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T155.md",
+    "line": 51,
+    "col": 144,
+    "rule": "marketing-adjective",
+    "severity": "hard",
+    "message": "营销形容词。删掉，或换成撑得起这句话的测量值。",
+    "match": "闭环"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T155.md",
+    "line": 59,
+    "col": 19,
+    "rule": "marketing-adjective",
+    "severity": "hard",
+    "message": "营销形容词。删掉，或换成撑得起这句话的测量值。",
+    "match": "闭环"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T156.md",
+    "line": 39,
+    "col": 55,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T156.md",
+    "line": 43,
+    "col": 41,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T157.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 44 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "44 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T157.md",
+    "line": 47,
+    "col": 51,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T157.md",
+    "line": 47,
+    "col": 129,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拒绝"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T158.md",
+    "line": 39,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T158.md",
+    "line": 39,
+    "col": 22,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T158.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 42 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "42 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T158.md",
+    "line": 43,
+    "col": 121,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被同一个排他游"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T159.md",
+    "line": 39,
+    "col": 32,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被归到同组"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T159.md",
+    "line": 47,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 47 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "47 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T159.md",
+    "line": 47,
+    "col": 17,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T159.md",
+    "line": 51,
+    "col": 93,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T159.md",
+    "line": 51,
+    "col": 117,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T160.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 50 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "50 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T160.md",
+    "line": 43,
+    "col": 27,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T160.md",
+    "line": 47,
+    "col": 46,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T161.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 56 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "56 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T161.md",
+    "line": 43,
+    "col": 16,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T161.md",
+    "line": 47,
+    "col": 27,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T162.md",
+    "line": 47,
+    "col": 84,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 44 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "44 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T163.md",
+    "line": 39,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T163.md",
+    "line": 39,
+    "col": 3,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×2、校验×1 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "校验"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T163.md",
+    "line": 39,
+    "col": 39,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T163.md",
+    "line": 43,
+    "col": 37,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T163.md",
+    "line": 43,
+    "col": 115,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T163.md",
+    "line": 43,
+    "col": 136,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：错误×1、报错×1 混用。定一个名字全篇用它，建议「错误」。",
+    "match": "报错"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T164.md",
+    "line": 39,
+    "col": 25,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T164.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 48 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "48 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T164.md",
+    "line": 43,
+    "col": 92,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T165.md",
+    "line": 43,
+    "col": 41,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T165.md",
+    "line": 47,
+    "col": 16,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被覆盖的旧值"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T165.md",
+    "line": 47,
+    "col": 22,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T165.md",
+    "line": 47,
+    "col": 60,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被尚未写入的零"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T166.md",
+    "line": 35,
+    "col": 15,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×3、检查×1 混用。定一个名字全篇用它，建议「校验」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T167.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 41 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "41 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T167.md",
+    "line": 43,
+    "col": 24,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T167.md",
+    "line": 47,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 46 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "46 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T167.md",
+    "line": 47,
+    "col": 75,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被计入"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T168.md",
+    "line": 43,
+    "col": 25,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T169.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 42 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "42 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T169.md",
+    "line": 43,
+    "col": 50,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T170.md",
+    "line": 39,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T170.md",
+    "line": 39,
+    "col": 44,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T170.md",
+    "line": 43,
+    "col": 32,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T170.md",
+    "line": 43,
+    "col": 104,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被猜测成某种近"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T170.md",
+    "line": 43,
+    "col": 131,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×1、校验×1 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "校验"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T171.md",
+    "line": 31,
+    "col": 45,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T171.md",
+    "line": 35,
+    "col": 134,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T172.md",
+    "line": 31,
+    "col": 22,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被重复统计"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T172.md",
+    "line": 43,
+    "col": 37,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T173.md",
+    "line": 35,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 48 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "48 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T173.md",
+    "line": 35,
+    "col": 38,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T174.md",
+    "line": 39,
+    "col": 44,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T174.md",
+    "line": 43,
+    "col": 61,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被分成二十分钟"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T174.md",
+    "line": 43,
+    "col": 131,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T175.md",
+    "line": 27,
+    "col": 12,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T175.md",
+    "line": 39,
+    "col": 45,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T175.md",
+    "line": 39,
+    "col": 46,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拒绝的等待不"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T175.md",
+    "line": 43,
+    "col": 115,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T175.md",
+    "line": 43,
+    "col": 124,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T176.md",
+    "line": 35,
+    "col": 7,
+    "rule": "compound-aspect",
+    "severity": "advisory",
+    "message": "复合体貌。简单体貌够用就简化；表达当前相关性时保留并标注。",
+    "match": "已经过"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T176.md",
+    "line": 35,
+    "col": 15,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被续活"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T176.md",
+    "line": 43,
+    "col": 54,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T177.md",
+    "line": 39,
+    "col": 20,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T178.md",
+    "line": 31,
+    "col": 20,
+    "rule": "vague-word",
+    "severity": "advisory",
+    "message": "含糊词。给出数量、范围或条件。",
+    "match": "必要时"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T178.md",
+    "line": 31,
+    "col": 26,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×4、检查×1 混用。定一个名字全篇用它，建议「校验」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T178.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T178.md",
+    "line": 43,
+    "col": 17,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T178.md",
+    "line": 47,
+    "col": 67,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 52 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "52 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T178.md",
+    "line": 47,
+    "col": 82,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被设计为规范化"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T178.md",
+    "line": 47,
+    "col": 148,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被静默修正替代"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T179.md",
+    "line": 43,
+    "col": 39,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T181.md",
+    "line": 39,
+    "col": 38,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T181.md",
+    "line": 43,
+    "col": 97,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 54 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "54 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T181.md",
+    "line": 43,
+    "col": 116,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T182.md",
+    "line": 39,
+    "col": 38,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 47 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "47 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T182.md",
+    "line": 39,
+    "col": 87,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T183.md",
+    "line": 39,
+    "col": 43,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T184.md",
+    "line": 35,
+    "col": 34,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T185.md",
+    "line": 39,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 44 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "44 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T185.md",
+    "line": 39,
+    "col": 37,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T185.md",
+    "line": 43,
+    "col": 25,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：核对×3、检查×1 混用。定一个名字全篇用它，建议「核对」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T185.md",
+    "line": 43,
+    "col": 120,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T185.md",
+    "line": 43,
+    "col": 134,
+    "rule": "vague-word",
+    "severity": "advisory",
+    "message": "含糊词。给出数量、范围或条件。",
+    "match": "相关"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T186.md",
+    "line": 27,
+    "col": 8,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：修改×6、变更×1 混用。定一个名字全篇用它，建议「修改」。",
+    "match": "变更"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T186.md",
+    "line": 39,
+    "col": 55,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T186.md",
+    "line": 43,
+    "col": 26,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T186.md",
+    "line": 43,
+    "col": 82,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 46 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "46 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T186.md",
+    "line": 43,
+    "col": 106,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T187.md",
+    "line": 39,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 41 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "41 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T187.md",
+    "line": 43,
+    "col": 94,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被排除"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T187.md",
+    "line": 43,
+    "col": 98,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 41 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "41 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T187.md",
+    "line": 43,
+    "col": 108,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T188.md",
+    "line": 39,
+    "col": 129,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 42 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "42 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T189.md",
+    "line": 31,
+    "col": 20,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×1、检查×1 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "校验"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T189.md",
+    "line": 43,
+    "col": 38,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T190.md",
+    "line": 39,
+    "col": 41,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T190.md",
+    "line": 43,
+    "col": 90,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 53 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "53 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T190.md",
+    "line": 43,
+    "col": 115,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T192.md",
+    "line": 31,
+    "col": 7,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：报错×1、错误×2 混用。定一个名字全篇用它，建议「错误」。",
+    "match": "报错"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T192.md",
+    "line": 39,
+    "col": 32,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T192.md",
+    "line": 43,
+    "col": 63,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 47 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "47 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T192.md",
+    "line": 43,
+    "col": 87,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T193.md",
+    "line": 31,
+    "col": 19,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：配置×9、设置×1 混用。定一个名字全篇用它，建议「配置」。",
+    "match": "设置"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T193.md",
+    "line": 39,
+    "col": 16,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T193.md",
+    "line": 47,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 61 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "61 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T193.md",
+    "line": 47,
+    "col": 43,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T193.md",
+    "line": 51,
+    "col": 4,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被转换为只包含"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T193.md",
+    "line": 51,
+    "col": 47,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 44 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "44 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T194.md",
+    "line": 43,
+    "col": 34,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T194.md",
+    "line": 43,
+    "col": 47,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被截断的成功文"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T194.md",
+    "line": 47,
+    "col": 61,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被记录并让整次"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T194.md",
+    "line": 47,
+    "col": 128,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T195.md",
+    "line": 43,
+    "col": 26,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T195.md",
+    "line": 47,
+    "col": 136,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被擅自截断"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T196.md",
+    "line": 31,
+    "col": 23,
+    "rule": "vague-word",
+    "severity": "advisory",
+    "message": "含糊词。给出数量、范围或条件。",
+    "match": "相关"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T196.md",
+    "line": 39,
+    "col": 44,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T196.md",
+    "line": 43,
+    "col": 46,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×3、检查×2 混用。定一个名字全篇用它，建议「校验」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T196.md",
+    "line": 43,
+    "col": 58,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T197.md",
+    "line": 39,
+    "col": 31,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T197.md",
+    "line": 39,
+    "col": 39,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：核对×3、检查×2 混用。定一个名字全篇用它，建议「核对」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T197.md",
+    "line": 43,
+    "col": 94,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：显示×3、展示×1 混用。定一个名字全篇用它，建议「显示」。",
+    "match": "展示"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T197.md",
+    "line": 43,
+    "col": 130,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T198.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 46 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "46 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T198.md",
+    "line": 43,
+    "col": 31,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T198.md",
+    "line": 43,
+    "col": 47,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被误执行的部分"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T198.md",
+    "line": 47,
+    "col": 23,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 51 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "51 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T198.md",
+    "line": 47,
+    "col": 45,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被错误丢弃"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T198.md",
+    "line": 47,
+    "col": 50,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T198.md",
+    "line": 47,
+    "col": 95,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：错误×3、报错×1 混用。定一个名字全篇用它，建议「错误」。",
+    "match": "报错"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T199.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 49 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "49 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T199.md",
+    "line": 43,
+    "col": 43,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T199.md",
+    "line": 47,
+    "col": 51,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被误删"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T200.md",
+    "line": 19,
+    "col": 3,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：修改×7、变更×3 混用。定一个名字全篇用它，建议「修改」。",
+    "match": "变更"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T200.md",
+    "line": 43,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 49 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "49 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T200.md",
+    "line": 43,
+    "col": 30,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T200.md",
+    "line": 43,
+    "col": 58,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被接受"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T200.md",
+    "line": 47,
+    "col": 117,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T201.md",
+    "line": 7,
+    "col": 23,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被修改文件"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T201.md",
+    "line": 15,
+    "col": 23,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被修改文件"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T201.md",
+    "line": 35,
+    "col": 29,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T201.md",
+    "line": 39,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 50 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "50 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T201.md",
+    "line": 39,
+    "col": 90,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被替换"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T201.md",
+    "line": 39,
+    "col": 135,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 42 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "42 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T201.md",
+    "line": 39,
+    "col": 156,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T201.md",
+    "line": 47,
+    "col": 23,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被修改文件"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T202.md",
+    "line": 23,
+    "col": 11,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被重放"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T202.md",
+    "line": 35,
+    "col": 2,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×1、校验×1 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "校验"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T202.md",
+    "line": 39,
+    "col": 103,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被读取"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T202.md",
+    "line": 39,
+    "col": 106,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T203.md",
+    "line": 23,
+    "col": 10,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拒绝"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T203.md",
+    "line": 35,
+    "col": 31,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T203.md",
+    "line": 39,
+    "col": 16,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×3、检查×1 混用。定一个名字全篇用它，建议「校验」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T203.md",
+    "line": 39,
+    "col": 68,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T205.md",
+    "line": 39,
+    "col": 79,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T205.md",
+    "line": 39,
+    "col": 82,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：修改×1、变更×1 混用。定一个名字全篇用它，建议「修改」。",
+    "match": "变更"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T205.md",
+    "line": 39,
+    "col": 86,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拒绝"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T207.md",
+    "line": 39,
+    "col": 118,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T208.md",
+    "line": 35,
+    "col": 33,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T208.md",
+    "line": 39,
+    "col": 38,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 44 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "44 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T208.md",
+    "line": 39,
+    "col": 78,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T209.md",
+    "line": 27,
+    "col": 9,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×12、检查×1 混用。定一个名字全篇用它，建议「校验」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T209.md",
+    "line": 39,
+    "col": 83,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T209.md",
+    "line": 39,
+    "col": 113,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被明确展示"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T210.md",
+    "line": 35,
+    "col": 24,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T210.md",
+    "line": 39,
+    "col": 100,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×1、核对×1 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "核对"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T211.md",
+    "line": 23,
+    "col": 24,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×5、校验×2、核对×1 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "校验"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T211.md",
+    "line": 35,
+    "col": 22,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T211.md",
+    "line": 39,
+    "col": 39,
+    "rule": "vague-word",
+    "severity": "advisory",
+    "message": "含糊词。给出数量、范围或条件。",
+    "match": "有关"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T211.md",
+    "line": 39,
+    "col": 117,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：错误×1、报错×1 混用。定一个名字全篇用它，建议「错误」。",
+    "match": "报错"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T211.md",
+    "line": 39,
+    "col": 125,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×5、校验×2、核对×1 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "核对"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T211.md",
+    "line": 39,
+    "col": 144,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被创建"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T212.md",
+    "line": 35,
+    "col": 12,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T212.md",
+    "line": 39,
+    "col": 23,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 42 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "42 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T212.md",
+    "line": 39,
+    "col": 60,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T213.md",
+    "line": 23,
+    "col": 22,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：核对×3、校验×1 混用。定一个名字全篇用它，建议「核对」。",
+    "match": "校验"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T213.md",
+    "line": 35,
+    "col": 14,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T213.md",
+    "line": 39,
+    "col": 43,
+    "rule": "vague-word",
+    "severity": "advisory",
+    "message": "含糊词。给出数量、范围或条件。",
+    "match": "相关"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T214.md",
+    "line": 39,
+    "col": 55,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：创建×4、建立×1 混用。定一个名字全篇用它，建议「创建」。",
+    "match": "建立"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T214.md",
+    "line": 39,
+    "col": 70,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×1、核对×1 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "核对"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T215.md",
+    "line": 19,
+    "col": 23,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×1、校验×2 混用。定一个名字全篇用它，建议「校验」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T215.md",
+    "line": 35,
+    "col": 20,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T215.md",
+    "line": 39,
+    "col": 70,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 53 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "53 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T215.md",
+    "line": 39,
+    "col": 83,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T216.md",
+    "line": 27,
+    "col": 18,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被设置就输出"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T216.md",
+    "line": 35,
+    "col": 20,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T216.md",
+    "line": 39,
+    "col": 30,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：生成×4、创建×1 混用。定一个名字全篇用它，建议「生成」。",
+    "match": "创建"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T216.md",
+    "line": 39,
+    "col": 55,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T217.md",
+    "line": 35,
+    "col": 31,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T217.md",
+    "line": 35,
+    "col": 43,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：核对×3、检查×1 混用。定一个名字全篇用它，建议「核对」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T217.md",
+    "line": 39,
+    "col": 34,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：生成×1、创建×1 混用。定一个名字全篇用它，建议「创建」。",
+    "match": "生成"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T217.md",
+    "line": 39,
+    "col": 73,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T218.md",
+    "line": 27,
+    "col": 17,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": ";"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T218.md",
+    "line": 35,
+    "col": 26,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T218.md",
+    "line": 35,
+    "col": 63,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拆成新参数"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T219.md",
+    "line": 35,
+    "col": 12,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T219.md",
+    "line": 39,
+    "col": 36,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 44 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "44 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T220.md",
+    "line": 19,
+    "col": 5,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被移除"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T221.md",
+    "line": 35,
+    "col": 20,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T222.md",
+    "line": 35,
+    "col": 39,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T223.md",
+    "line": 35,
+    "col": 11,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：创建×3、生成×1 混用。定一个名字全篇用它，建议「创建」。",
+    "match": "生成"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T223.md",
+    "line": 35,
+    "col": 16,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T223.md",
+    "line": 39,
+    "col": 113,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T224.md",
+    "line": 35,
+    "col": 1,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：生成×4、创建×1 混用。定一个名字全篇用它，建议「生成」。",
+    "match": "创建"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T224.md",
+    "line": 35,
+    "col": 38,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T224.md",
+    "line": 39,
+    "col": 75,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T224.md",
+    "line": 39,
+    "col": 87,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 46 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "46 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T225.md",
+    "line": 35,
+    "col": 14,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T226.md",
+    "line": 35,
+    "col": 18,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T226.md",
+    "line": 39,
+    "col": 91,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T226.md",
+    "line": 39,
+    "col": 114,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被跳过"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T227.md",
+    "line": 35,
+    "col": 18,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T228.md",
+    "line": 35,
+    "col": 18,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T229.md",
+    "line": 19,
+    "col": 19,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被视为文件还是"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T229.md",
+    "line": 35,
+    "col": 42,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T229.md",
+    "line": 35,
+    "col": 62,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被视为文件位置"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T229.md",
+    "line": 39,
+    "col": 46,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 57 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "57 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T229.md",
+    "line": 39,
+    "col": 62,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T229.md",
+    "line": 39,
+    "col": 121,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被修改"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T230.md",
+    "line": 27,
+    "col": 27,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：错误×3、报错×1 混用。定一个名字全篇用它，建议「错误」。",
+    "match": "报错"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T230.md",
+    "line": 35,
+    "col": 25,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T232.md",
+    "line": 35,
+    "col": 22,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T233.md",
+    "line": 23,
+    "col": 34,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：异常×1、错误×1 混用。定一个名字全篇用它，建议「错误」。",
+    "match": "异常"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T233.md",
+    "line": 35,
+    "col": 26,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T233.md",
+    "line": 39,
+    "col": 15,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 53 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "53 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T233.md",
+    "line": 39,
+    "col": 50,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T233.md",
+    "line": 39,
+    "col": 135,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：创建×1、建立×1 混用。定一个名字全篇用它，建议「创建」。",
+    "match": "建立"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T234.md",
+    "line": 35,
+    "col": 33,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T234.md",
+    "line": 39,
+    "col": 82,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被唤醒后重新取"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T235.md",
+    "line": 35,
+    "col": 18,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T236.md",
+    "line": 27,
+    "col": 24,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被外部修改"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T236.md",
+    "line": 35,
+    "col": 10,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T237.md",
+    "line": 35,
+    "col": 29,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T238.md",
+    "line": 23,
+    "col": 16,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被当作已验证的"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T238.md",
+    "line": 35,
+    "col": 33,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T238.md",
+    "line": 39,
+    "col": 50,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被报告"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T239.md",
+    "line": 19,
+    "col": 18,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被撤销"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T239.md",
+    "line": 39,
+    "col": 127,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T240.md",
+    "line": 35,
+    "col": 34,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T241.md",
+    "line": 35,
+    "col": 17,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T241.md",
+    "line": 39,
+    "col": 126,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被当成最终文件"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T242.md",
+    "line": 27,
+    "col": 37,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": ";"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T242.md",
+    "line": 35,
+    "col": 25,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T242.md",
+    "line": 39,
+    "col": 26,
+    "rule": "vague-word",
+    "severity": "advisory",
+    "message": "含糊词。给出数量、范围或条件。",
+    "match": "相关"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T242.md",
+    "line": 39,
+    "col": 61,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被编码"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T242.md",
+    "line": 39,
+    "col": 120,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：展示×2、显示×1 混用。定一个名字全篇用它，建议「展示」。",
+    "match": "显示"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T243.md",
+    "line": 39,
+    "col": 8,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：生成×3、建立×1 混用。定一个名字全篇用它，建议「生成」。",
+    "match": "建立"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T244.md",
+    "line": 35,
+    "col": 19,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T244.md",
+    "line": 39,
+    "col": 38,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T244.md",
+    "line": 39,
+    "col": 114,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拒绝且没有发"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T244.md",
+    "line": 39,
+    "col": 129,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：设置×3、配置×1 混用。定一个名字全篇用它，建议「设置」。",
+    "match": "配置"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T245.md",
+    "line": 23,
+    "col": 39,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被截断"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T247.md",
+    "line": 11,
+    "col": 4,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：显示×5、展示×2 混用。定一个名字全篇用它，建议「显示」。",
+    "match": "展示"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T247.md",
+    "line": 35,
+    "col": 19,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T247.md",
+    "line": 39,
+    "col": 75,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 45 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "45 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T249.md",
+    "line": 35,
+    "col": 38,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T249.md",
+    "line": 39,
+    "col": 81,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被后续替换扩张"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T250.md",
+    "line": 11,
+    "col": 4,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：展示×2、显示×2 混用。定一个名字全篇用它，建议「显示」。",
+    "match": "展示"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T250.md",
+    "line": 39,
+    "col": 69,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被限制到总量"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T251.md",
+    "line": 35,
+    "col": 11,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T251.md",
+    "line": 39,
+    "col": 96,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T251.md",
+    "line": 39,
+    "col": 114,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 41 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "41 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T252.md",
+    "line": 11,
+    "col": 1,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×2、检查×2 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "校验"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T252.md",
+    "line": 35,
+    "col": 38,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T253.md",
+    "line": 35,
+    "col": 31,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T254.md",
+    "line": 35,
+    "col": 18,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×10、检查×2 混用。定一个名字全篇用它，建议「校验」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T254.md",
+    "line": 35,
+    "col": 20,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T254.md",
+    "line": 35,
+    "col": 33,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拒绝"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T254.md",
+    "line": 39,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 50 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "50 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T255.md",
+    "line": 39,
+    "col": 20,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T255.md",
+    "line": 39,
+    "col": 100,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T256.md",
+    "line": 35,
+    "col": 42,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×12、检查×1 混用。定一个名字全篇用它，建议「校验」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T257.md",
+    "line": 39,
+    "col": 72,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被十整除"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T258.md",
+    "line": 19,
+    "col": 28,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被转义的分号"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T258.md",
+    "line": 35,
+    "col": 22,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T258.md",
+    "line": 39,
+    "col": 16,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 41 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "41 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T258.md",
+    "line": 39,
+    "col": 42,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T258.md",
+    "line": 39,
+    "col": 56,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拒绝"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T258.md",
+    "line": 39,
+    "col": 76,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拆成残缺字节"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T259.md",
+    "line": 11,
+    "col": 1,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×3、校验×2 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "校验"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T259.md",
+    "line": 35,
+    "col": 22,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T259.md",
+    "line": 39,
+    "col": 26,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 45 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "45 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T260.md",
+    "line": 19,
+    "col": 32,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×2、检查×1 混用。定一个名字全篇用它，建议「校验」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T260.md",
+    "line": 35,
+    "col": 21,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T260.md",
+    "line": 35,
+    "col": 42,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被正常接受"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T260.md",
+    "line": 39,
+    "col": 36,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 53 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "53 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T260.md",
+    "line": 39,
+    "col": 81,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T261.md",
+    "line": 35,
+    "col": 15,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T261.md",
+    "line": 39,
+    "col": 34,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×5、检查×2、核对×1 混用。定一个名字全篇用它，建议「校验」。",
+    "match": "检查"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T261.md",
+    "line": 39,
+    "col": 44,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：校验×5、检查×2、核对×1 混用。定一个名字全篇用它，建议「校验」。",
+    "match": "核对"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T261.md",
+    "line": 39,
+    "col": 93,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被修改的载荷分"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T261.md",
+    "line": 39,
+    "col": 109,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T262.md",
+    "line": 35,
+    "col": 18,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T262.md",
+    "line": 35,
+    "col": 30,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拒绝"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T263.md",
+    "line": 35,
+    "col": 31,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T263.md",
+    "line": 39,
+    "col": 40,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：存储×4、保存×1 混用。定一个名字全篇用它，建议「存储」。",
+    "match": "保存"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T263.md",
+    "line": 39,
+    "col": 93,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T264.md",
+    "line": 35,
+    "col": 12,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T265.md",
+    "line": 35,
+    "col": 11,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T265.md",
+    "line": 39,
+    "col": 101,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T265.md",
+    "line": 39,
+    "col": 134,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×1、校验×1 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "校验"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T266.md",
+    "line": 35,
+    "col": 25,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T266.md",
+    "line": 39,
+    "col": 15,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T267.md",
+    "line": 35,
+    "col": 26,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T267.md",
+    "line": 39,
+    "col": 57,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T268.md",
+    "line": 35,
+    "col": 22,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T268.md",
+    "line": 39,
+    "col": 74,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T270.md",
+    "line": 35,
+    "col": 43,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T270.md",
+    "line": 39,
+    "col": 100,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×1、核对×1 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "核对"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T271.md",
+    "line": 39,
+    "col": 42,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 42 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "42 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T272.md",
+    "line": 23,
+    "col": 16,
+    "rule": "marketing-adjective",
+    "severity": "hard",
+    "message": "营销形容词。删掉，或换成撑得起这句话的测量值。",
+    "match": "闭环"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T272.md",
+    "line": 35,
+    "col": 6,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：生成×4、建立×1 混用。定一个名字全篇用它，建议「生成」。",
+    "match": "建立"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T272.md",
+    "line": 35,
+    "col": 31,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T272.md",
+    "line": 39,
+    "col": 39,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 43 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "43 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T272.md",
+    "line": 39,
+    "col": 59,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T272.md",
+    "line": 39,
+    "col": 97,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被环阻塞的部分"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T273.md",
+    "line": 23,
+    "col": 24,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被占用的房间"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T273.md",
+    "line": 35,
+    "col": 25,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T273.md",
+    "line": 39,
+    "col": 68,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T274.md",
+    "line": 7,
+    "col": 10,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：检查×5、校验×3 混用。定一个名字全篇用它，建议「检查」。",
+    "match": "校验"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T274.md",
+    "line": 35,
+    "col": 5,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：建立×1、创建×1 混用。定一个名字全篇用它，建议「创建」。",
+    "match": "建立"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T274.md",
+    "line": 35,
+    "col": 15,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T274.md",
+    "line": 39,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 45 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "45 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T274.md",
+    "line": 39,
+    "col": 60,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 53 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "53 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T274.md",
+    "line": 39,
+    "col": 89,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T274.md",
+    "line": 39,
+    "col": 135,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 55 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "55 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T274.md",
+    "line": 39,
+    "col": 162,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T275.md",
+    "line": 39,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 41 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "41 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T276.md",
+    "line": 35,
+    "col": 18,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T276.md",
+    "line": 39,
+    "col": 71,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拒绝"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T276.md",
+    "line": 39,
+    "col": 84,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 47 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "47 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T276.md",
+    "line": 39,
+    "col": 110,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T277.md",
+    "line": 19,
+    "col": 8,
+    "rule": "synonym-rotation",
+    "severity": "hard",
+    "message": "同义轮换：变更×4、修改×2 混用。定一个名字全篇用它，建议「变更」。",
+    "match": "修改"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T277.md",
+    "line": 39,
+    "col": 59,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T278.md",
+    "line": 35,
+    "col": 31,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T278.md",
+    "line": 39,
+    "col": 95,
+    "rule": "passive-voice",
+    "severity": "advisory",
+    "message": "被动语态。说清施事并改用主动，除非施事未知或无关。",
+    "match": "被拒绝"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T278.md",
+    "line": 39,
+    "col": 115,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T279.md",
+    "line": 23,
+    "col": 1,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 42 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "42 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T279.md",
+    "line": 35,
+    "col": 25,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T279.md",
+    "line": 39,
+    "col": 90,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 47 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "47 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T280.md",
+    "line": 35,
+    "col": 35,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T280.md",
+    "line": 39,
+    "col": 15,
+    "rule": "long-sentence",
+    "severity": "hard",
+    "message": "句子 45 字（上限 40）。拆开，或删掉不必要的信息。",
+    "match": "45 字"
+  },
+  {
+    "path": ".trellis\\tasks\\10-22-go-curriculum-ohos\\research\\chinese-prose-20261026\\before\\T280.md",
+    "line": 39,
+    "col": 53,
+    "rule": "semicolon",
+    "severity": "hard",
+    "message": "分号把两件事串进了一句。拆成两句。",
+    "match": "；"
+  }
+]

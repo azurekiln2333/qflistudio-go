@@ -1,0 +1,30 @@
+{
+  "id": "standalone-ide-completeness",
+  "name": "standalone-ide-completeness",
+  "title": "Standalone offline IDE completeness and OHOS examples",
+  "description": "Fulfil the unified request across standalone apps: verify every example on OHOS, expand examples beyond 100, improve language UI, tools, editor diagnostics and workspace, then verify, commit and push.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "lichengyu",
+  "assignee": "lichengyu",
+  "createdAt": "2026-10-22",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "fix/go-release-integrity",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "10-22-go-curriculum-ohos",
+    "10-22-go-offline-ide",
+    "10-22-standalone-integration"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {}
+}

@@ -1,0 +1,70 @@
+{
+  "id": "T082",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "worker reached checkpoint, requesting cancel\nworker stopped: context canceled\nmain observed worker exit\nchild canceled by parent: context canceled"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-082",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "context 一：取消与传播",
+    "summary": "用 context.WithCancel 取消下游任务，并演示子 context 随父取消。",
+    "concepts": [
+      "context",
+      "取消",
+      "传播",
+      "Done"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 context 取消 goroutine，并用 Done() channel 检测取消、说明取消会向下传播。",
+    "prerequisites": [
+      "T074 channel 三：close 与 range 接收"
+    ],
+    "pitfalls": [
+      "把 context 存进结构体长期持有：应作为函数第一个参数按调用链传递。",
+      "忘记调用 cancel()：会泄漏资源（定时器/子节点），应用 defer cancel()。"
+    ],
+    "exercises": [
+      {
+        "prompt": "实现一个带 ctx 的循环任务，在 ctx.Done 时打印退出原因并关闭 done。",
+        "hint": "select { case <-ctx.Done(): ...; default: ... }",
+        "answer": "循环内 select 监听 ctx.Done()，收到后 close(done) 并 return。"
+      }
+    ],
+    "explain": "context 用于在调用链上传递取消信号、截止时间与请求范围值。WithCancel 返回派生 ctx 与 cancel；调用 cancel 会关闭 ctx.Done() 返回的 channel，所有监听它的下游任务据此提前退出。示例启动一个循环任务，任务在某个检查点自行 cancel，主流程通过 done channel 等待其确认退出——用 channel 同步而非睡眠，因此输出确定。随后演示子 context 随父取消：父 cancel 后子的 Done 也关闭。约定：context 作为函数第一个参数向下传递，不在结构体里长期保存，并总是 defer cancel()。",
+    "code": "// T082 context 一：取消与传播。\n//\n// context.WithCancel 派生一个可取消的上下文；调用 cancel() 会关闭 Done()\n// 返回的 channel，所有监听它的下游任务据此提前退出。本示例启动一个循环\n// 任务，取消后通过 channel 汇报\"已退出\"，主流程等待该信号，结果确定。\npackage main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tctx, cancel := context.WithCancel(context.Background())\n\n\tdone := make(chan struct{})\n\tgo func() {\n\t\t// 任务循环：每次迭代检查是否被取消。\n\t\tfor i := 0; ; i++ {\n\t\t\tselect {\n\t\t\tcase <-ctx.Done():\n\t\t\t\t// 被取消：报告原因并退出。\n\t\t\t\tfmt.Println(\"worker stopped:\", ctx.Err())\n\t\t\t\tclose(done)\n\t\t\t\treturn\n\t\t\tdefault:\n\t\t\t\t// 正常继续（这里不做事，仅计数到某个点后自行取消）。\n\t\t\t\tif i == 3 {\n\t\t\t\t\tfmt.Println(\"worker reached checkpoint, requesting cancel\")\n\t\t\t\t\tcancel()\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}()\n\n\t// 等待 worker 确认退出。不依赖睡眠/时间，用 channel 做同步。\n\t<-done\n\tfmt.Println(\"main observed worker exit\")\n\n\t// 传播：派生的子 context 也会随父取消而 Done。\n\tparent, pcancel := context.WithCancel(context.Background())\n\tchild, ccancel := context.WithCancel(parent)\n\tpcancel()\n\t<-child.Done()\n\tfmt.Println(\"child canceled by parent:\", child.Err())\n\tccancel()\n}\n",
+    "output": "worker reached checkpoint, requesting cancel\nworker stopped: context canceled\nmain observed worker exit\nchild canceled by parent: context canceled"
+  },
+  "example": {
+    "id": "go-example-082",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "context 一：取消与传播（示例）",
+    "summary": "对应主题 T082 的可运行示例。",
+    "concepts": [
+      "context",
+      "取消",
+      "传播",
+      "Done"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T082 context 一：取消与传播。\n//\n// context.WithCancel 派生一个可取消的上下文；调用 cancel() 会关闭 Done()\n// 返回的 channel，所有监听它的下游任务据此提前退出。本示例启动一个循环\n// 任务，取消后通过 channel 汇报\"已退出\"，主流程等待该信号，结果确定。\npackage main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tctx, cancel := context.WithCancel(context.Background())\n\n\tdone := make(chan struct{})\n\tgo func() {\n\t\t// 任务循环：每次迭代检查是否被取消。\n\t\tfor i := 0; ; i++ {\n\t\t\tselect {\n\t\t\tcase <-ctx.Done():\n\t\t\t\t// 被取消：报告原因并退出。\n\t\t\t\tfmt.Println(\"worker stopped:\", ctx.Err())\n\t\t\t\tclose(done)\n\t\t\t\treturn\n\t\t\tdefault:\n\t\t\t\t// 正常继续（这里不做事，仅计数到某个点后自行取消）。\n\t\t\t\tif i == 3 {\n\t\t\t\t\tfmt.Println(\"worker reached checkpoint, requesting cancel\")\n\t\t\t\t\tcancel()\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}()\n\n\t// 等待 worker 确认退出。不依赖睡眠/时间，用 channel 做同步。\n\t<-done\n\tfmt.Println(\"main observed worker exit\")\n\n\t// 传播：派生的子 context 也会随父取消而 Done。\n\tparent, pcancel := context.WithCancel(context.Background())\n\tchild, ccancel := context.WithCancel(parent)\n\tpcancel()\n\t<-child.Done()\n\tfmt.Println(\"child canceled by parent:\", child.Err())\n\tccancel()\n}\n",
+    "expectedOutput": "worker reached checkpoint, requesting cancel\nworker stopped: context canceled\nmain observed worker exit\nchild canceled by parent: context canceled",
+    "templateType": "go"
+  }
+}

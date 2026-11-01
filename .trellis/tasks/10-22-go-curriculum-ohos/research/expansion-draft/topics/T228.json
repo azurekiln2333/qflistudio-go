@@ -1,0 +1,69 @@
+{
+  "id": "T228",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "query=page=2&tag=go&tag=offline\ndropped-keys=1\ntag-count=2\ninvalid-escape=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-228",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "查询参数规范化",
+    "summary": "能按允许键筛选查询参数。保留重复值。生成稳定查询串。",
+    "concepts": [
+      "net/url",
+      "sort",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能按允许键筛选查询参数。保留重复值。生成稳定查询串。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "Values.Get 只返回第一个值，不能用于需要保留重复参数的规范化。",
+      "对值排序会改变顺序敏感协议的语义，应先确认业务约定。"
+    ],
+    "exercises": [
+      {
+        "prompt": "限制 tag 最多三个值。重复相同 tag 只保留一个。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "排序后线性去重。再检查去重后的长度。不要悄悄截断超额参数。"
+      }
+    ],
+    "explain": "ParseQuery 将同名参数保留为值切片，白名单过滤只复制允许键。为让签名输入或缓存键稳定，程序同时排序每个键下的值，Encode 再按键排序生成规范查询串。示例保留两个 tag。再删除 secret。示例还检测非法百分号转义。排序值是本例的业务决定，若参数顺序有意义就应保留原序。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/url\"\n\t\"sort\"\n)\n\nfunc main() {\n\tinput, err := url.ParseQuery(\"tag=offline&secret=x&page=2&tag=go\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tallowed := map[string]bool{\"tag\": true, \"page\": true}\n\tclean := url.Values{}\n\tdropped := 0\n\tfor key, values := range input {\n\t\tif !allowed[key] {\n\t\t\tdropped++\n\t\t\tcontinue\n\t\t}\n\t\tcopyValues := append([]string(nil), values...)\n\t\tsort.Strings(copyValues)\n\t\tclean[key] = copyValues\n\t}\n\tfmt.Printf(\"query=%s\\ndropped-keys=%d\\ntag-count=%d\\n\", clean.Encode(), dropped, len(clean[\"tag\"]))\n\t_, err = url.ParseQuery(\"name=%ZZ\")\n\tfmt.Printf(\"invalid-escape=%t\\n\", err != nil)\n}\n",
+    "output": "query=page=2&tag=go&tag=offline\ndropped-keys=1\ntag-count=2\ninvalid-escape=true"
+  },
+  "example": {
+    "id": "go-example-228",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "查询参数规范化",
+    "summary": "能按允许键筛选查询参数。保留重复值。生成稳定查询串。",
+    "concepts": [
+      "net/url",
+      "sort",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/url\"\n\t\"sort\"\n)\n\nfunc main() {\n\tinput, err := url.ParseQuery(\"tag=offline&secret=x&page=2&tag=go\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tallowed := map[string]bool{\"tag\": true, \"page\": true}\n\tclean := url.Values{}\n\tdropped := 0\n\tfor key, values := range input {\n\t\tif !allowed[key] {\n\t\t\tdropped++\n\t\t\tcontinue\n\t\t}\n\t\tcopyValues := append([]string(nil), values...)\n\t\tsort.Strings(copyValues)\n\t\tclean[key] = copyValues\n\t}\n\tfmt.Printf(\"query=%s\\ndropped-keys=%d\\ntag-count=%d\\n\", clean.Encode(), dropped, len(clean[\"tag\"]))\n\t_, err = url.ParseQuery(\"name=%ZZ\")\n\tfmt.Printf(\"invalid-escape=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "query=page=2&tag=go&tag=offline\ndropped-keys=1\ntag-count=2\ninvalid-escape=true",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "T260",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "text=中😀Go runes=4\ninvalid=true\nincomplete=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-260",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "分片 UTF8 解码",
+    "summary": "能接收在中文字符中间切分的字节块，保留未完成字节并拒绝非法序列。",
+    "concepts": [
+      "unicode/utf8",
+      "bytes",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能接收在中文字符中间切分的字节块，保留未完成字节并拒绝非法序列。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "FullRune 对已足够确认的坏字节也返回 true，仍必须检查 DecodeRune 的结果。",
+      "把每个 chunk 独立转换或清洗，会在跨块字符边界丢失信息。"
+    ],
+    "exercises": [
+      {
+        "prompt": "加入合法 U+FFFD 字符的分片往返，证明它不是错误输入。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "用该字符的三字节 UTF8 编码跨块输入；DecodeRune 返回大小为三，必须被正常接受。"
+      }
+    ],
+    "explain": "字节分片可能在中文或四字节表情中间切开，不能分别把每片直接转成字符串。Decoder 保留尚不完整的后缀，FullRune 表示已有足够字节判断下一个 rune；DecodeRune 返回 RuneError 且大小为一时才是坏编码，合法的替换字符本身不应误拒。最后一片仍有残留则报告截断，失败后不继续复用该状态。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"unicode/utf8\"\n)\n\ntype Decoder struct {\n\tPending []byte\n\tFailed  bool\n}\n\nfunc (d *Decoder) Feed(chunk []byte, final bool) (string, error) {\n\tif d.Failed {\n\t\treturn \"\", fmt.Errorf(\"decoder failed\")\n\t}\n\td.Pending = append(d.Pending, chunk...)\n\tvar out bytes.Buffer\n\tfor len(d.Pending) > 0 && utf8.FullRune(d.Pending) {\n\t\tr, size := utf8.DecodeRune(d.Pending)\n\t\tif r == utf8.RuneError && size == 1 {\n\t\t\td.Failed = true\n\t\t\treturn \"\", fmt.Errorf(\"invalid UTF8\")\n\t\t}\n\t\tout.WriteRune(r)\n\t\td.Pending = d.Pending[size:]\n\t}\n\tif final && len(d.Pending) > 0 {\n\t\td.Failed = true\n\t\treturn \"\", fmt.Errorf(\"incomplete UTF8\")\n\t}\n\treturn out.String(), nil\n}\nfunc main() {\n\tinput := []byte(\"中😀Go\")\n\tdecoder := &Decoder{}\n\ttext := \"\"\n\tfor i, part := range [][]byte{input[:2], input[2:5], input[5:]} {\n\t\tpiece, err := decoder.Feed(part, i == 2)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\ttext += piece\n\t}\n\tfmt.Printf(\"text=%s runes=%d\\n\", text, utf8.RuneCountInString(text))\n\tbad := &Decoder{}\n\t_, err := bad.Feed([]byte{0xff}, true)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n\tshort := &Decoder{}\n\t_, err = short.Feed([]byte{0xe4, 0xb8}, true)\n\tfmt.Printf(\"incomplete=%t\\n\", err != nil)\n}\n",
+    "output": "text=中😀Go runes=4\ninvalid=true\nincomplete=true"
+  },
+  "example": {
+    "id": "go-example-260",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "分片 UTF8 解码",
+    "summary": "能接收在中文字符中间切分的字节块，保留未完成字节并拒绝非法序列。",
+    "concepts": [
+      "unicode/utf8",
+      "bytes",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"unicode/utf8\"\n)\n\ntype Decoder struct {\n\tPending []byte\n\tFailed  bool\n}\n\nfunc (d *Decoder) Feed(chunk []byte, final bool) (string, error) {\n\tif d.Failed {\n\t\treturn \"\", fmt.Errorf(\"decoder failed\")\n\t}\n\td.Pending = append(d.Pending, chunk...)\n\tvar out bytes.Buffer\n\tfor len(d.Pending) > 0 && utf8.FullRune(d.Pending) {\n\t\tr, size := utf8.DecodeRune(d.Pending)\n\t\tif r == utf8.RuneError && size == 1 {\n\t\t\td.Failed = true\n\t\t\treturn \"\", fmt.Errorf(\"invalid UTF8\")\n\t\t}\n\t\tout.WriteRune(r)\n\t\td.Pending = d.Pending[size:]\n\t}\n\tif final && len(d.Pending) > 0 {\n\t\td.Failed = true\n\t\treturn \"\", fmt.Errorf(\"incomplete UTF8\")\n\t}\n\treturn out.String(), nil\n}\nfunc main() {\n\tinput := []byte(\"中😀Go\")\n\tdecoder := &Decoder{}\n\ttext := \"\"\n\tfor i, part := range [][]byte{input[:2], input[2:5], input[5:]} {\n\t\tpiece, err := decoder.Feed(part, i == 2)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\ttext += piece\n\t}\n\tfmt.Printf(\"text=%s runes=%d\\n\", text, utf8.RuneCountInString(text))\n\tbad := &Decoder{}\n\t_, err := bad.Feed([]byte{0xff}, true)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n\tshort := &Decoder{}\n\t_, err = short.Feed([]byte{0xe4, 0xb8}, true)\n\tfmt.Printf(\"incomplete=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "text=中😀Go runes=4\ninvalid=true\nincomplete=true",
+    "templateType": "go"
+  }
+}

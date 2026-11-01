@@ -1,0 +1,3223 @@
+{
+  "recordedAt": "2026-10-22T02:25:52.342821+00:00",
+  "goCommit": "82e17af4233e3aa2c6dd8eac2cb3f808f0f20a4f",
+  "coreCommit": "6441a5af843bf36ad00834f758b6862733def4a6",
+  "catalogs": {
+    "examples": {
+      "sha256": "8d6b333852871dafc5c3d18a9b9fb22d4dd783a7c8594b8a61e887ca678986c9",
+      "total": 1640,
+      "languages": {
+        "c": 100,
+        "cpp": 100,
+        "lua": 100,
+        "javascript": 100,
+        "typescript": 100,
+        "shell": 100,
+        "rust": 100,
+        "go": 120,
+        "html": 100,
+        "css": 100,
+        "dart": 100,
+        "sql": 100,
+        "json": 100,
+        "markdown": 100,
+        "java": 100,
+        "python": 120
+      },
+      "goEntries": 120,
+      "goCodeBlocks": [
+        {
+          "id": "go-example-001",
+          "codeSha256": "6bcd056bd6af141432ec84b2331b28b70e6c120a40a19d436d14cd57852a713e",
+          "codeBytes": 224,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-002",
+          "codeSha256": "248f8ab3fc4d8c7044c50a5c90404230fb623dbaa6c6d6862aa0623e6c4c8e26",
+          "codeBytes": 70,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-003",
+          "codeSha256": "9c69958e3f301e4af2e68b03ae3e85840b3b5654c4840f04ea63d8b561024c11",
+          "codeBytes": 210,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-004",
+          "codeSha256": "b01757e9f6c83afec69d30a17291c24b996c13b58af45c03a99f7845604ec85f",
+          "codeBytes": 319,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-005",
+          "codeSha256": "837cb5256b0cb99cc96bc27b2d9a568212d70a6863eadb8a706aa8c398aa16f9",
+          "codeBytes": 293,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-006",
+          "codeSha256": "c2bdce04ffc177175acc3f4fbe61cd49a7735a98d529f08b1e704fce6424ebc7",
+          "codeBytes": 438,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-007",
+          "codeSha256": "a7a5c6fed86bc6587c5c83f5522e9507771caa4e94e858cb9fe4701e4b0549e4",
+          "codeBytes": 169,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-008",
+          "codeSha256": "ed0bd19e6c9b4a6524b77ad24d8626a5c4feeea8ca64906ce9cafd0ba27883f3",
+          "codeBytes": 231,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-009",
+          "codeSha256": "1bb435082ce8bec4e889ecb9869e6655ec8839580472f563fc11a998355af4c5",
+          "codeBytes": 393,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-010",
+          "codeSha256": "072809ef524b6c00f6a671a01164d1ba1d5ae64bdab8d36c67ce352f82e6a1e8",
+          "codeBytes": 319,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-011",
+          "codeSha256": "100121181ce6bdfdcc0a3544583261c0828a111acadadc7239f657ba5891026e",
+          "codeBytes": 268,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-012",
+          "codeSha256": "45e811bb2d8a28b9dfedd21c97c8f53b569fc353f339c3c06598d522c12a196d",
+          "codeBytes": 291,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-013",
+          "codeSha256": "a94b69decfbdd7e1e38195e4ed3df60274e7046ce0a118cec3eed8b13e7e21d5",
+          "codeBytes": 354,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-014",
+          "codeSha256": "a903791df4499c0be63a303363843626fcdcf7a400e74a01c41c7bcf7691e2e4",
+          "codeBytes": 295,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-015",
+          "codeSha256": "123e3a16f74f9dbb05af18ec6370bb574f6e6ecda30678f377c77cff369ff81e",
+          "codeBytes": 320,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-016",
+          "codeSha256": "d523e5c836ddcdce90f3dabcb48329c08fdeb894cb0862f28c63abf5d15f72f2",
+          "codeBytes": 335,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-017",
+          "codeSha256": "7ea6aeb8603786f551674fe4ed4b89d9f33bc86cd12043b85b6b6f970826d680",
+          "codeBytes": 349,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-018",
+          "codeSha256": "4b77d43f20092d140072308b516b72a8728d69d7230f53e50a9b6b70c40d2c49",
+          "codeBytes": 192,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-019",
+          "codeSha256": "54b025bb68718c6faa18b54c59b47120f2d4abcecde018427a273dee525b799d",
+          "codeBytes": 257,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-020",
+          "codeSha256": "f7e5c8d5f1623627aa468841ef068ad354a4e993ad5a721a9814ff072368e513",
+          "codeBytes": 336,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-021",
+          "codeSha256": "1f381182801fd0985ebbe18ff8cbc46dd0b35857d4cd788b196d1b2e6bfbe346",
+          "codeBytes": 531,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-022",
+          "codeSha256": "37c14b5905828ad2737703495fcdcaaf6ba190e14d917d1d34f89e6591383e50",
+          "codeBytes": 338,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-023",
+          "codeSha256": "97136c769b2810c97d316b45d9fcb77c49b3f0ab2ee9f12cccb6afe03ab89d96",
+          "codeBytes": 302,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-024",
+          "codeSha256": "06b48ed8db8257383db0245bf68b33d33f3be047df62d4a4bf66260527c5bc6f",
+          "codeBytes": 190,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-025",
+          "codeSha256": "71fe664ee28c66ae106f39afd98edbab5d1843a519009b5aa88863ce87830fa3",
+          "codeBytes": 346,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-026",
+          "codeSha256": "7ce9ca591ef9bbb18b978c70f697990771b715d435c878e10c52ba874975eda8",
+          "codeBytes": 222,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-027",
+          "codeSha256": "2ec9350c55bd45e051b2f0201566e9dbe8b04dd22c23d422b52055b4abdc71dd",
+          "codeBytes": 160,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-028",
+          "codeSha256": "d2987c6fc2478ac48806130ded812f37979f7ffaf52f64b4898798258e3a4e7f",
+          "codeBytes": 309,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-029",
+          "codeSha256": "f9d4371fcd5ba0e544dda2f9cd36459cd3dfe366a7fa6fcacc1cba8f526b17e6",
+          "codeBytes": 263,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-030",
+          "codeSha256": "494bc0bdef19ed8e66787585bddcce0f03a56d140146cf3df4aabad0f39767a1",
+          "codeBytes": 447,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-031",
+          "codeSha256": "7779e03102004373a704881ebee3d3e603384d2d004fb9da1131fb2dc724db9a",
+          "codeBytes": 359,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-032",
+          "codeSha256": "c046a2aeff1684e9d90a68843141b38c678a17107fe3a7d0728a632fdbfa972f",
+          "codeBytes": 361,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-033",
+          "codeSha256": "fdad0ef51178d51ad28ba96fac2f3c6983085fc2a4452e628767d863779bae84",
+          "codeBytes": 306,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-034",
+          "codeSha256": "276957fc37521ce624151d2c0f819f2d817fdd9828e451b86d9da84f5f57e2ed",
+          "codeBytes": 635,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-035",
+          "codeSha256": "ea67e6c7f2159ee5f5055c08e479cd9c324a3a44948e6ca9361b741551d063d6",
+          "codeBytes": 473,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-036",
+          "codeSha256": "6d054a4cdb54836793338ca9377f332bc58236385ca742768678f4e46025d838",
+          "codeBytes": 198,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-037",
+          "codeSha256": "038d2c1b7df2f69d7d13bd0ef2b9015c7bd84d13147613ac87c5e211ddced994",
+          "codeBytes": 366,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-038",
+          "codeSha256": "83459cade7c8dcc4ef24c5a5d07c6b3bcee819bd77070b0d4e00a3ec13238a43",
+          "codeBytes": 371,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-039",
+          "codeSha256": "99cca0aa136cabb7f5827c731d8bc8a35f3fddfe3e4b925c8b657410d722e2ad",
+          "codeBytes": 409,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-040",
+          "codeSha256": "484e31233a4af04cdc2c61d0b8d17038e28305505e5476b52c00a87cab235dc2",
+          "codeBytes": 427,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-041",
+          "codeSha256": "dc46678375038ec7ebeb52b9563a4c008703fe64b146b1c45d4f44e67675e713",
+          "codeBytes": 1447,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-042",
+          "codeSha256": "e40606353691890674f063f59ef12959c4bac2b397c8043d21e53d6229823fcf",
+          "codeBytes": 1598,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-043",
+          "codeSha256": "e391a42c1f05d1caead34fa8cbebd38eb86ab91554f14d6576f71cffd2f73902",
+          "codeBytes": 1267,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-044",
+          "codeSha256": "dbc0d76e55aa5e1899448bde2a67353d2d01546580bd08801db08056fae7648b",
+          "codeBytes": 1567,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-045",
+          "codeSha256": "3587057ff06e789a183346ffaf99675217cb0a6c605fd15eaefeeee34954dcde",
+          "codeBytes": 1241,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-046",
+          "codeSha256": "0dabd18be185b9ceb9cfa98c0e9cc9c7910940263aef1e78731c1f007f49c3ff",
+          "codeBytes": 1072,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-047",
+          "codeSha256": "d2baf750b28d87f7e1cfd38942e62a0e4a9d43b666f2e7d0645bd5bb37b31fa8",
+          "codeBytes": 1841,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-048",
+          "codeSha256": "87495c1e4139b4da3c6f5649a6958bc6b4623da85871055a55cad0cd41192191",
+          "codeBytes": 1363,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-049",
+          "codeSha256": "e3339a395b009e2b76cac597498bc35c1d84432745ae86c9cfbd2764d245b62b",
+          "codeBytes": 947,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-050",
+          "codeSha256": "a0640dea88596505d438dacd316f7f0774c90f96ace0bb3659a29f1bce6a6ed7",
+          "codeBytes": 1335,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-051",
+          "codeSha256": "8259e7c9a211f36030f93f6355a43c2a7d4c15dabc39ad9bfd7839b25f0b7831",
+          "codeBytes": 1142,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-052",
+          "codeSha256": "eb3157234b2dd17531bf270f9c0256e0925ad2dfda4291bf600c9025ce5d4120",
+          "codeBytes": 1395,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-053",
+          "codeSha256": "e875d2386c9f64908211d5ad9368af18f8d49a189bc704e542b5ba64d2d447d2",
+          "codeBytes": 1230,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-054",
+          "codeSha256": "19c04e2d0622695f378a46de9bde7ad034240c6e5306e9dd59a225f885dc63aa",
+          "codeBytes": 1197,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-055",
+          "codeSha256": "13504fc1ac513388612736395e028da3206ce05863e9cf92cf139bc975b26264",
+          "codeBytes": 1476,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-056",
+          "codeSha256": "da22e516bd357ca2ed4b98cdc86999978529eb64f9e0152e1d68a93991f89647",
+          "codeBytes": 1472,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-057",
+          "codeSha256": "ed61d04fd96d33bb0ff7ad39cdb4743de35b753783459f2115f3c24c33005bc6",
+          "codeBytes": 1501,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-058",
+          "codeSha256": "9eb9cff4bc52dff1b737a154d0abae8ad3f851b8a9e5f1daf90530dc638b8d81",
+          "codeBytes": 1860,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-059",
+          "codeSha256": "d4fc859d8bfed9ff8b188fd5d8316ca03aaddffcd34de8cbe2e7d6e18013bd1c",
+          "codeBytes": 1513,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-060",
+          "codeSha256": "891f46be38b06b9a2b00792452ae90f83894c8655f35da1aa1af99e8bdce8cd6",
+          "codeBytes": 2026,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-061",
+          "codeSha256": "d3806a1b65f190ad31ac63f575514bec3f8e1b1107012b443869cd293988dc69",
+          "codeBytes": 1449,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-062",
+          "codeSha256": "377156c5e8ff074e6381d0f5604f91c871b98a5840fcc8c239a93765074080a0",
+          "codeBytes": 1173,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-063",
+          "codeSha256": "282f4c58183f5c2d282ba74b02a111ef7d3c020160431938c34438dc82a0186c",
+          "codeBytes": 1340,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-064",
+          "codeSha256": "d99de1fe026a79a2b50de104ebe613647fd1786b4e4f0e2d7a08e201bb98b704",
+          "codeBytes": 1271,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-065",
+          "codeSha256": "42c7b8b34d40c927c4282ea197a5eafa82dc90e22b59122d90a6ed845eadd584",
+          "codeBytes": 1433,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-066",
+          "codeSha256": "a14839199bf4da8485122a98429bf4bb71da102b6203b04ac552267f36e8f920",
+          "codeBytes": 1850,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-067",
+          "codeSha256": "d63ed37ed360ae5a79ba3d71a302d30480c987ccc45befe951329479a539436e",
+          "codeBytes": 2052,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-068",
+          "codeSha256": "6cdd8ed669656c91314c611622e2ac5167725903c60d90914c317bec91ab9f8f",
+          "codeBytes": 3204,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-069",
+          "codeSha256": "13aac478f9d38a60f19640af4f1ebf185579201c81c11f397dd952551f581a25",
+          "codeBytes": 1052,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-070",
+          "codeSha256": "e1380632756632c2bf0673c655c2bb61b81bfc9ba6c1d0b96daaa9667d3cba6d",
+          "codeBytes": 1531,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-071",
+          "codeSha256": "92ceccd6279262bde75aa936674e4cbd9e30a7447c08e3e9d3a5f94c26ce1f4d",
+          "codeBytes": 893,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-072",
+          "codeSha256": "8f55a3ced36614c854a8c64908e6c8d71f84abc7b5d2dbd344e490e631204b62",
+          "codeBytes": 760,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-073",
+          "codeSha256": "e2ef925bab544f308fd0d1a4842c840a50683d6f617b4d8dfbce1de8eac7fa9d",
+          "codeBytes": 1168,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-074",
+          "codeSha256": "a1e02e916dac8a2680081ce09c38c73258cd1264447b1ceb118a0fe9b2549a88",
+          "codeBytes": 876,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-075",
+          "codeSha256": "0ed8108504dfa3a0d1d5463696abcd0e926877c6b9ad9860de0bc7303dd17e06",
+          "codeBytes": 1427,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-076",
+          "codeSha256": "396216ecbdb342425c43994f5cee1db4878a1c8452fc07b8d6ee10104e47bac9",
+          "codeBytes": 1062,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-077",
+          "codeSha256": "168e987ad06e13505ddd5060106aabd12c7bdf546d97bc0a1f0d31982e371f0c",
+          "codeBytes": 1950,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-078",
+          "codeSha256": "993f6f048c8b55924685654c9998c072b766381609e8db7b90d96071ea57c2ed",
+          "codeBytes": 1850,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-079",
+          "codeSha256": "4521b1b9cbe9ec2f95b14722d365beb45853491532f89e06d06209ce1e4faaf9",
+          "codeBytes": 1103,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-080",
+          "codeSha256": "019e4b20eebc59a01ca99919ee8a66cf9f834433be730fc95aafbbd8a9def731",
+          "codeBytes": 2283,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-081",
+          "codeSha256": "dd31be30681be5a966edaf781c792da6f67a7df0853210c9d3b511c881219db5",
+          "codeBytes": 1675,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-082",
+          "codeSha256": "005fcf15002c881cc7b6a9e29de47db5ceb4ab81ddb669b2051f29d203ade305",
+          "codeBytes": 1335,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-083",
+          "codeSha256": "a7c88f25df7924fb23f44c297f83c6ec85e491e08ce0f3f3281afe1c2f97dbb2",
+          "codeBytes": 1703,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-084",
+          "codeSha256": "546ea1f523a18d7ab1513d69c9d2f2f25a41aeba80c5219b36dd144a9f684257",
+          "codeBytes": 1906,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-085",
+          "codeSha256": "835ab76c6c25f5e8aec52617d660a4e69a5671030394bb37d7abbb31d04a1886",
+          "codeBytes": 1378,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-086",
+          "codeSha256": "e47e89d225c1399bb01b8b9440dc9ab375c3e40bd08e755fad90af4ebac8dd6d",
+          "codeBytes": 1237,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-087",
+          "codeSha256": "b3fb7b4b99127768395c6cf7c5de37d0f801d6e7e6cdd12dec494deea4f21187",
+          "codeBytes": 883,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-088",
+          "codeSha256": "58e90918c588914d9ac03901b7176d107899a3655afaf964eaceb1d09b5e768b",
+          "codeBytes": 1424,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-089",
+          "codeSha256": "7babe82b65b8100f44555c7b9dcf6b36ad9c36f5f02570c42e701b53bad1dc12",
+          "codeBytes": 1199,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-090",
+          "codeSha256": "e7826fcb1b757e8104d8f79167329b4721b0123eb39137b001e0344821efaad6",
+          "codeBytes": 1262,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-091",
+          "codeSha256": "fa7dba17177ea2bd613a1c003e2ae35028481530909b6c963f7b452b6100c6ca",
+          "codeBytes": 1358,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-092",
+          "codeSha256": "44ba2f7c472f54df8f91215d21c08cb42f08610db919ce718ea57e67170d9924",
+          "codeBytes": 1217,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-093",
+          "codeSha256": "b7225c565ab46bea4b292795e63722b28b93dea410581b8c79d02801e704d401",
+          "codeBytes": 1164,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-094",
+          "codeSha256": "5c704fe2d28a38075dd0f8b2763128f283142fc0c933d05102a27e1326b36df3",
+          "codeBytes": 1012,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-095",
+          "codeSha256": "1051495a0995e047ecce5129b66b21e203fd52373d89fb5d3f7261b1a03bc228",
+          "codeBytes": 1158,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-096",
+          "codeSha256": "d82e6e298e6fb5fbea9d63b9436c7a16251d1d4fbc34d277bbcaa3c4a13255f2",
+          "codeBytes": 1055,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-097",
+          "codeSha256": "ee8ecaae5084385b9f58b5fb870c4f130eccd02488757fca0e117047c15e4bb8",
+          "codeBytes": 1089,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-098",
+          "codeSha256": "85b0dae3d7a4468b84a6597dd49f84724724a91344f2b1c1db30be70ab19d49d",
+          "codeBytes": 1297,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-099",
+          "codeSha256": "9e8fb158c3d5fda72acf72b1c8776a76dfd7eaa3c3b43767af72549d69ba2ead",
+          "codeBytes": 1333,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-100",
+          "codeSha256": "1bbcab62615926fb29d565b0749da7ddb96911e2735a2314e171242abfff567d",
+          "codeBytes": 1399,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-101",
+          "codeSha256": "4f271174d38264775e17b7a393c41f50bfda790bd10112a16b192d6a7bd2898d",
+          "codeBytes": 1735,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-102",
+          "codeSha256": "eeaccf2b9c47ac4ddd3d73dff97e4a2e71e209d1412601275ad2e2c4c8f8ea29",
+          "codeBytes": 2382,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-103",
+          "codeSha256": "fee88577b6a2ac28738bc32ffa58209bb791af7e868c91a3cecb68b1cc47c83b",
+          "codeBytes": 2423,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-104",
+          "codeSha256": "f2411a3c759ae18207248b039f1685582e2e664eafdb35ca63086469850f4794",
+          "codeBytes": 1805,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-105",
+          "codeSha256": "2eeb52c9c86252e9f042564f5482f2f26cc3d195244eaa165e9d63fa62dd8969",
+          "codeBytes": 1114,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-106",
+          "codeSha256": "a6be48731c0d5c7d3890763b04ecc824bdab45ec7f7133f402ee0e30bb52dbe4",
+          "codeBytes": 1243,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-107",
+          "codeSha256": "30a05f52cf59522ed730431f8664c2bef1c46b8f3f361aabd6bebf9f07c5252b",
+          "codeBytes": 1592,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-108",
+          "codeSha256": "10dc4218980e46dd85575b577129a39ca3a88ae9aeca94b1a28e9ec5727e5b81",
+          "codeBytes": 1437,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-109",
+          "codeSha256": "8f326882241cebe2301f81f8c6afbde68093696d1fea4433c25d1f2a344a5be0",
+          "codeBytes": 1072,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-110",
+          "codeSha256": "84194ba7c1f76688f3fd60264c5f785b8f1ec28488657570a6bfb1829008c5e8",
+          "codeBytes": 1807,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-111",
+          "codeSha256": "626a0b84803239b1fa9f1abe696a3753bbdbb3e00bafaeb4ddc280e8ca36bf8c",
+          "codeBytes": 1914,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-112",
+          "codeSha256": "181a843f2087985b5a9a73dd459bd69c0b29a03a46a8503334e39bc08574b572",
+          "codeBytes": 1373,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-113",
+          "codeSha256": "14ec50173b5985232a85a426c981139332305f39eefe5a7b41cb83f900637c7a",
+          "codeBytes": 1077,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-114",
+          "codeSha256": "f802c5c05b49009109af3a505a071ea7735dc7b5c236d7dccebfa880302b1fbb",
+          "codeBytes": 1994,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-115",
+          "codeSha256": "9f5d125a8da0b926d2690dfb80db85f547d825488d95862b21d9581c9d6fd4b4",
+          "codeBytes": 973,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-116",
+          "codeSha256": "3d983832d06b90f1aa13999648fb0ccbaccd8ba19294c8ec4d2d1be7b10f1d68",
+          "codeBytes": 1541,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-117",
+          "codeSha256": "c6596165f41c1e29d91acd67fd7c00b96c9607d5de46ca8ae2d38f055e74df18",
+          "codeBytes": 2065,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-118",
+          "codeSha256": "5802bac7b0ddcc8a7ee84e63f199e2fbd5bbe7eaa00052ef6a10456169283f4c",
+          "codeBytes": 3130,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-119",
+          "codeSha256": "e257891c419fdcaa446d1b4042a16f4c856cb88b32053bf69d2a9c91c54c7eb0",
+          "codeBytes": 2513,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        },
+        {
+          "id": "go-example-120",
+          "codeSha256": "03f8082770bc1d3e65176816b96f61f6883b3c71528fd527b50912981bf18496",
+          "codeBytes": 2686,
+          "hasExpectedOutput": true,
+          "hasInputFixtures": false
+        }
+      ]
+    },
+    "tutorials": {
+      "sha256": "ead9a068fb5f11f87cbf6d7501756d561aa24680eaf441fe6a3ebdec6afd5672",
+      "total": 1640,
+      "languages": {
+        "c": 100,
+        "cpp": 100,
+        "lua": 100,
+        "javascript": 100,
+        "typescript": 100,
+        "shell": 100,
+        "rust": 100,
+        "go": 120,
+        "html": 100,
+        "css": 100,
+        "dart": 100,
+        "sql": 100,
+        "json": 100,
+        "markdown": 100,
+        "java": 100,
+        "python": 120
+      },
+      "goEntries": 120,
+      "goCodeBlocks": [
+        {
+          "id": "go-tutorial-001",
+          "lessonId": "go-tutorial-001-lesson",
+          "codeSha256": "6bcd056bd6af141432ec84b2331b28b70e6c120a40a19d436d14cd57852a713e",
+          "codeBytes": 224,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-002",
+          "lessonId": "go-tutorial-002-lesson",
+          "codeSha256": "248f8ab3fc4d8c7044c50a5c90404230fb623dbaa6c6d6862aa0623e6c4c8e26",
+          "codeBytes": 70,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-003",
+          "lessonId": "go-tutorial-003-lesson",
+          "codeSha256": "9c69958e3f301e4af2e68b03ae3e85840b3b5654c4840f04ea63d8b561024c11",
+          "codeBytes": 210,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-004",
+          "lessonId": "go-tutorial-004-lesson",
+          "codeSha256": "b01757e9f6c83afec69d30a17291c24b996c13b58af45c03a99f7845604ec85f",
+          "codeBytes": 319,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-005",
+          "lessonId": "go-tutorial-005-lesson",
+          "codeSha256": "837cb5256b0cb99cc96bc27b2d9a568212d70a6863eadb8a706aa8c398aa16f9",
+          "codeBytes": 293,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-006",
+          "lessonId": "go-tutorial-006-lesson",
+          "codeSha256": "c2bdce04ffc177175acc3f4fbe61cd49a7735a98d529f08b1e704fce6424ebc7",
+          "codeBytes": 438,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-007",
+          "lessonId": "go-tutorial-007-lesson",
+          "codeSha256": "be640285d00e33208ad6ec4bd32213fafac990cacec7a3caa02a48784aa2a88d",
+          "codeBytes": 229,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-008",
+          "lessonId": "go-tutorial-008-lesson",
+          "codeSha256": "ed0bd19e6c9b4a6524b77ad24d8626a5c4feeea8ca64906ce9cafd0ba27883f3",
+          "codeBytes": 231,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-009",
+          "lessonId": "go-tutorial-009-lesson",
+          "codeSha256": "1bb435082ce8bec4e889ecb9869e6655ec8839580472f563fc11a998355af4c5",
+          "codeBytes": 393,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-010",
+          "lessonId": "go-tutorial-010-lesson",
+          "codeSha256": "072809ef524b6c00f6a671a01164d1ba1d5ae64bdab8d36c67ce352f82e6a1e8",
+          "codeBytes": 319,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-011",
+          "lessonId": "go-tutorial-011-lesson",
+          "codeSha256": "100121181ce6bdfdcc0a3544583261c0828a111acadadc7239f657ba5891026e",
+          "codeBytes": 268,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-012",
+          "lessonId": "go-tutorial-012-lesson",
+          "codeSha256": "45e811bb2d8a28b9dfedd21c97c8f53b569fc353f339c3c06598d522c12a196d",
+          "codeBytes": 291,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-013",
+          "lessonId": "go-tutorial-013-lesson",
+          "codeSha256": "a94b69decfbdd7e1e38195e4ed3df60274e7046ce0a118cec3eed8b13e7e21d5",
+          "codeBytes": 354,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-014",
+          "lessonId": "go-tutorial-014-lesson",
+          "codeSha256": "a903791df4499c0be63a303363843626fcdcf7a400e74a01c41c7bcf7691e2e4",
+          "codeBytes": 295,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-015",
+          "lessonId": "go-tutorial-015-lesson",
+          "codeSha256": "123e3a16f74f9dbb05af18ec6370bb574f6e6ecda30678f377c77cff369ff81e",
+          "codeBytes": 320,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-016",
+          "lessonId": "go-tutorial-016-lesson",
+          "codeSha256": "d523e5c836ddcdce90f3dabcb48329c08fdeb894cb0862f28c63abf5d15f72f2",
+          "codeBytes": 335,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-017",
+          "lessonId": "go-tutorial-017-lesson",
+          "codeSha256": "7ea6aeb8603786f551674fe4ed4b89d9f33bc86cd12043b85b6b6f970826d680",
+          "codeBytes": 349,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-018",
+          "lessonId": "go-tutorial-018-lesson",
+          "codeSha256": "4b77d43f20092d140072308b516b72a8728d69d7230f53e50a9b6b70c40d2c49",
+          "codeBytes": 192,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-019",
+          "lessonId": "go-tutorial-019-lesson",
+          "codeSha256": "54b025bb68718c6faa18b54c59b47120f2d4abcecde018427a273dee525b799d",
+          "codeBytes": 257,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-020",
+          "lessonId": "go-tutorial-020-lesson",
+          "codeSha256": "f7e5c8d5f1623627aa468841ef068ad354a4e993ad5a721a9814ff072368e513",
+          "codeBytes": 336,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-021",
+          "lessonId": "go-tutorial-021-lesson",
+          "codeSha256": "1f381182801fd0985ebbe18ff8cbc46dd0b35857d4cd788b196d1b2e6bfbe346",
+          "codeBytes": 531,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-022",
+          "lessonId": "go-tutorial-022-lesson",
+          "codeSha256": "37c14b5905828ad2737703495fcdcaaf6ba190e14d917d1d34f89e6591383e50",
+          "codeBytes": 338,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-023",
+          "lessonId": "go-tutorial-023-lesson",
+          "codeSha256": "97136c769b2810c97d316b45d9fcb77c49b3f0ab2ee9f12cccb6afe03ab89d96",
+          "codeBytes": 302,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-024",
+          "lessonId": "go-tutorial-024-lesson",
+          "codeSha256": "574f3fc0c476575aac960517a046e5523eac3f41d66f41aaefe52a91ebe5f04c",
+          "codeBytes": 241,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-025",
+          "lessonId": "go-tutorial-025-lesson",
+          "codeSha256": "71fe664ee28c66ae106f39afd98edbab5d1843a519009b5aa88863ce87830fa3",
+          "codeBytes": 346,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-026",
+          "lessonId": "go-tutorial-026-lesson",
+          "codeSha256": "7ce9ca591ef9bbb18b978c70f697990771b715d435c878e10c52ba874975eda8",
+          "codeBytes": 222,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-027",
+          "lessonId": "go-tutorial-027-lesson",
+          "codeSha256": "c22a79374c7c650082c41d2dc60146b13029078208b1d015a90fe5984a97c9d2",
+          "codeBytes": 280,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-028",
+          "lessonId": "go-tutorial-028-lesson",
+          "codeSha256": "d2987c6fc2478ac48806130ded812f37979f7ffaf52f64b4898798258e3a4e7f",
+          "codeBytes": 309,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-029",
+          "lessonId": "go-tutorial-029-lesson",
+          "codeSha256": "f9d4371fcd5ba0e544dda2f9cd36459cd3dfe366a7fa6fcacc1cba8f526b17e6",
+          "codeBytes": 263,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-030",
+          "lessonId": "go-tutorial-030-lesson",
+          "codeSha256": "494bc0bdef19ed8e66787585bddcce0f03a56d140146cf3df4aabad0f39767a1",
+          "codeBytes": 447,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-031",
+          "lessonId": "go-tutorial-031-lesson",
+          "codeSha256": "7779e03102004373a704881ebee3d3e603384d2d004fb9da1131fb2dc724db9a",
+          "codeBytes": 359,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-032",
+          "lessonId": "go-tutorial-032-lesson",
+          "codeSha256": "c046a2aeff1684e9d90a68843141b38c678a17107fe3a7d0728a632fdbfa972f",
+          "codeBytes": 361,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-033",
+          "lessonId": "go-tutorial-033-lesson",
+          "codeSha256": "fdad0ef51178d51ad28ba96fac2f3c6983085fc2a4452e628767d863779bae84",
+          "codeBytes": 306,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-034",
+          "lessonId": "go-tutorial-034-lesson",
+          "codeSha256": "276957fc37521ce624151d2c0f819f2d817fdd9828e451b86d9da84f5f57e2ed",
+          "codeBytes": 635,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-035",
+          "lessonId": "go-tutorial-035-lesson",
+          "codeSha256": "ea67e6c7f2159ee5f5055c08e479cd9c324a3a44948e6ca9361b741551d063d6",
+          "codeBytes": 473,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-036",
+          "lessonId": "go-tutorial-036-lesson",
+          "codeSha256": "6d054a4cdb54836793338ca9377f332bc58236385ca742768678f4e46025d838",
+          "codeBytes": 198,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-037",
+          "lessonId": "go-tutorial-037-lesson",
+          "codeSha256": "038d2c1b7df2f69d7d13bd0ef2b9015c7bd84d13147613ac87c5e211ddced994",
+          "codeBytes": 366,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-038",
+          "lessonId": "go-tutorial-038-lesson",
+          "codeSha256": "83459cade7c8dcc4ef24c5a5d07c6b3bcee819bd77070b0d4e00a3ec13238a43",
+          "codeBytes": 371,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-039",
+          "lessonId": "go-tutorial-039-lesson",
+          "codeSha256": "99cca0aa136cabb7f5827c731d8bc8a35f3fddfe3e4b925c8b657410d722e2ad",
+          "codeBytes": 409,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-040",
+          "lessonId": "go-tutorial-040-lesson",
+          "codeSha256": "484e31233a4af04cdc2c61d0b8d17038e28305505e5476b52c00a87cab235dc2",
+          "codeBytes": 427,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-041",
+          "lessonId": "go-tutorial-041-lesson",
+          "codeSha256": "dc46678375038ec7ebeb52b9563a4c008703fe64b146b1c45d4f44e67675e713",
+          "codeBytes": 1447,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-042",
+          "lessonId": "go-tutorial-042-lesson",
+          "codeSha256": "e40606353691890674f063f59ef12959c4bac2b397c8043d21e53d6229823fcf",
+          "codeBytes": 1598,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-043",
+          "lessonId": "go-tutorial-043-lesson",
+          "codeSha256": "e391a42c1f05d1caead34fa8cbebd38eb86ab91554f14d6576f71cffd2f73902",
+          "codeBytes": 1267,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-044",
+          "lessonId": "go-tutorial-044-lesson",
+          "codeSha256": "dbc0d76e55aa5e1899448bde2a67353d2d01546580bd08801db08056fae7648b",
+          "codeBytes": 1567,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-045",
+          "lessonId": "go-tutorial-045-lesson",
+          "codeSha256": "3587057ff06e789a183346ffaf99675217cb0a6c605fd15eaefeeee34954dcde",
+          "codeBytes": 1241,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-046",
+          "lessonId": "go-tutorial-046-lesson",
+          "codeSha256": "0dabd18be185b9ceb9cfa98c0e9cc9c7910940263aef1e78731c1f007f49c3ff",
+          "codeBytes": 1072,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-047",
+          "lessonId": "go-tutorial-047-lesson",
+          "codeSha256": "d2baf750b28d87f7e1cfd38942e62a0e4a9d43b666f2e7d0645bd5bb37b31fa8",
+          "codeBytes": 1841,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-048",
+          "lessonId": "go-tutorial-048-lesson",
+          "codeSha256": "87495c1e4139b4da3c6f5649a6958bc6b4623da85871055a55cad0cd41192191",
+          "codeBytes": 1363,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-049",
+          "lessonId": "go-tutorial-049-lesson",
+          "codeSha256": "e3339a395b009e2b76cac597498bc35c1d84432745ae86c9cfbd2764d245b62b",
+          "codeBytes": 947,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-050",
+          "lessonId": "go-tutorial-050-lesson",
+          "codeSha256": "a0640dea88596505d438dacd316f7f0774c90f96ace0bb3659a29f1bce6a6ed7",
+          "codeBytes": 1335,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-051",
+          "lessonId": "go-tutorial-051-lesson",
+          "codeSha256": "8259e7c9a211f36030f93f6355a43c2a7d4c15dabc39ad9bfd7839b25f0b7831",
+          "codeBytes": 1142,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-052",
+          "lessonId": "go-tutorial-052-lesson",
+          "codeSha256": "eb3157234b2dd17531bf270f9c0256e0925ad2dfda4291bf600c9025ce5d4120",
+          "codeBytes": 1395,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-053",
+          "lessonId": "go-tutorial-053-lesson",
+          "codeSha256": "e875d2386c9f64908211d5ad9368af18f8d49a189bc704e542b5ba64d2d447d2",
+          "codeBytes": 1230,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-054",
+          "lessonId": "go-tutorial-054-lesson",
+          "codeSha256": "19c04e2d0622695f378a46de9bde7ad034240c6e5306e9dd59a225f885dc63aa",
+          "codeBytes": 1197,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-055",
+          "lessonId": "go-tutorial-055-lesson",
+          "codeSha256": "13504fc1ac513388612736395e028da3206ce05863e9cf92cf139bc975b26264",
+          "codeBytes": 1476,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-056",
+          "lessonId": "go-tutorial-056-lesson",
+          "codeSha256": "da22e516bd357ca2ed4b98cdc86999978529eb64f9e0152e1d68a93991f89647",
+          "codeBytes": 1472,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-057",
+          "lessonId": "go-tutorial-057-lesson",
+          "codeSha256": "ed61d04fd96d33bb0ff7ad39cdb4743de35b753783459f2115f3c24c33005bc6",
+          "codeBytes": 1501,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-058",
+          "lessonId": "go-tutorial-058-lesson",
+          "codeSha256": "9eb9cff4bc52dff1b737a154d0abae8ad3f851b8a9e5f1daf90530dc638b8d81",
+          "codeBytes": 1860,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-059",
+          "lessonId": "go-tutorial-059-lesson",
+          "codeSha256": "d4fc859d8bfed9ff8b188fd5d8316ca03aaddffcd34de8cbe2e7d6e18013bd1c",
+          "codeBytes": 1513,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-060",
+          "lessonId": "go-tutorial-060-lesson",
+          "codeSha256": "891f46be38b06b9a2b00792452ae90f83894c8655f35da1aa1af99e8bdce8cd6",
+          "codeBytes": 2026,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-061",
+          "lessonId": "go-tutorial-061-lesson",
+          "codeSha256": "d3806a1b65f190ad31ac63f575514bec3f8e1b1107012b443869cd293988dc69",
+          "codeBytes": 1449,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-062",
+          "lessonId": "go-tutorial-062-lesson",
+          "codeSha256": "377156c5e8ff074e6381d0f5604f91c871b98a5840fcc8c239a93765074080a0",
+          "codeBytes": 1173,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-063",
+          "lessonId": "go-tutorial-063-lesson",
+          "codeSha256": "282f4c58183f5c2d282ba74b02a111ef7d3c020160431938c34438dc82a0186c",
+          "codeBytes": 1340,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-064",
+          "lessonId": "go-tutorial-064-lesson",
+          "codeSha256": "d99de1fe026a79a2b50de104ebe613647fd1786b4e4f0e2d7a08e201bb98b704",
+          "codeBytes": 1271,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-065",
+          "lessonId": "go-tutorial-065-lesson",
+          "codeSha256": "42c7b8b34d40c927c4282ea197a5eafa82dc90e22b59122d90a6ed845eadd584",
+          "codeBytes": 1433,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-066",
+          "lessonId": "go-tutorial-066-lesson",
+          "codeSha256": "a14839199bf4da8485122a98429bf4bb71da102b6203b04ac552267f36e8f920",
+          "codeBytes": 1850,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-067",
+          "lessonId": "go-tutorial-067-lesson",
+          "codeSha256": "d63ed37ed360ae5a79ba3d71a302d30480c987ccc45befe951329479a539436e",
+          "codeBytes": 2052,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-068",
+          "lessonId": "go-tutorial-068-lesson",
+          "codeSha256": "6cdd8ed669656c91314c611622e2ac5167725903c60d90914c317bec91ab9f8f",
+          "codeBytes": 3204,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-069",
+          "lessonId": "go-tutorial-069-lesson",
+          "codeSha256": "13aac478f9d38a60f19640af4f1ebf185579201c81c11f397dd952551f581a25",
+          "codeBytes": 1052,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-070",
+          "lessonId": "go-tutorial-070-lesson",
+          "codeSha256": "e1380632756632c2bf0673c655c2bb61b81bfc9ba6c1d0b96daaa9667d3cba6d",
+          "codeBytes": 1531,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-071",
+          "lessonId": "go-tutorial-071-lesson",
+          "codeSha256": "92ceccd6279262bde75aa936674e4cbd9e30a7447c08e3e9d3a5f94c26ce1f4d",
+          "codeBytes": 893,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-072",
+          "lessonId": "go-tutorial-072-lesson",
+          "codeSha256": "8f55a3ced36614c854a8c64908e6c8d71f84abc7b5d2dbd344e490e631204b62",
+          "codeBytes": 760,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-073",
+          "lessonId": "go-tutorial-073-lesson",
+          "codeSha256": "e2ef925bab544f308fd0d1a4842c840a50683d6f617b4d8dfbce1de8eac7fa9d",
+          "codeBytes": 1168,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-074",
+          "lessonId": "go-tutorial-074-lesson",
+          "codeSha256": "a1e02e916dac8a2680081ce09c38c73258cd1264447b1ceb118a0fe9b2549a88",
+          "codeBytes": 876,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-075",
+          "lessonId": "go-tutorial-075-lesson",
+          "codeSha256": "0ed8108504dfa3a0d1d5463696abcd0e926877c6b9ad9860de0bc7303dd17e06",
+          "codeBytes": 1427,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-076",
+          "lessonId": "go-tutorial-076-lesson",
+          "codeSha256": "396216ecbdb342425c43994f5cee1db4878a1c8452fc07b8d6ee10104e47bac9",
+          "codeBytes": 1062,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-077",
+          "lessonId": "go-tutorial-077-lesson",
+          "codeSha256": "168e987ad06e13505ddd5060106aabd12c7bdf546d97bc0a1f0d31982e371f0c",
+          "codeBytes": 1950,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-078",
+          "lessonId": "go-tutorial-078-lesson",
+          "codeSha256": "993f6f048c8b55924685654c9998c072b766381609e8db7b90d96071ea57c2ed",
+          "codeBytes": 1850,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-079",
+          "lessonId": "go-tutorial-079-lesson",
+          "codeSha256": "4521b1b9cbe9ec2f95b14722d365beb45853491532f89e06d06209ce1e4faaf9",
+          "codeBytes": 1103,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-080",
+          "lessonId": "go-tutorial-080-lesson",
+          "codeSha256": "019e4b20eebc59a01ca99919ee8a66cf9f834433be730fc95aafbbd8a9def731",
+          "codeBytes": 2283,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-081",
+          "lessonId": "go-tutorial-081-lesson",
+          "codeSha256": "dd31be30681be5a966edaf781c792da6f67a7df0853210c9d3b511c881219db5",
+          "codeBytes": 1675,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-082",
+          "lessonId": "go-tutorial-082-lesson",
+          "codeSha256": "005fcf15002c881cc7b6a9e29de47db5ceb4ab81ddb669b2051f29d203ade305",
+          "codeBytes": 1335,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-083",
+          "lessonId": "go-tutorial-083-lesson",
+          "codeSha256": "a7c88f25df7924fb23f44c297f83c6ec85e491e08ce0f3f3281afe1c2f97dbb2",
+          "codeBytes": 1703,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-084",
+          "lessonId": "go-tutorial-084-lesson",
+          "codeSha256": "546ea1f523a18d7ab1513d69c9d2f2f25a41aeba80c5219b36dd144a9f684257",
+          "codeBytes": 1906,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-085",
+          "lessonId": "go-tutorial-085-lesson",
+          "codeSha256": "835ab76c6c25f5e8aec52617d660a4e69a5671030394bb37d7abbb31d04a1886",
+          "codeBytes": 1378,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-086",
+          "lessonId": "go-tutorial-086-lesson",
+          "codeSha256": "e47e89d225c1399bb01b8b9440dc9ab375c3e40bd08e755fad90af4ebac8dd6d",
+          "codeBytes": 1237,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-087",
+          "lessonId": "go-tutorial-087-lesson",
+          "codeSha256": "b3fb7b4b99127768395c6cf7c5de37d0f801d6e7e6cdd12dec494deea4f21187",
+          "codeBytes": 883,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-088",
+          "lessonId": "go-tutorial-088-lesson",
+          "codeSha256": "58e90918c588914d9ac03901b7176d107899a3655afaf964eaceb1d09b5e768b",
+          "codeBytes": 1424,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-089",
+          "lessonId": "go-tutorial-089-lesson",
+          "codeSha256": "7babe82b65b8100f44555c7b9dcf6b36ad9c36f5f02570c42e701b53bad1dc12",
+          "codeBytes": 1199,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-090",
+          "lessonId": "go-tutorial-090-lesson",
+          "codeSha256": "e7826fcb1b757e8104d8f79167329b4721b0123eb39137b001e0344821efaad6",
+          "codeBytes": 1262,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-091",
+          "lessonId": "go-tutorial-091-lesson",
+          "codeSha256": "fa7dba17177ea2bd613a1c003e2ae35028481530909b6c963f7b452b6100c6ca",
+          "codeBytes": 1358,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-092",
+          "lessonId": "go-tutorial-092-lesson",
+          "codeSha256": "44ba2f7c472f54df8f91215d21c08cb42f08610db919ce718ea57e67170d9924",
+          "codeBytes": 1217,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-093",
+          "lessonId": "go-tutorial-093-lesson",
+          "codeSha256": "b7225c565ab46bea4b292795e63722b28b93dea410581b8c79d02801e704d401",
+          "codeBytes": 1164,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-094",
+          "lessonId": "go-tutorial-094-lesson",
+          "codeSha256": "5c704fe2d28a38075dd0f8b2763128f283142fc0c933d05102a27e1326b36df3",
+          "codeBytes": 1012,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-095",
+          "lessonId": "go-tutorial-095-lesson",
+          "codeSha256": "1051495a0995e047ecce5129b66b21e203fd52373d89fb5d3f7261b1a03bc228",
+          "codeBytes": 1158,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-096",
+          "lessonId": "go-tutorial-096-lesson",
+          "codeSha256": "d82e6e298e6fb5fbea9d63b9436c7a16251d1d4fbc34d277bbcaa3c4a13255f2",
+          "codeBytes": 1055,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-097",
+          "lessonId": "go-tutorial-097-lesson",
+          "codeSha256": "ee8ecaae5084385b9f58b5fb870c4f130eccd02488757fca0e117047c15e4bb8",
+          "codeBytes": 1089,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-098",
+          "lessonId": "go-tutorial-098-lesson",
+          "codeSha256": "85b0dae3d7a4468b84a6597dd49f84724724a91344f2b1c1db30be70ab19d49d",
+          "codeBytes": 1297,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-099",
+          "lessonId": "go-tutorial-099-lesson",
+          "codeSha256": "9e8fb158c3d5fda72acf72b1c8776a76dfd7eaa3c3b43767af72549d69ba2ead",
+          "codeBytes": 1333,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-100",
+          "lessonId": "go-tutorial-100-lesson",
+          "codeSha256": "1bbcab62615926fb29d565b0749da7ddb96911e2735a2314e171242abfff567d",
+          "codeBytes": 1399,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-101",
+          "lessonId": "go-tutorial-101-lesson",
+          "codeSha256": "4f271174d38264775e17b7a393c41f50bfda790bd10112a16b192d6a7bd2898d",
+          "codeBytes": 1735,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-102",
+          "lessonId": "go-tutorial-102-lesson",
+          "codeSha256": "eeaccf2b9c47ac4ddd3d73dff97e4a2e71e209d1412601275ad2e2c4c8f8ea29",
+          "codeBytes": 2382,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-103",
+          "lessonId": "go-tutorial-103-lesson",
+          "codeSha256": "fee88577b6a2ac28738bc32ffa58209bb791af7e868c91a3cecb68b1cc47c83b",
+          "codeBytes": 2423,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-104",
+          "lessonId": "go-tutorial-104-lesson",
+          "codeSha256": "f2411a3c759ae18207248b039f1685582e2e664eafdb35ca63086469850f4794",
+          "codeBytes": 1805,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-105",
+          "lessonId": "go-tutorial-105-lesson",
+          "codeSha256": "2eeb52c9c86252e9f042564f5482f2f26cc3d195244eaa165e9d63fa62dd8969",
+          "codeBytes": 1114,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-106",
+          "lessonId": "go-tutorial-106-lesson",
+          "codeSha256": "a6be48731c0d5c7d3890763b04ecc824bdab45ec7f7133f402ee0e30bb52dbe4",
+          "codeBytes": 1243,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-107",
+          "lessonId": "go-tutorial-107-lesson",
+          "codeSha256": "30a05f52cf59522ed730431f8664c2bef1c46b8f3f361aabd6bebf9f07c5252b",
+          "codeBytes": 1592,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-108",
+          "lessonId": "go-tutorial-108-lesson",
+          "codeSha256": "10dc4218980e46dd85575b577129a39ca3a88ae9aeca94b1a28e9ec5727e5b81",
+          "codeBytes": 1437,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-109",
+          "lessonId": "go-tutorial-109-lesson",
+          "codeSha256": "8f326882241cebe2301f81f8c6afbde68093696d1fea4433c25d1f2a344a5be0",
+          "codeBytes": 1072,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-110",
+          "lessonId": "go-tutorial-110-lesson",
+          "codeSha256": "84194ba7c1f76688f3fd60264c5f785b8f1ec28488657570a6bfb1829008c5e8",
+          "codeBytes": 1807,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-111",
+          "lessonId": "go-tutorial-111-lesson",
+          "codeSha256": "626a0b84803239b1fa9f1abe696a3753bbdbb3e00bafaeb4ddc280e8ca36bf8c",
+          "codeBytes": 1914,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-112",
+          "lessonId": "go-tutorial-112-lesson",
+          "codeSha256": "181a843f2087985b5a9a73dd459bd69c0b29a03a46a8503334e39bc08574b572",
+          "codeBytes": 1373,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-113",
+          "lessonId": "go-tutorial-113-lesson",
+          "codeSha256": "14ec50173b5985232a85a426c981139332305f39eefe5a7b41cb83f900637c7a",
+          "codeBytes": 1077,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-114",
+          "lessonId": "go-tutorial-114-lesson",
+          "codeSha256": "f802c5c05b49009109af3a505a071ea7735dc7b5c236d7dccebfa880302b1fbb",
+          "codeBytes": 1994,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-115",
+          "lessonId": "go-tutorial-115-lesson",
+          "codeSha256": "9f5d125a8da0b926d2690dfb80db85f547d825488d95862b21d9581c9d6fd4b4",
+          "codeBytes": 973,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-116",
+          "lessonId": "go-tutorial-116-lesson",
+          "codeSha256": "3d983832d06b90f1aa13999648fb0ccbaccd8ba19294c8ec4d2d1be7b10f1d68",
+          "codeBytes": 1541,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-117",
+          "lessonId": "go-tutorial-117-lesson",
+          "codeSha256": "c6596165f41c1e29d91acd67fd7c00b96c9607d5de46ca8ae2d38f055e74df18",
+          "codeBytes": 2065,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-118",
+          "lessonId": "go-tutorial-118-lesson",
+          "codeSha256": "5802bac7b0ddcc8a7ee84e63f199e2fbd5bbe7eaa00052ef6a10456169283f4c",
+          "codeBytes": 3130,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-119",
+          "lessonId": "go-tutorial-119-lesson",
+          "codeSha256": "e257891c419fdcaa446d1b4042a16f4c856cb88b32053bf69d2a9c91c54c7eb0",
+          "codeBytes": 2513,
+          "hasExpectedOutput": true
+        },
+        {
+          "id": "go-tutorial-120",
+          "lessonId": "go-tutorial-120-lesson",
+          "codeSha256": "03f8082770bc1d3e65176816b96f61f6883b3c71528fd527b50912981bf18496",
+          "codeBytes": 2686,
+          "hasExpectedOutput": true
+        }
+      ]
+    }
+  },
+  "topics": [
+    {
+      "id": "T001",
+      "sha256": "f659c3488050e7d025b0090be74a1c19f13655392cf17465faecedd9a3e7d082",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T002",
+      "sha256": "5fb3d91a480ffd31ce607bdf3d45cde8b0d3a29eb7378e784538a454826586c9",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T003",
+      "sha256": "23232c7cf8a954c2c6fe33aec2ad56fbed7e59236d808f3e1a04d2fcf5546157",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T004",
+      "sha256": "6aeac4d7a8da95f39a98b286b3b535c90080884cddbfddb79eebed048afaf9ad",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T005",
+      "sha256": "c3ae35891c4e09a9f597452ddfd386cd3db6d372658a1f8de4c59fb508c2debc",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T006",
+      "sha256": "bdb0b517eae6f6f6d03a4cbd502aa71222287fdac866b17ef5fddb8e2fa3f2d7",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T007",
+      "sha256": "0dc8f699a5ab74e583f52203a0f313e809f5714a2b353f1e7597f50d7a583898",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": true
+    },
+    {
+      "id": "T008",
+      "sha256": "cea6e6661909a1afe4e74c51f0948d46dcb3bf1c41a4ecb7eeace94b5ef6dec0",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T009",
+      "sha256": "af362ff0ecab69210917a224d10e7abd164daa364b0aed889af79dc41b32ae78",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T010",
+      "sha256": "8b1e871d7e32c799ba65acd6d5bb6db8fa52e8f3d729abd45519000619bf6686",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T011",
+      "sha256": "5344f1985f26f1294b3f2af047239dd6b933f24d4fc4ab316722db2dd8bd1653",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T012",
+      "sha256": "26af52fa7ae050d8ccc377115bcefd6b1f401fa32baa3f61252b20987f040bea",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T013",
+      "sha256": "6dd93834c239f555f621ee0374c5cce6f50281d3c213e78579f8bcc699315097",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T014",
+      "sha256": "3421f7b9de584a6f3ae567b8b67a935c1d2924617a8cbe6958962e54f6b2d0bd",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T015",
+      "sha256": "aa8852899f7fc6ac7e24afd657b02a74f9b0f9a9451e62b544d9570585b06c8e",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T016",
+      "sha256": "6542fd3be4eb3117b06513d7d7c237c6f1b2749e2103bb403af1babab6893cf3",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T017",
+      "sha256": "dd6a154bd7fb24b1d94b5906d01554c42a1ae2daa88df0779c22472e6dee3863",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T018",
+      "sha256": "561b024ffe8e2e3767f3725852f58d0bde298a3e025ee0111f4e168fc120ba8a",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T019",
+      "sha256": "4083d3a66097791454e6d42d82e4a4539f3a872793e9e3916d3f3368641cbbc6",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T020",
+      "sha256": "fe9e159de31bcacd4afce789ad1c0f1292ec0d80ad3f60f84a237f1c6f5cf191",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T021",
+      "sha256": "ea336d7ae83b24c8f99608d0451a1d58ee6d315ecd030d3091855fbe1b6d4e4d",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T022",
+      "sha256": "6d2701b1fa6501956fc948010732533e23c41e82bfb7590001cf046e91751a29",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T023",
+      "sha256": "2213945afcb15e149dec12b10628c0ef4392ee1559895cacb35bee9c5851abc6",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T024",
+      "sha256": "6e216fb5a56e968576ae46235310f1a31b0f103c578ce446d89dcb027aa88596",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": true
+    },
+    {
+      "id": "T025",
+      "sha256": "347aa4396bf27277d5240faa2cb619cb49938a5ce5e384abf0e4bd0e6b2cf590",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T026",
+      "sha256": "1a70bb208c6e59b788e792ba3cad5ee24213e2d572237a9d0c26225f3b2a57fc",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T027",
+      "sha256": "83dbc690130eb2840064d84b78899362b55c490e1d22c16ed0c62d1418da40de",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": true
+    },
+    {
+      "id": "T028",
+      "sha256": "8f56915d08592c9ed55015f4a48df5bb0bb7ba943c2137ea7c56cfc97c7a18d2",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T029",
+      "sha256": "65c63746f142679ac2d92b621d1dcdc8f804ea48950ae64f06c1ba394fea3f9b",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T030",
+      "sha256": "f1f3fe248c464a5b483f3317679034f8c55bfd20b6a1814762de2206ad24eb03",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T031",
+      "sha256": "0a29e5c8f3fb6679091e3e3995c20fdbba2f8310785787f8733478e157b0ac6d",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T032",
+      "sha256": "e854a6225bc49640b44edf3f52ff8f67370c168b3240286bf50234c334c80159",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T033",
+      "sha256": "b341f396afd96a6ac985de778ead374a643a68d03550892d3a9dce9fa5d1a2fa",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T034",
+      "sha256": "df398b8993768421af1bd501d3c84e822d133595ffdd9d5fe6f0d3fe7fc125ad",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T035",
+      "sha256": "80db0126bf97aa4982c5a74ed39b030d43b528db140bbd54397335a8f18a4099",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T036",
+      "sha256": "a9fa765dd70bbb56c12e5d9867d37225bc13d79b898c06ec6d66d7c431cc9237",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T037",
+      "sha256": "be10d810f6624bfc7496ec45e082de933eb469e6836b3536bd53c41932858210",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T038",
+      "sha256": "86398824b607efe973fc23e148db8cbe23282918db990998fd89098f4b64cc17",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T039",
+      "sha256": "6e13b206b5f000d636cb8dbcadc2bcdc647af710db44b8b1257f84a84ace1b16",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T040",
+      "sha256": "0252b33dcec27f5cdde32d7ea7a4c596b777bf7a4dc4d72dc1f01f3ea4fd4c64",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T041",
+      "sha256": "8c180640e2c1fe75f938e4aab922a73de8747dc0ba57c0f4eab2333dc27bcf71",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T042",
+      "sha256": "6adffab3216daf7f8fce8f9f38c86ca9dad687be20b9be57f686cae00e0a2eb2",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T043",
+      "sha256": "15a686edb9386a4b445b895914fbef7249b1239436b4a61d64ed82f85d5fe02e",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T044",
+      "sha256": "4e317d34bcd314051ca6a99ff39289e85dc192e45a57c6834b3108955f6b5324",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T045",
+      "sha256": "51fe1c328ce409fd4fc16cd2db873d3464d43867d1150c574de60d4484bcc9bb",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T046",
+      "sha256": "369046dbf497f40140b13d47661ef17edb1f076acd0e9fdf05f90185713c409b",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T047",
+      "sha256": "a03b2ac372fe901a6eff5b60875271198637592b4c5e4fe156f0ab58cc1c547e",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T048",
+      "sha256": "4cbe335441fff5ccf1e1ff49fe02ef697659823f885990844153dd1dcf1ac686",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T049",
+      "sha256": "e602776178f48cfb74597f53a44c6fb105729fd79b4c53359b86d5ff68d9f555",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T050",
+      "sha256": "4239f850a0e9a18d78d9f60b62e16be6c789656c072ec726a66a5fe5875ee72f",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T051",
+      "sha256": "c1ca5c14d122fc8eb0098bef963858fa5f408f47d24a5faa487c46baad721a4e",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T052",
+      "sha256": "9a4976f93a588fce493c9d1c03344f398e7e25698de49d926c45535136ec222b",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T053",
+      "sha256": "cbba780c0764222af2a32f592db0a2e145372d8fdd0d11dadccbd5261c08a159",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T054",
+      "sha256": "926431657c45350592e1901cae004dffd1c2e57ff6b07608e4930bd26f0223d1",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T055",
+      "sha256": "324210358853ccc0b9501e7c0b5e77cc50e6d554ab5acf9f616c8910cda7aa9a",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T056",
+      "sha256": "d4777a336e54b2fccdbaac83dbae9c3bce80627227cc8386aa795dd2d98c8d53",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T057",
+      "sha256": "e264853bc0d982d7e38c8dfb6083bba86c0fb434f6b56e1a16980fa17e4d9b87",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T058",
+      "sha256": "65b2c9f77c18f982cffd011bfc2341b83a6d0e7b2adaf6831e17f5c77a370833",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T059",
+      "sha256": "2675e74080a20636d67cb6d254a531e45cfdd6839e8a908db40e1193ab1e7b52",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T060",
+      "sha256": "a98b78ad0bb302b3d3787534fd35a255f38e58782a62e84ea37b8d1961ae6421",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T061",
+      "sha256": "9c54adf249d2389c4ef7cf24eb7b47fa52b8a9a0236f8ff35a7523d4ec5e9090",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T062",
+      "sha256": "fabc472b5d9ea7212a43076d49e5be19696ec4ed0129c473f6b480e4e976ce5a",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T063",
+      "sha256": "ebb032f1ca9d49a77e6dd1b8dc1c52779be9d91efa3b950e01c945870c58e0ad",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T064",
+      "sha256": "063128680aec6bd80bb05a176dc15a9b5400024df5385d09217d9fe098f71761",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T065",
+      "sha256": "08915aacb1c8c35acd29f535300e685ab01c5074bafb0c64869389551ffb49a3",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T066",
+      "sha256": "bd67683184054b4877ae70a10f200b94b336669686d0b8dd3ebc5013e5481499",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T067",
+      "sha256": "c6dd485f867f0839f97cad4be3b33a9ae7fdc1d2a7e84ed7ce79df9f79bf648e",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T068",
+      "sha256": "07af46d784c398d095b9c61195a2adb238386728c6b8d9a567f1e21b0640ebb3",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T069",
+      "sha256": "27a5609142799050d6a26309ea0c7b9a04181b00e505062622d6857b5ce5cb23",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "go.mod",
+        "impl_default.go",
+        "impl_special.go",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T070",
+      "sha256": "73c31e5b550f864044ea8d07b7a65dc13d37f3ad552fb3b3ec6ad20e4d41addb",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "day.go",
+        "day_string.go",
+        "gen_main.go",
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T071",
+      "sha256": "999d49260f58958628c12c64272c3e51f78fb88689462211ada891209a2c0321",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-sorted",
+      "variantDiffers": false
+    },
+    {
+      "id": "T072",
+      "sha256": "dfc2af3acae61f646b338952e3799ad08f6c204e5c5091331ece643a71fd7dbb",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T073",
+      "sha256": "c76033aaf2244d439db0e8a72b4d44ccdb26c02bace602ce20d868cd4ca9627d",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T074",
+      "sha256": "ffbe79eb21aec80e7835ce43327769bed3119fa4639329a8b9ab3aec0d85d6d8",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T075",
+      "sha256": "20361f65648a2b98bcba836ce150e9304520899b908044456e935a4fc561f6c6",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T076",
+      "sha256": "261e644426d34f72bb53c3adcdcd00abeffd8b33f787ce765643bdaaa104df51",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T077",
+      "sha256": "5f573c77329c8822a435836dbe49ee29a6aad0bcbd6ab73b6b2edf63dc1ead02",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "counter_test.go",
+        "go.mod"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T078",
+      "sha256": "7ec62aed84f20a4b010168858194821c993be24c6c6cbfb3139b3ba56cf97fff",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "config_test.go",
+        "go.mod"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T079",
+      "sha256": "a4d06e1926b386dcee7814de2789feca8d02b6f57de5f67f2ec38f41ed4a3b4a",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T080",
+      "sha256": "28e9daa821ecacb3548166e06cced607df245235ebba0ec0307626fef937edbe",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "go.mod",
+        "pool_test.go"
+      ],
+      "runCommand": "go test -bench . -run '^$' ./...",
+      "verificationKind": "bench-exists",
+      "variantDiffers": false
+    },
+    {
+      "id": "T081",
+      "sha256": "53b974cc4041955a599e51a59c74e3c007e55326dd7e14469485bf1b0cdee327",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "atomic_test.go",
+        "go.mod"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T082",
+      "sha256": "f2e300b4f7a3e4c9143e05f69d992921028dd71c7765275f6798ae50d4469351",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T083",
+      "sha256": "f4dfe34f9bd52714a68dcc6237d11fbb080e6fdcd1da571c54bd971f144488ec",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T084",
+      "sha256": "8366b021f1deaa79c9f8e79593e39e5785ffe9061092f131e501ad53194958e8",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T085",
+      "sha256": "b930a24d0476e52ce67e82294d37ffba843c963a43da9a26ebe118e70f5288ae",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T086",
+      "sha256": "4096ae19b11537b34e28458dd8df3cef980cc4486a9f09cc29cce6d7354fdef8",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T087",
+      "sha256": "5447aa1ca2c61777e8fe796e65b87261d64485306a9fe142cfbd88204a63f784",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T088",
+      "sha256": "129b38fa018e3ee2e83e6b648c9c5f186371cdd706ed9f7f0daa6d945aa7d987",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T089",
+      "sha256": "daf78aa8558592e62f6b2ccb1089ecb8799d356ae48c1e76576bdb121ffcacba",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T090",
+      "sha256": "6e029c3911ffcf50aeed4bf519ad0321c6469efc7908cc8ee285489effab5641",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T091",
+      "sha256": "e9e7b4d644f1fd513445e7058687ccb24b8093417a50d82855eae0075da8ef71",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T092",
+      "sha256": "ca322437d013ca8299d30e2668bd325c838177d3635f7d9dab33b97e2eebb9d3",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T093",
+      "sha256": "9fe9e712335bdb6096d755c117769466bd12e72c72e811245b1d2ce64bb49719",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T094",
+      "sha256": "026f8dbde7a6e11c307c312b586e902f899e522c58543a0da495d07fe44a0723",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T095",
+      "sha256": "faeb309014bbfe82097fcf1f759af0978637e437180440ee583be3eb76a3c699",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T096",
+      "sha256": "efa12a9059c35e8fb68778af0e0dc95f39154274282e68add3e3fab6864138df",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T097",
+      "sha256": "afa3f702b34adef543267ecf67046588c21f2c058ff04499159812bdec1f94cb",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T098",
+      "sha256": "f648d81ea09b361a252c67fc1f3e1b28e8f87cca6140e9f65809269556053e67",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T099",
+      "sha256": "1155a44c2e4f6728931e0c932eab93aac01ea8bb30644f607a07088acfc1e29d",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "client_test.go",
+        "go.mod"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T100",
+      "sha256": "8e10b1431f2f26bd66eae03eb7dc9501f8db9c761821e9098ee638f9ab9de003",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "go.mod",
+        "server_test.go"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T101",
+      "sha256": "5714aa48d2c38d42d7dd0583a403a71a5ad0df890a42ddd5c1f6df8f6a6cb4e3",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "go.mod",
+        "method_test.go"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T102",
+      "sha256": "d2a4b129493ecae201ddea609916daa8b2b08e209fb6c1eb9af750b4623eb7f2",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "api_test.go",
+        "go.mod"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T103",
+      "sha256": "768b94576c5ddb50118a8604c11196ed42e817d45d23db36ad1c3d61f03f9256",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "go.mod",
+        "mw_test.go"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T104",
+      "sha256": "13906006d829db9a08190f14a9b345430e2cfee08660c0057031a7db22243c62",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "go.mod",
+        "timeout_test.go"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T105",
+      "sha256": "d65ba586df393a8f11fbb9e7b95e8709de935ff2dea5d818bab06f3dd4052d63",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "calc_test.go",
+        "go.mod"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T106",
+      "sha256": "01cf0c207680bf8d7e306189382204d60fbb8dc9c9ad95483acf1920ba82de9c",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "assert_test.go",
+        "go.mod"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T107",
+      "sha256": "b684f25114cb538499ddbad959540cd6f9734f02b8bc2813c6a46d00b3e4999c",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "fixture_test.go",
+        "go.mod"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T108",
+      "sha256": "805a69484a93cf92f52b62e15597559150a1d371aa2e6a62f68111bfb186ed0e",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "bench_test.go",
+        "go.mod"
+      ],
+      "runCommand": "go test -bench . -run '^$' ./...",
+      "verificationKind": "bench-exists",
+      "variantDiffers": false
+    },
+    {
+      "id": "T109",
+      "sha256": "bce07b28091ccbd649116982fe020a25fe7e5fe3223c14b529aa1cd75c8448f8",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "calc.go",
+        "calc_test.go",
+        "go.mod"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T110",
+      "sha256": "113e13c0e538324301dd893f9305face09c2a917ec066ca974f71659b5e5aec7",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "fuzz_test.go",
+        "go.mod"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T111",
+      "sha256": "8ada69936376d60f6d0af5c8928ca15e3c3d1cdcf7cb6c3ec1e3f7c4a8d7a28d",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "go.mod",
+        "stub_test.go"
+      ],
+      "runCommand": "go test ./...",
+      "verificationKind": "test-pass",
+      "variantDiffers": false
+    },
+    {
+      "id": "T112",
+      "sha256": "900248b11407f0ccd10182a7cee705dc7135fefba6d77b03039d9c4f1c955862",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T113",
+      "sha256": "9db7dde253b5a80d7f0b3277f7797a15d3c2c4a9d9f0b6ea2301b40c60306fe2",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "go.mod",
+        "main.go",
+        "pprof_test.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T114",
+      "sha256": "56292030fd614794636bb2094a3916bb36f0d5994f20483a7e633b611d568805",
+      "runtime": "desktop",
+      "importKind": "test-package",
+      "sampleFiles": [
+        "go.mod",
+        "patterns_test.go"
+      ],
+      "runCommand": "go test -bench . -run '^$' ./...",
+      "verificationKind": "bench-exists",
+      "variantDiffers": false
+    },
+    {
+      "id": "T115",
+      "sha256": "13f5588b19b69474606d88bb13808ac9850e1bbb08673a87eedc3c1521dab826",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T116",
+      "sha256": "3251799e27a38ea10c9aac107bebb50ed2c47c068167a96ade509d2f6508d879",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T117",
+      "sha256": "f4df8050676ff689391b263ccd63101264309b4146a403f861d9b13d45824999",
+      "runtime": "desktop",
+      "importKind": "single-file",
+      "sampleFiles": [
+        "main.go"
+      ],
+      "runCommand": "go run main.go",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T118",
+      "sha256": "e854ff8961e91b430a39eb37788096c456238bc8cb3b6bb96db2c1b777c9f024",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "go.mod",
+        "main.go",
+        "store_test.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T119",
+      "sha256": "077baca543962cb7dc6efff59b1c5118dac777dbd80d560f7a4dc9b58ab74dee",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "freq_test.go",
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    },
+    {
+      "id": "T120",
+      "sha256": "e5f105c1741a054616007590d2ffd9a173c15df6bb4da61319a751bad2ef4cd7",
+      "runtime": "desktop",
+      "importKind": "module-project",
+      "sampleFiles": [
+        "api_test.go",
+        "go.mod",
+        "main.go"
+      ],
+      "runCommand": "go run .",
+      "verificationKind": "stdout-exact",
+      "variantDiffers": false
+    }
+  ]
+}

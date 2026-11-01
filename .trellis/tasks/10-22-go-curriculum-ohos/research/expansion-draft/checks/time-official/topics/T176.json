@@ -1,0 +1,71 @@
+{
+  "id": "T176",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "early=1 found=true\nat-expiry=false\npurged=1 remaining=[b]\nfinal=1 remaining=[]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-176",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "逻辑时钟 TTL 缓存",
+    "summary": "显式传入 now 验证 TTL 到期与清理，无需任何真实等待。",
+    "concepts": [
+      "显式时钟",
+      "到期边界",
+      "time.Before",
+      "清理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "显式传入 now 验证 TTL 到期与清理，无需任何真实等待。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "使用小于等于作为有效条件会把到期瞬间错误算作命中。",
+      "测试中依靠 Sleep 等到过期容易慢且不稳定，应该注入时钟。"
+    ],
+    "exercises": [
+      {
+        "prompt": "支持续期，但已经过期的键不能被续活。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "Renew 先调用同一到期条件检查当前有效性，通过后才用传入 now 与正 TTL 设置新 Expires；失效键返回 false。"
+      }
+    ],
+    "explain": "缓存条目保存过期时刻，每次 Get 都由调用者传入 now。只有 now 严格早于 Expires 才命中，所以恰好到期时已经失效。Get 不自动删除，Purge 负责清理并报告数量，这让读取语义与回收行为可以分别测试。程序用固定逻辑时钟推进五分钟和十分钟，输出稳定而且不受机器运行速度影响。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"time\"\n)\n\ntype Entry struct {\n\tValue   int\n\tExpires time.Time\n}\ntype Cache map[string]Entry\n\nfunc (c Cache) Put(key string, value int, now time.Time, ttl time.Duration) {\n\tif ttl <= 0 {\n\t\tpanic(\"invalid ttl\")\n\t}\n\tc[key] = Entry{value, now.Add(ttl)}\n}\nfunc (c Cache) Get(key string, now time.Time) (int, bool) {\n\tentry, ok := c[key]\n\tif !ok || !now.Before(entry.Expires) {\n\t\treturn 0, false\n\t}\n\treturn entry.Value, true\n}\nfunc (c Cache) Purge(now time.Time) int {\n\tremoved := 0\n\tfor key, entry := range c {\n\t\tif !now.Before(entry.Expires) {\n\t\t\tdelete(c, key)\n\t\t\tremoved++\n\t\t}\n\t}\n\treturn removed\n}\nfunc (c Cache) Keys() []string {\n\tkeys := []string{}\n\tfor key := range c {\n\t\tkeys = append(keys, key)\n\t}\n\tsort.Strings(keys)\n\treturn keys\n}\nfunc main() {\n\tnow := time.Date(2026, time.March, 12, 9, 0, 0, 0, time.UTC)\n\tcache := Cache{}\n\tcache.Put(\"a\", 1, now, 5*time.Minute)\n\tcache.Put(\"b\", 2, now, 10*time.Minute)\n\tvalue, found := cache.Get(\"a\", now.Add(4*time.Minute))\n\tfmt.Printf(\"early=%d found=%t\\n\", value, found)\n\t_, found = cache.Get(\"a\", now.Add(5*time.Minute))\n\tfmt.Printf(\"at-expiry=%t\\n\", found)\n\tremoved := cache.Purge(now.Add(5 * time.Minute))\n\tfmt.Printf(\"purged=%d remaining=%v\\n\", removed, cache.Keys())\n\tremoved = cache.Purge(now.Add(10 * time.Minute))\n\tfmt.Printf(\"final=%d remaining=%v\\n\", removed, cache.Keys())\n}\n",
+    "output": "early=1 found=true\nat-expiry=false\npurged=1 remaining=[b]\nfinal=1 remaining=[]"
+  },
+  "example": {
+    "id": "go-example-176",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "逻辑时钟 TTL 缓存",
+    "summary": "显式传入 now 验证 TTL 到期与清理，无需任何真实等待。",
+    "concepts": [
+      "显式时钟",
+      "到期边界",
+      "time.Before",
+      "清理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"time\"\n)\n\ntype Entry struct {\n\tValue   int\n\tExpires time.Time\n}\ntype Cache map[string]Entry\n\nfunc (c Cache) Put(key string, value int, now time.Time, ttl time.Duration) {\n\tif ttl <= 0 {\n\t\tpanic(\"invalid ttl\")\n\t}\n\tc[key] = Entry{value, now.Add(ttl)}\n}\nfunc (c Cache) Get(key string, now time.Time) (int, bool) {\n\tentry, ok := c[key]\n\tif !ok || !now.Before(entry.Expires) {\n\t\treturn 0, false\n\t}\n\treturn entry.Value, true\n}\nfunc (c Cache) Purge(now time.Time) int {\n\tremoved := 0\n\tfor key, entry := range c {\n\t\tif !now.Before(entry.Expires) {\n\t\t\tdelete(c, key)\n\t\t\tremoved++\n\t\t}\n\t}\n\treturn removed\n}\nfunc (c Cache) Keys() []string {\n\tkeys := []string{}\n\tfor key := range c {\n\t\tkeys = append(keys, key)\n\t}\n\tsort.Strings(keys)\n\treturn keys\n}\nfunc main() {\n\tnow := time.Date(2026, time.March, 12, 9, 0, 0, 0, time.UTC)\n\tcache := Cache{}\n\tcache.Put(\"a\", 1, now, 5*time.Minute)\n\tcache.Put(\"b\", 2, now, 10*time.Minute)\n\tvalue, found := cache.Get(\"a\", now.Add(4*time.Minute))\n\tfmt.Printf(\"early=%d found=%t\\n\", value, found)\n\t_, found = cache.Get(\"a\", now.Add(5*time.Minute))\n\tfmt.Printf(\"at-expiry=%t\\n\", found)\n\tremoved := cache.Purge(now.Add(5 * time.Minute))\n\tfmt.Printf(\"purged=%d remaining=%v\\n\", removed, cache.Keys())\n\tremoved = cache.Purge(now.Add(10 * time.Minute))\n\tfmt.Printf(\"final=%d remaining=%v\\n\", removed, cache.Keys())\n}\n",
+    "expectedOutput": "early=1 found=true\nat-expiry=false\npurged=1 remaining=[b]\nfinal=1 remaining=[]",
+    "templateType": "go"
+  }
+}

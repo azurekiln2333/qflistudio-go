@@ -1,0 +1,70 @@
+{
+  "id": "T079",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "init executed count: 1\nall goroutines finished: true\nsum of squares: 140"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-079",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "sync.WaitGroup 与一次性任务 sync.Once",
+    "summary": "用 Once 保证并发下初始化恰好执行一次，用 WaitGroup 等待全部完成。",
+    "concepts": [
+      "WaitGroup",
+      "Once",
+      "一次性初始化",
+      "原子计数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 sync.Once 实现并发安全的一次性初始化，并说明它为何只执行一次。",
+    "prerequisites": [
+      "T071 goroutine 基础与启动"
+    ],
+    "pitfalls": [
+      "用自己的 bool 标志做“只执行一次”：并发下存在竞态，应使用 Once。",
+      "Once.Do 里若 panic：Once 仍标记为已执行，后续调用不会再执行，需谨慎。"
+    ],
+    "exercises": [
+      {
+        "prompt": "用 Once 实现一个惰性加载的单例配置，并写并发测试断言初始化仅一次。",
+        "hint": "Once.Do 内赋值给包级变量；并发调用只首次执行。",
+        "answer": "var once sync.Once; var cfg *Config; once.Do(func(){ cfg = load() })。"
+      }
+    ],
+    "explain": "Once.Do(f) 保证 f 在程序生命周期内至多执行一次：第一个到达的 goroutine 执行，其余阻塞等待其完成后直接返回。示例用 8 个 goroutine 同时请求初始化，用原子计数证明 initResource 只执行一次（输出 1），并用 WaitGroup 等待全部结束。相比自己用 bool 标志，Once 无需加锁且语义清晰、并发安全。WaitGroup 负责汇合，Once 负责一次性——二者常配合用于并发初始化。",
+    "code": "// T079 sync.WaitGroup 与一次性任务 sync.Once。\n//\n// WaitGroup 用于等待一组 goroutine 完成；Once 保证某个初始化\"在并发下也只\n// 执行一次\"。本示例用一次受 Once 保护的初始化 + 多 goroutine 并发调用，\n// 断言初始化恰好发生一次，并用 WaitGroup 汇合。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"sync/atomic\"\n)\n\nfunc main() {\n\tvar once sync.Once\n\tvar initCount int32 // 用原子计数，证明初始化只跑了一次\n\n\tinitResource := func() {\n\t\tatomic.AddInt32(&initCount, 1)\n\t}\n\n\t// 多个 goroutine 同时请求初始化。\n\tconst n = 8\n\tvar wg sync.WaitGroup\n\tvalues := make([]int, n)\n\twg.Add(n)\n\tfor i := 0; i < n; i++ {\n\t\tgo func(id int) {\n\t\t\tdefer wg.Done()\n\t\t\tonce.Do(initResource) // 只有第一个到达的 goroutine 会执行\n\t\t\tvalues[id] = id * id\n\t\t}(i)\n\t}\n\twg.Wait()\n\n\tfmt.Println(\"init executed count:\", atomic.LoadInt32(&initCount))\n\tfmt.Println(\"all goroutines finished:\", len(values) == n)\n\tfmt.Println(\"sum of squares:\", sum(values))\n}\n\nfunc sum(xs []int) int {\n\tt := 0\n\tfor _, x := range xs {\n\t\tt += x\n\t}\n\treturn t\n}\n",
+    "output": "init executed count: 1\nall goroutines finished: true\nsum of squares: 140"
+  },
+  "example": {
+    "id": "go-example-079",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "sync.WaitGroup 与一次性任务 sync.Once（示例）",
+    "summary": "对应主题 T079 的可运行示例。",
+    "concepts": [
+      "WaitGroup",
+      "Once",
+      "一次性初始化",
+      "原子计数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T079 sync.WaitGroup 与一次性任务 sync.Once。\n//\n// WaitGroup 用于等待一组 goroutine 完成；Once 保证某个初始化\"在并发下也只\n// 执行一次\"。本示例用一次受 Once 保护的初始化 + 多 goroutine 并发调用，\n// 断言初始化恰好发生一次，并用 WaitGroup 汇合。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"sync/atomic\"\n)\n\nfunc main() {\n\tvar once sync.Once\n\tvar initCount int32 // 用原子计数，证明初始化只跑了一次\n\n\tinitResource := func() {\n\t\tatomic.AddInt32(&initCount, 1)\n\t}\n\n\t// 多个 goroutine 同时请求初始化。\n\tconst n = 8\n\tvar wg sync.WaitGroup\n\tvalues := make([]int, n)\n\twg.Add(n)\n\tfor i := 0; i < n; i++ {\n\t\tgo func(id int) {\n\t\t\tdefer wg.Done()\n\t\t\tonce.Do(initResource) // 只有第一个到达的 goroutine 会执行\n\t\t\tvalues[id] = id * id\n\t\t}(i)\n\t}\n\twg.Wait()\n\n\tfmt.Println(\"init executed count:\", atomic.LoadInt32(&initCount))\n\tfmt.Println(\"all goroutines finished:\", len(values) == n)\n\tfmt.Println(\"sum of squares:\", sum(values))\n}\n\nfunc sum(xs []int) int {\n\tt := 0\n\tfor _, x := range xs {\n\t\tt += x\n\t}\n\treturn t\n}\n",
+    "expectedOutput": "init executed count: 1\nall goroutines finished: true\nsum of squares: 140",
+    "templateType": "go"
+  }
+}

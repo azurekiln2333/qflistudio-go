@@ -1,0 +1,71 @@
+{
+  "id": "T139",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "restocked=1\nA=5 B=7\nroundtrip=true\nbad-stock=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-139",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "XML 库存与属性",
+    "summary": "读取 XML 属性与嵌套库存，补充低库存项目并重新编码验证。",
+    "concepts": [
+      "encoding/xml",
+      "属性标签",
+      "嵌套路径",
+      "结构化更新"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "读取 XML 属性与嵌套库存，补充低库存项目并重新编码验证。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "属性与子元素需要不同标签，sku,attr 不能写成普通元素。",
+      "结构化往返只保留已建模字段，不能保证保留原文注释、空白和未知节点。"
+    ],
+    "exercises": [
+      {
+        "prompt": "拒绝重复 sku，并保证整份库存验证成功后再开始补货。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "解码后先遍历并用 map 检查空 sku、重复 sku 和负库存；全部通过后再执行第二遍补货，避免错误数据的部分更新。"
+      }
+    ],
+    "explain": "结构体标签分别描述 sku 属性、quantity 子元素和 items>item 嵌套路径，数据转换无需手工拼接 XML 字符串。程序只将少于五件的商品补到五件，记录修改数量后 Marshal，再解码确认库存不变。坏库存文本无法解析成整数，会返回错误。未展示在结构中的 XML 内容可能被丢弃，所以这种读取再写出适用于受控协议，而不是任意文档的无损编辑。",
+    "code": "package main\n\nimport (\n\t\"encoding/xml\"\n\t\"fmt\"\n)\n\ntype Item struct {\n\tSKU      string `xml:\"sku,attr\"`\n\tQuantity int    `xml:\"quantity\"`\n}\ntype Inventory struct {\n\tXMLName xml.Name `xml:\"inventory\"`\n\tItems   []Item   `xml:\"items>item\"`\n}\n\nfunc main() {\n\tinput := `<inventory><items><item sku=\"A\"><quantity>1</quantity></item><item sku=\"B\"><quantity>7</quantity></item></items></inventory>`\n\tvar inventory Inventory\n\tif err := xml.Unmarshal([]byte(input), &inventory); err != nil {\n\t\tpanic(err)\n\t}\n\tchanged := 0\n\tfor i := range inventory.Items {\n\t\tif inventory.Items[i].Quantity < 5 {\n\t\t\tinventory.Items[i].Quantity = 5\n\t\t\tchanged++\n\t\t}\n\t}\n\tencoded, err := xml.Marshal(inventory)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar restored Inventory\n\tif err := xml.Unmarshal(encoded, &restored); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"restocked=%d\\n\", changed)\n\tfmt.Printf(\"%s=%d %s=%d\\n\", restored.Items[0].SKU, restored.Items[0].Quantity, restored.Items[1].SKU, restored.Items[1].Quantity)\n\tfmt.Printf(\"roundtrip=%t\\n\", len(restored.Items) == 2 && restored.Items[0].Quantity == 5 && restored.Items[1].Quantity == 7)\n\terr = xml.Unmarshal([]byte(`<inventory><items><item sku=\"C\"><quantity>many</quantity></item></items></inventory>`), &restored)\n\tfmt.Printf(\"bad-stock=%t\\n\", err != nil)\n}\n",
+    "output": "restocked=1\nA=5 B=7\nroundtrip=true\nbad-stock=true"
+  },
+  "example": {
+    "id": "go-example-139",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "XML 库存与属性",
+    "summary": "读取 XML 属性与嵌套库存，补充低库存项目并重新编码验证。",
+    "concepts": [
+      "encoding/xml",
+      "属性标签",
+      "嵌套路径",
+      "结构化更新"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/xml\"\n\t\"fmt\"\n)\n\ntype Item struct {\n\tSKU      string `xml:\"sku,attr\"`\n\tQuantity int    `xml:\"quantity\"`\n}\ntype Inventory struct {\n\tXMLName xml.Name `xml:\"inventory\"`\n\tItems   []Item   `xml:\"items>item\"`\n}\n\nfunc main() {\n\tinput := `<inventory><items><item sku=\"A\"><quantity>1</quantity></item><item sku=\"B\"><quantity>7</quantity></item></items></inventory>`\n\tvar inventory Inventory\n\tif err := xml.Unmarshal([]byte(input), &inventory); err != nil {\n\t\tpanic(err)\n\t}\n\tchanged := 0\n\tfor i := range inventory.Items {\n\t\tif inventory.Items[i].Quantity < 5 {\n\t\t\tinventory.Items[i].Quantity = 5\n\t\t\tchanged++\n\t\t}\n\t}\n\tencoded, err := xml.Marshal(inventory)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar restored Inventory\n\tif err := xml.Unmarshal(encoded, &restored); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"restocked=%d\\n\", changed)\n\tfmt.Printf(\"%s=%d %s=%d\\n\", restored.Items[0].SKU, restored.Items[0].Quantity, restored.Items[1].SKU, restored.Items[1].Quantity)\n\tfmt.Printf(\"roundtrip=%t\\n\", len(restored.Items) == 2 && restored.Items[0].Quantity == 5 && restored.Items[1].Quantity == 7)\n\terr = xml.Unmarshal([]byte(`<inventory><items><item sku=\"C\"><quantity>many</quantity></item></items></inventory>`), &restored)\n\tfmt.Printf(\"bad-stock=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "restocked=1\nA=5 B=7\nroundtrip=true\nbad-stock=true",
+    "templateType": "go"
+  }
+}

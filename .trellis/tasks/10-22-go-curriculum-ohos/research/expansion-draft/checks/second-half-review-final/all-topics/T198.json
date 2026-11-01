@@ -1,0 +1,71 @@
+{
+  "id": "T198",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "tokens=6\n[\"run\" \"--name\" \"Li Yu\" \"literal\\\\path\" \"\" \"back slash\"]\nunclosed=true\ndangling=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-198",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "简单参数词法分析",
+    "summary": "解析含引号和转义的参数列表，只返回数组，保留空参数而不调用 shell。",
+    "concepts": [
+      "unicode.IsSpace",
+      "引号状态",
+      "转义",
+      "空参数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "解析含引号和转义的参数列表，只返回数组，保留空参数而不调用 shell。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "只按空白 Fields 会把带引号的一个参数拆成多个。",
+      "没有 active 标记会把合法的空引号参数当作没有参数。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加参数数量上限三十二和每个参数的字节上限，超限时返回错误。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "在追加字符前检查当前字节预算，在提交 token 前检查数量；失败返回整个解析错误，不返回可被误执行的部分数组。"
+      }
+    ],
+    "explain": "状态机区分普通、单引号、双引号与待转义状态。空引号需要 active 标记，否则空参数会被错误丢弃；单引号中的反斜杠保持字面值，普通与双引号环境中的反斜杠保护下一字符。结尾仍有引号或转义即报错。本例是明确定义的小型词法器，不实现变量展开、管道或任何命令执行，也不声称完全复刻系统 shell。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"unicode\"\n)\n\nfunc split(text string) ([]string, error) {\n\targuments := []string{}\n\tvar word strings.Builder\n\tquote := rune(0)\n\tescaped := false\n\tactive := false\n\tfor _, r := range text {\n\t\tif escaped {\n\t\t\tword.WriteRune(r)\n\t\t\tescaped = false\n\t\t\tactive = true\n\t\t\tcontinue\n\t\t}\n\t\tif quote == '\\'' {\n\t\t\tif r == quote {\n\t\t\t\tquote = 0\n\t\t\t} else {\n\t\t\t\tword.WriteRune(r)\n\t\t\t}\n\t\t\tcontinue\n\t\t}\n\t\tif quote == '\"' {\n\t\t\tif r == '\\\\' {\n\t\t\t\tescaped = true\n\t\t\t} else if r == quote {\n\t\t\t\tquote = 0\n\t\t\t} else {\n\t\t\t\tword.WriteRune(r)\n\t\t\t}\n\t\t\tcontinue\n\t\t}\n\t\tif unicode.IsSpace(r) {\n\t\t\tif active {\n\t\t\t\targuments = append(arguments, word.String())\n\t\t\t\tword.Reset()\n\t\t\t\tactive = false\n\t\t\t}\n\t\t\tcontinue\n\t\t}\n\t\tactive = true\n\t\tif r == '\\'' || r == '\"' {\n\t\t\tquote = r\n\t\t} else if r == '\\\\' {\n\t\t\tescaped = true\n\t\t} else {\n\t\t\tword.WriteRune(r)\n\t\t}\n\t}\n\tif quote != 0 || escaped {\n\t\treturn nil, fmt.Errorf(\"unfinished quote or escape\")\n\t}\n\tif active {\n\t\targuments = append(arguments, word.String())\n\t}\n\treturn arguments, nil\n}\nfunc main() {\n\targuments, err := split(`run --name \"Li Yu\" 'literal\\path' \"\" back\\ slash`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"tokens=%d\\n%q\\n\", len(arguments), arguments)\n\t_, err = split(`run \"unfinished`)\n\tfmt.Printf(\"unclosed=%t\\n\", err != nil)\n\t_, err = split(`run trailing\\`)\n\tfmt.Printf(\"dangling=%t\\n\", err != nil)\n}\n",
+    "output": "tokens=6\n[\"run\" \"--name\" \"Li Yu\" \"literal\\\\path\" \"\" \"back slash\"]\nunclosed=true\ndangling=true"
+  },
+  "example": {
+    "id": "go-example-198",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "简单参数词法分析",
+    "summary": "解析含引号和转义的参数列表，只返回数组，保留空参数而不调用 shell。",
+    "concepts": [
+      "unicode.IsSpace",
+      "引号状态",
+      "转义",
+      "空参数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"unicode\"\n)\n\nfunc split(text string) ([]string, error) {\n\targuments := []string{}\n\tvar word strings.Builder\n\tquote := rune(0)\n\tescaped := false\n\tactive := false\n\tfor _, r := range text {\n\t\tif escaped {\n\t\t\tword.WriteRune(r)\n\t\t\tescaped = false\n\t\t\tactive = true\n\t\t\tcontinue\n\t\t}\n\t\tif quote == '\\'' {\n\t\t\tif r == quote {\n\t\t\t\tquote = 0\n\t\t\t} else {\n\t\t\t\tword.WriteRune(r)\n\t\t\t}\n\t\t\tcontinue\n\t\t}\n\t\tif quote == '\"' {\n\t\t\tif r == '\\\\' {\n\t\t\t\tescaped = true\n\t\t\t} else if r == quote {\n\t\t\t\tquote = 0\n\t\t\t} else {\n\t\t\t\tword.WriteRune(r)\n\t\t\t}\n\t\t\tcontinue\n\t\t}\n\t\tif unicode.IsSpace(r) {\n\t\t\tif active {\n\t\t\t\targuments = append(arguments, word.String())\n\t\t\t\tword.Reset()\n\t\t\t\tactive = false\n\t\t\t}\n\t\t\tcontinue\n\t\t}\n\t\tactive = true\n\t\tif r == '\\'' || r == '\"' {\n\t\t\tquote = r\n\t\t} else if r == '\\\\' {\n\t\t\tescaped = true\n\t\t} else {\n\t\t\tword.WriteRune(r)\n\t\t}\n\t}\n\tif quote != 0 || escaped {\n\t\treturn nil, fmt.Errorf(\"unfinished quote or escape\")\n\t}\n\tif active {\n\t\targuments = append(arguments, word.String())\n\t}\n\treturn arguments, nil\n}\nfunc main() {\n\targuments, err := split(`run --name \"Li Yu\" 'literal\\path' \"\" back\\ slash`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"tokens=%d\\n%q\\n\", len(arguments), arguments)\n\t_, err = split(`run \"unfinished`)\n\tfmt.Printf(\"unclosed=%t\\n\", err != nil)\n\t_, err = split(`run trailing\\`)\n\tfmt.Printf(\"dangling=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "tokens=6\n[\"run\" \"--name\" \"Li Yu\" \"literal\\\\path\" \"\" \"back slash\"]\nunclosed=true\ndangling=true",
+    "templateType": "go"
+  }
+}

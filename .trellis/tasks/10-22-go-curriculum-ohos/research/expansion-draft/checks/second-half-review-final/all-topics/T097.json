@@ -1,0 +1,72 @@
+{
+  "id": "T097",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "Atoi 42: 42 err: <nil>\nAtoi 4x2: 0 err non-nil: true\nItoa 255: 255\nParseFloat: 3.14\nParseBool TRUE: true\nParseInt ff base16: 255\nQuote: \"a\\tb\""
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-097",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "strconv 与数据解析",
+    "summary": "用 strconv 在字符串与基础类型间转换，并处理解析错误。",
+    "concepts": [
+      "strconv",
+      "Atoi",
+      "ParseFloat",
+      "进制",
+      "Quote"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 Atoi/Itoa/ParseFloat/ParseBool/ParseInt 做类型与文本互转并处理错误。",
+    "prerequisites": [
+      "T006 类型转换与数值精度"
+    ],
+    "pitfalls": [
+      "忽略解析错误：失败时返回零值，容易把 0 当成有效数据。",
+      "用 Atoi 处理超大整数：Atoi 返回 int，可能溢出；大数应用 ParseInt/BigInt。"
+    ],
+    "exercises": [
+      {
+        "prompt": "写一个函数把逗号分隔的数字串解析为 []int，遇非法项返回错误。",
+        "hint": "strings.Split 后逐个 Atoi，遇 err 立即返回。",
+        "answer": "for _, p := range parts { n, err := strconv.Atoi(strings.TrimSpace(p)); if err != nil { return nil, err } ... }"
+      }
+    ],
+    "explain": "strconv 是字符串与基础类型互转的标准库。Atoi 等价 ParseInt(s,10,0)，返回 int；Itoa 反向。ParseFloat 解析浮点（示例用 64 位），ParseBool 接受 1/0/t/f/TRUE 等多种形式，ParseInt 可指定进制（示例把 ff 按 16 进制解析为 255）。解析失败返回非 nil 错误，必须处理——忽略错误会把零值当成合法结果。Quote 给字符串加引号并转义特殊字符，常用于生成可读的调试输出。",
+    "code": "// T097 strconv 与数据解析。\n//\n// strconv 在字符串与基础类型之间转换：Atoi/Itoa、ParseFloat、\n// ParseBool、Quote 等。解析失败会返回错误，必须处理。\n// 本示例解析多种输入并打印结果，输出确定。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nfunc main() {\n\t// 字符串 -> int。\n\tn, err := strconv.Atoi(\"42\")\n\tfmt.Println(\"Atoi 42:\", n, \"err:\", err)\n\n\t// 解析失败：err 非 nil，n 为零值。\n\tbad, err := strconv.Atoi(\"4x2\")\n\tfmt.Println(\"Atoi 4x2:\", bad, \"err non-nil:\", err != nil)\n\n\t// int -> 字符串。\n\tfmt.Println(\"Itoa 255:\", strconv.Itoa(255))\n\n\t// 浮点解析（64 位）。\n\tf, _ := strconv.ParseFloat(\"3.140\", 64)\n\tfmt.Println(\"ParseFloat:\", f)\n\n\t// 布尔解析：接受 1/t/T/TRUE 等多种形式。\n\tb, _ := strconv.ParseBool(\"TRUE\")\n\tfmt.Println(\"ParseBool TRUE:\", b)\n\n\t// 进制转换：把十六进制字符串按 16 进制解析。\n\th, _ := strconv.ParseInt(\"ff\", 16, 64)\n\tfmt.Println(\"ParseInt ff base16:\", h)\n\n\t// Quote 给字符串加引号并转义。\n\tfmt.Println(\"Quote:\", strconv.Quote(\"a\\tb\"))\n}\n",
+    "output": "Atoi 42: 42 err: <nil>\nAtoi 4x2: 0 err non-nil: true\nItoa 255: 255\nParseFloat: 3.14\nParseBool TRUE: true\nParseInt ff base16: 255\nQuote: \"a\\tb\""
+  },
+  "example": {
+    "id": "go-example-097",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "strconv 与数据解析（示例）",
+    "summary": "对应主题 T097 的可运行示例。",
+    "concepts": [
+      "strconv",
+      "Atoi",
+      "ParseFloat",
+      "进制",
+      "Quote"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T097 strconv 与数据解析。\n//\n// strconv 在字符串与基础类型之间转换：Atoi/Itoa、ParseFloat、\n// ParseBool、Quote 等。解析失败会返回错误，必须处理。\n// 本示例解析多种输入并打印结果，输出确定。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nfunc main() {\n\t// 字符串 -> int。\n\tn, err := strconv.Atoi(\"42\")\n\tfmt.Println(\"Atoi 42:\", n, \"err:\", err)\n\n\t// 解析失败：err 非 nil，n 为零值。\n\tbad, err := strconv.Atoi(\"4x2\")\n\tfmt.Println(\"Atoi 4x2:\", bad, \"err non-nil:\", err != nil)\n\n\t// int -> 字符串。\n\tfmt.Println(\"Itoa 255:\", strconv.Itoa(255))\n\n\t// 浮点解析（64 位）。\n\tf, _ := strconv.ParseFloat(\"3.140\", 64)\n\tfmt.Println(\"ParseFloat:\", f)\n\n\t// 布尔解析：接受 1/t/T/TRUE 等多种形式。\n\tb, _ := strconv.ParseBool(\"TRUE\")\n\tfmt.Println(\"ParseBool TRUE:\", b)\n\n\t// 进制转换：把十六进制字符串按 16 进制解析。\n\th, _ := strconv.ParseInt(\"ff\", 16, 64)\n\tfmt.Println(\"ParseInt ff base16:\", h)\n\n\t// Quote 给字符串加引号并转义。\n\tfmt.Println(\"Quote:\", strconv.Quote(\"a\\tb\"))\n}\n",
+    "expectedOutput": "Atoi 42: 42 err: <nil>\nAtoi 4x2: 0 err non-nil: true\nItoa 255: 255\nParseFloat: 3.14\nParseBool TRUE: true\nParseInt ff base16: 255\nQuote: \"a\\tb\"",
+    "templateType": "go"
+  }
+}

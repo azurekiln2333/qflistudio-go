@@ -1,0 +1,69 @@
+{
+  "id": "T187",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "duplicate=[a.txt nested/b.txt]\nduplicate=[c.bin d.bin]\ngroups=2\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-187",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "重复文件内容索引",
+    "summary": "按内容摘要对不同路径分组，只输出重复候选组并排除唯一文件。",
+    "concepts": [
+      "crypto/sha256",
+      "摘要分组",
+      "稳定路径列表"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "按内容摘要对不同路径分组，只输出重复候选组并排除唯一文件。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "路径不同不能证明内容不同，按文件名分组会漏掉重复内容。",
+      "摘要匹配不是删除许可，破坏性去重前还应确认原始内容和用户选择。"
+    ],
+    "exercises": [
+      {
+        "prompt": "输出重复候选组可节约的总字节数，但继续保留所有文件。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "对每组确认所有字节相等后计算 单文件大小*(组数-1)，加入溢出检查，只报告潜在节约量，不执行删除。"
+      }
+    ],
+    "explain": "文件名和扩展名不同也可能包含相同字节，所以索引用 SHA-256 摘要作为键。每个组内先排序路径，再按第一条路径排序各重复组，输出便可重复。固定输入有两个重复组与一个独立文件，证明唯一项被排除。摘要匹配适合筛选候选；如果下一步会删除文件，应再按字节确认并征求明确授权，本例只输出索引。",
+    "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc main() {\n\tfiles := map[string][]byte{\"a.txt\": []byte(\"same\"), \"nested/b.txt\": []byte(\"same\"), \"unique.txt\": []byte(\"unique\"), \"c.bin\": []byte(\"other\"), \"d.bin\": []byte(\"other\")}\n\tindex := map[[32]byte][]string{}\n\tfor name, data := range files {\n\t\tdigest := sha256.Sum256(data)\n\t\tindex[digest] = append(index[digest], name)\n\t}\n\tgroups := [][]string{}\n\tfor _, names := range index {\n\t\tif len(names) > 1 {\n\t\t\tsort.Strings(names)\n\t\t\tgroups = append(groups, names)\n\t\t}\n\t}\n\tsort.Slice(groups, func(i, j int) bool { return groups[i][0] < groups[j][0] })\n\tfor _, names := range groups {\n\t\tfmt.Printf(\"duplicate=%v\\n\", names)\n\t}\n\tfmt.Printf(\"groups=%d\\n\", len(groups))\n}\n",
+    "output": "duplicate=[a.txt nested/b.txt]\nduplicate=[c.bin d.bin]\ngroups=2"
+  },
+  "example": {
+    "id": "go-example-187",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "重复文件内容索引",
+    "summary": "按内容摘要对不同路径分组，只输出重复候选组并排除唯一文件。",
+    "concepts": [
+      "crypto/sha256",
+      "摘要分组",
+      "稳定路径列表"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc main() {\n\tfiles := map[string][]byte{\"a.txt\": []byte(\"same\"), \"nested/b.txt\": []byte(\"same\"), \"unique.txt\": []byte(\"unique\"), \"c.bin\": []byte(\"other\"), \"d.bin\": []byte(\"other\")}\n\tindex := map[[32]byte][]string{}\n\tfor name, data := range files {\n\t\tdigest := sha256.Sum256(data)\n\t\tindex[digest] = append(index[digest], name)\n\t}\n\tgroups := [][]string{}\n\tfor _, names := range index {\n\t\tif len(names) > 1 {\n\t\t\tsort.Strings(names)\n\t\t\tgroups = append(groups, names)\n\t\t}\n\t}\n\tsort.Slice(groups, func(i, j int) bool { return groups[i][0] < groups[j][0] })\n\tfor _, names := range groups {\n\t\tfmt.Printf(\"duplicate=%v\\n\", names)\n\t}\n\tfmt.Printf(\"groups=%d\\n\", len(groups))\n}\n",
+    "expectedOutput": "duplicate=[a.txt nested/b.txt]\nduplicate=[c.bin d.bin]\ngroups=2",
+    "templateType": "go"
+  }
+}

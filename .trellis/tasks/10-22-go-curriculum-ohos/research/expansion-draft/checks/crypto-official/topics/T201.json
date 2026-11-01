@@ -1,0 +1,69 @@
+{
+  "id": "T201",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "a.txt exists=true match=true\nb.txt exists=true match=false\nbad-manifest=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-201",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "摘要清单验证",
+    "summary": "能验证两个离线文件的摘要清单，分别报告匹配和被修改文件。",
+    "concepts": [
+      "crypto/sha256",
+      "encoding/hex",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能验证两个离线文件的摘要清单，分别报告匹配和被修改文件。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "文件不存在和摘要不符是不同问题，不能把空内容当成不存在。",
+      "攻击者若能同时修改文件和清单，普通摘要不能提供身份认证。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加清单中存在但文件集合中缺失的 c.txt，保持按文件名排序。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "先检查 map 的 exists，再计算摘要；缺失项输出 exists=false、match=false。"
+      }
+    ],
+    "explain": "清单保存文件名和 SHA256 十六进制摘要，验证阶段重新计算当前内容并与清单比较。a.txt 未改变，b.txt 的内容被替换，因此分别报告匹配与不匹配。先排序文件名再输出，避免 map 遍历顺序影响审计记录。十六进制解码错误说明清单本身也需要格式检查；摘要可检测变化，却不能证明清单来自可信发布者。",
+    "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"encoding/hex\"\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc digest(text string) string {\n\tsum := sha256.Sum256([]byte(text))\n\treturn hex.EncodeToString(sum[:])\n}\nfunc main() {\n\tfiles := map[string]string{\"a.txt\": \"alpha\", \"b.txt\": \"changed\"}\n\tmanifest := map[string]string{\"a.txt\": digest(\"alpha\"), \"b.txt\": digest(\"beta\")}\n\tnames := []string{}\n\tfor name := range manifest {\n\t\tnames = append(names, name)\n\t}\n\tsort.Strings(names)\n\tfor _, name := range names {\n\t\tdata, exists := files[name]\n\t\tfmt.Printf(\"%s exists=%t match=%t\\n\", name, exists, exists && digest(data) == manifest[name])\n\t}\n\t_, err := hex.DecodeString(\"xyz\")\n\tfmt.Printf(\"bad-manifest=%t\\n\", err != nil)\n}\n",
+    "output": "a.txt exists=true match=true\nb.txt exists=true match=false\nbad-manifest=true"
+  },
+  "example": {
+    "id": "go-example-201",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "摘要清单验证",
+    "summary": "能验证两个离线文件的摘要清单，分别报告匹配和被修改文件。",
+    "concepts": [
+      "crypto/sha256",
+      "encoding/hex",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"encoding/hex\"\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc digest(text string) string {\n\tsum := sha256.Sum256([]byte(text))\n\treturn hex.EncodeToString(sum[:])\n}\nfunc main() {\n\tfiles := map[string]string{\"a.txt\": \"alpha\", \"b.txt\": \"changed\"}\n\tmanifest := map[string]string{\"a.txt\": digest(\"alpha\"), \"b.txt\": digest(\"beta\")}\n\tnames := []string{}\n\tfor name := range manifest {\n\t\tnames = append(names, name)\n\t}\n\tsort.Strings(names)\n\tfor _, name := range names {\n\t\tdata, exists := files[name]\n\t\tfmt.Printf(\"%s exists=%t match=%t\\n\", name, exists, exists && digest(data) == manifest[name])\n\t}\n\t_, err := hex.DecodeString(\"xyz\")\n\tfmt.Printf(\"bad-manifest=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "a.txt exists=true match=true\nb.txt exists=true match=false\nbad-manifest=true",
+    "templateType": "go"
+  }
+}

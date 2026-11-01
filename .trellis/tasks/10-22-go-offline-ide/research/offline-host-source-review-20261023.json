@@ -1,0 +1,20 @@
+{
+  "date": "2026-10-23",
+  "evidenceLevel": "static-source-and-synthetic-inspector-fixture",
+  "sourceSha256": {
+    "ohos/entry/src/main/ets/entryability/EntryAbility.ets": "2522c581738465fdcf2911f01ecda0c54661728c7b866d9ecb8853b5b1529bd4",
+    "ohos/entry/src/main/resources/base/profile/main_pages.json": "f21984fb1d5096f0db41314da0bb94c573e7ad018e5afae3044f8d5ff71b0bfc",
+    "integration_test/go_catalog_test.dart": "5e1b1c95530f7c5f34643d15174ecfc903c34277c380d6715558b32d7e571d1a",
+    "tool/inspect_go_catalog_hap.py": "16a1db6fdd7db360ad22a22c1f2124425421cab28604dd223ae9701ed8303199",
+    ".trellis/spec/frontend/native-startup.md": "a384ec36d037b9b0c14e73b5f54e30d42f7702a6a7ed485d63ce5be82858a1d1",
+    ".trellis/tasks/10-22-go-offline-ide/research/fixtures/inspector_binding_review.py": "9af4788effb1d8694337dddc4cd17a24f6bde34984ad397653b318284eddf1a8"
+  },
+  "mainPages": {
+    "src": [
+      "pages/Index"
+    ]
+  },
+  "actualOhosExecution": false,
+  "realBuild": false,
+  "nativeRuntimeRepairReviewed": false
+}

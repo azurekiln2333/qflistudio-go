@@ -1,0 +1,221 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "go-example-161",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "整数分币与折扣",
+      "summary": "用整数分表示金额，按逐项四舍五入规则计算折扣与税费。",
+      "concepts": [
+        "整数金额",
+        "strconv.ParseInt",
+        "基点",
+        "四舍五入"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc cents(text string) (int64, error) {\n\tparts := strings.Split(text, \".\")\n\tif len(parts) > 2 || parts[0] == \"\" {\n\t\treturn 0, fmt.Errorf(\"invalid amount\")\n\t}\n\tfraction := \"00\"\n\tif len(parts) == 2 {\n\t\tif len(parts[1]) < 1 || len(parts[1]) > 2 {\n\t\t\treturn 0, fmt.Errorf(\"invalid precision\")\n\t\t}\n\t\tfraction = parts[1]\n\t\tif len(fraction) == 1 {\n\t\t\tfraction += \"0\"\n\t\t}\n\t}\n\tfor _, r := range parts[0] + fraction {\n\t\tif r < '0' || r > '9' {\n\t\t\treturn 0, fmt.Errorf(\"invalid digit\")\n\t\t}\n\t}\n\twhole, err := strconv.ParseInt(parts[0], 10, 64)\n\tif err != nil || whole > 1000000000 {\n\t\treturn 0, fmt.Errorf(\"amount exceeds budget\")\n\t}\n\ttail, err := strconv.ParseInt(fraction, 10, 64)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\treturn whole*100 + tail, nil\n}\nfunc roundRate(amount, basisPoints int64) int64 { return (amount*basisPoints + 5000) / 10000 }\nfunc main() {\n\tbase, err := cents(\"12.35\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdiscount := roundRate(base, 1000)\n\ttax := roundRate(base-discount, 825)\n\tfmt.Printf(\"base=%d discount=%d tax=%d total=%d\\n\", base, discount, tax, base-discount+tax)\n\t_, err = cents(\"12.345\")\n\tfmt.Printf(\"precision-rejected=%t\\n\", err != nil)\n\t_, err = cents(\"-1.00\")\n\tfmt.Printf(\"negative-rejected=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "base=1235 discount=124 tax=92 total=1203\nprecision-rejected=true\nnegative-rejected=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-162",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "精确分数分账",
+      "summary": "把十元均分三份，验证精确总和与两位小数显示总和的差别。",
+      "concepts": [
+        "math/big.Rat",
+        "有理数",
+        "显示精度",
+        "守恒"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/big\"\n)\n\nfunc main() {\n\tshare := big.NewRat(10, 3)\n\tsum := new(big.Rat)\n\tfor i := 0; i < 3; i++ {\n\t\tsum.Add(sum, share)\n\t}\n\tfmt.Printf(\"share=%s displayed=%s\\n\", share.RatString(), share.FloatString(2))\n\tfmt.Printf(\"exact-total=%s preserved=%t\\n\", sum.RatString(), sum.Cmp(big.NewRat(10, 1)) == 0)\n\tfmt.Printf(\"displayed-total=%d.%02d\\n\", (333*3)/100, (333*3)%100)\n}\n",
+      "expectedOutput": "share=10/3 displayed=3.33\nexact-total=10 preserved=true\ndisplayed-total=9.99",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-163",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "大整数排列组合",
+      "summary": "计算超出 int64 的组合数，以逐步乘除递推保持精确整数结果。",
+      "concepts": [
+        "math/big.Int",
+        "组合数递推",
+        "精确除法"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/big\"\n)\n\nfunc choose(n, k int) (*big.Int, error) {\n\tif n < 0 || k < 0 || k > n {\n\t\treturn nil, fmt.Errorf(\"invalid combination\")\n\t}\n\tif k > n-k {\n\t\tk = n - k\n\t}\n\tresult := big.NewInt(1)\n\tfor i := 1; i <= k; i++ {\n\t\tresult.Mul(result, big.NewInt(int64(n-k+i)))\n\t\tresult.Quo(result, big.NewInt(int64(i)))\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tvalue, err := choose(70, 35)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"C70,35=%s\\n\", value.String())\n\tfmt.Printf(\"fits-int64=%t\\n\", value.IsInt64())\n\tboundary, err := choose(0, 0)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"C0,0=%s\\n\", boundary.String())\n\t_, err = choose(3, 4)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "C70,35=112186277816662845432\nfits-int64=false\nC0,0=1\ninvalid=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-164",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "在线均值与方差",
+      "summary": "逐条更新均值与样本方差，并和可独立推导的固定数据核对。",
+      "concepts": [
+        "Welford",
+        "样本方差",
+        "math.Abs",
+        "流式统计"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\ntype Stats struct {\n\tCount int\n\tMean  float64\n\tM2    float64\n}\n\nfunc (s *Stats) Add(value float64) {\n\ts.Count++\n\tdelta := value - s.Mean\n\ts.Mean += delta / float64(s.Count)\n\ts.M2 += delta * (value - s.Mean)\n}\nfunc (s Stats) Variance() (float64, bool) {\n\tif s.Count < 2 {\n\t\treturn 0, false\n\t}\n\treturn s.M2 / float64(s.Count-1), true\n}\nfunc main() {\n\tstats := Stats{}\n\tfor _, value := range []float64{2, 4, 4, 4, 5, 5, 7, 9} {\n\t\tstats.Add(value)\n\t}\n\tvariance, ok := stats.Variance()\n\tfmt.Printf(\"count=%d mean=%.2f sample-variance=%.4f\\n\", stats.Count, stats.Mean, variance)\n\tfmt.Printf(\"verified=%t\\n\", ok && math.Abs(variance-32.0/7) < 1e-12)\n\tsingle := Stats{}\n\tsingle.Add(9)\n\t_, ok = single.Variance()\n\tfmt.Printf(\"single-defined=%t\\n\", ok)\n}\n",
+      "expectedOutput": "count=8 mean=5.00 sample-variance=4.5714\nverified=true\nsingle-defined=false",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-165",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "滑动窗口平均",
+      "summary": "用固定三个槽位与运行和计算最近读数平均，正确处理窗口尚未填满。",
+      "concepts": [
+        "环形窗口",
+        "运行和",
+        "预热期"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport \"fmt\"\n\ntype Window struct {\n\tValues []int64\n\tNext   int\n\tCount  int\n\tSum    int64\n}\n\nfunc newWindow(size int) *Window {\n\tif size <= 0 {\n\t\tpanic(\"invalid window\")\n\t}\n\treturn &Window{Values: make([]int64, size)}\n}\nfunc (w *Window) Add(value int64) float64 {\n\tif w.Count == len(w.Values) {\n\t\tw.Sum -= w.Values[w.Next]\n\t} else {\n\t\tw.Count++\n\t}\n\tw.Values[w.Next] = value\n\tw.Sum += value\n\tw.Next = (w.Next + 1) % len(w.Values)\n\treturn float64(w.Sum) / float64(w.Count)\n}\nfunc main() {\n\twindow := newWindow(3)\n\tfor _, value := range []int64{10, 20, 30, 50} {\n\t\taverage := window.Add(value)\n\t\tfmt.Printf(\"value=%d average=%.1f count=%d\\n\", value, average, window.Count)\n\t}\n}\n",
+      "expectedOutput": "value=10 average=10.0 count=1\nvalue=20 average=15.0 count=2\nvalue=30 average=20.0 count=3\nvalue=50 average=33.3 count=3",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-166",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "百分位插值",
+      "summary": "对延迟样本排序，用明确的线性插值定义计算 P50 与 P90，并验证单样本边界。",
+      "concepts": [
+        "sort.Float64s",
+        "线性插值",
+        "百分位定义",
+        "NaN 校验"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n\t\"sort\"\n)\n\nfunc percentile(input []float64, p float64) (float64, error) {\n\tif len(input) == 0 || math.IsNaN(p) || p < 0 || p > 1 {\n\t\treturn 0, fmt.Errorf(\"invalid percentile\")\n\t}\n\tdata := append([]float64(nil), input...)\n\tfor _, v := range data {\n\t\tif math.IsNaN(v) || math.IsInf(v, 0) {\n\t\t\treturn 0, fmt.Errorf(\"nonfinite sample\")\n\t\t}\n\t}\n\tsort.Float64s(data)\n\tposition := p * float64(len(data)-1)\n\tlow := int(math.Floor(position))\n\thigh := int(math.Ceil(position))\n\treturn data[low] + (data[high]-data[low])*(position-float64(low)), nil\n}\nfunc main() {\n\tdata := []float64{50, 10, 40, 20, 30}\n\tp50, err := percentile(data, .5)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tp90, err := percentile(data, .9)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tsingle, err := percentile([]float64{7}, .9)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"p50=%.1f p90=%.1f single=%.1f\\n\", p50, p90, single)\n\t_, err = percentile(data, 1.1)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n\t_, err = percentile([]float64{math.NaN()}, .5)\n\tfmt.Printf(\"nan-rejected=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "p50=30.0 p90=46.0 single=7.0\ninvalid=true\nnan-rejected=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-167",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "按区间直方图",
+      "summary": "为延迟读数分桶，明确上界不包含的规则，并独立统计负数拒绝和溢出桶。",
+      "concepts": [
+        "sort.Search",
+        "半开分桶",
+        "溢出桶",
+        "无效读数"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc histogram(values, bounds []int) ([]int, int, error) {\n\tfor i, bound := range bounds {\n\t\tif bound <= 0 || (i > 0 && bound <= bounds[i-1]) {\n\t\t\treturn nil, 0, fmt.Errorf(\"invalid bounds\")\n\t\t}\n\t}\n\tcounts := make([]int, len(bounds)+1)\n\trejected := 0\n\tfor _, value := range values {\n\t\tif value < 0 {\n\t\t\trejected++\n\t\t\tcontinue\n\t\t}\n\t\tbucket := sort.Search(len(bounds), func(i int) bool { return value < bounds[i] })\n\t\tcounts[bucket]++\n\t}\n\treturn counts, rejected, nil\n}\nfunc main() {\n\tcounts, rejected, err := histogram([]int{0, 9, 10, 49, 50, 99, 100, 150, -1}, []int{10, 50, 100})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"under10=%d under50=%d under100=%d overflow=%d\\n\", counts[0], counts[1], counts[2], counts[3])\n\tfmt.Printf(\"negative-rejected=%d\\n\", rejected)\n}\n",
+      "expectedOutput": "under10=2 under50=2 under100=2 overflow=2\nnegative-rejected=1",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-168",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "库存多维聚合",
+      "summary": "按仓库和商品组成联合键汇总库存，稳定输出低库存项。",
+      "concepts": [
+        "结构体 map 键",
+        "分组求和",
+        "排序低库存清单"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Key struct {\n\tWarehouse string\n\tProduct   string\n}\ntype Stock struct {\n\tKey      Key\n\tQuantity int\n}\n\nfunc aggregate(rows []Stock) (map[Key]int, error) {\n\ttotals := map[Key]int{}\n\tfor _, row := range rows {\n\t\tif row.Quantity < 0 {\n\t\t\treturn nil, fmt.Errorf(\"negative inventory\")\n\t\t}\n\t\ttotals[row.Key] += row.Quantity\n\t}\n\treturn totals, nil\n}\nfunc main() {\n\ttotals, err := aggregate([]Stock{{Key{\"A\", \"pen\"}, 2}, {Key{\"A\", \"pen\"}, 1}, {Key{\"A\", \"book\"}, 9}, {Key{\"B\", \"pen\"}, 1}, {Key{\"B\", \"book\"}, 2}})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tlow := []Key{}\n\tfor key, quantity := range totals {\n\t\tif quantity < 4 {\n\t\t\tlow = append(low, key)\n\t\t}\n\t}\n\tsort.Slice(low, func(i, j int) bool {\n\t\tif low[i].Warehouse != low[j].Warehouse {\n\t\t\treturn low[i].Warehouse < low[j].Warehouse\n\t\t}\n\t\treturn low[i].Product < low[j].Product\n\t})\n\tfor _, key := range low {\n\t\tfmt.Printf(\"%s/%s=%d\\n\", key.Warehouse, key.Product, totals[key])\n\t}\n}\n",
+      "expectedOutput": "A/pen=3\nB/book=2\nB/pen=1",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-169",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "有符号安全求和",
+      "summary": "累加正负账目时预先检测溢出，返回错误项位置与此前已确认的总额。",
+      "concepts": [
+        "int64 溢出",
+        "math.MaxInt64",
+        "部分结果",
+        "错误位置"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n)\n\nfunc sum(values []int64) (int64, int, error) {\n\tvar total int64\n\tfor i, value := range values {\n\t\tif (value > 0 && total > math.MaxInt64-value) || (value < 0 && total < math.MinInt64-value) {\n\t\t\treturn total, i, fmt.Errorf(\"sum overflow\")\n\t\t}\n\t\ttotal += value\n\t}\n\treturn total, -1, nil\n}\nfunc main() {\n\ttotal, _, err := sum([]int64{100, -30, 20})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"ok=%d\\n\", total)\n\ttotal, index, err := sum([]int64{math.MaxInt64 - 2, 2, 1})\n\tfmt.Printf(\"positive=%d index=%d rejected=%t\\n\", total, index, err != nil)\n\ttotal, index, err = sum([]int64{math.MinInt64 + 1, -1, -1})\n\tfmt.Printf(\"negative=%d index=%d rejected=%t\\n\", total, index, err != nil)\n}\n",
+      "expectedOutput": "ok=90\npositive=9223372036854775807 index=2 rejected=true\nnegative=-9223372036854775808 index=2 rejected=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-170",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "单位换算与量纲",
+      "summary": "解析 KB、MiB 与原始字节，拒绝未知单位、负容量和换算溢出。",
+      "concepts": [
+        "strconv.ParseUint",
+        "十进制与二进制单位",
+        "乘法溢出"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc capacity(text string) (uint64, error) {\n\ttext = strings.TrimSpace(text)\n\tfactor := uint64(1)\n\tif strings.HasSuffix(text, \"MiB\") {\n\t\tfactor = 1 << 20\n\t\ttext = strings.TrimSuffix(text, \"MiB\")\n\t} else if strings.HasSuffix(text, \"KB\") {\n\t\tfactor = 1000\n\t\ttext = strings.TrimSuffix(text, \"KB\")\n\t}\n\tvalue, err := strconv.ParseUint(strings.TrimSpace(text), 10, 64)\n\tif err != nil {\n\t\treturn 0, err\n\t}\n\tconst maximum uint64 = 1<<63 - 1\n\tif value > maximum/factor {\n\t\treturn 0, fmt.Errorf(\"capacity overflow\")\n\t}\n\treturn value * factor, nil\n}\nfunc main() {\n\tfor _, input := range []string{\"2KB\", \"2MiB\", \"512\"} {\n\t\tvalue, err := capacity(input)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s=%d\\n\", input, value)\n\t}\n\t_, err := capacity(\"3MB\")\n\tfmt.Printf(\"unknown=%t\\n\", err != nil)\n\t_, err = capacity(\"-1KB\")\n\tfmt.Printf(\"negative=%t\\n\", err != nil)\n\t_, err = capacity(\"9223372036854775807MiB\")\n\tfmt.Printf(\"overflow=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "2KB=2000\n2MiB=2097152\n512=512\nunknown=true\nnegative=true\noverflow=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "id": "T141",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "frames=[cat go]\noversized=true\ntruncated=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-141",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "长度前缀消息",
+    "summary": "编码两帧消息，逐帧读取，并在分配载荷前拒绝截断和超预算长度。",
+    "concepts": [
+      "encoding/binary",
+      "io.ReadFull",
+      "帧预算"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "编码两帧消息，逐帧读取，并在分配载荷前拒绝截断和超预算长度。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "普通 Read 可能只返回部分数据，不能一次调用就假定读满。",
+      "按不可信长度先分配再检查，会失去资源预算的作用。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加零长度心跳帧，并将它与流结束区分。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "长度为零时返回非 nil 的空载荷和 nil 错误；只有读取下一个完整帧头之前遇到 io.EOF 才结束循环。"
+      }
+    ],
+    "explain": "每帧用两个大端字节保存载荷长度。ReadFull 保证头和载荷必须完整，正常流结束与只剩半个头不同。读取长度后先与八字节业务预算比较，再分配载荷，避免直接相信输入长度。示例正常读出 cat 与 go，同时检查过大的头和载荷不足这两条失败路径。这里的十六位长度只是传输上限，不能代替更小的业务预算。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/binary\"\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc writeFrame(out *bytes.Buffer, text string) {\n\tvar header [2]byte\n\tbinary.BigEndian.PutUint16(header[:], uint16(len(text)))\n\tout.Write(header[:])\n\tout.WriteString(text)\n}\nfunc readFrame(reader io.Reader) ([]byte, error) {\n\tvar header [2]byte\n\tif _, err := io.ReadFull(reader, header[:]); err != nil {\n\t\treturn nil, err\n\t}\n\tlength := int(binary.BigEndian.Uint16(header[:]))\n\tif length > 8 {\n\t\treturn nil, fmt.Errorf(\"frame over budget\")\n\t}\n\tpayload := make([]byte, length)\n\t_, err := io.ReadFull(reader, payload)\n\treturn payload, err\n}\nfunc main() {\n\tvar wire bytes.Buffer\n\twriteFrame(&wire, \"cat\")\n\twriteFrame(&wire, \"go\")\n\tframes := []string{}\n\tfor {\n\t\tpayload, err := readFrame(&wire)\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tframes = append(frames, string(payload))\n\t}\n\tfmt.Printf(\"frames=%v\\n\", frames)\n\t_, err := readFrame(bytes.NewReader([]byte{0, 9}))\n\tfmt.Printf(\"oversized=%t\\n\", err != nil)\n\t_, err = readFrame(bytes.NewReader([]byte{0, 3, 'x'}))\n\tfmt.Printf(\"truncated=%t\\n\", err == io.ErrUnexpectedEOF)\n}\n",
+    "output": "frames=[cat go]\noversized=true\ntruncated=true"
+  },
+  "example": {
+    "id": "go-example-141",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "长度前缀消息",
+    "summary": "编码两帧消息，逐帧读取，并在分配载荷前拒绝截断和超预算长度。",
+    "concepts": [
+      "encoding/binary",
+      "io.ReadFull",
+      "帧预算"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/binary\"\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc writeFrame(out *bytes.Buffer, text string) {\n\tvar header [2]byte\n\tbinary.BigEndian.PutUint16(header[:], uint16(len(text)))\n\tout.Write(header[:])\n\tout.WriteString(text)\n}\nfunc readFrame(reader io.Reader) ([]byte, error) {\n\tvar header [2]byte\n\tif _, err := io.ReadFull(reader, header[:]); err != nil {\n\t\treturn nil, err\n\t}\n\tlength := int(binary.BigEndian.Uint16(header[:]))\n\tif length > 8 {\n\t\treturn nil, fmt.Errorf(\"frame over budget\")\n\t}\n\tpayload := make([]byte, length)\n\t_, err := io.ReadFull(reader, payload)\n\treturn payload, err\n}\nfunc main() {\n\tvar wire bytes.Buffer\n\twriteFrame(&wire, \"cat\")\n\twriteFrame(&wire, \"go\")\n\tframes := []string{}\n\tfor {\n\t\tpayload, err := readFrame(&wire)\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tframes = append(frames, string(payload))\n\t}\n\tfmt.Printf(\"frames=%v\\n\", frames)\n\t_, err := readFrame(bytes.NewReader([]byte{0, 9}))\n\tfmt.Printf(\"oversized=%t\\n\", err != nil)\n\t_, err = readFrame(bytes.NewReader([]byte{0, 3, 'x'}))\n\tfmt.Printf(\"truncated=%t\\n\", err == io.ErrUnexpectedEOF)\n}\n",
+    "expectedOutput": "frames=[cat go]\noversized=true\ntruncated=true",
+    "templateType": "go"
+  }
+}

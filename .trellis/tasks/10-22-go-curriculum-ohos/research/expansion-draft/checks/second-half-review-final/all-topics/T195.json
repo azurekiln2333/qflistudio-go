@@ -1,0 +1,71 @@
+{
+  "id": "T195",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "server.port=8080 ui.theme=dark\nduplicate-line3=true\nmalformed-line2=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-195",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "INI 分节解析",
+    "summary": "解析带分节的键值配置，处理注释、空行、重复键与结构化行号错误。",
+    "concepts": [
+      "bufio.Scanner",
+      "分节状态",
+      "重复键",
+      "行号错误"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "解析带分节的键值配置，处理注释、空行、重复键与结构化行号错误。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "INI 有多种方言，必须明确支持的注释和引号规则。",
+      "重复键策略不能依赖 map 最终值，解析时就应选择覆盖或拒绝。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把当前允许重复声明节名的规则改为严格模式：第二次声明同名节时返回带当前行号的错误。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "在节名非空检查后判断 result 中是否已有该节；已有则返回 LineError，尚未出现才创建节内 map。键重复检查保持不变。"
+      }
+    ],
+    "explain": "解析器维护当前分节，忽略空行与整行注释，键值用第一个等号拆分。节名和键都必须非空，分节之前不接受键，重复的节内键直接返回带行号错误。错误结构把 Line 与 Reason 分开，调用者不必解析格式化文本就能定位问题。这里不支持引号、转义或行尾注释，因此含分号的普通值不会被擅自截断。",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"strings\"\n)\n\ntype LineError struct {\n\tLine   int\n\tReason string\n}\n\nfunc (e *LineError) Error() string { return fmt.Sprintf(\"line %d: %s\", e.Line, e.Reason) }\nfunc parse(text string) (map[string]map[string]string, error) {\n\tresult := map[string]map[string]string{}\n\tsection := \"\"\n\tscanner := bufio.NewScanner(strings.NewReader(text))\n\tline := 0\n\tfor scanner.Scan() {\n\t\tline++\n\t\trow := strings.TrimSpace(scanner.Text())\n\t\tif row == \"\" || strings.HasPrefix(row, \"#\") || strings.HasPrefix(row, \";\") {\n\t\t\tcontinue\n\t\t}\n\t\tif strings.HasPrefix(row, \"[\") {\n\t\t\tif !strings.HasSuffix(row, \"]\") {\n\t\t\t\treturn nil, &LineError{line, \"unclosed section\"}\n\t\t\t}\n\t\t\tsection = strings.TrimSpace(row[1 : len(row)-1])\n\t\t\tif section == \"\" {\n\t\t\t\treturn nil, &LineError{line, \"empty section\"}\n\t\t\t}\n\t\t\tif result[section] == nil {\n\t\t\t\tresult[section] = map[string]string{}\n\t\t\t}\n\t\t\tcontinue\n\t\t}\n\t\tkey, value, ok := strings.Cut(row, \"=\")\n\t\tkey = strings.TrimSpace(key)\n\t\tif !ok || key == \"\" || section == \"\" {\n\t\t\treturn nil, &LineError{line, \"invalid key-value\"}\n\t\t}\n\t\tif _, exists := result[section][key]; exists {\n\t\t\treturn nil, &LineError{line, \"duplicate key\"}\n\t\t}\n\t\tresult[section][key] = strings.TrimSpace(value)\n\t}\n\tif err := scanner.Err(); err != nil {\n\t\treturn nil, err\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tcfg, err := parse(\"# local\\n[server]\\nport=8080\\n\\n[ui]\\ntheme=dark\\n\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"server.port=%s ui.theme=%s\\n\", cfg[\"server\"][\"port\"], cfg[\"ui\"][\"theme\"])\n\t_, err = parse(\"[server]\\nport=1\\nport=2\")\n\tproblem, ok := err.(*LineError)\n\tfmt.Printf(\"duplicate-line3=%t\\n\", ok && problem.Line == 3)\n\t_, err = parse(\"[server]\\nport\")\n\tproblem, ok = err.(*LineError)\n\tfmt.Printf(\"malformed-line2=%t\\n\", ok && problem.Line == 2)\n}\n",
+    "output": "server.port=8080 ui.theme=dark\nduplicate-line3=true\nmalformed-line2=true"
+  },
+  "example": {
+    "id": "go-example-195",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "INI 分节解析",
+    "summary": "解析带分节的键值配置，处理注释、空行、重复键与结构化行号错误。",
+    "concepts": [
+      "bufio.Scanner",
+      "分节状态",
+      "重复键",
+      "行号错误"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"strings\"\n)\n\ntype LineError struct {\n\tLine   int\n\tReason string\n}\n\nfunc (e *LineError) Error() string { return fmt.Sprintf(\"line %d: %s\", e.Line, e.Reason) }\nfunc parse(text string) (map[string]map[string]string, error) {\n\tresult := map[string]map[string]string{}\n\tsection := \"\"\n\tscanner := bufio.NewScanner(strings.NewReader(text))\n\tline := 0\n\tfor scanner.Scan() {\n\t\tline++\n\t\trow := strings.TrimSpace(scanner.Text())\n\t\tif row == \"\" || strings.HasPrefix(row, \"#\") || strings.HasPrefix(row, \";\") {\n\t\t\tcontinue\n\t\t}\n\t\tif strings.HasPrefix(row, \"[\") {\n\t\t\tif !strings.HasSuffix(row, \"]\") {\n\t\t\t\treturn nil, &LineError{line, \"unclosed section\"}\n\t\t\t}\n\t\t\tsection = strings.TrimSpace(row[1 : len(row)-1])\n\t\t\tif section == \"\" {\n\t\t\t\treturn nil, &LineError{line, \"empty section\"}\n\t\t\t}\n\t\t\tif result[section] == nil {\n\t\t\t\tresult[section] = map[string]string{}\n\t\t\t}\n\t\t\tcontinue\n\t\t}\n\t\tkey, value, ok := strings.Cut(row, \"=\")\n\t\tkey = strings.TrimSpace(key)\n\t\tif !ok || key == \"\" || section == \"\" {\n\t\t\treturn nil, &LineError{line, \"invalid key-value\"}\n\t\t}\n\t\tif _, exists := result[section][key]; exists {\n\t\t\treturn nil, &LineError{line, \"duplicate key\"}\n\t\t}\n\t\tresult[section][key] = strings.TrimSpace(value)\n\t}\n\tif err := scanner.Err(); err != nil {\n\t\treturn nil, err\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tcfg, err := parse(\"# local\\n[server]\\nport=8080\\n\\n[ui]\\ntheme=dark\\n\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"server.port=%s ui.theme=%s\\n\", cfg[\"server\"][\"port\"], cfg[\"ui\"][\"theme\"])\n\t_, err = parse(\"[server]\\nport=1\\nport=2\")\n\tproblem, ok := err.(*LineError)\n\tfmt.Printf(\"duplicate-line3=%t\\n\", ok && problem.Line == 3)\n\t_, err = parse(\"[server]\\nport\")\n\tproblem, ok = err.(*LineError)\n\tfmt.Printf(\"malformed-line2=%t\\n\", ok && problem.Line == 2)\n}\n",
+    "expectedOutput": "server.port=8080 ui.theme=dark\nduplicate-line3=true\nmalformed-line2=true",
+    "templateType": "go"
+  }
+}

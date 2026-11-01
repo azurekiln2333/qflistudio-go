@@ -1,0 +1,68 @@
+{
+  "id": "T026",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "1 2 3\n1\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-026",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "闭包与捕获变量",
+    "summary": "用闭包捕获并维持状态，理解每次调用返回独立的环境。",
+    "concepts": [
+      "闭包",
+      "捕获",
+      "函数返回值"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能写出返回闭包的函数，并说明每次调用产生独立的捕获环境。",
+    "prerequisites": [
+      "T025 高阶函数"
+    ],
+    "pitfalls": [
+      "误以为多个闭包共享同一个变量：counter() 每次调用创建新的 i，因此两个闭包各自计数、互不影响。",
+      "在循环里直接捕获循环变量（Go 1.22 之前）：旧版本会共享同一个变量，需显式拷贝；Go 1.22 起每次迭代是新变量。"
+    ],
+    "exercises": [
+      {
+        "prompt": "写一个 makeAdder(n) 返回把参数加 n 的闭包，并验证两个不同 n 互不影响。",
+        "hint": "返回 func(int) int 捕获 n。",
+        "answer": "add5:=makeAdder(5); add5(1)==6，而另一个 add10 不受影响，说明各自捕获独立。"
+      }
+    ],
+    "explain": "闭包是携带了环境变量的函数值。counter 每次被调用都会新建一个局部变量 i 并返回一个捕获它的函数；这个 i 在返回后仍存活于闭包环境中，因此 next() 能持续累加。再次调用 counter() 会创建另一个独立的 i，所以两个计数器互不干扰。\n\n在循环中创建闭包时要注意捕获的是变量本身：Go 1.22 起每次迭代使用新的循环变量，闭包各捕获各的；更早版本需要显式复制循环变量。\n\n本样例演示两个独立计数闭包。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc counter() func() int {\n\ti := 0\n\treturn func() int {\n\t\ti++\n\t\treturn i\n\t}\n}\n\nfunc main() {\n\tnext := counter()\n\tfmt.Println(next(), next(), next())\n\tother := counter()\n\tfmt.Println(other())\n}\n",
+    "output": "1 2 3\n1"
+  },
+  "example": {
+    "id": "go-example-026",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "闭包与捕获变量",
+    "summary": "用闭包捕获并维持状态，理解每次调用返回独立的环境。",
+    "concepts": [
+      "闭包",
+      "捕获",
+      "函数返回值"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc counter() func() int {\n\ti := 0\n\treturn func() int {\n\t\ti++\n\t\treturn i\n\t}\n}\n\nfunc main() {\n\tnext := counter()\n\tfmt.Println(next(), next(), next())\n\tother := counter()\n\tfmt.Println(other())\n}\n",
+    "expectedOutput": "1 2 3\n1",
+    "templateType": "go"
+  }
+}

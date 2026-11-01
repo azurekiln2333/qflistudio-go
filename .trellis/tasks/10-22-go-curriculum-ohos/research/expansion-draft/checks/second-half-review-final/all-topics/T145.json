@@ -1,0 +1,69 @@
+{
+  "id": "T145",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "first=2345 second=789 cursor=0\nboundary=true byte=5\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-145",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "随机访问区间",
+    "summary": "从同一个 ReaderAt 创建独立区间，读取数据并验证区间边界与原始游标。",
+    "concepts": [
+      "io.SectionReader",
+      "io.ReaderAt",
+      "独立游标"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "从同一个 ReaderAt 创建独立区间，读取数据并验证区间边界与原始游标。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "ReadAt 跨越末尾可能同时返回部分数据和 EOF，不能丢掉 n。",
+      "窗口长度大于剩余底层数据并不会凭空补零。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在读取窗口前验证 offset 与 length 非负，并拒绝整数相加溢出。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "分别检查 offset>=0、length>=0，再用 length > MaxInt64-offset 判断溢出；不要先算 offset+length 再判断结果。"
+      }
+    ],
+    "explain": "SectionReader 给共享 ReaderAt 提供受限窗口，每个窗口有自己的顺序读取位置。第一个窗口得到 2345，第二个请求更长但底层只剩 789；ReadAll 将正常 EOF 视作成功。窗口的 ReadAt 不会改变底层 strings.Reader 的游标，越过窗口末尾则返回有效的部分字节和 EOF。边界检查既包括底层实际长度，也包括窗口声明长度。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc main() {\n\tsource := strings.NewReader(\"0123456789\")\n\tfirst := io.NewSectionReader(source, 2, 4)\n\tsecond := io.NewSectionReader(source, 7, 8)\n\ta, err := io.ReadAll(first)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tb, err := io.ReadAll(second)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tposition, err := source.Seek(0, io.SeekCurrent)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"first=%s second=%s cursor=%d\\n\", a, b, position)\n\tbuffer := make([]byte, 2)\n\tn, err := first.ReadAt(buffer, 3)\n\tfmt.Printf(\"boundary=%t byte=%s\\n\", n == 1 && err == io.EOF, buffer[:n])\n}\n",
+    "output": "first=2345 second=789 cursor=0\nboundary=true byte=5"
+  },
+  "example": {
+    "id": "go-example-145",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "随机访问区间",
+    "summary": "从同一个 ReaderAt 创建独立区间，读取数据并验证区间边界与原始游标。",
+    "concepts": [
+      "io.SectionReader",
+      "io.ReaderAt",
+      "独立游标"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc main() {\n\tsource := strings.NewReader(\"0123456789\")\n\tfirst := io.NewSectionReader(source, 2, 4)\n\tsecond := io.NewSectionReader(source, 7, 8)\n\ta, err := io.ReadAll(first)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tb, err := io.ReadAll(second)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tposition, err := source.Seek(0, io.SeekCurrent)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"first=%s second=%s cursor=%d\\n\", a, b, position)\n\tbuffer := make([]byte, 2)\n\tn, err := first.ReadAt(buffer, 3)\n\tfmt.Printf(\"boundary=%t byte=%s\\n\", n == 1 && err == io.EOF, buffer[:n])\n}\n",
+    "expectedOutput": "first=2345 second=789 cursor=0\nboundary=true byte=5",
+    "templateType": "go"
+  }
+}

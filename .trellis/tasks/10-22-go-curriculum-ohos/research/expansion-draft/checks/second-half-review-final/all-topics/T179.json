@@ -1,0 +1,71 @@
+{
+  "id": "T179",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "separate-minutes=60 combined-minutes=45\nzero=0\nnegative-rejected=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-179",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "计费时长向上取整",
+    "summary": "把使用时长按十五分钟计费，比较逐段取整与总时长取整并拒绝负数。",
+    "concepts": [
+      "time.Duration",
+      "商与余数",
+      "分段计费",
+      "溢出保护"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "把使用时长按十五分钟计费，比较逐段取整与总时长取整并拒绝负数。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "分段取整之和不等于先求和再取整。",
+      "常见加 unit-1 的公式在接近整数上限时会溢出。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在累加多段使用时长前检测总时长溢出，不接受负段。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "每段先验证非负，再检查 duration>MaxDuration-total；全部通过后才相加并调用计费函数。"
+      }
+    ],
+    "explain": "向上取整通过整数商与非零余数实现，避免 duration+unit-1 可能发生的加法溢出。再检查块数乘单价单位是否超出 Duration 范围。三段一分钟、十四分钟、十六分钟逐段计费共六十分钟，先合并三十一分钟再计费则为四十五分钟。两种规则都可实现，但应在合同和界面中明确采用哪一种。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc charge(duration, unit time.Duration) (time.Duration, error) {\n\tif duration < 0 || unit <= 0 {\n\t\treturn 0, fmt.Errorf(\"invalid duration\")\n\t}\n\tblocks := duration / unit\n\tif duration%unit != 0 {\n\t\tblocks++\n\t}\n\tconst maximum time.Duration = 1<<63 - 1\n\tif blocks > maximum/unit {\n\t\treturn 0, fmt.Errorf(\"charge overflow\")\n\t}\n\treturn blocks * unit, nil\n}\nfunc main() {\n\tvar separate, total time.Duration\n\tfor _, duration := range []time.Duration{time.Minute, 14 * time.Minute, 16 * time.Minute} {\n\t\tcost, err := charge(duration, 15*time.Minute)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tseparate += cost\n\t\ttotal += duration\n\t}\n\tcombined, err := charge(total, 15*time.Minute)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"separate-minutes=%.0f combined-minutes=%.0f\\n\", separate.Minutes(), combined.Minutes())\n\tzero, err := charge(0, 15*time.Minute)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"zero=%d\\n\", zero)\n\t_, err = charge(-time.Second, 15*time.Minute)\n\tfmt.Printf(\"negative-rejected=%t\\n\", err != nil)\n}\n",
+    "output": "separate-minutes=60 combined-minutes=45\nzero=0\nnegative-rejected=true"
+  },
+  "example": {
+    "id": "go-example-179",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "计费时长向上取整",
+    "summary": "把使用时长按十五分钟计费，比较逐段取整与总时长取整并拒绝负数。",
+    "concepts": [
+      "time.Duration",
+      "商与余数",
+      "分段计费",
+      "溢出保护"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc charge(duration, unit time.Duration) (time.Duration, error) {\n\tif duration < 0 || unit <= 0 {\n\t\treturn 0, fmt.Errorf(\"invalid duration\")\n\t}\n\tblocks := duration / unit\n\tif duration%unit != 0 {\n\t\tblocks++\n\t}\n\tconst maximum time.Duration = 1<<63 - 1\n\tif blocks > maximum/unit {\n\t\treturn 0, fmt.Errorf(\"charge overflow\")\n\t}\n\treturn blocks * unit, nil\n}\nfunc main() {\n\tvar separate, total time.Duration\n\tfor _, duration := range []time.Duration{time.Minute, 14 * time.Minute, 16 * time.Minute} {\n\t\tcost, err := charge(duration, 15*time.Minute)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tseparate += cost\n\t\ttotal += duration\n\t}\n\tcombined, err := charge(total, 15*time.Minute)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"separate-minutes=%.0f combined-minutes=%.0f\\n\", separate.Minutes(), combined.Minutes())\n\tzero, err := charge(0, 15*time.Minute)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"zero=%d\\n\", zero)\n\t_, err = charge(-time.Second, 15*time.Minute)\n\tfmt.Printf(\"negative-rejected=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "separate-minutes=60 combined-minutes=45\nzero=0\nnegative-rejected=true",
+    "templateType": "go"
+  }
+}

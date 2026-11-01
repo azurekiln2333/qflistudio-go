@@ -1,0 +1,504 @@
+[
+  {
+    "id": "go-tutorial-171",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "时区与同一时刻",
+    "summary": "解析带偏移的时间，转换 UTC，并验证不同时区文本表示同一时刻。",
+    "concepts": [
+      "time.Parse",
+      "RFC3339",
+      "time.Equal",
+      "FixedZone"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-171-lesson",
+        "title": "时区与同一时刻",
+        "summary": "解析带偏移的时间，转换 UTC，并验证不同时区文本表示同一时刻。",
+        "concepts": [
+          "time.Parse",
+          "RFC3339",
+          "time.Equal",
+          "FixedZone"
+        ],
+        "explain": "RFC3339 文本同时给出本地钟面与 UTC 偏移，09:30+08:00 和 01:30Z 表示同一瞬间。Equal 比较时刻，不能用格式化文本相等来判断。转换到固定西五区会落在前一天，提醒日期也随时区变化。FixedZone 只有固定偏移，不包含地区夏令时规则；需要地区历史规则时应使用已提供的时区数据库。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc mustTime(text string) time.Time {\n\tvalue, err := time.Parse(time.RFC3339, text)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\treturn value\n}\nfunc main() {\n\teast := mustTime(\"2026-03-12T09:30:00+08:00\")\n\tutc := mustTime(\"2026-03-12T01:30:00Z\")\n\tfmt.Printf(\"utc=%s equal=%t\\n\", east.UTC().Format(time.RFC3339), east.Equal(utc))\n\twest := east.In(time.FixedZone(\"WEST\", -5*60*60))\n\tfmt.Printf(\"west=%s\\n\", west.Format(time.RFC3339))\n}\n",
+        "output": "utc=2026-03-12T01:30:00Z equal=true\nwest=2026-03-11T20:30:00-05:00",
+        "objective": "解析带偏移的时间，转换 UTC，并验证不同时区文本表示同一时刻。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "钟面字符串相同不保证时刻相同，偏移必须一起解析。",
+          "固定偏移时区不能替代有夏令时的地区时区。"
+        ],
+        "exercises": [
+          {
+            "prompt": "计算两条带不同偏移日志的真实先后顺序，禁止直接比较原字符串。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "分别 time.Parse 为 Time，再用 Before、After 或 Equal；展示 UTC 格式便于人工核对，但排序依据保持为 Time。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-172",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "UTC 时间桶聚合",
+    "summary": "把乱序事件归入十五分钟 UTC 桶，稳定输出空桶与非空桶并拒绝范围外事件。",
+    "concepts": [
+      "time.Truncate",
+      "UTC 归一",
+      "空桶",
+      "排序聚合"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-172-lesson",
+        "title": "UTC 时间桶聚合",
+        "summary": "把乱序事件归入十五分钟 UTC 桶，稳定输出空桶与非空桶并拒绝范围外事件。",
+        "concepts": [
+          "time.Truncate",
+          "UTC 归一",
+          "空桶",
+          "排序聚合"
+        ],
+        "explain": "先将事件转换成 UTC，再以十五分钟 Truncate 得到桶起点，避免不同偏移文本落入不同键。预先生成查询范围内全部桶，所以没有事件的 09:45 也会输出零。范围使用左闭右开，10:00 属于范围外而不是最后一桶。桶键排序后同时输出计数与金额总和，乱序输入不会改变结果。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"time\"\n)\n\ntype Bucket struct {\n\tCount int\n\tSum   int\n}\n\nfunc parse(text string) time.Time {\n\tvalue, err := time.Parse(time.RFC3339, text)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\treturn value\n}\nfunc main() {\n\tstart := parse(\"2026-03-12T09:00:00Z\")\n\tend := start.Add(time.Hour)\n\tbuckets := map[time.Time]Bucket{}\n\tfor at := start; at.Before(end); at = at.Add(15 * time.Minute) {\n\t\tbuckets[at] = Bucket{}\n\t}\n\trejected := 0\n\tfor _, event := range []struct {\n\t\tText  string\n\t\tValue int\n\t}{{\"2026-03-12T09:34:00Z\", 3}, {\"2026-03-12T09:03:00Z\", 2}, {\"2026-03-12T09:29:00Z\", 4}, {\"2026-03-12T17:03:00+08:00\", 5}, {\"2026-03-12T10:00:00Z\", 9}} {\n\t\tat := parse(event.Text).UTC()\n\t\tif at.Before(start) || !at.Before(end) {\n\t\t\trejected++\n\t\t\tcontinue\n\t\t}\n\t\tkey := at.Truncate(15 * time.Minute)\n\t\tbucket := buckets[key]\n\t\tbucket.Count++\n\t\tbucket.Sum += event.Value\n\t\tbuckets[key] = bucket\n\t}\n\tkeys := []time.Time{}\n\tfor key := range buckets {\n\t\tkeys = append(keys, key)\n\t}\n\tsort.Slice(keys, func(i, j int) bool { return keys[i].Before(keys[j]) })\n\tfor _, key := range keys {\n\t\tbucket := buckets[key]\n\t\tfmt.Printf(\"%s count=%d sum=%d\\n\", key.Format(\"15:04\"), bucket.Count, bucket.Sum)\n\t}\n\tfmt.Printf(\"rejected=%d\\n\", rejected)\n}\n",
+        "output": "09:00 count=2 sum=7\n09:15 count=1 sum=4\n09:30 count=1 sum=3\n09:45 count=0 sum=0\nrejected=1",
+        "objective": "把乱序事件归入十五分钟 UTC 桶，稳定输出空桶与非空桶并拒绝范围外事件。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "只输出 map 中实际出现的键会丢掉空桶。",
+          "范围终点是否包含必须明确，否则边界事件可能被重复统计。"
+        ],
+        "exercises": [
+          {
+            "prompt": "为桶增加平均值，并让空桶显示空值而不是零除错误。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "仅在 Count>0 时计算 Sum/Count，空桶输出单独的缺失标记；保留原始计数与总和，便于再次聚合。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-173",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "工作日日期推进",
+    "summary": "从给定日期推进第三个工作日，跳过周末并保留钟面时间。",
+    "concepts": [
+      "time.AddDate",
+      "Weekday",
+      "日历语义"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-173-lesson",
+        "title": "工作日日期推进",
+        "summary": "从给定日期推进第三个工作日，跳过周末并保留钟面时间。",
+        "concepts": [
+          "time.AddDate",
+          "Weekday",
+          "日历语义"
+        ],
+        "explain": "工作日计算按日历日期前进，循环用 AddDate 增加一天，仅在周一到周五时减少剩余数量。起始日不计入，星期五一月三十日的第三个工作日是二月四日星期三。日历天与固定二十四小时不总相同，AddDate 保留所选地点下的日历语义。本例不包含法定节假日，负数量明确拒绝，零数量返回原时刻。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc advance(start time.Time, days int) (time.Time, error) {\n\tif days < 0 {\n\t\treturn time.Time{}, fmt.Errorf(\"negative workdays\")\n\t}\n\tat := start\n\tfor days > 0 {\n\t\tat = at.AddDate(0, 0, 1)\n\t\tif at.Weekday() != time.Saturday && at.Weekday() != time.Sunday {\n\t\t\tdays--\n\t\t}\n\t}\n\treturn at, nil\n}\nfunc main() {\n\tstart := time.Date(2026, time.January, 30, 9, 0, 0, 0, time.UTC)\n\tthird, err := advance(start, 3)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"start=%s %s\\n\", start.Format(\"2006-01-02\"), start.Weekday().String())\n\tfmt.Printf(\"third=%s %s\\n\", third.Format(\"2006-01-02\"), third.Weekday().String())\n\tzero, err := advance(start, 0)\n\tfmt.Printf(\"zero=%t\\n\", err == nil && zero.Equal(start))\n\t_, err = advance(start, -1)\n\tfmt.Printf(\"negative=%t\\n\", err != nil)\n}\n",
+        "output": "start=2026-01-30 Friday\nthird=2026-02-04 Wednesday\nzero=true\nnegative=true",
+        "objective": "从给定日期推进第三个工作日，跳过周末并保留钟面时间。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "直接增加 days*24h 不表达跨时区夏令时边界的日历推进。",
+          "是否计入起始日、是否排除节假日都必须作为业务规则写清。"
+        ],
+        "exercises": [
+          {
+            "prompt": "增加固定节假日集合，遇到节假日也不消耗工作日名额。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "将日期按目标地点格式化为 YYYY-MM-DD，在周末检查之后查询假日集合；同一天即使同时命中周末和假日也只跳过一次。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-174",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "跨午夜区间拆分",
+    "summary": "把跨午夜会话按自然日拆分，核对各段时长之和等于原始会话。",
+    "concepts": [
+      "time.Date",
+      "自然日边界",
+      "时长守恒"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-174-lesson",
+        "title": "跨午夜区间拆分",
+        "summary": "把跨午夜会话按自然日拆分，核对各段时长之和等于原始会话。",
+        "concepts": [
+          "time.Date",
+          "自然日边界",
+          "时长守恒"
+        ],
+        "explain": "每轮从当前游标构造下一自然日零点，取零点与总终点中较早者作为本段结束，再推进游标。会话 23:40 到次日 00:25 被分成二十分钟与二十五分钟。使用 time.Date 构造下一日而非增加固定二十四小时，保留日历边界含义。结束早于开始会失败，相等时产生零段；日期归属采用起点的地点。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\ntype Usage struct {\n\tDate     string\n\tDuration time.Duration\n}\n\nfunc split(start, end time.Time) ([]Usage, error) {\n\tif end.Before(start) {\n\t\treturn nil, fmt.Errorf(\"reversed interval\")\n\t}\n\tend = end.In(start.Location())\n\tresult := []Usage{}\n\tfor cursor := start; cursor.Before(end); {\n\t\tmidnight := time.Date(cursor.Year(), cursor.Month(), cursor.Day()+1, 0, 0, 0, 0, cursor.Location())\n\t\tstop := midnight\n\t\tif end.Before(stop) {\n\t\t\tstop = end\n\t\t}\n\t\tresult = append(result, Usage{cursor.Format(\"2006-01-02\"), stop.Sub(cursor)})\n\t\tcursor = stop\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tstart := time.Date(2026, time.March, 12, 23, 40, 0, 0, time.UTC)\n\tend := start.Add(45 * time.Minute)\n\tparts, err := split(start, end)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar total time.Duration\n\tfor _, part := range parts {\n\t\tfmt.Printf(\"%s=%.0fm\\n\", part.Date, part.Duration.Minutes())\n\t\ttotal += part.Duration\n\t}\n\tfmt.Printf(\"total=%.0fm preserved=%t\\n\", total.Minutes(), total == end.Sub(start))\n\t_, err = split(end, start)\n\tfmt.Printf(\"reversed=%t\\n\", err != nil)\n}\n",
+        "output": "2026-03-12=20m\n2026-03-13=25m\ntotal=45m preserved=true\nreversed=true",
+        "objective": "把跨午夜会话按自然日拆分，核对各段时长之和等于原始会话。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "跨午夜不意味着总时长必须超过二十四小时。",
+          "按日期切分前必须固定地点，不同地点的午夜并非同一时刻。"
+        ],
+        "exercises": [
+          {
+            "prompt": "增加恰好在午夜结束的输入，保证不生成次日零时长段。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "循环条件保持 cursor.Before(end)，上一段恰好到达 end 后直接结束；不要使用小于等于条件追加空段。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-175",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "可预测指数退避",
+    "summary": "计算带上限的退避序列，预防翻倍溢出，并输出累计等待预算。",
+    "concepts": [
+      "time.Duration",
+      "饱和增长",
+      "重试预算"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-175-lesson",
+        "title": "可预测指数退避",
+        "summary": "计算带上限的退避序列，预防翻倍溢出，并输出累计等待预算。",
+        "concepts": [
+          "time.Duration",
+          "饱和增长",
+          "重试预算"
+        ],
+        "explain": "退避计划在内存中计算，不真正 Sleep。每次写入当前延迟后，先比较 cap/2，再决定翻倍或直接饱和到 cap，避免先翻倍产生整数溢出。固定参数得到 100、200、400、750、750、750 毫秒，总预算 2.95 秒。确定性计划适合测试；真实分布式重试通常还需要抖动与取消，但不能用随机输出替代本例的规则验证。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc plan(base, cap time.Duration, count int) ([]time.Duration, error) {\n\tif base <= 0 || cap < base || count < 0 || count > 100 {\n\t\treturn nil, fmt.Errorf(\"invalid retry plan\")\n\t}\n\tresult := []time.Duration{}\n\tdelay := base\n\tfor i := 0; i < count; i++ {\n\t\tresult = append(result, delay)\n\t\tif delay > cap/2 {\n\t\t\tdelay = cap\n\t\t} else {\n\t\t\tdelay *= 2\n\t\t}\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tdelays, err := plan(100*time.Millisecond, 750*time.Millisecond, 6)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar total time.Duration\n\tfor _, delay := range delays {\n\t\ttotal += delay\n\t}\n\tfmt.Printf(\"delays=%v\\ntotal=%s\\n\", delays, total.String())\n\t_, err = plan(0, time.Second, 2)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+        "output": "delays=[100ms 200ms 400ms 750ms 750ms 750ms]\ntotal=2.95s\ninvalid=true",
+        "objective": "计算带上限的退避序列，预防翻倍溢出，并输出累计等待预算。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "先乘二再与上限比较可能已经溢出。",
+          "单次上限不等于累计预算；尝试次数同样需要限制。"
+        ],
+        "exercises": [
+          {
+            "prompt": "加入两秒累计预算，下一次等待会超预算时停止生成。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "在追加前比较 delay>budget-total，避免 total+delay 先溢出；被拒绝的等待不计入次数和总和。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-176",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "逻辑时钟 TTL 缓存",
+    "summary": "显式传入 now 验证 TTL 到期与清理，无需任何真实等待。",
+    "concepts": [
+      "显式时钟",
+      "到期边界",
+      "time.Before",
+      "清理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-176-lesson",
+        "title": "逻辑时钟 TTL 缓存",
+        "summary": "显式传入 now 验证 TTL 到期与清理，无需任何真实等待。",
+        "concepts": [
+          "显式时钟",
+          "到期边界",
+          "time.Before",
+          "清理"
+        ],
+        "explain": "缓存条目保存过期时刻，每次 Get 都由调用者传入 now。只有 now 严格早于 Expires 才命中，所以恰好到期时已经失效。Get 不自动删除，Purge 负责清理并报告数量，这让读取语义与回收行为可以分别测试。程序用固定逻辑时钟推进五分钟和十分钟，输出稳定而且不受机器运行速度影响。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"time\"\n)\n\ntype Entry struct {\n\tValue   int\n\tExpires time.Time\n}\ntype Cache map[string]Entry\n\nfunc (c Cache) Put(key string, value int, now time.Time, ttl time.Duration) {\n\tif ttl <= 0 {\n\t\tpanic(\"invalid ttl\")\n\t}\n\tc[key] = Entry{value, now.Add(ttl)}\n}\nfunc (c Cache) Get(key string, now time.Time) (int, bool) {\n\tentry, ok := c[key]\n\tif !ok || !now.Before(entry.Expires) {\n\t\treturn 0, false\n\t}\n\treturn entry.Value, true\n}\nfunc (c Cache) Purge(now time.Time) int {\n\tremoved := 0\n\tfor key, entry := range c {\n\t\tif !now.Before(entry.Expires) {\n\t\t\tdelete(c, key)\n\t\t\tremoved++\n\t\t}\n\t}\n\treturn removed\n}\nfunc (c Cache) Keys() []string {\n\tkeys := []string{}\n\tfor key := range c {\n\t\tkeys = append(keys, key)\n\t}\n\tsort.Strings(keys)\n\treturn keys\n}\nfunc main() {\n\tnow := time.Date(2026, time.March, 12, 9, 0, 0, 0, time.UTC)\n\tcache := Cache{}\n\tcache.Put(\"a\", 1, now, 5*time.Minute)\n\tcache.Put(\"b\", 2, now, 10*time.Minute)\n\tvalue, found := cache.Get(\"a\", now.Add(4*time.Minute))\n\tfmt.Printf(\"early=%d found=%t\\n\", value, found)\n\t_, found = cache.Get(\"a\", now.Add(5*time.Minute))\n\tfmt.Printf(\"at-expiry=%t\\n\", found)\n\tremoved := cache.Purge(now.Add(5 * time.Minute))\n\tfmt.Printf(\"purged=%d remaining=%v\\n\", removed, cache.Keys())\n\tremoved = cache.Purge(now.Add(10 * time.Minute))\n\tfmt.Printf(\"final=%d remaining=%v\\n\", removed, cache.Keys())\n}\n",
+        "output": "early=1 found=true\nat-expiry=false\npurged=1 remaining=[b]\nfinal=1 remaining=[]",
+        "objective": "显式传入 now 验证 TTL 到期与清理，无需任何真实等待。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "使用小于等于作为有效条件会把到期瞬间错误算作命中。",
+          "测试中依靠 Sleep 等到过期容易慢且不稳定，应该注入时钟。"
+        ],
+        "exercises": [
+          {
+            "prompt": "支持续期，但已经过期的键不能被续活。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "Renew 先调用同一到期条件检查当前有效性，通过后才用传入 now 与正 TTL 设置新 Expires；失效键返回 false。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-177",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "每日定点计划",
+    "summary": "从固定 now 求下一次每日执行时刻，处理当天未到、已过与恰好相等三种情况。",
+    "concepts": [
+      "time.Date",
+      "AddDate",
+      "严格未来时刻"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-177-lesson",
+        "title": "每日定点计划",
+        "summary": "从固定 now 求下一次每日执行时刻，处理当天未到、已过与恰好相等三种情况。",
+        "concepts": [
+          "time.Date",
+          "AddDate",
+          "严格未来时刻"
+        ],
+        "explain": "先在 now 的地点构造今天的目标钟面；若候选不严格晚于 now，就按日历增加一天。这里定义下一次必须在未来，因此恰好九点时不会立即重复执行今天的九点任务。使用 AddDate 保留日历计划语义，输入小时分钟分别验证范围。地区夏令时可能让某些钟面缺失或重复，实际调度器还需明确对应策略。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc next(now time.Time, hour, minute int) (time.Time, error) {\n\tif hour < 0 || hour > 23 || minute < 0 || minute > 59 {\n\t\treturn time.Time{}, fmt.Errorf(\"invalid daily clock\")\n\t}\n\tcandidate := time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, now.Location())\n\tif !candidate.After(now) {\n\t\tcandidate = candidate.AddDate(0, 0, 1)\n\t}\n\treturn candidate, nil\n}\nfunc main() {\n\tfor _, item := range []struct {\n\t\tLabel string\n\t\tHour  int\n\t}{{\"before\", 8}, {\"after\", 10}, {\"equal\", 9}} {\n\t\tnow := time.Date(2026, time.March, 12, item.Hour, 0, 0, 0, time.UTC)\n\t\tcandidate, err := next(now, 9, 0)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s=%s\\n\", item.Label, candidate.Format(time.RFC3339))\n\t}\n}\n",
+        "output": "before=2026-03-12T09:00:00Z\nafter=2026-03-13T09:00:00Z\nequal=2026-03-13T09:00:00Z",
+        "objective": "从固定 now 求下一次每日执行时刻，处理当天未到、已过与恰好相等三种情况。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "恰好等于目标时刻是否立即执行必须有明确规则。",
+          "直接加二十四小时不能完整表达地区时区的每日钟面计划。"
+        ],
+        "exercises": [
+          {
+            "prompt": "改成允许恰好等于 now 的候选，保持其他场景结果不变。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "将 !candidate.After(now) 改为 candidate.Before(now)，并新增相等场景断言，说明这是业务规则变化而非格式调整。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-178",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "日期严格校验",
+    "summary": "严格验证日期与格式，区分闰年合法日期和 Date 构造时的自动归一化。",
+    "concepts": [
+      "time.Parse",
+      "规范往返",
+      "闰年",
+      "Date 归一化"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-178-lesson",
+        "title": "日期严格校验",
+        "summary": "严格验证日期与格式，区分闰年合法日期和 Date 构造时的自动归一化。",
+        "concepts": [
+          "time.Parse",
+          "规范往返",
+          "闰年",
+          "Date 归一化"
+        ],
+        "explain": "Parse 会验证月份的实际日数，随后 Format 与原输入往返相等保证规范补零格式。闰年二月二十九日可接受，非闰年同日必须拒绝。与此不同，time.Date 被设计为规范化越界字段，二零二五年二月二十九日会得到三月一日，不能拿构造成功当作原输入合法的证明。程序同时展示两条路径，避免日历校验被静默修正替代。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc strict(text string) (time.Time, error) {\n\tvalue, err := time.Parse(\"2006-01-02\", text)\n\tif err != nil {\n\t\treturn time.Time{}, err\n\t}\n\tif value.Format(\"2006-01-02\") != text {\n\t\treturn time.Time{}, fmt.Errorf(\"noncanonical date\")\n\t}\n\treturn value, nil\n}\nfunc main() {\n\tleap, err := strict(\"2024-02-29\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"leap=%s\\n\", leap.Format(\"2006-01-02\"))\n\tnormalized := time.Date(2025, time.February, 29, 0, 0, 0, 0, time.UTC)\n\t_, err = strict(\"2025-02-29\")\n\tfmt.Printf(\"normalized=%s rejected=%t\\n\", normalized.Format(\"2006-01-02\"), err != nil)\n\t_, err = strict(\"2026-04-31\")\n\tfmt.Printf(\"april-rejected=%t\\n\", err != nil)\n\t_, err = strict(\"2026-4-01\")\n\tfmt.Printf(\"nonpadded-rejected=%t\\n\", err != nil)\n}\n",
+        "output": "leap=2024-02-29\nnormalized=2025-03-01 rejected=true\napril-rejected=true\nnonpadded-rejected=true",
+        "objective": "严格验证日期与格式，区分闰年合法日期和 Date 构造时的自动归一化。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "time.Date 会归一化越界日期，不是用户输入校验器。",
+          "能解析不总代表符合产品要求的规范文本，必要时做往返检查。"
+        ],
+        "exercises": [
+          {
+            "prompt": "允许用户输入不补零日期，但保存时统一为规范格式，并保留解析错误。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "明确新增可接受布局，逐个尝试解析；成功后输出唯一的 2006-01-02 格式，仍拒绝二月三十等实际不存在日期。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-179",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "计费时长向上取整",
+    "summary": "把使用时长按十五分钟计费，比较逐段取整与总时长取整并拒绝负数。",
+    "concepts": [
+      "time.Duration",
+      "商与余数",
+      "分段计费",
+      "溢出保护"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-179-lesson",
+        "title": "计费时长向上取整",
+        "summary": "把使用时长按十五分钟计费，比较逐段取整与总时长取整并拒绝负数。",
+        "concepts": [
+          "time.Duration",
+          "商与余数",
+          "分段计费",
+          "溢出保护"
+        ],
+        "explain": "向上取整通过整数商与非零余数实现，避免 duration+unit-1 可能发生的加法溢出。再检查块数乘单价单位是否超出 Duration 范围。三段一分钟、十四分钟、十六分钟逐段计费共六十分钟，先合并三十一分钟再计费则为四十五分钟。两种规则都可实现，但应在合同和界面中明确采用哪一种。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc charge(duration, unit time.Duration) (time.Duration, error) {\n\tif duration < 0 || unit <= 0 {\n\t\treturn 0, fmt.Errorf(\"invalid duration\")\n\t}\n\tblocks := duration / unit\n\tif duration%unit != 0 {\n\t\tblocks++\n\t}\n\tconst maximum time.Duration = 1<<63 - 1\n\tif blocks > maximum/unit {\n\t\treturn 0, fmt.Errorf(\"charge overflow\")\n\t}\n\treturn blocks * unit, nil\n}\nfunc main() {\n\tvar separate, total time.Duration\n\tfor _, duration := range []time.Duration{time.Minute, 14 * time.Minute, 16 * time.Minute} {\n\t\tcost, err := charge(duration, 15*time.Minute)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tseparate += cost\n\t\ttotal += duration\n\t}\n\tcombined, err := charge(total, 15*time.Minute)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"separate-minutes=%.0f combined-minutes=%.0f\\n\", separate.Minutes(), combined.Minutes())\n\tzero, err := charge(0, 15*time.Minute)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"zero=%d\\n\", zero)\n\t_, err = charge(-time.Second, 15*time.Minute)\n\tfmt.Printf(\"negative-rejected=%t\\n\", err != nil)\n}\n",
+        "output": "separate-minutes=60 combined-minutes=45\nzero=0\nnegative-rejected=true",
+        "objective": "把使用时长按十五分钟计费，比较逐段取整与总时长取整并拒绝负数。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "分段取整之和不等于先求和再取整。",
+          "常见加 unit-1 的公式在接近整数上限时会溢出。"
+        ],
+        "exercises": [
+          {
+            "prompt": "在累加多段使用时长前检测总时长溢出，不接受负段。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "每段先验证非负，再检查 duration>MaxDuration-total；全部通过后才相加并调用计费函数。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-180",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "多来源日志归并",
+    "summary": "归并三条已排序日志流，以时间、来源序号和来源内位置保持稳定顺序。",
+    "concepts": [
+      "container/heap",
+      "time.Before",
+      "多路归并",
+      "稳定并列"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-180-lesson",
+        "title": "多来源日志归并",
+        "summary": "归并三条已排序日志流，以时间、来源序号和来源内位置保持稳定顺序。",
+        "concepts": [
+          "container/heap",
+          "time.Before",
+          "多路归并",
+          "稳定并列"
+        ],
+        "explain": "堆中只保留每条流当前一项，取出后才补入该来源下一项，空间与来源数成正比。比较器先按时刻，再按来源编号，最后按来源内索引，因此相同时刻仍有稳定全序。开始归并前逐流验证单调排序，避免把错误前提带入算法。所有时间来自固定输入，既不依赖当前时钟，也不依赖实际并发调度。",
+        "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n\t\"time\"\n)\n\ntype Event struct {\n\tAt   time.Time\n\tText string\n}\ntype Cursor struct {\n\tEvent  Event\n\tSource int\n\tIndex  int\n}\ntype Queue []Cursor\n\nfunc (q Queue) Len() int { return len(q) }\nfunc (q Queue) Less(i, j int) bool {\n\tif !q[i].Event.At.Equal(q[j].Event.At) {\n\t\treturn q[i].Event.At.Before(q[j].Event.At)\n\t}\n\tif q[i].Source != q[j].Source {\n\t\treturn q[i].Source < q[j].Source\n\t}\n\treturn q[i].Index < q[j].Index\n}\nfunc (q Queue) Swap(i, j int)           { q[i], q[j] = q[j], q[i] }\nfunc (q *Queue) Push(value interface{}) { *q = append(*q, value.(Cursor)) }\nfunc (q *Queue) Pop() interface{} {\n\told := *q\n\tvalue := old[len(old)-1]\n\t*q = old[:len(old)-1]\n\treturn value\n}\nfunc merge(streams [][]Event) ([]Cursor, error) {\n\tqueue := &Queue{}\n\tfor source, stream := range streams {\n\t\tfor i := 1; i < len(stream); i++ {\n\t\t\tif stream[i].At.Before(stream[i-1].At) {\n\t\t\t\treturn nil, fmt.Errorf(\"unsorted stream\")\n\t\t\t}\n\t\t}\n\t\tif len(stream) > 0 {\n\t\t\theap.Push(queue, Cursor{stream[0], source, 0})\n\t\t}\n\t}\n\tresult := []Cursor{}\n\tfor queue.Len() > 0 {\n\t\tcurrent := heap.Pop(queue).(Cursor)\n\t\tresult = append(result, current)\n\t\tnext := current.Index + 1\n\t\tif next < len(streams[current.Source]) {\n\t\t\theap.Push(queue, Cursor{streams[current.Source][next], current.Source, next})\n\t\t}\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tbase := time.Date(2026, time.March, 12, 10, 0, 0, 0, time.UTC)\n\tstreams := [][]Event{{{base, \"a0\"}, {base.Add(2 * time.Minute), \"a1\"}}, {{base, \"b0\"}, {base.Add(time.Minute), \"b1\"}}, {{base.Add(time.Minute), \"c0\"}, {base.Add(2 * time.Minute), \"c1\"}}}\n\tresult, err := merge(streams)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, item := range result {\n\t\tfmt.Printf(\"%s source=%d %s\\n\", item.Event.At.Format(\"15:04\"), item.Source, item.Event.Text)\n\t}\n}\n",
+        "output": "10:00 source=0 a0\n10:00 source=1 b0\n10:01 source=1 b1\n10:01 source=2 c0\n10:02 source=0 a1\n10:02 source=2 c1",
+        "objective": "归并三条已排序日志流，以时间、来源序号和来源内位置保持稳定顺序。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "多路归并要求各输入流本身已经排序，不能静默接受乱序流。",
+          "相同时间戳需要额外决胜字段，否则日志顺序不确定。"
+        ],
+        "exercises": [
+          {
+            "prompt": "增加第四条空流，证明它不影响其他来源顺序且不会访问首项越界。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "初始化只把 len(stream)>0 的来源加入堆，已有的补入逻辑继续检查 next<len(stream)，空来源无需特殊占位项。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  }
+]

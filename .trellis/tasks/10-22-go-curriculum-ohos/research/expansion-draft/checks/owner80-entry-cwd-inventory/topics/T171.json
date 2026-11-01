@@ -1,0 +1,71 @@
+{
+  "id": "T171",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "utc=2026-03-12T01:30:00Z equal=true\nwest=2026-03-11T20:30:00-05:00\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-171",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "时区与同一时刻",
+    "summary": "解析带偏移的时间，转换 UTC，并验证不同时区文本表示同一时刻。",
+    "concepts": [
+      "time.Parse",
+      "RFC3339",
+      "time.Equal",
+      "FixedZone"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "解析带偏移的时间，转换 UTC，并验证不同时区文本表示同一时刻。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "钟面字符串相同不保证时刻相同，偏移必须一起解析。",
+      "固定偏移时区不能替代有夏令时的地区时区。"
+    ],
+    "exercises": [
+      {
+        "prompt": "计算两条带不同偏移日志的真实先后顺序，禁止直接比较原字符串。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "分别 time.Parse 为 Time，再用 Before、After 或 Equal；展示 UTC 格式便于人工核对，但排序依据保持为 Time。"
+      }
+    ],
+    "explain": "RFC3339 文本同时给出本地钟面与 UTC 偏移，09:30+08:00 和 01:30Z 表示同一瞬间。Equal 比较时刻，不能用格式化文本相等来判断。转换到固定西五区会落在前一天，提醒日期也随时区变化。FixedZone 只有固定偏移，不包含地区夏令时规则；需要地区历史规则时应使用已提供的时区数据库。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc mustTime(text string) time.Time {\n\tvalue, err := time.Parse(time.RFC3339, text)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\treturn value\n}\nfunc main() {\n\teast := mustTime(\"2026-03-12T09:30:00+08:00\")\n\tutc := mustTime(\"2026-03-12T01:30:00Z\")\n\tfmt.Printf(\"utc=%s equal=%t\\n\", east.UTC().Format(time.RFC3339), east.Equal(utc))\n\twest := east.In(time.FixedZone(\"WEST\", -5*60*60))\n\tfmt.Printf(\"west=%s\\n\", west.Format(time.RFC3339))\n}\n",
+    "output": "utc=2026-03-12T01:30:00Z equal=true\nwest=2026-03-11T20:30:00-05:00"
+  },
+  "example": {
+    "id": "go-example-171",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "时区与同一时刻",
+    "summary": "解析带偏移的时间，转换 UTC，并验证不同时区文本表示同一时刻。",
+    "concepts": [
+      "time.Parse",
+      "RFC3339",
+      "time.Equal",
+      "FixedZone"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc mustTime(text string) time.Time {\n\tvalue, err := time.Parse(time.RFC3339, text)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\treturn value\n}\nfunc main() {\n\teast := mustTime(\"2026-03-12T09:30:00+08:00\")\n\tutc := mustTime(\"2026-03-12T01:30:00Z\")\n\tfmt.Printf(\"utc=%s equal=%t\\n\", east.UTC().Format(time.RFC3339), east.Equal(utc))\n\twest := east.In(time.FixedZone(\"WEST\", -5*60*60))\n\tfmt.Printf(\"west=%s\\n\", west.Format(time.RFC3339))\n}\n",
+    "expectedOutput": "utc=2026-03-12T01:30:00Z equal=true\nwest=2026-03-11T20:30:00-05:00",
+    "templateType": "go"
+  }
+}

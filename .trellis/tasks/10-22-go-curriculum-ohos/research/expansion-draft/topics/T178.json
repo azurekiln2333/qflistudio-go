@@ -1,0 +1,71 @@
+{
+  "id": "T178",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "leap=2024-02-29\nnormalized=2025-03-01 rejected=true\napril-rejected=true\nnonpadded-rejected=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-178",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "日期严格校验",
+    "summary": "严格验证日期与格式。区分闰年合法日期和 Date 构造时的自动归一化。",
+    "concepts": [
+      "time.Parse",
+      "规范往返",
+      "闰年",
+      "Date 归一化"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "严格验证日期与格式。区分闰年合法日期和 Date 构造时的自动归一化。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "time.Date 会归一化越界日期，不是用户输入校验器。",
+      "能解析不总代表符合产品要求的规范文本。需要时做往返校验。"
+    ],
+    "exercises": [
+      {
+        "prompt": "允许用户输入不补零日期。保存时统一为规范格式。保留解析错误。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "明确新增可接受布局。逐个尝试解析。成功后输出唯一的 2006-01-02 格式。仍拒绝二月三十等实际不存在日期。"
+      }
+    ],
+    "explain": "Parse 会验证月份的实际日数。Format 与原输入往返相等，保证规范补零格式。闰年二月二十九日可接受。非闰年同日必须拒绝。time.Date 的设计是规范化越界字段。二零二五年二月二十九日会规范化成三月一日。不能拿构造成功当作原输入合法的证明。程序同时展示两条路径。不要用静默修正替代日历校验。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc strict(text string) (time.Time, error) {\n\tvalue, err := time.Parse(\"2006-01-02\", text)\n\tif err != nil {\n\t\treturn time.Time{}, err\n\t}\n\tif value.Format(\"2006-01-02\") != text {\n\t\treturn time.Time{}, fmt.Errorf(\"noncanonical date\")\n\t}\n\treturn value, nil\n}\nfunc main() {\n\tleap, err := strict(\"2024-02-29\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"leap=%s\\n\", leap.Format(\"2006-01-02\"))\n\tnormalized := time.Date(2025, time.February, 29, 0, 0, 0, 0, time.UTC)\n\t_, err = strict(\"2025-02-29\")\n\tfmt.Printf(\"normalized=%s rejected=%t\\n\", normalized.Format(\"2006-01-02\"), err != nil)\n\t_, err = strict(\"2026-04-31\")\n\tfmt.Printf(\"april-rejected=%t\\n\", err != nil)\n\t_, err = strict(\"2026-4-01\")\n\tfmt.Printf(\"nonpadded-rejected=%t\\n\", err != nil)\n}\n",
+    "output": "leap=2024-02-29\nnormalized=2025-03-01 rejected=true\napril-rejected=true\nnonpadded-rejected=true"
+  },
+  "example": {
+    "id": "go-example-178",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "日期严格校验",
+    "summary": "严格验证日期与格式。区分闰年合法日期和 Date 构造时的自动归一化。",
+    "concepts": [
+      "time.Parse",
+      "规范往返",
+      "闰年",
+      "Date 归一化"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc strict(text string) (time.Time, error) {\n\tvalue, err := time.Parse(\"2006-01-02\", text)\n\tif err != nil {\n\t\treturn time.Time{}, err\n\t}\n\tif value.Format(\"2006-01-02\") != text {\n\t\treturn time.Time{}, fmt.Errorf(\"noncanonical date\")\n\t}\n\treturn value, nil\n}\nfunc main() {\n\tleap, err := strict(\"2024-02-29\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"leap=%s\\n\", leap.Format(\"2006-01-02\"))\n\tnormalized := time.Date(2025, time.February, 29, 0, 0, 0, 0, time.UTC)\n\t_, err = strict(\"2025-02-29\")\n\tfmt.Printf(\"normalized=%s rejected=%t\\n\", normalized.Format(\"2006-01-02\"), err != nil)\n\t_, err = strict(\"2026-04-31\")\n\tfmt.Printf(\"april-rejected=%t\\n\", err != nil)\n\t_, err = strict(\"2026-4-01\")\n\tfmt.Printf(\"nonpadded-rejected=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "leap=2024-02-29\nnormalized=2025-03-01 rejected=true\napril-rejected=true\nnonpadded-rejected=true",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,208 @@
+[
+  {
+    "id": "go-example-271",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "账本对账器",
+    "summary": "能按交易 ID 对比两份账本，输出缺失、重复与金额不一致记录。",
+    "concepts": [
+      "encoding/csv",
+      "sort",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/csv\"\n\t\"fmt\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc ledger(text string) (map[string]int, map[string]bool) {\n\trows, err := csv.NewReader(strings.NewReader(text)).ReadAll()\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvalues := map[string]int{}\n\tduplicates := map[string]bool{}\n\tfor _, row := range rows[1:] {\n\t\tif len(row) != 2 {\n\t\t\tpanic(\"bad columns\")\n\t\t}\n\t\tamount, err := strconv.Atoi(row[1])\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif _, exists := values[row[0]]; exists {\n\t\t\tduplicates[row[0]] = true\n\t\t} else {\n\t\t\tvalues[row[0]] = amount\n\t\t}\n\t}\n\treturn values, duplicates\n}\nfunc main() {\n\tleft, ld := ledger(\"id,cents\\nt1,100\\nt2,200\\nt3,300\\n\")\n\tright, rd := ledger(\"id,cents\\nt1,110\\nt2,200\\nt2,200\\nt4,400\\n\")\n\tset := map[string]bool{}\n\tfor id := range left {\n\t\tset[id] = true\n\t}\n\tfor id := range right {\n\t\tset[id] = true\n\t}\n\tids := []string{}\n\tfor id := range set {\n\t\tids = append(ids, id)\n\t}\n\tsort.Strings(ids)\n\tfor _, id := range ids {\n\t\ta, hasA := left[id]\n\t\tb, hasB := right[id]\n\t\tif ld[id] {\n\t\t\tfmt.Printf(\"%s duplicate-left\\n\", id)\n\t\t}\n\t\tif rd[id] {\n\t\t\tfmt.Printf(\"%s duplicate-right\\n\", id)\n\t\t}\n\t\tswitch {\n\t\tcase !hasA:\n\t\t\tfmt.Printf(\"%s missing-left\\n\", id)\n\t\tcase !hasB:\n\t\t\tfmt.Printf(\"%s missing-right\\n\", id)\n\t\tcase a != b:\n\t\t\tfmt.Printf(\"%s mismatch=%d/%d\\n\", id, a, b)\n\t\t}\n\t}\n}\n",
+    "expectedOutput": "t1 mismatch=100/110\nt2 duplicate-right\nt3 missing-right\nt4 missing-left",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-272",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "依赖构建顺序",
+    "summary": "能用拓扑排序与字典序队列生成稳定构建计划，并报告剩余环节点。",
+    "concepts": [
+      "container/heap",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Names []string\n\nfunc (h Names) Len() int            { return len(h) }\nfunc (h Names) Less(i, j int) bool  { return h[i] < h[j] }\nfunc (h Names) Swap(i, j int)       { h[i], h[j] = h[j], h[i] }\nfunc (h *Names) Push(v interface{}) { *h = append(*h, v.(string)) }\nfunc (h *Names) Pop() interface{} {\n\told := *h\n\tlast := old[len(old)-1]\n\t*h = old[:len(old)-1]\n\treturn last\n}\nfunc plan(deps map[string][]string) ([]string, []string) {\n\tdegree := map[string]int{}\n\tnext := map[string][]string{}\n\tfor name, inputs := range deps {\n\t\tif _, ok := degree[name]; !ok {\n\t\t\tdegree[name] = 0\n\t\t}\n\t\tfor _, input := range inputs {\n\t\t\tdegree[name]++\n\t\t\tif _, ok := degree[input]; !ok {\n\t\t\t\tdegree[input] = 0\n\t\t\t}\n\t\t\tnext[input] = append(next[input], name)\n\t\t}\n\t}\n\tready := &Names{}\n\theap.Init(ready)\n\tfor name, n := range degree {\n\t\tif n == 0 {\n\t\t\theap.Push(ready, name)\n\t\t}\n\t}\n\torder := []string{}\n\tfor ready.Len() > 0 {\n\t\tname := heap.Pop(ready).(string)\n\t\torder = append(order, name)\n\t\tfor _, dependent := range next[name] {\n\t\t\tdegree[dependent]--\n\t\t\tif degree[dependent] == 0 {\n\t\t\t\theap.Push(ready, dependent)\n\t\t\t}\n\t\t}\n\t}\n\tremaining := []string{}\n\tfor name, n := range degree {\n\t\tif n > 0 {\n\t\t\tremaining = append(remaining, name)\n\t\t}\n\t}\n\tsort.Strings(remaining)\n\treturn order, remaining\n}\nfunc main() {\n\torder, cycle := plan(map[string][]string{\"parse\": {}, \"compile\": {\"parse\"}, \"test\": {\"compile\"}, \"link\": {\"compile\"}})\n\tfmt.Printf(\"order=%v remaining=%v\\n\", order, cycle)\n\t_, cycle = plan(map[string][]string{\"a\": {\"b\"}, \"b\": {\"a\"}})\n\tfmt.Printf(\"cycle=%v\\n\", cycle)\n}\n",
+    "expectedOutput": "order=[parse compile link test] remaining=[]\ncycle=[a b]",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-273",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "会议室分配",
+    "summary": "能按结束时间复用会议室，输出每个预约的房间和最少房间数。",
+    "concepts": [
+      "container/heap",
+      "sort",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Booking struct {\n\tID         string\n\tStart, End int\n}\ntype Room struct{ End, ID int }\ntype Active []Room\n\nfunc (h Active) Len() int { return len(h) }\nfunc (h Active) Less(i, j int) bool {\n\tif h[i].End != h[j].End {\n\t\treturn h[i].End < h[j].End\n\t}\n\treturn h[i].ID < h[j].ID\n}\nfunc (h Active) Swap(i, j int)       { h[i], h[j] = h[j], h[i] }\nfunc (h *Active) Push(v interface{}) { *h = append(*h, v.(Room)) }\nfunc (h *Active) Pop() interface{}   { old := *h; v := old[len(old)-1]; *h = old[:len(old)-1]; return v }\nfunc main() {\n\tbookings := []Booking{{\"A\", 0, 30}, {\"B\", 5, 10}, {\"C\", 10, 20}, {\"D\", 30, 40}}\n\tsort.SliceStable(bookings, func(i, j int) bool { return bookings[i].Start < bookings[j].Start })\n\tactive := &Active{}\n\theap.Init(active)\n\trooms := 0\n\tfor _, booking := range bookings {\n\t\tif booking.Start >= booking.End {\n\t\t\tpanic(\"bad interval\")\n\t\t}\n\t\troom := 0\n\t\tif active.Len() > 0 && (*active)[0].End <= booking.Start {\n\t\t\troom = heap.Pop(active).(Room).ID\n\t\t} else {\n\t\t\trooms++\n\t\t\troom = rooms\n\t\t}\n\t\theap.Push(active, Room{booking.End, room})\n\t\tfmt.Printf(\"%s=room%d\\n\", booking.ID, room)\n\t}\n\tfmt.Printf(\"rooms=%d\\n\", rooms)\n}\n",
+    "expectedOutput": "A=room1\nB=room2\nC=room2\nD=room2\nrooms=2",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-274",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "包清单完整性检查",
+    "summary": "能读取包文件清单并校验文件存在、长度和摘要，聚合全部错误。",
+    "concepts": [
+      "encoding/json",
+      "crypto/sha256",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Entry struct {\n\tName   string `json:\"name\"`\n\tSize   int    `json:\"size\"`\n\tDigest string `json:\"sha256\"`\n}\n\nfunc digest(text string) string { sum := sha256.Sum256([]byte(text)); return fmt.Sprintf(\"%x\", sum) }\nfunc main() {\n\tmanifest := []Entry{{\"ok.txt\", 2, digest(\"ok\")}, {\"changed.txt\", 3, digest(\"old\")}, {\"missing.txt\", 1, digest(\"x\")}}\n\twire, err := json.Marshal(manifest)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar decoded []Entry\n\tif err = json.Unmarshal(wire, &decoded); err != nil {\n\t\tpanic(err)\n\t}\n\tfiles := map[string]string{\"ok.txt\": \"ok\", \"changed.txt\": \"NEW!\"}\n\tissues := []string{}\n\tfor _, item := range decoded {\n\t\tdata, exists := files[item.Name]\n\t\tif !exists {\n\t\t\tissues = append(issues, item.Name+\":missing\")\n\t\t\tcontinue\n\t\t}\n\t\tif len(data) != item.Size {\n\t\t\tissues = append(issues, item.Name+\":size\")\n\t\t}\n\t\tif digest(data) != item.Digest {\n\t\t\tissues = append(issues, item.Name+\":digest\")\n\t\t}\n\t}\n\tsort.Strings(issues)\n\tfor _, issue := range issues {\n\t\tfmt.Println(issue)\n\t}\n\tfmt.Printf(\"issues=%d\\n\", len(issues))\n}\n",
+    "expectedOutput": "changed.txt:digest\nchanged.txt:size\nmissing.txt:missing\nissues=3",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-275",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "本地记录查询器",
+    "summary": "能实现过滤、分组与排序的查询步骤，对订单输出部门统计。",
+    "concepts": [
+      "sort",
+      "strings",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n)\n\ntype Order struct {\n\tDepartment, State string\n\tCents             int\n}\ntype Total struct{ Count, Cents int }\n\nfunc main() {\n\torders := []Order{{\"North\", \"paid\", 1200}, {\"south\", \"paid\", 900}, {\"north\", \"draft\", 300}, {\"NORTH\", \"paid\", 700}, {\"south\", \"paid\", 100}}\n\tgroups := map[string]Total{}\n\tfor _, order := range orders {\n\t\tif order.State != \"paid\" || order.Cents < 500 {\n\t\t\tcontinue\n\t\t}\n\t\tkey := strings.ToLower(order.Department)\n\t\ttotal := groups[key]\n\t\ttotal.Count++\n\t\ttotal.Cents += order.Cents\n\t\tgroups[key] = total\n\t}\n\tnames := []string{}\n\tfor name := range groups {\n\t\tnames = append(names, name)\n\t}\n\tsort.Strings(names)\n\tfor _, name := range names {\n\t\ttotal := groups[name]\n\t\tfmt.Printf(\"%s count=%d cents=%d\\n\", name, total.Count, total.Cents)\n\t}\n}\n",
+    "expectedOutput": "north count=2 cents=1900\nsouth count=1 cents=900",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-276",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "事件溯源余额",
+    "summary": "能依序重放开户、入账、扣款事件，拒绝非法事件且保留此前状态。",
+    "concepts": [
+      "encoding/json",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Event struct {\n\tKind   string `json:\"kind\"`\n\tAmount int    `json:\"amount\"`\n}\ntype State struct {\n\tOpen    bool\n\tBalance int\n}\n\nfunc apply(state State, event Event) (State, error) {\n\tnext := state\n\tswitch event.Kind {\n\tcase \"open\":\n\t\tif state.Open {\n\t\t\treturn state, fmt.Errorf(\"already open\")\n\t\t}\n\t\tnext.Open = true\n\tcase \"credit\", \"debit\":\n\t\tif !state.Open || event.Amount <= 0 {\n\t\t\treturn state, fmt.Errorf(\"invalid amount/state\")\n\t\t}\n\t\tif event.Kind == \"credit\" {\n\t\t\tnext.Balance += event.Amount\n\t\t} else {\n\t\t\tif event.Amount > state.Balance {\n\t\t\t\treturn state, fmt.Errorf(\"insufficient funds\")\n\t\t\t}\n\t\t\tnext.Balance -= event.Amount\n\t\t}\n\tdefault:\n\t\treturn state, fmt.Errorf(\"unknown event\")\n\t}\n\treturn next, nil\n}\nfunc main() {\n\tvar events []Event\n\tif err := json.Unmarshal([]byte(`[{\"kind\":\"open\"},{\"kind\":\"credit\",\"amount\":100},{\"kind\":\"debit\",\"amount\":30},{\"kind\":\"debit\",\"amount\":90},{\"kind\":\"other\"}]`), &events); err != nil {\n\t\tpanic(err)\n\t}\n\tstate := State{}\n\tfor index, event := range events {\n\t\tnext, err := apply(state, event)\n\t\tif err != nil {\n\t\t\tfmt.Printf(\"event%d rejected balance=%d\\n\", index, state.Balance)\n\t\t\tcontinue\n\t\t}\n\t\tstate = next\n\t}\n\tfmt.Printf(\"final=%d\\n\", state.Balance)\n}\n",
+    "expectedOutput": "event3 rejected balance=70\nevent4 rejected balance=70\nfinal=70",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-277",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内存事务回滚",
+    "summary": "能在副本上执行多步库存变更，遇到负库存回滚全部操作。",
+    "concepts": [
+      "fmt",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n)\n\ntype Change struct {\n\tItem  string\n\tDelta int\n}\n\nfunc transact(stock map[string]int, changes []Change) error {\n\tnext := map[string]int{}\n\tfor item, value := range stock {\n\t\tnext[item] = value\n\t}\n\tfor _, change := range changes {\n\t\tvalue, exists := next[change.Item]\n\t\tif !exists {\n\t\t\treturn fmt.Errorf(\"unknown item\")\n\t\t}\n\t\tvalue += change.Delta\n\t\tif value < 0 {\n\t\t\treturn fmt.Errorf(\"negative stock\")\n\t\t}\n\t\tnext[change.Item] = value\n\t}\n\tfor item, value := range next {\n\t\tstock[item] = value\n\t}\n\treturn nil\n}\nfunc main() {\n\tstock := map[string]int{\"pen\": 10, \"pad\": 4}\n\terr := transact(stock, []Change{{\"pen\", -3}, {\"pad\", -9}})\n\tfmt.Printf(\"failed=%t pen=%d pad=%d\\n\", err != nil, stock[\"pen\"], stock[\"pad\"])\n\terr = transact(stock, []Change{{\"pen\", -3}, {\"pad\", 2}})\n\tfmt.Printf(\"committed=%t pen=%d pad=%d\\n\", err == nil, stock[\"pen\"], stock[\"pad\"])\n}\n",
+    "expectedOutput": "failed=true pen=10 pad=4\ncommitted=true pen=7 pad=6",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-278",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "逻辑时钟令牌桶",
+    "summary": "能用显式 now 更新令牌余额，验证突发、补充与拒绝而不实际睡眠。",
+    "concepts": [
+      "time",
+      "math",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n\t\"time\"\n)\n\ntype Bucket struct {\n\tCapacity, Tokens, PerSecond float64\n\tLast                        time.Time\n}\n\nfunc (b *Bucket) Allow(now time.Time) bool {\n\tif now.Before(b.Last) {\n\t\treturn false\n\t}\n\tb.Tokens = math.Min(b.Capacity, b.Tokens+now.Sub(b.Last).Seconds()*b.PerSecond)\n\tb.Last = now\n\tif b.Tokens < 1 {\n\t\treturn false\n\t}\n\tb.Tokens--\n\treturn true\n}\nfunc main() {\n\tstart := time.Date(2026, 10, 23, 0, 0, 0, 0, time.UTC)\n\tb := &Bucket{Capacity: 2, Tokens: 2, PerSecond: 1, Last: start}\n\tfor _, offset := range []time.Duration{0, 0, 0, 500 * time.Millisecond, time.Second, time.Second, 3 * time.Second} {\n\t\tfmt.Printf(\"t=%4.1f allow=%t\\n\", offset.Seconds(), b.Allow(start.Add(offset)))\n\t}\n\tfmt.Printf(\"clock-backwards=%t\\n\", b.Allow(start))\n}\n",
+    "expectedOutput": "t= 0.0 allow=true\nt= 0.0 allow=true\nt= 0.0 allow=false\nt= 0.5 allow=false\nt= 1.0 allow=true\nt= 1.0 allow=false\nt= 3.0 allow=true\nclock-backwards=false",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-279",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "批处理检查点恢复",
+    "summary": "能按批保存已完成偏移，模拟失败后从检查点恢复且避免重复提交。",
+    "concepts": [
+      "encoding/json",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Checkpoint struct {\n\tNext int `json:\"next\"`\n}\n\nfunc main() {\n\trecords := []string{\"A\", \"B\", \"C\", \"D\", \"E\"}\n\tcommitted := []string{}\n\tcheckpoint := Checkpoint{}\n\twire := []byte{}\n\tfailOnce := true\n\tfor checkpoint.Next < len(records) {\n\t\tstart := checkpoint.Next\n\t\tend := start + 2\n\t\tif end > len(records) {\n\t\t\tend = len(records)\n\t\t}\n\t\tpending := append([]string(nil), records[start:end]...)\n\t\tif start == 2 && failOnce {\n\t\t\tfailOnce = false\n\t\t\tfmt.Printf(\"failed-at=%d\\n\", start)\n\t\t\tif err := json.Unmarshal(wire, &checkpoint); err != nil {\n\t\t\t\tpanic(err)\n\t\t\t}\n\t\t\tcontinue\n\t\t}\n\t\tcommitted = append(committed, pending...)\n\t\tcheckpoint.Next = end\n\t\tvar err error\n\t\twire, err = json.Marshal(checkpoint)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tfmt.Printf(\"committed=%v\\ncheckpoint=%s\\n\", committed, wire)\n}\n",
+    "expectedOutput": "failed-at=2\ncommitted=[A B C D E]\ncheckpoint={\"next\":5}",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-280",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "中缀表达式计算器",
+    "summary": "能用操作符栈处理括号与优先级，报告除零及不完整表达式。",
+    "concepts": [
+      "strconv",
+      "unicode",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"unicode\"\n)\n\nfunc precedence(op rune) int {\n\tif op == '+' || op == '-' {\n\t\treturn 1\n\t}\n\tif op == '*' || op == '/' {\n\t\treturn 2\n\t}\n\treturn 0\n}\nfunc evaluate(text string) (int, error) {\n\tvalues := []int{}\n\tops := []rune{}\n\tapply := func() error {\n\t\tif len(values) < 2 || len(ops) == 0 {\n\t\t\treturn fmt.Errorf(\"missing operand\")\n\t\t}\n\t\top := ops[len(ops)-1]\n\t\tops = ops[:len(ops)-1]\n\t\ta, b := values[len(values)-2], values[len(values)-1]\n\t\tvalues = values[:len(values)-2]\n\t\tswitch op {\n\t\tcase '+':\n\t\t\tvalues = append(values, a+b)\n\t\tcase '-':\n\t\t\tvalues = append(values, a-b)\n\t\tcase '*':\n\t\t\tvalues = append(values, a*b)\n\t\tcase '/':\n\t\t\tif b == 0 {\n\t\t\t\treturn fmt.Errorf(\"division by zero\")\n\t\t\t}\n\t\t\tvalues = append(values, a/b)\n\t\tdefault:\n\t\t\treturn fmt.Errorf(\"bad operator\")\n\t\t}\n\t\treturn nil\n\t}\n\tchars := []rune(text)\n\texpectValue := true\n\tfor i := 0; i < len(chars); {\n\t\tc := chars[i]\n\t\tif unicode.IsSpace(c) {\n\t\t\ti++\n\t\t\tcontinue\n\t\t}\n\t\tif c >= '0' && c <= '9' {\n\t\t\tif !expectValue {\n\t\t\t\treturn 0, fmt.Errorf(\"missing operator\")\n\t\t\t}\n\t\t\tstart := i\n\t\t\tfor i < len(chars) && chars[i] >= '0' && chars[i] <= '9' {\n\t\t\t\ti++\n\t\t\t}\n\t\t\tn, err := strconv.Atoi(string(chars[start:i]))\n\t\t\tif err != nil {\n\t\t\t\treturn 0, err\n\t\t\t}\n\t\t\tvalues = append(values, n)\n\t\t\texpectValue = false\n\t\t\tcontinue\n\t\t}\n\t\tif c == '(' {\n\t\t\tif !expectValue {\n\t\t\t\treturn 0, fmt.Errorf(\"missing operator\")\n\t\t\t}\n\t\t\tops = append(ops, c)\n\t\t\ti++\n\t\t\tcontinue\n\t\t}\n\t\tif c == ')' {\n\t\t\tif expectValue {\n\t\t\t\treturn 0, fmt.Errorf(\"empty group\")\n\t\t\t}\n\t\t\tfor len(ops) > 0 && ops[len(ops)-1] != '(' {\n\t\t\t\tif err := apply(); err != nil {\n\t\t\t\t\treturn 0, err\n\t\t\t\t}\n\t\t\t}\n\t\t\tif len(ops) == 0 {\n\t\t\t\treturn 0, fmt.Errorf(\"unmatched close\")\n\t\t\t}\n\t\t\tops = ops[:len(ops)-1]\n\t\t\ti++\n\t\t\tcontinue\n\t\t}\n\t\tif precedence(c) == 0 || expectValue {\n\t\t\treturn 0, fmt.Errorf(\"bad token\")\n\t\t}\n\t\tfor len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(c) {\n\t\t\tif err := apply(); err != nil {\n\t\t\t\treturn 0, err\n\t\t\t}\n\t\t}\n\t\tops = append(ops, c)\n\t\texpectValue = true\n\t\ti++\n\t}\n\tif expectValue {\n\t\treturn 0, fmt.Errorf(\"incomplete\")\n\t}\n\tfor len(ops) > 0 {\n\t\tif ops[len(ops)-1] == '(' {\n\t\t\treturn 0, fmt.Errorf(\"unmatched open\")\n\t\t}\n\t\tif err := apply(); err != nil {\n\t\t\treturn 0, err\n\t\t}\n\t}\n\tif len(values) != 1 {\n\t\treturn 0, fmt.Errorf(\"bad expression\")\n\t}\n\treturn values[0], nil\n}\nfunc main() {\n\tfor _, expression := range []string{\"2 + 3 * (4 - 1)\", \"18 / 3 / 2\", \"4/(2-2)\", \"1 +\"} {\n\t\tvalue, err := evaluate(expression)\n\t\tif err != nil {\n\t\t\tfmt.Printf(\"%s -> error\\n\", expression)\n\t\t} else {\n\t\t\tfmt.Printf(\"%s -> %d\\n\", expression, value)\n\t\t}\n\t}\n}\n",
+    "expectedOutput": "2 + 3 * (4 - 1) -> 11\n18 / 3 / 2 -> 3\n4/(2-2) -> error\n1 + -> error",
+    "templateType": "go",
+    "inputFixtures": {}
+  }
+]

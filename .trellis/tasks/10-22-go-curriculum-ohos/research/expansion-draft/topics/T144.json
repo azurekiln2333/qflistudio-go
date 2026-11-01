@@ -1,0 +1,69 @@
+{
+  "id": "T144",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "copied=7 source-bytes=7\ndigest=true content=offline\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-144",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "边复制边计算摘要",
+    "summary": "在复制内容时同时计算摘要，只从原始流读取一次。",
+    "concepts": [
+      "io.TeeReader",
+      "crypto/sha256",
+      "流式检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "在复制内容时同时计算摘要，只从原始流读取一次。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "先读完整流算摘要再尝试复制，第二次读取通常只会得到 EOF。",
+      "TeeReader 的旁路写入也是执行的一部分，错误不能忽略。"
+    ],
+    "exercises": [
+      {
+        "prompt": "让旁路 Writer 在三字节后返回错误。验证复制不会继续报告完整成功。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "实现有剩余预算的 Writer。写入超过预算时返回部分计数和错误。检查 Copy 的 err 与实际复制长度。不要只看目标非空。"
+      }
+    ],
+    "explain": "TeeReader 将每次读出的字节同步写入摘要器。同时把相同字节交给 Copy。包装 Reader 累计实际读取字节数。证明源数据只消费了七字节，而没有为了摘要再读一遍。复制结束后，将流式摘要与固定原始数据的一次性摘要比较。同时检查副本内容。TeeReader 的旁路 Writer 写入失败会成为读取错误。因此 Copy 返回的错误必须处理。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"crypto/sha256\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\ntype CountReader struct {\n\tInner io.Reader\n\tBytes int\n}\n\nfunc (r *CountReader) Read(buffer []byte) (int, error) {\n\tn, err := r.Inner.Read(buffer)\n\tr.Bytes += n\n\treturn n, err\n}\nfunc main() {\n\tsource := &CountReader{Inner: strings.NewReader(\"offline\")}\n\tdigest := sha256.New()\n\tvar copy bytes.Buffer\n\tn, err := io.Copy(&copy, io.TeeReader(source, digest))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\texpected := sha256.Sum256([]byte(\"offline\"))\n\tfmt.Printf(\"copied=%d source-bytes=%d\\n\", n, source.Bytes)\n\tfmt.Printf(\"digest=%t content=%s\\n\", bytes.Equal(digest.Sum(nil), expected[:]), copy.String())\n}\n",
+    "output": "copied=7 source-bytes=7\ndigest=true content=offline"
+  },
+  "example": {
+    "id": "go-example-144",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "边复制边计算摘要",
+    "summary": "在复制内容时同时计算摘要，只从原始流读取一次。",
+    "concepts": [
+      "io.TeeReader",
+      "crypto/sha256",
+      "流式检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"crypto/sha256\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\ntype CountReader struct {\n\tInner io.Reader\n\tBytes int\n}\n\nfunc (r *CountReader) Read(buffer []byte) (int, error) {\n\tn, err := r.Inner.Read(buffer)\n\tr.Bytes += n\n\treturn n, err\n}\nfunc main() {\n\tsource := &CountReader{Inner: strings.NewReader(\"offline\")}\n\tdigest := sha256.New()\n\tvar copy bytes.Buffer\n\tn, err := io.Copy(&copy, io.TeeReader(source, digest))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\texpected := sha256.Sum256([]byte(\"offline\"))\n\tfmt.Printf(\"copied=%d source-bytes=%d\\n\", n, source.Bytes)\n\tfmt.Printf(\"digest=%t content=%s\\n\", bytes.Equal(digest.Sum(nil), expected[:]), copy.String())\n}\n",
+    "expectedOutput": "copied=7 source-bytes=7\ndigest=true content=offline",
+    "templateType": "go"
+  }
+}

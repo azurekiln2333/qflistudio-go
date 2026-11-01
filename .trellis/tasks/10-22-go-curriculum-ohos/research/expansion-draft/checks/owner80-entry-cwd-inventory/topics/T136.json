@@ -1,0 +1,71 @@
+{
+  "id": "T136",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "missing=Li\nnull=<unset>\nvalue=Yu\nbad-type=true preserved=Yu\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-136",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "JSON 部分更新的三态",
+    "summary": "区分字段缺失、null 与实际字符串，对用户昵称执行部分更新。",
+    "concepts": [
+      "json.RawMessage",
+      "缺失与 null",
+      "指针",
+      "原子更新"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "区分字段缺失、null 与实际字符串，对用户昵称执行部分更新。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "缺失字段与显式 null 语义不同，不能都当作空字符串。",
+      "在完成类型检查前修改资料，会让失败补丁留下部分状态。"
+    ],
+    "exercises": [
+      {
+        "prompt": "支持同时更新 nickname 和 city，并保证任一字段错误时两个字段都不变。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "先复制资料为 candidate，在 candidate 上验证和更新所有字段，全部成功后一次赋回原资料；注意指针指向的可变对象也需按需要复制。"
+      }
+    ],
+    "explain": "普通字符串指针无法独立描述字段是否出现在补丁中，因此先将补丁解码为 RawMessage 映射。查不到键表示保持原值，null 表示清除指针，字符串表示赋新值。先把新值成功解码到局部变量再修改资料，错误输入不会破坏旧昵称。示例连续展示三种合法状态，并用数字值验证类型错误的拒绝路径。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Profile struct{ Nickname *string }\n\nfunc apply(profile *Profile, text string) error {\n\tvar fields map[string]json.RawMessage\n\tif err := json.Unmarshal([]byte(text), &fields); err != nil {\n\t\treturn err\n\t}\n\traw, exists := fields[\"nickname\"]\n\tif !exists {\n\t\treturn nil\n\t}\n\tif bytes.Equal(bytes.TrimSpace(raw), []byte(\"null\")) {\n\t\tprofile.Nickname = nil\n\t\treturn nil\n\t}\n\tvar name string\n\tif err := json.Unmarshal(raw, &name); err != nil {\n\t\treturn err\n\t}\n\tprofile.Nickname = &name\n\treturn nil\n}\n\nfunc display(profile Profile) string {\n\tif profile.Nickname == nil {\n\t\treturn \"<unset>\"\n\t}\n\treturn *profile.Nickname\n}\n\nfunc main() {\n\tinitial := \"Li\"\n\tprofile := Profile{&initial}\n\tfor _, step := range []struct {\n\t\tLabel string\n\t\tPatch string\n\t}{\n\t\t{\"missing\", `{}`}, {\"null\", `{\"nickname\":null}`}, {\"value\", `{\"nickname\":\"Yu\"}`},\n\t} {\n\t\tif err := apply(&profile, step.Patch); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s=%s\\n\", step.Label, display(profile))\n\t}\n\terr := apply(&profile, `{\"nickname\":42}`)\n\tfmt.Printf(\"bad-type=%t preserved=%s\\n\", err != nil, display(profile))\n}\n",
+    "output": "missing=Li\nnull=<unset>\nvalue=Yu\nbad-type=true preserved=Yu"
+  },
+  "example": {
+    "id": "go-example-136",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "JSON 部分更新的三态",
+    "summary": "区分字段缺失、null 与实际字符串，对用户昵称执行部分更新。",
+    "concepts": [
+      "json.RawMessage",
+      "缺失与 null",
+      "指针",
+      "原子更新"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Profile struct{ Nickname *string }\n\nfunc apply(profile *Profile, text string) error {\n\tvar fields map[string]json.RawMessage\n\tif err := json.Unmarshal([]byte(text), &fields); err != nil {\n\t\treturn err\n\t}\n\traw, exists := fields[\"nickname\"]\n\tif !exists {\n\t\treturn nil\n\t}\n\tif bytes.Equal(bytes.TrimSpace(raw), []byte(\"null\")) {\n\t\tprofile.Nickname = nil\n\t\treturn nil\n\t}\n\tvar name string\n\tif err := json.Unmarshal(raw, &name); err != nil {\n\t\treturn err\n\t}\n\tprofile.Nickname = &name\n\treturn nil\n}\n\nfunc display(profile Profile) string {\n\tif profile.Nickname == nil {\n\t\treturn \"<unset>\"\n\t}\n\treturn *profile.Nickname\n}\n\nfunc main() {\n\tinitial := \"Li\"\n\tprofile := Profile{&initial}\n\tfor _, step := range []struct {\n\t\tLabel string\n\t\tPatch string\n\t}{\n\t\t{\"missing\", `{}`}, {\"null\", `{\"nickname\":null}`}, {\"value\", `{\"nickname\":\"Yu\"}`},\n\t} {\n\t\tif err := apply(&profile, step.Patch); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s=%s\\n\", step.Label, display(profile))\n\t}\n\terr := apply(&profile, `{\"nickname\":42}`)\n\tfmt.Printf(\"bad-type=%t preserved=%s\\n\", err != nil, display(profile))\n}\n",
+    "expectedOutput": "missing=Li\nnull=<unset>\nvalue=Yu\nbad-type=true preserved=Yu",
+    "templateType": "go"
+  }
+}

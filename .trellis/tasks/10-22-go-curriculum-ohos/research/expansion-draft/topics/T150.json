@@ -1,0 +1,71 @@
+{
+  "id": "T150",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "before=0 buffered=11\nafter=11 content=\"alpha\\nbeta\\n\"\nsecond-flush=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-150",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "批量写入与 Flush",
+    "summary": "观察批量写入在 Flush 前后的底层可见性。同时验证重复 Flush 不重复写数据。",
+    "concepts": [
+      "bufio.Writer",
+      "可见性",
+      "Flush",
+      "错误处理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "观察批量写入在 Flush 前后的底层可见性。同时验证重复 Flush 不重复写数据。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "WriteString 成功可能只写进缓冲，不代表目标已经收到数据。",
+      "不能假定所有数据都等到 Flush 才可见。大写入可能触发自动下沉。"
+    ],
+    "exercises": [
+      {
+        "prompt": "用总是返回错误的底层 Writer。验证错误在首次 Flush 出现。同时验证后续 Flush 仍保留该错误。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "实现 Write 返回零和固定错误。写入小于缓冲容量的数据。再连续调用两次 Flush。分别用 errors.Is 检查相同错误。"
+      }
+    ],
+    "explain": "两条短记录先进入三十二字节缓冲。底层 bytes.Buffer 仍为空，而 Buffered 为十一。Flush 把缓存内容写到底层。之后再 Flush 不会重复追加。缓冲只能推迟写入，不能消除写入错误。所以每次 WriteString 与 Flush 都检查返回值。若内容超过缓冲容量，数据可能在显式 Flush 前就下沉。本例固定短输入，以清楚展示这一阶段。",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"bytes\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tvar destination bytes.Buffer\n\twriter := bufio.NewWriterSize(&destination, 32)\n\tif _, err := writer.WriteString(\"alpha\\n\"); err != nil {\n\t\tpanic(err)\n\t}\n\tif _, err := writer.WriteString(\"beta\\n\"); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"before=%d buffered=%d\\n\", destination.Len(), writer.Buffered())\n\tif err := writer.Flush(); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"after=%d content=%q\\n\", destination.Len(), destination.String())\n\tbefore := destination.Len()\n\terr := writer.Flush()\n\tfmt.Printf(\"second-flush=%t\\n\", err == nil && destination.Len() == before)\n}\n",
+    "output": "before=0 buffered=11\nafter=11 content=\"alpha\\nbeta\\n\"\nsecond-flush=true"
+  },
+  "example": {
+    "id": "go-example-150",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "批量写入与 Flush",
+    "summary": "观察批量写入在 Flush 前后的底层可见性。同时验证重复 Flush 不重复写数据。",
+    "concepts": [
+      "bufio.Writer",
+      "可见性",
+      "Flush",
+      "错误处理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"bytes\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tvar destination bytes.Buffer\n\twriter := bufio.NewWriterSize(&destination, 32)\n\tif _, err := writer.WriteString(\"alpha\\n\"); err != nil {\n\t\tpanic(err)\n\t}\n\tif _, err := writer.WriteString(\"beta\\n\"); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"before=%d buffered=%d\\n\", destination.Len(), writer.Buffered())\n\tif err := writer.Flush(); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"after=%d content=%q\\n\", destination.Len(), destination.String())\n\tbefore := destination.Len()\n\terr := writer.Flush()\n\tfmt.Printf(\"second-flush=%t\\n\", err == nil && destination.Len() == before)\n}\n",
+    "expectedOutput": "before=0 buffered=11\nafter=11 content=\"alpha\\nbeta\\n\"\nsecond-flush=true",
+    "templateType": "go"
+  }
+}

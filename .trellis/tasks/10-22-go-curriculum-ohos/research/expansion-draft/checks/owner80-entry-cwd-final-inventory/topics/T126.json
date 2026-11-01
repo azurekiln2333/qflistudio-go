@@ -1,0 +1,71 @@
+{
+  "id": "T126",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "prefix=报告-202 suffix=.csv\nutf8=true\nempty=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-126",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "最长公共前后缀",
+    "summary": "计算多个版本文件名的公共前缀和后缀，避免切断中文字符。",
+    "concepts": [
+      "strings.HasPrefix",
+      "strings.HasSuffix",
+      "rune 边界",
+      "utf8.ValidString"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "计算多个版本文件名的公共前缀和后缀，避免切断中文字符。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "按字节每次减一可能留下半个中文字符。",
+      "独立求出的前后缀可能重叠；用来提取中间文本前必须检查长度。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加只有一个名称的输入，并说明前后缀为什么都等于完整名称。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "候选来自第一个名称，没有其他名称触发缩短，因此两者都保持原值；若业务要求不重叠，应另外定义截断策略。"
+      }
+    ],
+    "explain": "先用第一个文件名初始化候选前后缀，然后逐个缩短，直到所有名称都匹配。候选通过 rune 切片缩短，保证每次都移除完整字符；最后用 utf8.ValidString 验证结果。前后缀独立计算，短输入时它们可能重叠，不能直接据此切割中间部分。零个名称有明确定义，返回两个空字符串。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"unicode/utf8\"\n)\n\nfunc common(names []string) (string, string) {\n\tif len(names) == 0 {\n\t\treturn \"\", \"\"\n\t}\n\tprefix, suffix := []rune(names[0]), []rune(names[0])\n\tfor _, name := range names[1:] {\n\t\tfor !strings.HasPrefix(name, string(prefix)) {\n\t\t\tprefix = prefix[:len(prefix)-1]\n\t\t}\n\t\tfor !strings.HasSuffix(name, string(suffix)) {\n\t\t\tsuffix = suffix[1:]\n\t\t}\n\t}\n\treturn string(prefix), string(suffix)\n}\n\nfunc main() {\n\tprefix, suffix := common([]string{\"报告-2024.csv\", \"报告-2025.csv\", \"报告-2026.csv\"})\n\tfmt.Printf(\"prefix=%s suffix=%s\\n\", prefix, suffix)\n\tfmt.Printf(\"utf8=%t\\n\", utf8.ValidString(prefix) && utf8.ValidString(suffix))\n\ta, b := common(nil)\n\tfmt.Printf(\"empty=%t\\n\", a == \"\" && b == \"\")\n}\n",
+    "output": "prefix=报告-202 suffix=.csv\nutf8=true\nempty=true"
+  },
+  "example": {
+    "id": "go-example-126",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "最长公共前后缀",
+    "summary": "计算多个版本文件名的公共前缀和后缀，避免切断中文字符。",
+    "concepts": [
+      "strings.HasPrefix",
+      "strings.HasSuffix",
+      "rune 边界",
+      "utf8.ValidString"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"unicode/utf8\"\n)\n\nfunc common(names []string) (string, string) {\n\tif len(names) == 0 {\n\t\treturn \"\", \"\"\n\t}\n\tprefix, suffix := []rune(names[0]), []rune(names[0])\n\tfor _, name := range names[1:] {\n\t\tfor !strings.HasPrefix(name, string(prefix)) {\n\t\t\tprefix = prefix[:len(prefix)-1]\n\t\t}\n\t\tfor !strings.HasSuffix(name, string(suffix)) {\n\t\t\tsuffix = suffix[1:]\n\t\t}\n\t}\n\treturn string(prefix), string(suffix)\n}\n\nfunc main() {\n\tprefix, suffix := common([]string{\"报告-2024.csv\", \"报告-2025.csv\", \"报告-2026.csv\"})\n\tfmt.Printf(\"prefix=%s suffix=%s\\n\", prefix, suffix)\n\tfmt.Printf(\"utf8=%t\\n\", utf8.ValidString(prefix) && utf8.ValidString(suffix))\n\ta, b := common(nil)\n\tfmt.Printf(\"empty=%t\\n\", a == \"\" && b == \"\")\n}\n",
+    "expectedOutput": "prefix=报告-202 suffix=.csv\nutf8=true\nempty=true",
+    "templateType": "go"
+  }
+}

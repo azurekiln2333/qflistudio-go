@@ -1,0 +1,218 @@
+[
+  {
+    "id": "go-example-211",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Gzip 日志封装",
+    "summary": "能压缩多行日志并解压，检查关闭写入器后的完整尾部与内容。",
+    "concepts": [
+      "compress/gzip",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"compress/gzip\"\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc main() {\n\tinput := []byte(\"first\\nsecond\\n\")\n\tvar compressed bytes.Buffer\n\twriter := gzip.NewWriter(&compressed)\n\tif _, err := writer.Write(input); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := writer.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\treader, err := gzip.NewReader(bytes.NewReader(compressed.Bytes()))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\trestored, err := io.ReadAll(reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tif err = reader.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"roundtrip=%t\\nlines=%d\\n\", bytes.Equal(input, restored), bytes.Count(restored, []byte{'\\n'}))\n\ttruncated := compressed.Bytes()[:compressed.Len()-3]\n\tbroken, err := gzip.NewReader(bytes.NewReader(truncated))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\t_, err = io.ReadAll(broken)\n\tbroken.Close()\n\tfmt.Printf(\"missing-trailer=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "roundtrip=true\nlines=2\nmissing-trailer=true",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-212",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Zlib 解压预算",
+    "summary": "能对压缩输入限制解压后字节数，拒绝超预算载荷。",
+    "concepts": [
+      "compress/zlib",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"compress/zlib\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc compress(text string) []byte {\n\tvar out bytes.Buffer\n\tw := zlib.NewWriter(&out)\n\tif _, err := io.WriteString(w, text); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\treturn out.Bytes()\n}\nfunc decode(data []byte, budget int64) (string, error) {\n\tr, err := zlib.NewReader(bytes.NewReader(data))\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\tdefer r.Close()\n\ttext, err := io.ReadAll(io.LimitReader(r, budget+1))\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\tif int64(len(text)) > budget {\n\t\treturn \"\", fmt.Errorf(\"expanded data over budget\")\n\t}\n\treturn string(text), nil\n}\nfunc main() {\n\ttext, err := decode(compress(\"small\"), 8)\n\tfmt.Printf(\"small=%s valid=%t\\n\", text, err == nil)\n\t_, err = decode(compress(strings.Repeat(\"a\", 1000)), 8)\n\tfmt.Printf(\"expanded-rejected=%t\\n\", err != nil)\n\ttext, err = decode(compress(\"12345678\"), 8)\n\tfmt.Printf(\"exact-limit=%t\\n\", err == nil && len(text) == 8)\n}\n",
+    "expectedOutput": "small=small valid=true\nexpanded-rejected=true\nexact-limit=true",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-213",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Tar 选择性提取",
+    "summary": "能遍历内存归档，只读取目标文档并核对条目类型和长度。",
+    "concepts": [
+      "archive/tar",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"archive/tar\"\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc main() {\n\tvar archive bytes.Buffer\n\tw := tar.NewWriter(&archive)\n\tfor _, item := range []struct{ name, text string }{{\"notes.txt\", \"skip\"}, {\"docs/readme.txt\", \"offline guide\"}} {\n\t\tif err := w.WriteHeader(&tar.Header{Name: item.name, Mode: 0600, Size: int64(len(item.text)), Typeflag: tar.TypeReg}); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif _, err := io.WriteString(w, item.text); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr := tar.NewReader(bytes.NewReader(archive.Bytes()))\n\tfound := \"\"\n\tfor {\n\t\th, err := r.Next()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif h.Name != \"docs/readme.txt\" {\n\t\t\tcontinue\n\t\t}\n\t\tif h.Typeflag != tar.TypeReg || h.Size > 64 {\n\t\t\tpanic(\"invalid target\")\n\t\t}\n\t\tdata, err := io.ReadAll(r)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfound = string(data)\n\t}\n\tfmt.Printf(\"document=%s\\nbytes=%d\\n\", found, len(found))\n}\n",
+    "expectedOutput": "document=offline guide\nbytes=13",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-214",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Zip 报表归档",
+    "summary": "能创建含两个报表的 zip，读取所有条目并稳定输出摘要。",
+    "concepts": [
+      "archive/zip",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"archive/zip\"\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"sort\"\n)\n\nfunc main() {\n\tvar data bytes.Buffer\n\tw := zip.NewWriter(&data)\n\tfor _, item := range []struct{ name, text string }{{\"sales.csv\", \"a,10\\n\"}, {\"stock.csv\", \"a,3\\n\"}} {\n\t\tf, err := w.Create(item.name)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif _, err = io.WriteString(f, item.text); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr, err := zip.NewReader(bytes.NewReader(data.Bytes()), int64(data.Len()))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\trows := []string{}\n\tfor _, file := range r.File {\n\t\tf, err := file.Open()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tbody, err := io.ReadAll(f)\n\t\tf.Close()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\trows = append(rows, fmt.Sprintf(\"%s:%d\", file.Name, len(body)))\n\t}\n\tsort.Strings(rows)\n\tfor _, row := range rows {\n\t\tfmt.Println(row)\n\t}\n\tfmt.Printf(\"entries=%d\\n\", len(rows))\n}\n",
+    "expectedOutput": "sales.csv:5\nstock.csv:4\nentries=2",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-215",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "归档路径验证",
+    "summary": "能在提取前验证条目路径，拒绝越界、绝对路径与符号链接。",
+    "concepts": [
+      "archive/zip",
+      "path",
+      "strings",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"archive/zip\"\n\t\"fmt\"\n\t\"os\"\n\t\"path\"\n\t\"strings\"\n)\n\nfunc safe(h *zip.FileHeader) bool {\n\tname := h.Name\n\tif name == \"\" || strings.Contains(name, \"\\\\\") || strings.Contains(name, \":\") || path.IsAbs(name) || h.Mode()&os.ModeSymlink != 0 {\n\t\treturn false\n\t}\n\tclean := path.Clean(name)\n\treturn clean != \".\" && clean != \"..\" && !strings.HasPrefix(clean, \"../\")\n}\nfunc main() {\n\tfor _, name := range []string{\"docs/a.txt\", \"../escape\", \"/etc/file\", \"C:/file\", \"docs\\\\..\\\\escape\"} {\n\t\th := &zip.FileHeader{Name: name}\n\t\tfmt.Printf(\"%s=%t\\n\", name, safe(h))\n\t}\n\tlink := &zip.FileHeader{Name: \"docs/link\"}\n\tlink.SetMode(os.ModeSymlink | 0600)\n\tfmt.Printf(\"symlink=%t\\n\", safe(link))\n}\n",
+    "expectedOutput": "docs/a.txt=true\n../escape=false\n/etc/file=false\nC:/file=false\ndocs\\..\\escape=false\nsymlink=false",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-216",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Tar 元数据清单",
+    "summary": "能从归档头读取权限和大小，跳过目录内容并生成稳定清单。",
+    "concepts": [
+      "archive/tar",
+      "sort",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"archive/tar\"\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"sort\"\n)\n\nfunc main() {\n\tvar data bytes.Buffer\n\tw := tar.NewWriter(&data)\n\tfor _, h := range []*tar.Header{{Name: \"docs/\", Mode: 0755, Typeflag: tar.TypeDir}, {Name: \"docs/run.sh\", Mode: 0750, Size: 3, Typeflag: tar.TypeReg}} {\n\t\tif err := w.WriteHeader(h); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif h.Size > 0 {\n\t\t\tif _, err := w.Write([]byte(\"go\\n\")); err != nil {\n\t\t\t\tpanic(err)\n\t\t\t}\n\t\t}\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr := tar.NewReader(bytes.NewReader(data.Bytes()))\n\trows := []string{}\n\tfor {\n\t\th, err := r.Next()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tkind := \"file\"\n\t\tif h.Typeflag == tar.TypeDir {\n\t\t\tkind = \"dir\"\n\t\t}\n\t\trows = append(rows, fmt.Sprintf(\"%s %s %04o %d\", h.Name, kind, h.Mode, h.Size))\n\t}\n\tsort.Strings(rows)\n\tfor _, row := range rows {\n\t\tfmt.Println(row)\n\t}\n}\n",
+    "expectedOutput": "docs/ dir 0755 0\ndocs/run.sh file 0750 3",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-217",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内存 Multipart 表单",
+    "summary": "能构造含文本与文件的表单，逐 part 解码并核对文件内容。",
+    "concepts": [
+      "mime/multipart",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"mime/multipart\"\n)\n\nfunc main() {\n\tvar wire bytes.Buffer\n\tw := multipart.NewWriter(&wire)\n\tif err := w.SetBoundary(\"qfli-boundary\"); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := w.WriteField(\"owner\", \"Li\"); err != nil {\n\t\tpanic(err)\n\t}\n\tfile, err := w.CreateFormFile(\"upload\", \"notes.txt\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tif _, err = io.WriteString(file, \"line1\\n\"); err != nil {\n\t\tpanic(err)\n\t}\n\tif err = w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr := multipart.NewReader(&wire, w.Boundary())\n\tfor {\n\t\tpart, err := r.NextPart()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tbody, err := io.ReadAll(part)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tpart.Close()\n\t\tfmt.Printf(\"field=%s file=%q body=%q\\n\", part.FormName(), part.FileName(), string(body))\n\t}\n}\n",
+    "expectedOutput": "field=owner file=\"\" body=\"Li\"\nfield=upload file=\"notes.txt\" body=\"line1\\n\"",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-218",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "MIME 媒体类型参数",
+    "summary": "能解析带引号参数和字符集的媒体类型，规范重组并处理非法输入。",
+    "concepts": [
+      "mime",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"mime\"\n)\n\nfunc main() {\n\tmedia, params, err := mime.ParseMediaType(`Text/Plain; charset=utf-8; title=\"QFLI report\"`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"type=%s\\ntitle=%s\\nnormalized=%s\\n\", media, params[\"title\"], mime.FormatMediaType(media, params))\n\t_, _, err = mime.ParseMediaType(\"text/plain; charset\")\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "type=text/plain\ntitle=QFLI report\nnormalized=text/plain; charset=utf-8; title=\"QFLI report\"\ninvalid=true",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-219",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "流式 Base64 编解码",
+    "summary": "能跨多次 Write 编码并关闭刷新尾块，再以 Reader 解码。",
+    "concepts": [
+      "encoding/base64",
+      "io",
+      "bytes",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/base64\"\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc main() {\n\tvar wire bytes.Buffer\n\tw := base64.NewEncoder(base64.StdEncoding, &wire)\n\tfor _, chunk := range []string{\"g\", \"o\", \":\", \"42\"} {\n\t\tif _, err := io.WriteString(w, chunk); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tfmt.Printf(\"before=%s\\n\", wire.String())\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"after=%s\\n\", wire.String())\n\tdecoded, err := io.ReadAll(base64.NewDecoder(base64.StdEncoding, bytes.NewReader(wire.Bytes())))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"roundtrip=%t\\n\", string(decoded) == \"go:42\")\n}\n",
+    "expectedOutput": "before=Z286\nafter=Z286NDI=\nroundtrip=true",
+    "templateType": "go",
+    "inputFixtures": {}
+  },
+  {
+    "id": "go-example-220",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Quoted Printable 文本",
+    "summary": "能解码软换行和转义字节，再编码 UTF-8 邮件片段并验证往返。",
+    "concepts": [
+      "mime/quotedprintable",
+      "io",
+      "strings",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"mime/quotedprintable\"\n\t\"strings\"\n)\n\nfunc main() {\n\tdecoded, err := io.ReadAll(quotedprintable.NewReader(strings.NewReader(\"Subject=3A hello=\\r\\nworld=21\")))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"decoded=%s\\n\", decoded)\n\toriginal := []byte(\"你好=go\")\n\tvar wire bytes.Buffer\n\tw := quotedprintable.NewWriter(&wire)\n\tif _, err = w.Write(original); err != nil {\n\t\tpanic(err)\n\t}\n\tif err = w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\trestored, err := io.ReadAll(quotedprintable.NewReader(&wire))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"utf8-roundtrip=%t\\n\", bytes.Equal(restored, original))\n}\n",
+    "expectedOutput": "decoded=Subject: helloworld!\nutf8-roundtrip=true",
+    "templateType": "go",
+    "inputFixtures": {}
+  }
+]

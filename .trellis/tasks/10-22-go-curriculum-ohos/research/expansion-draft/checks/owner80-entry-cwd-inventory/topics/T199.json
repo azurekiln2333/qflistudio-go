@@ -1,0 +1,71 @@
+{
+  "id": "T199",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "A [tag] 红色 B\nother-preserved=true\ntruncated=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-199",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "ANSI 控制序列清理",
+    "summary": "删除 SGR 颜色序列，保留普通方括号与中文，并拒绝截断的颜色控制。",
+    "concepts": [
+      "SGR",
+      "字节状态机",
+      "UTF-8 保留",
+      "截断错误"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "删除 SGR 颜色序列，保留普通方括号与中文，并拒绝截断的颜色控制。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "删除所有方括号内容会破坏正常文本。",
+      "ANSI 不是只有颜色，清理 SGR 不等于清理所有终端控制序列。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在严格模式下拒绝所有非 SGR 的 ESC 序列，同时保留普通无 ESC 文本。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "发现 ESC 后如果不能完整解析为允许的 SGR 就返回错误，普通方括号仍按字节复制；不要把控制范围扩展成删除任意括号。"
+      }
+    ],
+    "explain": "清理器只识别 ESC、左方括号、数字或分号参数、m 组成的 SGR 序列。其他控制序列保持原样而不是被误删，普通中括号文本与 UTF-8 字节直接复制。结尾截断的候选序列返回错误，避免悄悄丢弃不确定内容。范围仅限常见数字 SGR，不宣称完整终端仿真或能过滤全部终端控制风险。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc strip(text string) (string, error) {\n\tvar out strings.Builder\n\tfor i := 0; i < len(text); {\n\t\tif text[i] == 27 && i+1 < len(text) && text[i+1] == '[' {\n\t\t\tj := i + 2\n\t\t\tfor j < len(text) && ((text[j] >= '0' && text[j] <= '9') || text[j] == ';') {\n\t\t\t\tj++\n\t\t\t}\n\t\t\tif j == len(text) {\n\t\t\t\treturn \"\", fmt.Errorf(\"truncated SGR\")\n\t\t\t}\n\t\t\tif text[j] == 'm' {\n\t\t\t\ti = j + 1\n\t\t\t\tcontinue\n\t\t\t}\n\t\t}\n\t\tout.WriteByte(text[i])\n\t\ti++\n\t}\n\treturn out.String(), nil\n}\nfunc main() {\n\tclean, err := strip(\"A [tag] \\x1b[31m红色\\x1b[0m B\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(clean)\n\tother := \"\\x1b[2J\"\n\tpreserved, err := strip(other)\n\tfmt.Printf(\"other-preserved=%t\\n\", err == nil && preserved == other)\n\t_, err = strip(\"\\x1b[31\")\n\tfmt.Printf(\"truncated=%t\\n\", err != nil)\n}\n",
+    "output": "A [tag] 红色 B\nother-preserved=true\ntruncated=true"
+  },
+  "example": {
+    "id": "go-example-199",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "ANSI 控制序列清理",
+    "summary": "删除 SGR 颜色序列，保留普通方括号与中文，并拒绝截断的颜色控制。",
+    "concepts": [
+      "SGR",
+      "字节状态机",
+      "UTF-8 保留",
+      "截断错误"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc strip(text string) (string, error) {\n\tvar out strings.Builder\n\tfor i := 0; i < len(text); {\n\t\tif text[i] == 27 && i+1 < len(text) && text[i+1] == '[' {\n\t\t\tj := i + 2\n\t\t\tfor j < len(text) && ((text[j] >= '0' && text[j] <= '9') || text[j] == ';') {\n\t\t\t\tj++\n\t\t\t}\n\t\t\tif j == len(text) {\n\t\t\t\treturn \"\", fmt.Errorf(\"truncated SGR\")\n\t\t\t}\n\t\t\tif text[j] == 'm' {\n\t\t\t\ti = j + 1\n\t\t\t\tcontinue\n\t\t\t}\n\t\t}\n\t\tout.WriteByte(text[i])\n\t\ti++\n\t}\n\treturn out.String(), nil\n}\nfunc main() {\n\tclean, err := strip(\"A [tag] \\x1b[31m红色\\x1b[0m B\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(clean)\n\tother := \"\\x1b[2J\"\n\tpreserved, err := strip(other)\n\tfmt.Printf(\"other-preserved=%t\\n\", err == nil && preserved == other)\n\t_, err = strip(\"\\x1b[31\")\n\tfmt.Printf(\"truncated=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "A [tag] 红色 B\nother-preserved=true\ntruncated=true",
+    "templateType": "go"
+  }
+}

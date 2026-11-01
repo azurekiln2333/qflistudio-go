@@ -1,0 +1,67 @@
+{
+  "id": "T233",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "loads=1\nmatched=6\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-233",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "同键请求合并",
+    "summary": "能在自实现调用表中合并并发相同键请求，断言实际装载仅一次。",
+    "concepts": [
+      "sync",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能在自实现调用表中合并并发相同键请求，断言实际装载仅一次。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "必须在结果字段写好之后关闭完成通道，否则等待者可能读到零值。",
+      "装载 panic 或提前返回也要解除等待并清理表项，生产实现需完整异常收尾。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 Call 增加 Err，合并一次失败装载并让所有等待者看到同一错误。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "保存 value 和 err 后统一关闭 Done；等待者读两个字段，失败完成同样删除进行中表项。"
+      }
+    ],
+    "explain": "调用表用键关联进行中的装载。首个请求创建完成通道并执行 load，后续请求等同一通道关闭后读取结果；完成时删除表项，所以它合并重叠请求而不是永久缓存。测试用 joined 和 release 精确保证五个等待者已加入，再放行装载，避免靠 Sleep 猜测调度。通道关闭建立结果写入与等待者读取之间的同步关系。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\ntype Call struct {\n\tDone  chan struct{}\n\tValue string\n}\ntype Group struct {\n\tmu     sync.Mutex\n\tcalls  map[string]*Call\n\tjoined chan struct{}\n}\n\nfunc (g *Group) Do(key string, load func() string) string {\n\tg.mu.Lock()\n\tif existing := g.calls[key]; existing != nil {\n\t\tg.mu.Unlock()\n\t\tg.joined <- struct{}{}\n\t\t<-existing.Done\n\t\treturn existing.Value\n\t}\n\tcall := &Call{Done: make(chan struct{})}\n\tg.calls[key] = call\n\tg.mu.Unlock()\n\tcall.Value = load()\n\tg.mu.Lock()\n\tdelete(g.calls, key)\n\tclose(call.Done)\n\tg.mu.Unlock()\n\treturn call.Value\n}\nfunc main() {\n\tgroup := &Group{calls: map[string]*Call{}, joined: make(chan struct{}, 5)}\n\tstarted := make(chan struct{})\n\trelease := make(chan struct{})\n\tresults := make(chan string, 6)\n\tloads := 0\n\tfor i := 0; i < 6; i++ {\n\t\tgo func() {\n\t\t\tresults <- group.Do(\"catalog\", func() string { loads++; close(started); <-release; return \"ready\" })\n\t\t}()\n\t}\n\t<-started\n\tfor i := 0; i < 5; i++ {\n\t\t<-group.joined\n\t}\n\tclose(release)\n\tmatches := 0\n\tfor i := 0; i < 6; i++ {\n\t\tif <-results == \"ready\" {\n\t\t\tmatches++\n\t\t}\n\t}\n\tfmt.Printf(\"loads=%d\\nmatched=%d\\n\", loads, matches)\n}\n",
+    "output": "loads=1\nmatched=6"
+  },
+  "example": {
+    "id": "go-example-233",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "同键请求合并",
+    "summary": "能在自实现调用表中合并并发相同键请求，断言实际装载仅一次。",
+    "concepts": [
+      "sync",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\ntype Call struct {\n\tDone  chan struct{}\n\tValue string\n}\ntype Group struct {\n\tmu     sync.Mutex\n\tcalls  map[string]*Call\n\tjoined chan struct{}\n}\n\nfunc (g *Group) Do(key string, load func() string) string {\n\tg.mu.Lock()\n\tif existing := g.calls[key]; existing != nil {\n\t\tg.mu.Unlock()\n\t\tg.joined <- struct{}{}\n\t\t<-existing.Done\n\t\treturn existing.Value\n\t}\n\tcall := &Call{Done: make(chan struct{})}\n\tg.calls[key] = call\n\tg.mu.Unlock()\n\tcall.Value = load()\n\tg.mu.Lock()\n\tdelete(g.calls, key)\n\tclose(call.Done)\n\tg.mu.Unlock()\n\treturn call.Value\n}\nfunc main() {\n\tgroup := &Group{calls: map[string]*Call{}, joined: make(chan struct{}, 5)}\n\tstarted := make(chan struct{})\n\trelease := make(chan struct{})\n\tresults := make(chan string, 6)\n\tloads := 0\n\tfor i := 0; i < 6; i++ {\n\t\tgo func() {\n\t\t\tresults <- group.Do(\"catalog\", func() string { loads++; close(started); <-release; return \"ready\" })\n\t\t}()\n\t}\n\t<-started\n\tfor i := 0; i < 5; i++ {\n\t\t<-group.joined\n\t}\n\tclose(release)\n\tmatches := 0\n\tfor i := 0; i < 6; i++ {\n\t\tif <-results == \"ready\" {\n\t\t\tmatches++\n\t\t}\n\t}\n\tfmt.Printf(\"loads=%d\\nmatched=%d\\n\", loads, matches)\n}\n",
+    "expectedOutput": "loads=1\nmatched=6",
+    "templateType": "go"
+  }
+}

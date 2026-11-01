@@ -1,0 +1,71 @@
+{
+  "id": "T166",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "p50=30.0 p90=46.0 single=7.0\ninvalid=true\nnan-rejected=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-166",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "百分位插值",
+    "summary": "对延迟样本排序，用明确的线性插值定义计算 P50 与 P90，并验证单样本边界。",
+    "concepts": [
+      "sort.Float64s",
+      "线性插值",
+      "百分位定义",
+      "NaN 校验"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "对延迟样本排序，用明确的线性插值定义计算 P50 与 P90，并验证单样本边界。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "不同百分位定义可能给出不同 P90，不能只写一个指标名。",
+      "NaN 会破坏普通大小比较的排序前提，必须先校验。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加 P0 与 P100 的检查，证明它们分别等于最小值和最大值。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "对相同样本分别传 p=0 和 p=1，索引变为零与 n-1，插值两端重合，结果应是十和五十。"
+      }
+    ],
+    "explain": "本例采用位置 p*(n-1) 的百分位定义，向下和向上取整后在两个样本间线性插值。五个等间距样本的 P50 为三十，P90 位置为 3.6，因此结果为四十六。百分位有多种合法定义，报告中必须写清规则。程序拒绝空输入、越界 p、NaN 和无穷样本，并在副本上排序以保护调用方顺序。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n\t\"sort\"\n)\n\nfunc percentile(input []float64, p float64) (float64, error) {\n\tif len(input) == 0 || math.IsNaN(p) || p < 0 || p > 1 {\n\t\treturn 0, fmt.Errorf(\"invalid percentile\")\n\t}\n\tdata := append([]float64(nil), input...)\n\tfor _, v := range data {\n\t\tif math.IsNaN(v) || math.IsInf(v, 0) {\n\t\t\treturn 0, fmt.Errorf(\"nonfinite sample\")\n\t\t}\n\t}\n\tsort.Float64s(data)\n\tposition := p * float64(len(data)-1)\n\tlow := int(math.Floor(position))\n\thigh := int(math.Ceil(position))\n\treturn data[low] + (data[high]-data[low])*(position-float64(low)), nil\n}\nfunc main() {\n\tdata := []float64{50, 10, 40, 20, 30}\n\tp50, err := percentile(data, .5)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tp90, err := percentile(data, .9)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tsingle, err := percentile([]float64{7}, .9)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"p50=%.1f p90=%.1f single=%.1f\\n\", p50, p90, single)\n\t_, err = percentile(data, 1.1)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n\t_, err = percentile([]float64{math.NaN()}, .5)\n\tfmt.Printf(\"nan-rejected=%t\\n\", err != nil)\n}\n",
+    "output": "p50=30.0 p90=46.0 single=7.0\ninvalid=true\nnan-rejected=true"
+  },
+  "example": {
+    "id": "go-example-166",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "百分位插值",
+    "summary": "对延迟样本排序，用明确的线性插值定义计算 P50 与 P90，并验证单样本边界。",
+    "concepts": [
+      "sort.Float64s",
+      "线性插值",
+      "百分位定义",
+      "NaN 校验"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n\t\"sort\"\n)\n\nfunc percentile(input []float64, p float64) (float64, error) {\n\tif len(input) == 0 || math.IsNaN(p) || p < 0 || p > 1 {\n\t\treturn 0, fmt.Errorf(\"invalid percentile\")\n\t}\n\tdata := append([]float64(nil), input...)\n\tfor _, v := range data {\n\t\tif math.IsNaN(v) || math.IsInf(v, 0) {\n\t\t\treturn 0, fmt.Errorf(\"nonfinite sample\")\n\t\t}\n\t}\n\tsort.Float64s(data)\n\tposition := p * float64(len(data)-1)\n\tlow := int(math.Floor(position))\n\thigh := int(math.Ceil(position))\n\treturn data[low] + (data[high]-data[low])*(position-float64(low)), nil\n}\nfunc main() {\n\tdata := []float64{50, 10, 40, 20, 30}\n\tp50, err := percentile(data, .5)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tp90, err := percentile(data, .9)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tsingle, err := percentile([]float64{7}, .9)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"p50=%.1f p90=%.1f single=%.1f\\n\", p50, p90, single)\n\t_, err = percentile(data, 1.1)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n\t_, err = percentile([]float64{math.NaN()}, .5)\n\tfmt.Printf(\"nan-rejected=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "p50=30.0 p90=46.0 single=7.0\ninvalid=true\nnan-rejected=true",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "T177",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "before=2026-03-12T09:00:00Z\nafter=2026-03-13T09:00:00Z\nequal=2026-03-13T09:00:00Z\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-177",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "每日定点计划",
+    "summary": "从固定 now 求下一次每日执行时刻。处理当天未到、已过与恰好相等三种情况。",
+    "concepts": [
+      "time.Date",
+      "AddDate",
+      "严格未来时刻"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "从固定 now 求下一次每日执行时刻。处理当天未到、已过与恰好相等三种情况。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "恰好等于目标时刻是否立即执行必须有明确规则。",
+      "直接加二十四小时不能完整表达地区时区的每日钟面计划。"
+    ],
+    "exercises": [
+      {
+        "prompt": "改成允许恰好等于 now 的候选，保持其他场景结果不变。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "将 !candidate.After(now) 改为 candidate.Before(now)。新增相等场景断言。说明这是业务规则变化，而非格式调整。"
+      }
+    ],
+    "explain": "先在 now 的地点构造今天的目标钟面。若候选不严格晚于 now，就按日历增加一天。这里定义下一次必须在未来。恰好九点时不会立即重复执行今天的九点任务。使用 AddDate 保留日历计划语义。输入小时分钟分别验证范围。地区夏令时可能让部分钟面缺失或重复。实际调度器还需明确对应策略。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc next(now time.Time, hour, minute int) (time.Time, error) {\n\tif hour < 0 || hour > 23 || minute < 0 || minute > 59 {\n\t\treturn time.Time{}, fmt.Errorf(\"invalid daily clock\")\n\t}\n\tcandidate := time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, now.Location())\n\tif !candidate.After(now) {\n\t\tcandidate = candidate.AddDate(0, 0, 1)\n\t}\n\treturn candidate, nil\n}\nfunc main() {\n\tfor _, item := range []struct {\n\t\tLabel string\n\t\tHour  int\n\t}{{\"before\", 8}, {\"after\", 10}, {\"equal\", 9}} {\n\t\tnow := time.Date(2026, time.March, 12, item.Hour, 0, 0, 0, time.UTC)\n\t\tcandidate, err := next(now, 9, 0)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s=%s\\n\", item.Label, candidate.Format(time.RFC3339))\n\t}\n}\n",
+    "output": "before=2026-03-12T09:00:00Z\nafter=2026-03-13T09:00:00Z\nequal=2026-03-13T09:00:00Z"
+  },
+  "example": {
+    "id": "go-example-177",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "每日定点计划",
+    "summary": "从固定 now 求下一次每日执行时刻。处理当天未到、已过与恰好相等三种情况。",
+    "concepts": [
+      "time.Date",
+      "AddDate",
+      "严格未来时刻"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\nfunc next(now time.Time, hour, minute int) (time.Time, error) {\n\tif hour < 0 || hour > 23 || minute < 0 || minute > 59 {\n\t\treturn time.Time{}, fmt.Errorf(\"invalid daily clock\")\n\t}\n\tcandidate := time.Date(now.Year(), now.Month(), now.Day(), hour, minute, 0, 0, now.Location())\n\tif !candidate.After(now) {\n\t\tcandidate = candidate.AddDate(0, 0, 1)\n\t}\n\treturn candidate, nil\n}\nfunc main() {\n\tfor _, item := range []struct {\n\t\tLabel string\n\t\tHour  int\n\t}{{\"before\", 8}, {\"after\", 10}, {\"equal\", 9}} {\n\t\tnow := time.Date(2026, time.March, 12, item.Hour, 0, 0, 0, time.UTC)\n\t\tcandidate, err := next(now, 9, 0)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s=%s\\n\", item.Label, candidate.Format(time.RFC3339))\n\t}\n}\n",
+    "expectedOutput": "before=2026-03-12T09:00:00Z\nafter=2026-03-13T09:00:00Z\nequal=2026-03-13T09:00:00Z",
+    "templateType": "go"
+  }
+}

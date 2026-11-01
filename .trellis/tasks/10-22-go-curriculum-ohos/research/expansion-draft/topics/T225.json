@@ -1,0 +1,71 @@
+{
+  "id": "T225",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "status=206\nrange=bytes 1-3/6\nbody=bcd\ninvalid=416\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-225",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "字节范围响应",
+    "summary": "能用 ServeContent 响应一个单范围请求。检查 206、Content-Range 与载荷。",
+    "concepts": [
+      "net/http",
+      "net/http/httptest",
+      "strings",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能用 ServeContent 响应一个单范围请求。检查 206、Content-Range 与载荷。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "HTTP Range 的下标按字节计算，不能直接当作 Unicode 字符下标。",
+      "范围终点包含在结果中，与 Go 切片的半开区间不同。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加后缀范围 bytes=-2。检查返回最后两个字节。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "保持资源不变。发送后缀请求。期望状态 206、正文 ef、范围 bytes 4-5/6。"
+      }
+    ],
+    "explain": "ServeContent 从可寻址内容读取器实现范围请求。bytes=1-3 使用包含两端的零基字节下标，所以返回 bcd、206 状态和总长度为六的 Content-Range。第二个请求超出资源长度，得到 416。固定修改时间和内存内容避免时钟及外部文件变化影响结果，整个交互没有开启网络端口。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"strings\"\n\t\"time\"\n)\n\nfunc main() {\n\tr := httptest.NewRequest(\"GET\", \"/data.txt\", nil)\n\tr.Header.Set(\"Range\", \"bytes=1-3\")\n\tw := httptest.NewRecorder()\n\thttp.ServeContent(w, r, \"data.txt\", time.Unix(0, 0), strings.NewReader(\"abcdef\"))\n\tfmt.Printf(\"status=%d\\nrange=%s\\nbody=%s\\n\", w.Code, w.Header().Get(\"Content-Range\"), w.Body.String())\n\tr = httptest.NewRequest(\"GET\", \"/data.txt\", nil)\n\tr.Header.Set(\"Range\", \"bytes=99-100\")\n\tw = httptest.NewRecorder()\n\thttp.ServeContent(w, r, \"data.txt\", time.Unix(0, 0), strings.NewReader(\"abcdef\"))\n\tfmt.Printf(\"invalid=%d\\n\", w.Code)\n}\n",
+    "output": "status=206\nrange=bytes 1-3/6\nbody=bcd\ninvalid=416"
+  },
+  "example": {
+    "id": "go-example-225",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "字节范围响应",
+    "summary": "能用 ServeContent 响应一个单范围请求。检查 206、Content-Range 与载荷。",
+    "concepts": [
+      "net/http",
+      "net/http/httptest",
+      "strings",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"strings\"\n\t\"time\"\n)\n\nfunc main() {\n\tr := httptest.NewRequest(\"GET\", \"/data.txt\", nil)\n\tr.Header.Set(\"Range\", \"bytes=1-3\")\n\tw := httptest.NewRecorder()\n\thttp.ServeContent(w, r, \"data.txt\", time.Unix(0, 0), strings.NewReader(\"abcdef\"))\n\tfmt.Printf(\"status=%d\\nrange=%s\\nbody=%s\\n\", w.Code, w.Header().Get(\"Content-Range\"), w.Body.String())\n\tr = httptest.NewRequest(\"GET\", \"/data.txt\", nil)\n\tr.Header.Set(\"Range\", \"bytes=99-100\")\n\tw = httptest.NewRecorder()\n\thttp.ServeContent(w, r, \"data.txt\", time.Unix(0, 0), strings.NewReader(\"abcdef\"))\n\tfmt.Printf(\"invalid=%d\\n\", w.Code)\n}\n",
+    "expectedOutput": "status=206\nrange=bytes 1-3/6\nbody=bcd\ninvalid=416",
+    "templateType": "go"
+  }
+}

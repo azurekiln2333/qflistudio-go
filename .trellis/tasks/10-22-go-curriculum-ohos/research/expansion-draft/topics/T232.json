@@ -1,0 +1,69 @@
+{
+  "id": "T232",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "completed=6\npeak-bounded=true\nactive=0\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-232",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有界并发闸门",
+    "summary": "能用缓冲通道限制并发。验证所有任务完成且峰值不超过上限。",
+    "concepts": [
+      "sync",
+      "sync/atomic",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能用缓冲通道限制并发。验证所有任务完成且峰值不超过上限。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "只限制结果缓冲大小不会限制正在执行的工作数。",
+      "获取槽位之后的错误或 panic 路径也必须归还槽位，真实任务通常需要 defer。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把闸门封装成 runLimited 函数。用 defer 归还槽位。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "进入后立即登记 defer。再执行用户任务。WaitGroup.Done 也应由 worker 最外层 defer 执行。"
+      }
+    ],
+    "explain": "容量为二的通道作为并发闸门。拿到槽位后才进入受限区域。结束前归还槽位。原子计数跟踪当前数量、峰值和完成数，比较交换循环只在新值更大时更新峰值。调度可能让实际峰值是一或二，因此断言的是不超过上限而非虚构固定并发顺序。Wait 后 active 为零证明所有受限工作已退出。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"sync/atomic\"\n)\n\nfunc main() {\n\tgate := make(chan struct{}, 2)\n\tvar workers sync.WaitGroup\n\tvar active, peak, completed int32\n\tfor i := 0; i < 6; i++ {\n\t\tworkers.Add(1)\n\t\tgo func() {\n\t\t\tdefer workers.Done()\n\t\t\tgate <- struct{}{}\n\t\t\tcurrent := atomic.AddInt32(&active, 1)\n\t\t\tfor {\n\t\t\t\told := atomic.LoadInt32(&peak)\n\t\t\t\tif current <= old || atomic.CompareAndSwapInt32(&peak, old, current) {\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t\tatomic.AddInt32(&completed, 1)\n\t\t\tatomic.AddInt32(&active, -1)\n\t\t\t<-gate\n\t\t}()\n\t}\n\tworkers.Wait()\n\tfmt.Printf(\"completed=%d\\npeak-bounded=%t\\nactive=%d\\n\", completed, peak >= 1 && peak <= 2, active)\n}\n",
+    "output": "completed=6\npeak-bounded=true\nactive=0"
+  },
+  "example": {
+    "id": "go-example-232",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有界并发闸门",
+    "summary": "能用缓冲通道限制并发。验证所有任务完成且峰值不超过上限。",
+    "concepts": [
+      "sync",
+      "sync/atomic",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"sync/atomic\"\n)\n\nfunc main() {\n\tgate := make(chan struct{}, 2)\n\tvar workers sync.WaitGroup\n\tvar active, peak, completed int32\n\tfor i := 0; i < 6; i++ {\n\t\tworkers.Add(1)\n\t\tgo func() {\n\t\t\tdefer workers.Done()\n\t\t\tgate <- struct{}{}\n\t\t\tcurrent := atomic.AddInt32(&active, 1)\n\t\t\tfor {\n\t\t\t\told := atomic.LoadInt32(&peak)\n\t\t\t\tif current <= old || atomic.CompareAndSwapInt32(&peak, old, current) {\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t\tatomic.AddInt32(&completed, 1)\n\t\t\tatomic.AddInt32(&active, -1)\n\t\t\t<-gate\n\t\t}()\n\t}\n\tworkers.Wait()\n\tfmt.Printf(\"completed=%d\\npeak-bounded=%t\\nactive=%d\\n\", completed, peak >= 1 && peak <= 2, active)\n}\n",
+    "expectedOutput": "completed=6\npeak-bounded=true\nactive=0",
+    "templateType": "go"
+  }
+}

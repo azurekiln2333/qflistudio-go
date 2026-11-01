@@ -1,0 +1,69 @@
+{
+  "id": "T202",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "tag-bytes=32\nvalid=true\ntampered=false\nwrong-key=false\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-202",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "HMAC 消息认证",
+    "summary": "能为消息生成标签，验证正确消息并拒绝修改后的内容。",
+    "concepts": [
+      "crypto/hmac",
+      "crypto/sha256",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能为消息生成标签，验证正确消息并拒绝修改后的内容。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "直接计算 sha256(key+message) 不能替代标准 HMAC 构造。",
+      "认证通过不阻止旧消息被重放，业务协议还需要序号或唯一请求标识。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把账单序号加入消息并维护已处理序号集合。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "先校验完整消息的 HMAC，再检查序号是否已出现，成功处理后才登记序号。"
+      }
+    ],
+    "explain": "HMAC 把共享密钥与消息一起用于认证。发送方计算标签，接收方用相同密钥重新计算，并通过 hmac.Equal 比较。示例分别检验原始账单、改过金额的账单和错误密钥，只有第一种通过。标签不是加密，账单仍可被读取；示例密钥只用于演示，实际密钥应从受控存储取得并定期轮换。",
+    "code": "package main\n\nimport (\n\t\"crypto/hmac\"\n\t\"crypto/sha256\"\n\t\"fmt\"\n)\n\nfunc tag(key, message []byte) []byte {\n\tmac := hmac.New(sha256.New, key)\n\tmac.Write(message)\n\treturn mac.Sum(nil)\n}\nfunc verify(key, message, want []byte) bool { return hmac.Equal(tag(key, message), want) }\nfunc main() {\n\tkey := []byte(\"lesson-only-shared-key\")\n\tmessage := []byte(\"invoice:7:1250\")\n\tsignature := tag(key, message)\n\tfmt.Printf(\"tag-bytes=%d\\nvalid=%t\\ntampered=%t\\nwrong-key=%t\\n\", len(signature), verify(key, message, signature), verify(key, []byte(\"invoice:7:9250\"), signature), verify([]byte(\"other-key\"), message, signature))\n}\n",
+    "output": "tag-bytes=32\nvalid=true\ntampered=false\nwrong-key=false"
+  },
+  "example": {
+    "id": "go-example-202",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "HMAC 消息认证",
+    "summary": "能为消息生成标签，验证正确消息并拒绝修改后的内容。",
+    "concepts": [
+      "crypto/hmac",
+      "crypto/sha256",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"crypto/hmac\"\n\t\"crypto/sha256\"\n\t\"fmt\"\n)\n\nfunc tag(key, message []byte) []byte {\n\tmac := hmac.New(sha256.New, key)\n\tmac.Write(message)\n\treturn mac.Sum(nil)\n}\nfunc verify(key, message, want []byte) bool { return hmac.Equal(tag(key, message), want) }\nfunc main() {\n\tkey := []byte(\"lesson-only-shared-key\")\n\tmessage := []byte(\"invoice:7:1250\")\n\tsignature := tag(key, message)\n\tfmt.Printf(\"tag-bytes=%d\\nvalid=%t\\ntampered=%t\\nwrong-key=%t\\n\", len(signature), verify(key, message, signature), verify(key, []byte(\"invoice:7:9250\"), signature), verify([]byte(\"other-key\"), message, signature))\n}\n",
+    "expectedOutput": "tag-bytes=32\nvalid=true\ntampered=false\nwrong-key=false",
+    "templateType": "go"
+  }
+}

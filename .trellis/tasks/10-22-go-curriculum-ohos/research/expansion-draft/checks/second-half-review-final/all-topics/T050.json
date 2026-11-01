@@ -1,0 +1,72 @@
+{
+  "id": "T050",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "found a: 1 err: <nil>\nerrors.Is ErrNotFound: true\nwrapped text: lookup \"missing\": not found\nwrapped Is ErrNotFound: true\nstring compare is fragile: true"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-050",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "errors.New、fmt.Errorf 与哨兵错误",
+    "summary": "定义哨兵错误并用 errors.Is 判断身份，避免脆弱的字符串比较。",
+    "concepts": [
+      "哨兵错误",
+      "errors.New",
+      "fmt.Errorf",
+      "%w",
+      "errors.Is"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能定义哨兵错误、用 %w 包装，并用 errors.Is 沿链判断身份。",
+    "prerequisites": [
+      "T049 error 接口与错误即值"
+    ],
+    "pitfalls": [
+      "比较错误字符串判断类型：包装或措辞变化即失效。",
+      "用 %v 而非 %w 包装：丢失可被 errors.Is/As 识别的链。"
+    ],
+    "exercises": [
+      {
+        "prompt": "定义 ErrConflict 哨兵并用 %w 包装后，用 errors.Is 判断。",
+        "hint": "var ErrConflict = errors.New(\"conflict\")；包装用 %w。",
+        "answer": "errors.Is(fmt.Errorf(\"save: %w\", ErrConflict), ErrConflict) == true。"
+      }
+    ],
+    "explain": "哨兵错误（sentinel error）是包级导出的错误变量，调用方用 errors.Is 判断错误身份，而不比较错误字符串——字符串比较脆弱，包装后即失效。示例定义 ErrNotFound，返回它并用 fmt.Errorf 的 %w 包装；errors.Is 能穿过包装命中哨兵。对照用 %v 只做文本拼接、不构成可解包链，因此 errors.Is 失败。",
+    "code": "// T050 errors.New、fmt.Errorf 与哨兵错误。\n//\n// 哨兵错误（sentinel error）是包级导出的错误变量，调用方用 errors.Is\n// 判断错误身份，而不比较错误字符串——字符串比较脆弱，包装后即失效。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\n// ErrNotFound 是一个哨兵错误。\nvar ErrNotFound = errors.New(\"not found\")\n\n// lookup 在缺少键时返回哨兵错误（可能被外层包装）。\nfunc lookup(m map[string]int, key string) (int, error) {\n\tv, ok := m[key]\n\tif !ok {\n\t\treturn 0, ErrNotFound\n\t}\n\treturn v, nil\n}\n\n// withContext 在外层用 %w 包装，保留可被 errors.Is 识别的原始错误。\nfunc withContext(err error, key string) error {\n\treturn fmt.Errorf(\"lookup %q: %w\", key, err)\n}\n\nfunc main() {\n\tm := map[string]int{\"a\": 1}\n\n\tv, err := lookup(m, \"a\")\n\tfmt.Println(\"found a:\", v, \"err:\", err)\n\n\t_, err = lookup(m, \"missing\")\n\tfmt.Println(\"errors.Is ErrNotFound:\", errors.Is(err, ErrNotFound))\n\n\t// 包装后仍然可以用 errors.Is 命中哨兵。\n\twrapped := withContext(ErrNotFound, \"missing\")\n\tfmt.Println(\"wrapped text:\", wrapped)\n\tfmt.Println(\"wrapped Is ErrNotFound:\", errors.Is(wrapped, ErrNotFound))\n\n\t// 直接比较字符串是脆弱的，示例说明不要这样做。\n\tfmt.Println(\"string compare is fragile:\", errors.Is(err, ErrNotFound))\n}\n",
+    "output": "found a: 1 err: <nil>\nerrors.Is ErrNotFound: true\nwrapped text: lookup \"missing\": not found\nwrapped Is ErrNotFound: true\nstring compare is fragile: true"
+  },
+  "example": {
+    "id": "go-example-050",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "errors.New、fmt.Errorf 与哨兵错误（示例）",
+    "summary": "对应主题 T050 的可运行示例。",
+    "concepts": [
+      "哨兵错误",
+      "errors.New",
+      "fmt.Errorf",
+      "%w",
+      "errors.Is"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T050 errors.New、fmt.Errorf 与哨兵错误。\n//\n// 哨兵错误（sentinel error）是包级导出的错误变量，调用方用 errors.Is\n// 判断错误身份，而不比较错误字符串——字符串比较脆弱，包装后即失效。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\n// ErrNotFound 是一个哨兵错误。\nvar ErrNotFound = errors.New(\"not found\")\n\n// lookup 在缺少键时返回哨兵错误（可能被外层包装）。\nfunc lookup(m map[string]int, key string) (int, error) {\n\tv, ok := m[key]\n\tif !ok {\n\t\treturn 0, ErrNotFound\n\t}\n\treturn v, nil\n}\n\n// withContext 在外层用 %w 包装，保留可被 errors.Is 识别的原始错误。\nfunc withContext(err error, key string) error {\n\treturn fmt.Errorf(\"lookup %q: %w\", key, err)\n}\n\nfunc main() {\n\tm := map[string]int{\"a\": 1}\n\n\tv, err := lookup(m, \"a\")\n\tfmt.Println(\"found a:\", v, \"err:\", err)\n\n\t_, err = lookup(m, \"missing\")\n\tfmt.Println(\"errors.Is ErrNotFound:\", errors.Is(err, ErrNotFound))\n\n\t// 包装后仍然可以用 errors.Is 命中哨兵。\n\twrapped := withContext(ErrNotFound, \"missing\")\n\tfmt.Println(\"wrapped text:\", wrapped)\n\tfmt.Println(\"wrapped Is ErrNotFound:\", errors.Is(wrapped, ErrNotFound))\n\n\t// 直接比较字符串是脆弱的，示例说明不要这样做。\n\tfmt.Println(\"string compare is fragile:\", errors.Is(err, ErrNotFound))\n}\n",
+    "expectedOutput": "found a: 1 err: <nil>\nerrors.Is ErrNotFound: true\nwrapped text: lookup \"missing\": not found\nwrapped Is ErrNotFound: true\nstring compare is fragile: true",
+    "templateType": "go"
+  }
+}

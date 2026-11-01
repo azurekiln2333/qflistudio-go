@@ -1,0 +1,263 @@
+[
+  {
+    "name": "go-parser",
+    "url": "https://pkg.go.dev/go/parser",
+    "status": 200,
+    "length": 63663,
+    "sha256": "30fe752073fb1a910a473ad1133049fa09a133c6fcb654382c3181b33f342c20",
+    "rawSnapshotRetained": false,
+    "note": "fetched 2026-10-22 by go-tools research pane; matches earlier digest 30fe75.. (parent recorded c66753.. for a different fetch)"
+  },
+  {
+    "name": "go-format",
+    "url": "https://pkg.go.dev/go/format",
+    "status": 200,
+    "length": 54602,
+    "sha256": "d94a764a37db7678e4f00c64ca11e53d9bbd8e282697e8d00101478df47f972d",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "go-ast",
+    "url": "https://pkg.go.dev/go/ast",
+    "status": 200,
+    "length": 354962,
+    "sha256": "e6da06b05a246d24f02069f97910081548b26ba1db54ebbc4730a3211e34125d",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "go-token",
+    "url": "https://pkg.go.dev/go/token",
+    "status": 200,
+    "length": 123485,
+    "sha256": "not-recorded",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "go-types",
+    "url": "https://pkg.go.dev/go/types",
+    "status": 200,
+    "length": 532888,
+    "sha256": "not-recorded",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "go-importer",
+    "url": "https://pkg.go.dev/go/importer",
+    "status": 200,
+    "length": 55208,
+    "sha256": "84b6a14b9c53a43586184911f5d691a48af2f8fb8e0c4b22da9e5f0e5c4f7f2f",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "go-printer",
+    "url": "https://pkg.go.dev/go/printer",
+    "status": 200,
+    "length": 59910,
+    "sha256": "not-recorded",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "go-doc",
+    "url": "https://pkg.go.dev/go/doc",
+    "status": 200,
+    "length": 94736,
+    "sha256": "not-recorded",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "go-build",
+    "url": "https://pkg.go.dev/go/build",
+    "status": 200,
+    "length": 98496,
+    "sha256": "not-recorded",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "cmd-gofmt",
+    "url": "https://pkg.go.dev/cmd/gofmt",
+    "status": 200,
+    "length": 51939,
+    "sha256": "not-recorded",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "cmd-vet",
+    "url": "https://pkg.go.dev/cmd/vet",
+    "status": 200,
+    "length": 50263,
+    "sha256": "not-recorded",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "cmd-doc",
+    "url": "https://pkg.go.dev/cmd/doc",
+    "status": 200,
+    "length": 47478,
+    "sha256": "263bf4e79333e34ade2e68b694556d8bc10f47a99c8441e78aa39a1f7374be9e",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "cmd-test2json",
+    "url": "https://pkg.go.dev/cmd/test2json",
+    "status": 200,
+    "length": 51734,
+    "sha256": "d8de2cd95b878fa5709c2652d3c86caa496ab19afc86dc5711798c1cdbce2888",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "go-ref-mod",
+    "url": "https://go.dev/ref/mod",
+    "status": 200,
+    "length": 284942,
+    "sha256": "c17d99f56d7f55b4104dc9d1bb4ea1002e471df8cf59cf691f333e2cb702d525",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "net",
+    "url": "https://pkg.go.dev/net",
+    "status": 200,
+    "length": 510662,
+    "sha256": "8bafdfa8f5cfea4928789613364b636f4dce19422b07346bd6b632272abaf7bf",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "yaegi-interp",
+    "url": "https://pkg.go.dev/github.com/traefik/yaegi/interp",
+    "status": 200,
+    "length": 147607,
+    "sha256": "not-recorded",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "vscode-debugging-md",
+    "url": "https://code.visualstudio.com/docs/debugtest/debugging.md",
+    "status": 200,
+    "length": 11367,
+    "sha256": "3502752d0a3b1f9668bcb48a72a18edfda21612691bbd88c68b56280beef3503",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "vscode-tasks-md",
+    "url": "https://code.visualstudio.com/docs/debugtest/tasks.md",
+    "status": 200,
+    "length": 49562,
+    "sha256": "bba079605092ecbd4433413ffb55faa774fa624b504759d568cef47e28f3dc40",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "vscode-codebasics-md",
+    "url": "https://code.visualstudio.com/docs/editing/codebasics.md",
+    "status": 200,
+    "length": 36553,
+    "sha256": "dfc56281c24c86d939ceaa06c93352642cb2728efc89e7d0374dc2e51d33ade1",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "vscode-multiroot-md",
+    "url": "https://code.visualstudio.com/docs/editing/workspaces/multi-root-workspaces.md",
+    "status": 200,
+    "length": 17157,
+    "sha256": "b3473713e61094efdbb8d2a7fd1a74559fe8cfb06ca0592f599d44f6592b6f93",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "vscode-ssh-md",
+    "url": "https://code.visualstudio.com/docs/remote/ssh.md",
+    "status": 200,
+    "length": 27664,
+    "sha256": "e0135ea91d36351f64d02cdba2ec9c954ad34d9a3ef6f8ebed73510ba73f074d",
+    "rawSnapshotRetained": false,
+    "note": "Ports view semantics (bottom panel, Add Port, restore forwarded ports)"
+  },
+  {
+    "name": "vscode-containers-md",
+    "url": "https://code.visualstudio.com/docs/devcontainers/containers.md",
+    "status": 200,
+    "length": 51799,
+    "sha256": "453283fcbfae99bf2a4b834210a7c5e3b75183a811b6cac6b2bde74a9f868947",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "vscode-terminal-md",
+    "url": "https://code.visualstudio.com/docs/terminal/basics.md",
+    "status": 200,
+    "length": 27546,
+    "sha256": "cf921dec86b4bbf0b2c417d8b4e19464a05135e7419947e76341f704cdb6893d",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "vscode-editingevolved-md",
+    "url": "https://code.visualstudio.com/docs/editing/editingevolved.md",
+    "status": 200,
+    "length": 14632,
+    "sha256": "8353076a53c59f447c44ac7b44a9690a8e6f3f033ea661ce45b826d2a5a9cf29",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "vscode-languages-go-md",
+    "url": "https://code.visualstudio.com/docs/languages/go.md",
+    "status": 200,
+    "length": 9493,
+    "sha256": "82b4a7506e314b79710cd4fb8c5e56ae5c2f6b40decfa3ae0b961959e1707f05",
+    "rawSnapshotRetained": false,
+    "note": "Problems panel, gopls diagnostics, gofmt formatting, Go tools/debug setup context"
+  },
+  {
+    "name": "vscode-userinterface-html",
+    "url": "https://code.visualstudio.com/docs/getstarted/userinterface",
+    "status": 200,
+    "length": 238647,
+    "sha256": "not-recorded",
+    "rawSnapshotRetained": false,
+    "note": "Panel definition: by default contains output, debug information, errors and warnings, and an integrated terminal"
+  },
+  {
+    "name": "jetbrains-goland-code-inspection",
+    "url": "https://www.jetbrains.com/help/go/code-inspection.html",
+    "status": 200,
+    "length": 25378,
+    "sha256": "118dff0767c135a2dd0da556a0693cca3abd871393b7b2855e3b4ecb86c4f36f",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "clion-code-inspection",
+    "url": "https://www.jetbrains.com/help/clion/code-inspection.html",
+    "status": 200,
+    "length": 13037,
+    "sha256": "fa37879fb0fc70392e7417a8119c6b56517e1822afe7c27a83fbc69620128057",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "jetbrains-goland-features",
+    "url": "https://www.jetbrains.com/go/features/",
+    "status": 200,
+    "length": 57306,
+    "sha256": "c40ecb3086d5bc7e988f3217d2937f4700155d5ab71ede39ee36d0ade6748af2",
+    "rawSnapshotRetained": false,
+    "note": "Code -> Go Tools menu; formatter equal to go fmt; debugger watches/evaluate"
+  },
+  {
+    "name": "ohos-hdc",
+    "url": "https://gitee.com/openharmony/docs/raw/master/en/application-dev/dfx/hdc.md",
+    "status": 200,
+    "length": 98367,
+    "sha256": "d2a86767b211ee8cebb239b21e9d2f6a75d133dff78ccd9ce32cf398d2b98d0e",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "flutter-ohos-readme",
+    "url": "https://raw.gitcode.com/openharmony-sig/flutter_flutter/raw/master/README.md",
+    "status": 200,
+    "length": 10789,
+    "sha256": "4edc0dd9d648d350bf207d9f77a95bede4360413fe2cb1c3346c78634b532089",
+    "rawSnapshotRetained": false
+  },
+  {
+    "name": "flutter-ohos-samples-docs-index",
+    "url": "https://raw.gitcode.com/openharmony-tpc/flutter_samples/raw/master/ohos/docs/README.md",
+    "status": 200,
+    "length": 2241,
+    "sha256": "not-recorded",
+    "rawSnapshotRetained": false
+  }
+]

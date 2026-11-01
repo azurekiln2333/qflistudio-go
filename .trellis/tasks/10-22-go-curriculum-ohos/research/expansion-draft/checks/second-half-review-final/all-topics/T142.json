@@ -1,0 +1,71 @@
+{
+  "id": "T142",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "recent=[b c d]\nisolated=true\nexport=\"c\\nd\\ne\"\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-142",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "固定容量环形日志",
+    "summary": "只保存最后三条记录，覆盖最旧项，按时间顺序导出独立快照。",
+    "concepts": [
+      "环形槽",
+      "覆盖策略",
+      "快照隔离",
+      "bytes.Buffer"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "只保存最后三条记录，覆盖最旧项，按时间顺序导出独立快照。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "直接返回内部切片会让调用者修改日志内容。",
+      "环形存储顺序不是时间顺序，导出时必须从最旧槽位开始。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加每条记录最多十六字节的限制，拒绝超限写入且不推进 next。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "在修改任何槽位之前检查 len(record)，失败直接返回错误；对中文这是字节限制，应在接口说明中明确。"
+      }
+    ],
+    "explain": "next 指向下一次写入位置，count 最大增长到容量，快照起点由 next-count 回绕得到。写入四条后 a 被覆盖，随后写入 e 又覆盖 b。Snapshot 返回新的切片，修改它不会污染日志内部槽位；bytes.Buffer 负责按顺序生成导出文本。固定容量约束的是记录条数，单条记录仍需另设字节预算。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n)\n\ntype Ring struct {\n\tslots []string\n\tnext  int\n\tcount int\n}\n\nfunc newRing(capacity int) *Ring {\n\tif capacity <= 0 {\n\t\tpanic(\"capacity must be positive\")\n\t}\n\treturn &Ring{slots: make([]string, capacity)}\n}\nfunc (r *Ring) Add(record string) {\n\tr.slots[r.next] = record\n\tr.next = (r.next + 1) % len(r.slots)\n\tif r.count < len(r.slots) {\n\t\tr.count++\n\t}\n}\nfunc (r *Ring) Snapshot() []string {\n\tresult := make([]string, r.count)\n\tstart := (r.next - r.count + len(r.slots)) % len(r.slots)\n\tfor i := range result {\n\t\tresult[i] = r.slots[(start+i)%len(r.slots)]\n\t}\n\treturn result\n}\nfunc (r *Ring) Text() string {\n\tvar out bytes.Buffer\n\tfor i, record := range r.Snapshot() {\n\t\tif i > 0 {\n\t\t\tout.WriteByte('\\n')\n\t\t}\n\t\tout.WriteString(record)\n\t}\n\treturn out.String()\n}\nfunc main() {\n\tring := newRing(3)\n\tfor _, record := range []string{\"a\", \"b\", \"c\", \"d\"} {\n\t\tring.Add(record)\n\t}\n\tfmt.Printf(\"recent=%v\\n\", ring.Snapshot())\n\tsnapshot := ring.Snapshot()\n\tsnapshot[0] = \"changed\"\n\tfmt.Printf(\"isolated=%t\\n\", ring.Snapshot()[0] == \"b\")\n\tring.Add(\"e\")\n\tfmt.Printf(\"export=%q\\n\", ring.Text())\n}\n",
+    "output": "recent=[b c d]\nisolated=true\nexport=\"c\\nd\\ne\""
+  },
+  "example": {
+    "id": "go-example-142",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "固定容量环形日志",
+    "summary": "只保存最后三条记录，覆盖最旧项，按时间顺序导出独立快照。",
+    "concepts": [
+      "环形槽",
+      "覆盖策略",
+      "快照隔离",
+      "bytes.Buffer"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n)\n\ntype Ring struct {\n\tslots []string\n\tnext  int\n\tcount int\n}\n\nfunc newRing(capacity int) *Ring {\n\tif capacity <= 0 {\n\t\tpanic(\"capacity must be positive\")\n\t}\n\treturn &Ring{slots: make([]string, capacity)}\n}\nfunc (r *Ring) Add(record string) {\n\tr.slots[r.next] = record\n\tr.next = (r.next + 1) % len(r.slots)\n\tif r.count < len(r.slots) {\n\t\tr.count++\n\t}\n}\nfunc (r *Ring) Snapshot() []string {\n\tresult := make([]string, r.count)\n\tstart := (r.next - r.count + len(r.slots)) % len(r.slots)\n\tfor i := range result {\n\t\tresult[i] = r.slots[(start+i)%len(r.slots)]\n\t}\n\treturn result\n}\nfunc (r *Ring) Text() string {\n\tvar out bytes.Buffer\n\tfor i, record := range r.Snapshot() {\n\t\tif i > 0 {\n\t\t\tout.WriteByte('\\n')\n\t\t}\n\t\tout.WriteString(record)\n\t}\n\treturn out.String()\n}\nfunc main() {\n\tring := newRing(3)\n\tfor _, record := range []string{\"a\", \"b\", \"c\", \"d\"} {\n\t\tring.Add(record)\n\t}\n\tfmt.Printf(\"recent=%v\\n\", ring.Snapshot())\n\tsnapshot := ring.Snapshot()\n\tsnapshot[0] = \"changed\"\n\tfmt.Printf(\"isolated=%t\\n\", ring.Snapshot()[0] == \"b\")\n\tring.Add(\"e\")\n\tfmt.Printf(\"export=%q\\n\", ring.Text())\n}\n",
+    "expectedOutput": "recent=[b c d]\nisolated=true\nexport=\"c\\nd\\ne\"",
+    "templateType": "go"
+  }
+}

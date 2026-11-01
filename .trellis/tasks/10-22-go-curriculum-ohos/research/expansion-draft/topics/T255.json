@@ -1,0 +1,71 @@
+{
+  "id": "T255",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "1.9.0\n2.0.0-alpha.1\n2.0.0-rc.2\n2.0.0-rc.10\n2.0.0\ninvalid=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-255",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "语义版本排序",
+    "summary": "能比较主次补丁与预发布标识，稳定排序并拒绝坏版本。",
+    "concepts": [
+      "strconv",
+      "strings",
+      "sort",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能比较主次补丁与预发布标识，稳定排序并拒绝坏版本。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "按整个字符串排序会把 10 排在 2 前面，无法表达版本优先级。",
+      "构建元数据不参与语义版本优先级。若扩展支持加号后缀，比较时应剔除。"
+    ],
+    "exercises": [
+      {
+        "prompt": "支持 +build.7 后缀，但让它不影响已有版本排序。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "先分离并校验构建标识。保留 Raw 用于展示。只把核心与预发布字段交给 less。"
+      }
+    ],
+    "explain": "版本比较先按三段整数。再比较预发布标识。正式版优先级高于相同核心版本的预发布。预发布里的数字按数值比较。因此 rc.2 早于 rc.10。数字标识排在文字标识之前。解析拒绝空段、数字前导零和坏字符。本例范围不含构建元数据。数字必须能表示为本机 int。稳定排序让相同优先级保留输入顺序。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\ntype Version struct {\n\tRaw   string\n\tParts [3]int\n\tPre   []string\n}\n\nfunc number(text string) (int, error) {\n\tif text == \"\" || len(text) > 1 && text[0] == '0' {\n\t\treturn 0, fmt.Errorf(\"bad number\")\n\t}\n\tfor _, c := range text {\n\t\tif c < '0' || c > '9' {\n\t\t\treturn 0, fmt.Errorf(\"bad digit\")\n\t\t}\n\t}\n\treturn strconv.Atoi(text)\n}\nfunc parse(text string) (Version, error) {\n\tv := Version{Raw: text}\n\tparts := strings.SplitN(text, \"-\", 2)\n\tcore := strings.Split(parts[0], \".\")\n\tif len(core) != 3 {\n\t\treturn v, fmt.Errorf(\"need three parts\")\n\t}\n\tfor i, part := range core {\n\t\tn, err := number(part)\n\t\tif err != nil {\n\t\t\treturn v, err\n\t\t}\n\t\tv.Parts[i] = n\n\t}\n\tif len(parts) == 2 {\n\t\tv.Pre = strings.Split(parts[1], \".\")\n\t\tfor _, id := range v.Pre {\n\t\t\tif id == \"\" {\n\t\t\t\treturn v, fmt.Errorf(\"empty prerelease\")\n\t\t\t}\n\t\t\tnumeric := true\n\t\t\tfor _, c := range id {\n\t\t\t\tif !(c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '-') {\n\t\t\t\t\treturn v, fmt.Errorf(\"bad prerelease\")\n\t\t\t\t}\n\t\t\t\tif c < '0' || c > '9' {\n\t\t\t\t\tnumeric = false\n\t\t\t\t}\n\t\t\t}\n\t\t\tif numeric {\n\t\t\t\tif _, err := number(id); err != nil {\n\t\t\t\t\treturn v, err\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\treturn v, nil\n}\nfunc less(a, b Version) bool {\n\tfor i := 0; i < 3; i++ {\n\t\tif a.Parts[i] != b.Parts[i] {\n\t\t\treturn a.Parts[i] < b.Parts[i]\n\t\t}\n\t}\n\tif len(a.Pre) == 0 {\n\t\treturn false\n\t}\n\tif len(b.Pre) == 0 {\n\t\treturn true\n\t}\n\tfor i := 0; i < len(a.Pre) && i < len(b.Pre); i++ {\n\t\tx, y := a.Pre[i], b.Pre[i]\n\t\tif x == y {\n\t\t\tcontinue\n\t\t}\n\t\tnx, ex := strconv.Atoi(x)\n\t\tny, ey := strconv.Atoi(y)\n\t\tif ex == nil && ey == nil {\n\t\t\treturn nx < ny\n\t\t}\n\t\tif ex == nil {\n\t\t\treturn true\n\t\t}\n\t\tif ey == nil {\n\t\t\treturn false\n\t\t}\n\t\treturn x < y\n\t}\n\treturn len(a.Pre) < len(b.Pre)\n}\nfunc main() {\n\tversions := []Version{}\n\tfor _, text := range []string{\"2.0.0\", \"2.0.0-rc.10\", \"1.9.0\", \"2.0.0-alpha.1\", \"2.0.0-rc.2\"} {\n\t\tv, err := parse(text)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tversions = append(versions, v)\n\t}\n\tsort.SliceStable(versions, func(i, j int) bool { return less(versions[i], versions[j]) })\n\tfor _, v := range versions {\n\t\tfmt.Println(v.Raw)\n\t}\n\t_, err := parse(\"1.02.0\")\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+    "output": "1.9.0\n2.0.0-alpha.1\n2.0.0-rc.2\n2.0.0-rc.10\n2.0.0\ninvalid=true"
+  },
+  "example": {
+    "id": "go-example-255",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "语义版本排序",
+    "summary": "能比较主次补丁与预发布标识，稳定排序并拒绝坏版本。",
+    "concepts": [
+      "strconv",
+      "strings",
+      "sort",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\ntype Version struct {\n\tRaw   string\n\tParts [3]int\n\tPre   []string\n}\n\nfunc number(text string) (int, error) {\n\tif text == \"\" || len(text) > 1 && text[0] == '0' {\n\t\treturn 0, fmt.Errorf(\"bad number\")\n\t}\n\tfor _, c := range text {\n\t\tif c < '0' || c > '9' {\n\t\t\treturn 0, fmt.Errorf(\"bad digit\")\n\t\t}\n\t}\n\treturn strconv.Atoi(text)\n}\nfunc parse(text string) (Version, error) {\n\tv := Version{Raw: text}\n\tparts := strings.SplitN(text, \"-\", 2)\n\tcore := strings.Split(parts[0], \".\")\n\tif len(core) != 3 {\n\t\treturn v, fmt.Errorf(\"need three parts\")\n\t}\n\tfor i, part := range core {\n\t\tn, err := number(part)\n\t\tif err != nil {\n\t\t\treturn v, err\n\t\t}\n\t\tv.Parts[i] = n\n\t}\n\tif len(parts) == 2 {\n\t\tv.Pre = strings.Split(parts[1], \".\")\n\t\tfor _, id := range v.Pre {\n\t\t\tif id == \"\" {\n\t\t\t\treturn v, fmt.Errorf(\"empty prerelease\")\n\t\t\t}\n\t\t\tnumeric := true\n\t\t\tfor _, c := range id {\n\t\t\t\tif !(c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '-') {\n\t\t\t\t\treturn v, fmt.Errorf(\"bad prerelease\")\n\t\t\t\t}\n\t\t\t\tif c < '0' || c > '9' {\n\t\t\t\t\tnumeric = false\n\t\t\t\t}\n\t\t\t}\n\t\t\tif numeric {\n\t\t\t\tif _, err := number(id); err != nil {\n\t\t\t\t\treturn v, err\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\treturn v, nil\n}\nfunc less(a, b Version) bool {\n\tfor i := 0; i < 3; i++ {\n\t\tif a.Parts[i] != b.Parts[i] {\n\t\t\treturn a.Parts[i] < b.Parts[i]\n\t\t}\n\t}\n\tif len(a.Pre) == 0 {\n\t\treturn false\n\t}\n\tif len(b.Pre) == 0 {\n\t\treturn true\n\t}\n\tfor i := 0; i < len(a.Pre) && i < len(b.Pre); i++ {\n\t\tx, y := a.Pre[i], b.Pre[i]\n\t\tif x == y {\n\t\t\tcontinue\n\t\t}\n\t\tnx, ex := strconv.Atoi(x)\n\t\tny, ey := strconv.Atoi(y)\n\t\tif ex == nil && ey == nil {\n\t\t\treturn nx < ny\n\t\t}\n\t\tif ex == nil {\n\t\t\treturn true\n\t\t}\n\t\tif ey == nil {\n\t\t\treturn false\n\t\t}\n\t\treturn x < y\n\t}\n\treturn len(a.Pre) < len(b.Pre)\n}\nfunc main() {\n\tversions := []Version{}\n\tfor _, text := range []string{\"2.0.0\", \"2.0.0-rc.10\", \"1.9.0\", \"2.0.0-alpha.1\", \"2.0.0-rc.2\"} {\n\t\tv, err := parse(text)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tversions = append(versions, v)\n\t}\n\tsort.SliceStable(versions, func(i, j int) bool { return less(versions[i], versions[j]) })\n\tfor _, v := range versions {\n\t\tfmt.Println(v.Raw)\n\t}\n\t_, err := parse(\"1.02.0\")\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "1.9.0\n2.0.0-alpha.1\n2.0.0-rc.2\n2.0.0-rc.10\n2.0.0\ninvalid=true",
+    "templateType": "go"
+  }
+}

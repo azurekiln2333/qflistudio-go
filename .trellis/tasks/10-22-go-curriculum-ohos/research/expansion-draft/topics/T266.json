@@ -1,0 +1,69 @@
+{
+  "id": "T266",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "frames=[cat go]\npending=0\noversize=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-266",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "分片帧解包器",
+    "summary": "能把随机切分的长度帧喂给解包器。它能缓存半帧。也能输出多帧。",
+    "concepts": [
+      "encoding/binary",
+      "bytes",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能把随机切分的长度帧喂给解包器。它能缓存半帧。也能输出多帧。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "每次 Feed 只处理一帧会漏掉同一分片中并排的多帧。",
+      "只限制单帧长度还不够。公共接口应限制单次 chunk。也要限制总待处理字节量。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加 Finish 方法，在流结束时拒绝非空 Pending。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "Pending 非空时返回截断错误。Pending 为空时成功。不要默默丢弃半个帧头。"
+      }
+    ],
+    "explain": "网络读取边界不等于消息边界。Unpacker 保存上次未完成的头或载荷。够两字节才能读取长度。够整帧才消费。然后继续检查同一块里的后续帧。固定分片刻意切开头部与正文。最终仍得到 cat 和 go。发现超预算帧后状态永久失败。调用方不能忽略错误。也不能沿不可信边界继续解包。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/binary\"\n\t\"fmt\"\n)\n\ntype Unpacker struct {\n\tPending []byte\n\tFailed  bool\n}\n\nfunc (u *Unpacker) Feed(chunk []byte) ([]string, error) {\n\tif u.Failed {\n\t\treturn nil, fmt.Errorf(\"failed state\")\n\t}\n\tu.Pending = append(u.Pending, chunk...)\n\tframes := []string{}\n\tfor len(u.Pending) >= 2 {\n\t\tn := int(binary.BigEndian.Uint16(u.Pending[:2]))\n\t\tif n > 32 {\n\t\t\tu.Failed = true\n\t\t\treturn nil, fmt.Errorf(\"frame budget\")\n\t\t}\n\t\tif len(u.Pending) < 2+n {\n\t\t\tbreak\n\t\t}\n\t\tframes = append(frames, string(u.Pending[2:2+n]))\n\t\tu.Pending = u.Pending[2+n:]\n\t}\n\treturn frames, nil\n}\nfunc main() {\n\tvar wire bytes.Buffer\n\tfor _, text := range []string{\"cat\", \"go\"} {\n\t\tvar header [2]byte\n\t\tbinary.BigEndian.PutUint16(header[:], uint16(len(text)))\n\t\twire.Write(header[:])\n\t\twire.WriteString(text)\n\t}\n\tall := wire.Bytes()\n\tu := &Unpacker{}\n\tresult := []string{}\n\tfor _, part := range [][]byte{all[:1], all[1:4], all[4:6], all[6:]} {\n\t\tframes, err := u.Feed(part)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tresult = append(result, frames...)\n\t}\n\tfmt.Printf(\"frames=%v\\npending=%d\\n\", result, len(u.Pending))\n\t_, err := u.Feed([]byte{0, 33})\n\tfmt.Printf(\"oversize=%t\\n\", err != nil)\n}\n",
+    "output": "frames=[cat go]\npending=0\noversize=true"
+  },
+  "example": {
+    "id": "go-example-266",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "分片帧解包器",
+    "summary": "能把随机切分的长度帧喂给解包器。它能缓存半帧。也能输出多帧。",
+    "concepts": [
+      "encoding/binary",
+      "bytes",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/binary\"\n\t\"fmt\"\n)\n\ntype Unpacker struct {\n\tPending []byte\n\tFailed  bool\n}\n\nfunc (u *Unpacker) Feed(chunk []byte) ([]string, error) {\n\tif u.Failed {\n\t\treturn nil, fmt.Errorf(\"failed state\")\n\t}\n\tu.Pending = append(u.Pending, chunk...)\n\tframes := []string{}\n\tfor len(u.Pending) >= 2 {\n\t\tn := int(binary.BigEndian.Uint16(u.Pending[:2]))\n\t\tif n > 32 {\n\t\t\tu.Failed = true\n\t\t\treturn nil, fmt.Errorf(\"frame budget\")\n\t\t}\n\t\tif len(u.Pending) < 2+n {\n\t\t\tbreak\n\t\t}\n\t\tframes = append(frames, string(u.Pending[2:2+n]))\n\t\tu.Pending = u.Pending[2+n:]\n\t}\n\treturn frames, nil\n}\nfunc main() {\n\tvar wire bytes.Buffer\n\tfor _, text := range []string{\"cat\", \"go\"} {\n\t\tvar header [2]byte\n\t\tbinary.BigEndian.PutUint16(header[:], uint16(len(text)))\n\t\twire.Write(header[:])\n\t\twire.WriteString(text)\n\t}\n\tall := wire.Bytes()\n\tu := &Unpacker{}\n\tresult := []string{}\n\tfor _, part := range [][]byte{all[:1], all[1:4], all[4:6], all[6:]} {\n\t\tframes, err := u.Feed(part)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tresult = append(result, frames...)\n\t}\n\tfmt.Printf(\"frames=%v\\npending=%d\\n\", result, len(u.Pending))\n\t_, err := u.Feed([]byte{0, 33})\n\tfmt.Printf(\"oversize=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "frames=[cat go]\npending=0\noversize=true",
+    "templateType": "go"
+  }
+}

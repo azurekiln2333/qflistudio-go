@@ -1,0 +1,487 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "go-tutorial-271",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "账本对账器",
+      "summary": "能按交易 ID 对比两份账本，输出缺失、重复与金额不一致记录。",
+      "concepts": [
+        "encoding/csv",
+        "sort",
+        "综合离线应用"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-271-lesson",
+          "title": "账本对账器",
+          "summary": "能按交易 ID 对比两份账本，输出缺失、重复与金额不一致记录。",
+          "concepts": [
+            "encoding/csv",
+            "sort",
+            "综合离线应用"
+          ],
+          "explain": "对账不是比较文件总金额，而是按交易 ID 对应逐笔记录。加载时先保留第一笔并记录重复 ID，比较时取两边键集合的并集，按 ID 排序报告金额不符、重复和缺失。金额统一用整数分，避免浮点格式差异掩盖实际金额问题。示例刻意让重复记录金额相同，证明仅看汇总仍会漏掉结构错误。",
+          "code": "package main\n\nimport (\n\t\"encoding/csv\"\n\t\"fmt\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc ledger(text string) (map[string]int, map[string]bool) {\n\trows, err := csv.NewReader(strings.NewReader(text)).ReadAll()\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvalues := map[string]int{}\n\tduplicates := map[string]bool{}\n\tfor _, row := range rows[1:] {\n\t\tif len(row) != 2 {\n\t\t\tpanic(\"bad columns\")\n\t\t}\n\t\tamount, err := strconv.Atoi(row[1])\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif _, exists := values[row[0]]; exists {\n\t\t\tduplicates[row[0]] = true\n\t\t} else {\n\t\t\tvalues[row[0]] = amount\n\t\t}\n\t}\n\treturn values, duplicates\n}\nfunc main() {\n\tleft, ld := ledger(\"id,cents\\nt1,100\\nt2,200\\nt3,300\\n\")\n\tright, rd := ledger(\"id,cents\\nt1,110\\nt2,200\\nt2,200\\nt4,400\\n\")\n\tset := map[string]bool{}\n\tfor id := range left {\n\t\tset[id] = true\n\t}\n\tfor id := range right {\n\t\tset[id] = true\n\t}\n\tids := []string{}\n\tfor id := range set {\n\t\tids = append(ids, id)\n\t}\n\tsort.Strings(ids)\n\tfor _, id := range ids {\n\t\ta, hasA := left[id]\n\t\tb, hasB := right[id]\n\t\tif ld[id] {\n\t\t\tfmt.Printf(\"%s duplicate-left\\n\", id)\n\t\t}\n\t\tif rd[id] {\n\t\t\tfmt.Printf(\"%s duplicate-right\\n\", id)\n\t\t}\n\t\tswitch {\n\t\tcase !hasA:\n\t\t\tfmt.Printf(\"%s missing-left\\n\", id)\n\t\tcase !hasB:\n\t\t\tfmt.Printf(\"%s missing-right\\n\", id)\n\t\tcase a != b:\n\t\t\tfmt.Printf(\"%s mismatch=%d/%d\\n\", id, a, b)\n\t\t}\n\t}\n}\n",
+          "output": "t1 mismatch=100/110\nt2 duplicate-right\nt3 missing-right\nt4 missing-left",
+          "objective": "能按交易 ID 对比两份账本，输出缺失、重复与金额不一致记录。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "把重复 ID 直接覆盖会丢失重复交易证据。",
+            "两份账本总额相同也可能有不同的缺失或错账，不能只比较总和。"
+          ],
+          "exercises": [
+            {
+              "prompt": "对同一 ID 的重复金额不一致单独报告冲突。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "加载函数除重复集合外记录第一次金额与冲突标记，避免覆盖原始值，再按稳定 ID 顺序展示。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-272",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "依赖构建顺序",
+      "summary": "能用拓扑排序与字典序队列生成稳定构建计划，并报告剩余环节点。",
+      "concepts": [
+        "container/heap",
+        "综合离线应用"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-272-lesson",
+          "title": "依赖构建顺序",
+          "summary": "能用拓扑排序与字典序队列生成稳定构建计划，并报告剩余环节点。",
+          "concepts": [
+            "container/heap",
+            "综合离线应用"
+          ],
+          "explain": "Kahn 拓扑排序维护每个节点尚未完成的依赖数，零依赖节点放进字典序小根堆。每取出一个构建项，就降低它后继节点的计数；新就绪节点再次入堆，所以同一依赖图始终生成同一计划。最终剩余正计数节点表示被环阻塞的部分，可能包含环外但依赖环的节点，并非精确环路径。",
+          "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Names []string\n\nfunc (h Names) Len() int            { return len(h) }\nfunc (h Names) Less(i, j int) bool  { return h[i] < h[j] }\nfunc (h Names) Swap(i, j int)       { h[i], h[j] = h[j], h[i] }\nfunc (h *Names) Push(v interface{}) { *h = append(*h, v.(string)) }\nfunc (h *Names) Pop() interface{} {\n\told := *h\n\tlast := old[len(old)-1]\n\t*h = old[:len(old)-1]\n\treturn last\n}\nfunc plan(deps map[string][]string) ([]string, []string) {\n\tdegree := map[string]int{}\n\tnext := map[string][]string{}\n\tfor name, inputs := range deps {\n\t\tif _, ok := degree[name]; !ok {\n\t\t\tdegree[name] = 0\n\t\t}\n\t\tfor _, input := range inputs {\n\t\t\tdegree[name]++\n\t\t\tif _, ok := degree[input]; !ok {\n\t\t\t\tdegree[input] = 0\n\t\t\t}\n\t\t\tnext[input] = append(next[input], name)\n\t\t}\n\t}\n\tready := &Names{}\n\theap.Init(ready)\n\tfor name, n := range degree {\n\t\tif n == 0 {\n\t\t\theap.Push(ready, name)\n\t\t}\n\t}\n\torder := []string{}\n\tfor ready.Len() > 0 {\n\t\tname := heap.Pop(ready).(string)\n\t\torder = append(order, name)\n\t\tfor _, dependent := range next[name] {\n\t\t\tdegree[dependent]--\n\t\t\tif degree[dependent] == 0 {\n\t\t\t\theap.Push(ready, dependent)\n\t\t\t}\n\t\t}\n\t}\n\tremaining := []string{}\n\tfor name, n := range degree {\n\t\tif n > 0 {\n\t\t\tremaining = append(remaining, name)\n\t\t}\n\t}\n\tsort.Strings(remaining)\n\treturn order, remaining\n}\nfunc main() {\n\torder, cycle := plan(map[string][]string{\"parse\": {}, \"compile\": {\"parse\"}, \"test\": {\"compile\"}, \"link\": {\"compile\"}})\n\tfmt.Printf(\"order=%v remaining=%v\\n\", order, cycle)\n\t_, cycle = plan(map[string][]string{\"a\": {\"b\"}, \"b\": {\"a\"}})\n\tfmt.Printf(\"cycle=%v\\n\", cycle)\n}\n",
+          "output": "order=[parse compile link test] remaining=[]\ncycle=[a b]",
+          "objective": "能用拓扑排序与字典序队列生成稳定构建计划，并报告剩余环节点。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "边的方向必须从依赖项指向使用它的节点，反向会产生相反构建顺序。",
+            "剩余节点集合不能直接宣称为一条闭环路径，定位环还需要 DFS 或强连通分量。"
+          ],
+          "exercises": [
+            {
+              "prompt": "拒绝一个节点依赖列表中的重复依赖。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "为每个节点建立临时依赖集合，在增加 degree 前检查重复；不要悄悄重复计数。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-273",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "会议室分配",
+      "summary": "能按结束时间复用会议室，输出每个预约的房间和最少房间数。",
+      "concepts": [
+        "container/heap",
+        "sort",
+        "综合离线应用"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-273-lesson",
+          "title": "会议室分配",
+          "summary": "能按结束时间复用会议室，输出每个预约的房间和最少房间数。",
+          "concepts": [
+            "container/heap",
+            "sort",
+            "综合离线应用"
+          ],
+          "explain": "按开始时间处理预约，堆顶保存最早结束的房间。如果它已经结束就复用，否则才新增房间。B 在十分钟结束，C 恰好十分钟开始，因此二者可复用；这依赖左闭右开的预约区间约定。房间结束时间相同再按编号比较，保证结果稳定。算法最小化房间总数，不承诺每次挑编号最小的空房。",
+          "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Booking struct {\n\tID         string\n\tStart, End int\n}\ntype Room struct{ End, ID int }\ntype Active []Room\n\nfunc (h Active) Len() int { return len(h) }\nfunc (h Active) Less(i, j int) bool {\n\tif h[i].End != h[j].End {\n\t\treturn h[i].End < h[j].End\n\t}\n\treturn h[i].ID < h[j].ID\n}\nfunc (h Active) Swap(i, j int)       { h[i], h[j] = h[j], h[i] }\nfunc (h *Active) Push(v interface{}) { *h = append(*h, v.(Room)) }\nfunc (h *Active) Pop() interface{}   { old := *h; v := old[len(old)-1]; *h = old[:len(old)-1]; return v }\nfunc main() {\n\tbookings := []Booking{{\"A\", 0, 30}, {\"B\", 5, 10}, {\"C\", 10, 20}, {\"D\", 30, 40}}\n\tsort.SliceStable(bookings, func(i, j int) bool { return bookings[i].Start < bookings[j].Start })\n\tactive := &Active{}\n\theap.Init(active)\n\trooms := 0\n\tfor _, booking := range bookings {\n\t\tif booking.Start >= booking.End {\n\t\t\tpanic(\"bad interval\")\n\t\t}\n\t\troom := 0\n\t\tif active.Len() > 0 && (*active)[0].End <= booking.Start {\n\t\t\troom = heap.Pop(active).(Room).ID\n\t\t} else {\n\t\t\trooms++\n\t\t\troom = rooms\n\t\t}\n\t\theap.Push(active, Room{booking.End, room})\n\t\tfmt.Printf(\"%s=room%d\\n\", booking.ID, room)\n\t}\n\tfmt.Printf(\"rooms=%d\\n\", rooms)\n}\n",
+          "output": "A=room1\nB=room2\nC=room2\nD=room2\nrooms=2",
+          "objective": "能按结束时间复用会议室，输出每个预约的房间和最少房间数。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "结束等于下一场开始应视为可复用还是冲突，必须先约定区间端点语义。",
+            "只按房间编号选择而忽略结束时间，可能错误复用仍被占用的房间。"
+          ],
+          "exercises": [
+            {
+              "prompt": "增加同开始时刻的预约，以 ID 作为排序次关键字。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "在 sort 比较中先比 Start，再比 ID；相同时间输入顺序变化也得到稳定分配。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-274",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "包清单完整性检查",
+      "summary": "能读取包文件清单并校验文件存在、长度和摘要，聚合全部错误。",
+      "concepts": [
+        "encoding/json",
+        "crypto/sha256",
+        "综合离线应用"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-274-lesson",
+          "title": "包清单完整性检查",
+          "summary": "能读取包文件清单并校验文件存在、长度和摘要，聚合全部错误。",
+          "concepts": [
+            "encoding/json",
+            "crypto/sha256",
+            "综合离线应用"
+          ],
+          "explain": "包完整性检查把 JSON 元数据、存在性、字节长度和摘要组合成逐文件验证。长度错误不妨碍继续检查摘要，因此同一损坏文件能报告两个问题；缺失文件则不计算虚构内容的摘要。所有问题收集后排序，结果适合离线安装前审阅。清单仍需要可信来源，校验器本身不能防止清单与内容一起被替换。",
+          "code": "package main\n\nimport (\n\t\"crypto/sha256\"\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Entry struct {\n\tName   string `json:\"name\"`\n\tSize   int    `json:\"size\"`\n\tDigest string `json:\"sha256\"`\n}\n\nfunc digest(text string) string { sum := sha256.Sum256([]byte(text)); return fmt.Sprintf(\"%x\", sum) }\nfunc main() {\n\tmanifest := []Entry{{\"ok.txt\", 2, digest(\"ok\")}, {\"changed.txt\", 3, digest(\"old\")}, {\"missing.txt\", 1, digest(\"x\")}}\n\twire, err := json.Marshal(manifest)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar decoded []Entry\n\tif err = json.Unmarshal(wire, &decoded); err != nil {\n\t\tpanic(err)\n\t}\n\tfiles := map[string]string{\"ok.txt\": \"ok\", \"changed.txt\": \"NEW!\"}\n\tissues := []string{}\n\tfor _, item := range decoded {\n\t\tdata, exists := files[item.Name]\n\t\tif !exists {\n\t\t\tissues = append(issues, item.Name+\":missing\")\n\t\t\tcontinue\n\t\t}\n\t\tif len(data) != item.Size {\n\t\t\tissues = append(issues, item.Name+\":size\")\n\t\t}\n\t\tif digest(data) != item.Digest {\n\t\t\tissues = append(issues, item.Name+\":digest\")\n\t\t}\n\t}\n\tsort.Strings(issues)\n\tfor _, issue := range issues {\n\t\tfmt.Println(issue)\n\t}\n\tfmt.Printf(\"issues=%d\\n\", len(issues))\n}\n",
+          "output": "changed.txt:digest\nchanged.txt:size\nmissing.txt:missing\nissues=3",
+          "objective": "能读取包文件清单并校验文件存在、长度和摘要，聚合全部错误。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "发现首个问题就返回会让用户多轮修复，批量检查应聚合独立错误。",
+            "清单里的相对路径若用于真实文件读取，必须先做项目包含关系与符号链接检查。"
+          ],
+          "exercises": [
+            {
+              "prompt": "拒绝 JSON 清单中的重复 Name，避免同一文件出现互相冲突元数据。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "解析后先建立 Name 集合；重复即记录清单结构错误，在验证内容之前给出明确结果。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-275",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "本地记录查询器",
+      "summary": "能实现过滤、分组与排序的查询步骤，对订单输出部门统计。",
+      "concepts": [
+        "sort",
+        "strings",
+        "综合离线应用"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-275-lesson",
+          "title": "本地记录查询器",
+          "summary": "能实现过滤、分组与排序的查询步骤，对订单输出部门统计。",
+          "concepts": [
+            "sort",
+            "strings",
+            "综合离线应用"
+          ],
+          "explain": "这份内存查询器先筛选已支付且达到金额门槛的订单，再规范化部门名并分组汇总，最后排序展示。不同大小写部门归到同组，草稿单和小额单都不计入。筛选、分组、排序三个步骤各有清晰职责，便于将来替换成来自 CSV 或 JSON 的离线记录。金额采用整数分，聚合仍需根据实际规模设置溢出保护。",
+          "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n)\n\ntype Order struct {\n\tDepartment, State string\n\tCents             int\n}\ntype Total struct{ Count, Cents int }\n\nfunc main() {\n\torders := []Order{{\"North\", \"paid\", 1200}, {\"south\", \"paid\", 900}, {\"north\", \"draft\", 300}, {\"NORTH\", \"paid\", 700}, {\"south\", \"paid\", 100}}\n\tgroups := map[string]Total{}\n\tfor _, order := range orders {\n\t\tif order.State != \"paid\" || order.Cents < 500 {\n\t\t\tcontinue\n\t\t}\n\t\tkey := strings.ToLower(order.Department)\n\t\ttotal := groups[key]\n\t\ttotal.Count++\n\t\ttotal.Cents += order.Cents\n\t\tgroups[key] = total\n\t}\n\tnames := []string{}\n\tfor name := range groups {\n\t\tnames = append(names, name)\n\t}\n\tsort.Strings(names)\n\tfor _, name := range names {\n\t\ttotal := groups[name]\n\t\tfmt.Printf(\"%s count=%d cents=%d\\n\", name, total.Count, total.Cents)\n\t}\n}\n",
+          "output": "north count=2 cents=1900\nsouth count=1 cents=900",
+          "objective": "能实现过滤、分组与排序的查询步骤，对订单输出部门统计。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "先汇总再按单笔金额条件筛选会改变业务语义。",
+            "map 遍历顺序不稳定，报表输出前必须排序键。"
+          ],
+          "exercises": [
+            {
+              "prompt": "在汇总结果中按金额降序排序，金额相同按部门名升序。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "把 map 转成带 Department 的结果切片，使用明确的两级比较器，而不是依赖已有键顺序。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-276",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "事件溯源余额",
+      "summary": "能依序重放开户、入账、扣款事件，拒绝非法事件且保留此前状态。",
+      "concepts": [
+        "encoding/json",
+        "综合离线应用"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-276-lesson",
+          "title": "事件溯源余额",
+          "summary": "能依序重放开户、入账、扣款事件，拒绝非法事件且保留此前状态。",
+          "concepts": [
+            "encoding/json",
+            "综合离线应用"
+          ],
+          "explain": "事件重放把当前状态和一个事件交给纯 apply 函数，先在副本上检查并修改，成功才提交。开户、入账和扣款依次得到余额七十，超额扣款和未知事件被拒绝，之前有效状态保留。示例选择记录坏事件后继续扫描，这是一种明确的导入策略；正式事件日志通常还要定义损坏日志是否立即终止。",
+          "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Event struct {\n\tKind   string `json:\"kind\"`\n\tAmount int    `json:\"amount\"`\n}\ntype State struct {\n\tOpen    bool\n\tBalance int\n}\n\nfunc apply(state State, event Event) (State, error) {\n\tnext := state\n\tswitch event.Kind {\n\tcase \"open\":\n\t\tif state.Open {\n\t\t\treturn state, fmt.Errorf(\"already open\")\n\t\t}\n\t\tnext.Open = true\n\tcase \"credit\", \"debit\":\n\t\tif !state.Open || event.Amount <= 0 {\n\t\t\treturn state, fmt.Errorf(\"invalid amount/state\")\n\t\t}\n\t\tif event.Kind == \"credit\" {\n\t\t\tnext.Balance += event.Amount\n\t\t} else {\n\t\t\tif event.Amount > state.Balance {\n\t\t\t\treturn state, fmt.Errorf(\"insufficient funds\")\n\t\t\t}\n\t\t\tnext.Balance -= event.Amount\n\t\t}\n\tdefault:\n\t\treturn state, fmt.Errorf(\"unknown event\")\n\t}\n\treturn next, nil\n}\nfunc main() {\n\tvar events []Event\n\tif err := json.Unmarshal([]byte(`[{\"kind\":\"open\"},{\"kind\":\"credit\",\"amount\":100},{\"kind\":\"debit\",\"amount\":30},{\"kind\":\"debit\",\"amount\":90},{\"kind\":\"other\"}]`), &events); err != nil {\n\t\tpanic(err)\n\t}\n\tstate := State{}\n\tfor index, event := range events {\n\t\tnext, err := apply(state, event)\n\t\tif err != nil {\n\t\t\tfmt.Printf(\"event%d rejected balance=%d\\n\", index, state.Balance)\n\t\t\tcontinue\n\t\t}\n\t\tstate = next\n\t}\n\tfmt.Printf(\"final=%d\\n\", state.Balance)\n}\n",
+          "output": "event3 rejected balance=70\nevent4 rejected balance=70\nfinal=70",
+          "objective": "能依序重放开户、入账、扣款事件，拒绝非法事件且保留此前状态。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "在检查余额前先扣款再返回错误，会破坏重放确定性。",
+            "事件顺序属于业务数据，不能为了输出排序而重排入账和扣款事件。"
+          ],
+          "exercises": [
+            {
+              "prompt": "为事件增加序号，拒绝重复或不连续序号。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "在 State 增加最后已应用序号；只有事件验证和状态更新都成功后才推进，明确失败事件的恢复策略。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-277",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "内存事务回滚",
+      "summary": "能在副本上执行多步库存变更，遇到负库存回滚全部操作。",
+      "concepts": [
+        "fmt",
+        "综合离线应用"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-277-lesson",
+          "title": "内存事务回滚",
+          "summary": "能在副本上执行多步库存变更，遇到负库存回滚全部操作。",
+          "concepts": [
+            "fmt",
+            "综合离线应用"
+          ],
+          "explain": "事务先复制库存表，在副本上逐步执行变更，全部通过后才写回原表。第一批先减少笔再让便笺变负，整批失败后两个库存仍为原值；第二批合法才同时提交。这是单协程内存级原子业务操作，不是数据库持久事务。若库存值包含切片或指针，浅复制 map 仍会共享内部可变数据。",
+          "code": "package main\n\nimport (\n\t\"fmt\"\n)\n\ntype Change struct {\n\tItem  string\n\tDelta int\n}\n\nfunc transact(stock map[string]int, changes []Change) error {\n\tnext := map[string]int{}\n\tfor item, value := range stock {\n\t\tnext[item] = value\n\t}\n\tfor _, change := range changes {\n\t\tvalue, exists := next[change.Item]\n\t\tif !exists {\n\t\t\treturn fmt.Errorf(\"unknown item\")\n\t\t}\n\t\tvalue += change.Delta\n\t\tif value < 0 {\n\t\t\treturn fmt.Errorf(\"negative stock\")\n\t\t}\n\t\tnext[change.Item] = value\n\t}\n\tfor item, value := range next {\n\t\tstock[item] = value\n\t}\n\treturn nil\n}\nfunc main() {\n\tstock := map[string]int{\"pen\": 10, \"pad\": 4}\n\terr := transact(stock, []Change{{\"pen\", -3}, {\"pad\", -9}})\n\tfmt.Printf(\"failed=%t pen=%d pad=%d\\n\", err != nil, stock[\"pen\"], stock[\"pad\"])\n\terr = transact(stock, []Change{{\"pen\", -3}, {\"pad\", 2}})\n\tfmt.Printf(\"committed=%t pen=%d pad=%d\\n\", err == nil, stock[\"pen\"], stock[\"pad\"])\n}\n",
+          "output": "failed=true pen=10 pad=4\ncommitted=true pen=7 pad=6",
+          "objective": "能在副本上执行多步库存变更，遇到负库存回滚全部操作。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "直接在原表逐项修改，后面的失败不会自动撤销前面的成功修改。",
+            "当前实现没有并发隔离，多个协程同时调用仍需同一把锁或 actor 所有权。"
+          ],
+          "exercises": [
+            {
+              "prompt": "增加一个新商品的创建操作，并保证失败时不会留下它。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "让 Change 显式区分 create 与 adjust，在 next 副本中验证存在性并处理，最终统一提交新增键。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-278",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "逻辑时钟令牌桶",
+      "summary": "能用显式 now 更新令牌余额，验证突发、补充与拒绝而不实际睡眠。",
+      "concepts": [
+        "time",
+        "math",
+        "综合离线应用"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-278-lesson",
+          "title": "逻辑时钟令牌桶",
+          "summary": "能用显式 now 更新令牌余额，验证突发、补充与拒绝而不实际睡眠。",
+          "concepts": [
+            "time",
+            "math",
+            "综合离线应用"
+          ],
+          "explain": "令牌桶把突发容量与长期补充速率分开。每次调用显式传入逻辑时间，先按经过秒数补充并限制到容量，再判断能否扣除一枚令牌。连续三次零时刻请求只能通过两个，半秒不足一枚，一秒恢复一次机会。即使请求被拒绝，已补充余额和 Last 也要保留；时钟倒退直接拒绝且不修改状态。",
+          "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math\"\n\t\"time\"\n)\n\ntype Bucket struct {\n\tCapacity, Tokens, PerSecond float64\n\tLast                        time.Time\n}\n\nfunc (b *Bucket) Allow(now time.Time) bool {\n\tif now.Before(b.Last) {\n\t\treturn false\n\t}\n\tb.Tokens = math.Min(b.Capacity, b.Tokens+now.Sub(b.Last).Seconds()*b.PerSecond)\n\tb.Last = now\n\tif b.Tokens < 1 {\n\t\treturn false\n\t}\n\tb.Tokens--\n\treturn true\n}\nfunc main() {\n\tstart := time.Date(2026, 10, 23, 0, 0, 0, 0, time.UTC)\n\tb := &Bucket{Capacity: 2, Tokens: 2, PerSecond: 1, Last: start}\n\tfor _, offset := range []time.Duration{0, 0, 0, 500 * time.Millisecond, time.Second, time.Second, 3 * time.Second} {\n\t\tfmt.Printf(\"t=%4.1f allow=%t\\n\", offset.Seconds(), b.Allow(start.Add(offset)))\n\t}\n\tfmt.Printf(\"clock-backwards=%t\\n\", b.Allow(start))\n}\n",
+          "output": "t= 0.0 allow=true\nt= 0.0 allow=true\nt= 0.0 allow=false\nt= 0.5 allow=false\nt= 1.0 allow=true\nt= 1.0 allow=false\nt= 3.0 allow=true\nclock-backwards=false",
+          "objective": "能用显式 now 更新令牌余额，验证突发、补充与拒绝而不实际睡眠。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "每次拒绝都把令牌归零，会丢失不足一枚的累计补充。",
+            "并发请求必须同步更新 Tokens 和 Last，两个字段分开修改会破坏限流。"
+          ],
+          "exercises": [
+            {
+              "prompt": "让每个请求携带 cost，且 cost 大于容量时明确拒绝。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "在更新前验证 cost>0 且 cost<=Capacity；足额后一次性扣除 cost，继续保留小数余额。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-279",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "批处理检查点恢复",
+      "summary": "能按批保存已完成偏移，模拟失败后从检查点恢复且避免重复提交。",
+      "concepts": [
+        "encoding/json",
+        "综合离线应用"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-279-lesson",
+          "title": "批处理检查点恢复",
+          "summary": "能按批保存已完成偏移，模拟失败后从检查点恢复且避免重复提交。",
+          "concepts": [
+            "encoding/json",
+            "综合离线应用"
+          ],
+          "explain": "批处理把未提交批次先放在 pending 中，模拟第二批在提交前失败，再从已保存 Next 偏移恢复。只有批次成功提交才推进并序列化检查点，因此恢复不会重复追加已完成的 A、B。示例是在同一内存进程中的教学模拟，真实崩溃恢复必须保证提交与检查点原子关联，或以稳定任务 ID 实现幂等。",
+          "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Checkpoint struct {\n\tNext int `json:\"next\"`\n}\n\nfunc main() {\n\trecords := []string{\"A\", \"B\", \"C\", \"D\", \"E\"}\n\tcommitted := []string{}\n\tcheckpoint := Checkpoint{}\n\twire := []byte{}\n\tfailOnce := true\n\tfor checkpoint.Next < len(records) {\n\t\tstart := checkpoint.Next\n\t\tend := start + 2\n\t\tif end > len(records) {\n\t\t\tend = len(records)\n\t\t}\n\t\tpending := append([]string(nil), records[start:end]...)\n\t\tif start == 2 && failOnce {\n\t\t\tfailOnce = false\n\t\t\tfmt.Printf(\"failed-at=%d\\n\", start)\n\t\t\tif err := json.Unmarshal(wire, &checkpoint); err != nil {\n\t\t\t\tpanic(err)\n\t\t\t}\n\t\t\tcontinue\n\t\t}\n\t\tcommitted = append(committed, pending...)\n\t\tcheckpoint.Next = end\n\t\tvar err error\n\t\twire, err = json.Marshal(checkpoint)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tfmt.Printf(\"committed=%v\\ncheckpoint=%s\\n\", committed, wire)\n}\n",
+          "output": "failed-at=2\ncommitted=[A B C D E]\ncheckpoint={\"next\":5}",
+          "objective": "能按批保存已完成偏移，模拟失败后从检查点恢复且避免重复提交。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "先推进检查点再提交数据，崩溃后会永久漏掉该批次。",
+            "提交与保存检查点之间发生真实崩溃仍可能重复，需要事务或幂等写入，单个 JSON 文件不自动提供 exactly-once。"
+          ],
+          "exercises": [
+            {
+              "prompt": "用记录 ID 集合让重复提交同一批也不会新增重复结果。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "提交时先检查稳定 ID 是否已存在，仅追加新记录；检查点只用于加速定位，不能替代幂等约束。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    },
+    {
+      "id": "go-tutorial-280",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "中缀表达式计算器",
+      "summary": "能用操作符栈处理括号与优先级，报告除零及不完整表达式。",
+      "concepts": [
+        "strconv",
+        "unicode",
+        "综合离线应用"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "lessons": [
+        {
+          "id": "go-tutorial-280-lesson",
+          "title": "中缀表达式计算器",
+          "summary": "能用操作符栈处理括号与优先级，报告除零及不完整表达式。",
+          "concepts": [
+            "strconv",
+            "unicode",
+            "综合离线应用"
+          ],
+          "explain": "计算器维护数值栈和运算符栈。遇到更低或相同优先级的二元运算符时先归约栈顶，保证乘除优先以及同优先级左结合；括号作为归约边界。expectValue 区分当前应该出现数字还是运算符，因此拒绝尾部运算符和缺操作数。示例还检测除零。本范围只接受非负整数字面量和二元算术，不实现一元负号，整数运算采用 Go 的本机 int 规则。",
+          "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"unicode\"\n)\n\nfunc precedence(op rune) int {\n\tif op == '+' || op == '-' {\n\t\treturn 1\n\t}\n\tif op == '*' || op == '/' {\n\t\treturn 2\n\t}\n\treturn 0\n}\nfunc evaluate(text string) (int, error) {\n\tvalues := []int{}\n\tops := []rune{}\n\tapply := func() error {\n\t\tif len(values) < 2 || len(ops) == 0 {\n\t\t\treturn fmt.Errorf(\"missing operand\")\n\t\t}\n\t\top := ops[len(ops)-1]\n\t\tops = ops[:len(ops)-1]\n\t\ta, b := values[len(values)-2], values[len(values)-1]\n\t\tvalues = values[:len(values)-2]\n\t\tswitch op {\n\t\tcase '+':\n\t\t\tvalues = append(values, a+b)\n\t\tcase '-':\n\t\t\tvalues = append(values, a-b)\n\t\tcase '*':\n\t\t\tvalues = append(values, a*b)\n\t\tcase '/':\n\t\t\tif b == 0 {\n\t\t\t\treturn fmt.Errorf(\"division by zero\")\n\t\t\t}\n\t\t\tvalues = append(values, a/b)\n\t\tdefault:\n\t\t\treturn fmt.Errorf(\"bad operator\")\n\t\t}\n\t\treturn nil\n\t}\n\tchars := []rune(text)\n\texpectValue := true\n\tfor i := 0; i < len(chars); {\n\t\tc := chars[i]\n\t\tif unicode.IsSpace(c) {\n\t\t\ti++\n\t\t\tcontinue\n\t\t}\n\t\tif c >= '0' && c <= '9' {\n\t\t\tif !expectValue {\n\t\t\t\treturn 0, fmt.Errorf(\"missing operator\")\n\t\t\t}\n\t\t\tstart := i\n\t\t\tfor i < len(chars) && chars[i] >= '0' && chars[i] <= '9' {\n\t\t\t\ti++\n\t\t\t}\n\t\t\tn, err := strconv.Atoi(string(chars[start:i]))\n\t\t\tif err != nil {\n\t\t\t\treturn 0, err\n\t\t\t}\n\t\t\tvalues = append(values, n)\n\t\t\texpectValue = false\n\t\t\tcontinue\n\t\t}\n\t\tif c == '(' {\n\t\t\tif !expectValue {\n\t\t\t\treturn 0, fmt.Errorf(\"missing operator\")\n\t\t\t}\n\t\t\tops = append(ops, c)\n\t\t\ti++\n\t\t\tcontinue\n\t\t}\n\t\tif c == ')' {\n\t\t\tif expectValue {\n\t\t\t\treturn 0, fmt.Errorf(\"empty group\")\n\t\t\t}\n\t\t\tfor len(ops) > 0 && ops[len(ops)-1] != '(' {\n\t\t\t\tif err := apply(); err != nil {\n\t\t\t\t\treturn 0, err\n\t\t\t\t}\n\t\t\t}\n\t\t\tif len(ops) == 0 {\n\t\t\t\treturn 0, fmt.Errorf(\"unmatched close\")\n\t\t\t}\n\t\t\tops = ops[:len(ops)-1]\n\t\t\ti++\n\t\t\tcontinue\n\t\t}\n\t\tif precedence(c) == 0 || expectValue {\n\t\t\treturn 0, fmt.Errorf(\"bad token\")\n\t\t}\n\t\tfor len(ops) > 0 && precedence(ops[len(ops)-1]) >= precedence(c) {\n\t\t\tif err := apply(); err != nil {\n\t\t\t\treturn 0, err\n\t\t\t}\n\t\t}\n\t\tops = append(ops, c)\n\t\texpectValue = true\n\t\ti++\n\t}\n\tif expectValue {\n\t\treturn 0, fmt.Errorf(\"incomplete\")\n\t}\n\tfor len(ops) > 0 {\n\t\tif ops[len(ops)-1] == '(' {\n\t\t\treturn 0, fmt.Errorf(\"unmatched open\")\n\t\t}\n\t\tif err := apply(); err != nil {\n\t\t\treturn 0, err\n\t\t}\n\t}\n\tif len(values) != 1 {\n\t\treturn 0, fmt.Errorf(\"bad expression\")\n\t}\n\treturn values[0], nil\n}\nfunc main() {\n\tfor _, expression := range []string{\"2 + 3 * (4 - 1)\", \"18 / 3 / 2\", \"4/(2-2)\", \"1 +\"} {\n\t\tvalue, err := evaluate(expression)\n\t\tif err != nil {\n\t\t\tfmt.Printf(\"%s -> error\\n\", expression)\n\t\t} else {\n\t\t\tfmt.Printf(\"%s -> %d\\n\", expression, value)\n\t\t}\n\t}\n}\n",
+          "output": "2 + 3 * (4 - 1) -> 11\n18 / 3 / 2 -> 3\n4/(2-2) -> error\n1 + -> error",
+          "objective": "能用操作符栈处理括号与优先级，报告除零及不完整表达式。",
+          "prerequisites": [
+            "T035",
+            "T049"
+          ],
+          "pitfalls": [
+            "减法和除法的操作数顺序必须是倒数第二个值 op 最后一个值，不能反过来。",
+            "本机 int 的中间算术可能溢出，生产计算器需要边界检查或 math/big。"
+          ],
+          "exercises": [
+            {
+              "prompt": "为一元负号加入独立优先级，支持 -(2+3)*4。",
+              "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+              "answer": "当 expectValue 为 true 且遇到减号时压入单目操作符；归约时只弹一个数值，不能简单改写所有减号。"
+            }
+          ],
+          "inputFixtures": {}
+        }
+      ]
+    }
+  ]
+}

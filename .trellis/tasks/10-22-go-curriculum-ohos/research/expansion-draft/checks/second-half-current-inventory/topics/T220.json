@@ -1,0 +1,71 @@
+{
+  "id": "T220",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "decoded=Subject: helloworld!\nutf8-roundtrip=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-220",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Quoted Printable 文本",
+    "summary": "能解码软换行和转义字节，再编码 UTF-8 邮件片段并验证往返。",
+    "concepts": [
+      "mime/quotedprintable",
+      "io",
+      "strings",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能解码软换行和转义字节，再编码 UTF-8 邮件片段并验证往返。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "软换行会被移除，真实正文换行不能随意写成等号加 CRLF。",
+      "编解码按字节操作，不会自动决定邮件头或正文使用的字符集。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在原始正文中加入真实 CRLF，验证它与软换行有不同结果。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "分别解码 a\r\nb 和 a=\r\nb，前者保留换行，后者变成 ab。"
+      }
+    ],
+    "explain": "Quoted Printable 以 =HH 表示字节，并用等号紧接 CRLF 表示软换行。第一段数据里的软换行不属于正文，所以解码后 hello 与 world 相连。第二段把中文和等号按 UTF8 字节编码再解码，核对完整字节一致。这是 MIME 传输编码，不能与 URL 百分号编码或 HTML 实体混用。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"mime/quotedprintable\"\n\t\"strings\"\n)\n\nfunc main() {\n\tdecoded, err := io.ReadAll(quotedprintable.NewReader(strings.NewReader(\"Subject=3A hello=\\r\\nworld=21\")))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"decoded=%s\\n\", decoded)\n\toriginal := []byte(\"你好=go\")\n\tvar wire bytes.Buffer\n\tw := quotedprintable.NewWriter(&wire)\n\tif _, err = w.Write(original); err != nil {\n\t\tpanic(err)\n\t}\n\tif err = w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\trestored, err := io.ReadAll(quotedprintable.NewReader(&wire))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"utf8-roundtrip=%t\\n\", bytes.Equal(restored, original))\n}\n",
+    "output": "decoded=Subject: helloworld!\nutf8-roundtrip=true"
+  },
+  "example": {
+    "id": "go-example-220",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Quoted Printable 文本",
+    "summary": "能解码软换行和转义字节，再编码 UTF-8 邮件片段并验证往返。",
+    "concepts": [
+      "mime/quotedprintable",
+      "io",
+      "strings",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"mime/quotedprintable\"\n\t\"strings\"\n)\n\nfunc main() {\n\tdecoded, err := io.ReadAll(quotedprintable.NewReader(strings.NewReader(\"Subject=3A hello=\\r\\nworld=21\")))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"decoded=%s\\n\", decoded)\n\toriginal := []byte(\"你好=go\")\n\tvar wire bytes.Buffer\n\tw := quotedprintable.NewWriter(&wire)\n\tif _, err = w.Write(original); err != nil {\n\t\tpanic(err)\n\t}\n\tif err = w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\trestored, err := io.ReadAll(quotedprintable.NewReader(&wire))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"utf8-roundtrip=%t\\n\", bytes.Equal(restored, original))\n}\n",
+    "expectedOutput": "decoded=Subject: helloworld!\nutf8-roundtrip=true",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "T253",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "https://api.example.test/a=true\nhttp://example.test=false\nhttps://user@example.test=false\nhttps://example.test.evil=false\nhttps://evil-example.test=false\nhttps://example.test:8443=false\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-253",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "离线 URL 白名单",
+    "summary": "能拒绝非 https、用户信息及非允许主机，避免主机后缀误判。",
+    "concepts": [
+      "net/url",
+      "strings",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能拒绝非 https、用户信息及非允许主机，避免主机后缀误判。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "简单 Contains 或无点边界的 HasSuffix 会误接收伪造域名。",
+      "初始 URL 合法不保证服务器重定向的后续 URL 仍合法。"
+    ],
+    "exercises": [
+      {
+        "prompt": "拒绝末尾点形式的主机，或明确规范化为不带末尾点的形式。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "先选定业务策略，再在 Hostname 后统一处理一次末尾点；对原始主机和规范化主机都增加测试。"
+      }
+    ],
+    "explain": "URL 白名单必须依据解析后的 scheme、用户信息、主机和端口判断。主机允许 example.test 或点边界内的子域，避免把 evil-example.test 与 example.test.evil 当作同一域。示例拒绝非 HTTPS、内嵌凭据和非默认端口，仅做离线语法判断，不请求任何地址。DNS 解析与重定向后的目标验证属于另一个边界。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/url\"\n\t\"strings\"\n)\n\nfunc allowed(text string) bool {\n\tu, err := url.Parse(text)\n\tif err != nil || u.Scheme != \"https\" || u.User != nil || u.Opaque != \"\" {\n\t\treturn false\n\t}\n\thost := strings.ToLower(u.Hostname())\n\tif u.Port() != \"\" && u.Port() != \"443\" {\n\t\treturn false\n\t}\n\treturn host == \"example.test\" || strings.HasSuffix(host, \".example.test\")\n}\nfunc main() {\n\tfor _, text := range []string{\"https://api.example.test/a\", \"http://example.test\", \"https://user@example.test\", \"https://example.test.evil\", \"https://evil-example.test\", \"https://example.test:8443\"} {\n\t\tfmt.Printf(\"%s=%t\\n\", text, allowed(text))\n\t}\n}\n",
+    "output": "https://api.example.test/a=true\nhttp://example.test=false\nhttps://user@example.test=false\nhttps://example.test.evil=false\nhttps://evil-example.test=false\nhttps://example.test:8443=false"
+  },
+  "example": {
+    "id": "go-example-253",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "离线 URL 白名单",
+    "summary": "能拒绝非 https、用户信息及非允许主机，避免主机后缀误判。",
+    "concepts": [
+      "net/url",
+      "strings",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/url\"\n\t\"strings\"\n)\n\nfunc allowed(text string) bool {\n\tu, err := url.Parse(text)\n\tif err != nil || u.Scheme != \"https\" || u.User != nil || u.Opaque != \"\" {\n\t\treturn false\n\t}\n\thost := strings.ToLower(u.Hostname())\n\tif u.Port() != \"\" && u.Port() != \"443\" {\n\t\treturn false\n\t}\n\treturn host == \"example.test\" || strings.HasSuffix(host, \".example.test\")\n}\nfunc main() {\n\tfor _, text := range []string{\"https://api.example.test/a\", \"http://example.test\", \"https://user@example.test\", \"https://example.test.evil\", \"https://evil-example.test\", \"https://example.test:8443\"} {\n\t\tfmt.Printf(\"%s=%t\\n\", text, allowed(text))\n\t}\n}\n",
+    "expectedOutput": "https://api.example.test/a=true\nhttp://example.test=false\nhttps://user@example.test=false\nhttps://example.test.evil=false\nhttps://evil-example.test=false\nhttps://example.test:8443=false",
+    "templateType": "go"
+  }
+}

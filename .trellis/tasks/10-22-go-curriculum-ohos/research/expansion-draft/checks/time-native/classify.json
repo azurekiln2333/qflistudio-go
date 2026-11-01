@@ -1,0 +1,132 @@
+[
+  {
+    "id": "T171",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "utc=2026-03-12T01:30:00Z equal=true\nwest=2026-03-11T20:30:00-05:00\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T172",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "09:00 count=2 sum=7\n09:15 count=1 sum=4\n09:30 count=1 sum=3\n09:45 count=0 sum=0\nrejected=1\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T173",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "start=2026-01-30 Friday\nthird=2026-02-04 Wednesday\nzero=true\nnegative=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T174",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "2026-03-12=20m\n2026-03-13=25m\ntotal=45m preserved=true\nreversed=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T175",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "delays=[100ms 200ms 400ms 750ms 750ms 750ms]\ntotal=2.95s\ninvalid=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T176",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "early=1 found=true\nat-expiry=false\npurged=1 remaining=[b]\nfinal=1 remaining=[]\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T177",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "before=2026-03-12T09:00:00Z\nafter=2026-03-13T09:00:00Z\nequal=2026-03-13T09:00:00Z\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T178",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "leap=2024-02-29\nnormalized=2025-03-01 rejected=true\napril-rejected=true\nnonpadded-rejected=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T179",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "separate-minutes=60 combined-minutes=45\nzero=0\nnegative-rejected=true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T180",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "10:00 source=0 a0\n10:00 source=1 b0\n10:01 source=1 b1\n10:01 source=2 c0\n10:02 source=0 a1\n10:02 source=2 c1\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  }
+]

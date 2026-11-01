@@ -1,0 +1,69 @@
+{
+  "id": "T261",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "payload=hello\nversion-rejected=true\ntampered=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-261",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "带 CRC 的二进制帧",
+    "summary": "能组装版本、长度、载荷与校验码，拒绝坏版本和篡改帧。",
+    "concepts": [
+      "encoding/binary",
+      "hash/crc32",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能组装版本、长度、载荷与校验码，拒绝坏版本和篡改帧。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "不校验完整帧长度会漏掉截断或附加数据，不能直接按声明长度切片。",
+      "CRC 不是 HMAC，恶意修改者能重算合法校验码。"
+    ],
+    "exercises": [
+      {
+        "prompt": "给 decode 增加尾部附加一个零字节的测试。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "现有精确长度条件应拒绝该输入；如果要处理连续帧，需要另写返回 consumed 字节数的流解析接口。"
+      }
+    ],
+    "explain": "帧由一字节版本、两字节大端长度、载荷和四字节 CRC 构成。解码先检查最小头与版本，再核对预算和完整长度，最后验证覆盖头部与载荷的 CRC。只有全部检查通过才返回正文。复制的坏版本帧和被修改的载荷分别触发不同失败边界；CRC 只检测变化，不提供攻击者身份认证。",
+    "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n\t\"hash/crc32\"\n)\n\nfunc encode(payload []byte) []byte {\n\tif len(payload) > 1024 {\n\t\tpanic(\"payload budget\")\n\t}\n\tframe := make([]byte, 3+len(payload)+4)\n\tframe[0] = 1\n\tbinary.BigEndian.PutUint16(frame[1:3], uint16(len(payload)))\n\tcopy(frame[3:], payload)\n\tbinary.BigEndian.PutUint32(frame[len(frame)-4:], crc32.ChecksumIEEE(frame[:len(frame)-4]))\n\treturn frame\n}\nfunc decode(frame []byte) (string, error) {\n\tif len(frame) < 7 || frame[0] != 1 {\n\t\treturn \"\", fmt.Errorf(\"version/header\")\n\t}\n\tsize := int(binary.BigEndian.Uint16(frame[1:3]))\n\tif size > 1024 || len(frame) != 3+size+4 {\n\t\treturn \"\", fmt.Errorf(\"size\")\n\t}\n\twant := binary.BigEndian.Uint32(frame[len(frame)-4:])\n\tif crc32.ChecksumIEEE(frame[:len(frame)-4]) != want {\n\t\treturn \"\", fmt.Errorf(\"checksum\")\n\t}\n\treturn string(frame[3 : 3+size]), nil\n}\nfunc main() {\n\twire := encode([]byte(\"hello\"))\n\ttext, err := decode(wire)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"payload=%s\\n\", text)\n\tbad := append([]byte(nil), wire...)\n\tbad[0] = 2\n\t_, err = decode(bad)\n\tfmt.Printf(\"version-rejected=%t\\n\", err != nil)\n\twire[3] ^= 1\n\t_, err = decode(wire)\n\tfmt.Printf(\"tampered=%t\\n\", err != nil)\n}\n",
+    "output": "payload=hello\nversion-rejected=true\ntampered=true"
+  },
+  "example": {
+    "id": "go-example-261",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "带 CRC 的二进制帧",
+    "summary": "能组装版本、长度、载荷与校验码，拒绝坏版本和篡改帧。",
+    "concepts": [
+      "encoding/binary",
+      "hash/crc32",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n\t\"hash/crc32\"\n)\n\nfunc encode(payload []byte) []byte {\n\tif len(payload) > 1024 {\n\t\tpanic(\"payload budget\")\n\t}\n\tframe := make([]byte, 3+len(payload)+4)\n\tframe[0] = 1\n\tbinary.BigEndian.PutUint16(frame[1:3], uint16(len(payload)))\n\tcopy(frame[3:], payload)\n\tbinary.BigEndian.PutUint32(frame[len(frame)-4:], crc32.ChecksumIEEE(frame[:len(frame)-4]))\n\treturn frame\n}\nfunc decode(frame []byte) (string, error) {\n\tif len(frame) < 7 || frame[0] != 1 {\n\t\treturn \"\", fmt.Errorf(\"version/header\")\n\t}\n\tsize := int(binary.BigEndian.Uint16(frame[1:3]))\n\tif size > 1024 || len(frame) != 3+size+4 {\n\t\treturn \"\", fmt.Errorf(\"size\")\n\t}\n\twant := binary.BigEndian.Uint32(frame[len(frame)-4:])\n\tif crc32.ChecksumIEEE(frame[:len(frame)-4]) != want {\n\t\treturn \"\", fmt.Errorf(\"checksum\")\n\t}\n\treturn string(frame[3 : 3+size]), nil\n}\nfunc main() {\n\twire := encode([]byte(\"hello\"))\n\ttext, err := decode(wire)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"payload=%s\\n\", text)\n\tbad := append([]byte(nil), wire...)\n\tbad[0] = 2\n\t_, err = decode(bad)\n\tfmt.Printf(\"version-rejected=%t\\n\", err != nil)\n\twire[3] ^= 1\n\t_, err = decode(wire)\n\tfmt.Printf(\"tampered=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "payload=hello\nversion-rejected=true\ntampered=true",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "id": "T200",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "name=dev port=9090 changed=[name port]\nunknown=true preserved=true\nbad-type=true preserved=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-200",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "配置补丁与未知键",
+    "summary": "应用白名单 JSON 配置补丁。拒绝未知键。保证任何失败都不修改原配置。",
+    "concepts": [
+      "json.RawMessage",
+      "白名单",
+      "失败无修改",
+      "排序补丁字段名"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "应用白名单 JSON 配置补丁。拒绝未知键。保证任何失败都不修改原配置。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "不要把补丁字段逐项解码到原配置。后续字段失败会留下部分更新。",
+      "白名单字段补丁与标准 JSON Patch 操作数组是不同协议。需要明确接口。"
+    ],
+    "exercises": [
+      {
+        "prompt": "加入只读 version 字段。补丁尝试修改时返回专门错误，且保持配置不变。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "在未知键与只读键预检阶段识别 version。返回只读错误。不要先给候选赋版本再忽略。因为调用者需要明确知道系统不接受该请求。"
+      }
+    ],
+    "explain": "补丁先解码为原始字段映射。再排序键列表。并在所有未知键检查通过后修改候选副本。字段类型与范围也在副本上验证。全部成功才一次赋回配置。这样即使 name 已成功解析而 port 随后失败。原资料也不会改变。返回排序后的补丁字段名，便于稳定展示。取值与旧值相同的项也计入。本例是字段替换协议。不自称实现完整 JSON Patch 标准。",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n)\n\ntype Config struct {\n\tName string\n\tPort int\n\tTags []string\n}\n\nfunc patch(cfg *Config, text string) ([]string, error) {\n\tvar fields map[string]json.RawMessage\n\tif err := json.Unmarshal([]byte(text), &fields); err != nil {\n\t\treturn nil, err\n\t}\n\tkeys := []string{}\n\tfor key := range fields {\n\t\tkeys = append(keys, key)\n\t}\n\tsort.Strings(keys)\n\tfor _, key := range keys {\n\t\tif key != \"name\" && key != \"port\" && key != \"tags\" {\n\t\t\treturn nil, fmt.Errorf(\"unknown key %s\", key)\n\t\t}\n\t}\n\tcandidate := *cfg\n\tcandidate.Tags = append([]string(nil), cfg.Tags...)\n\tfor _, key := range keys {\n\t\traw := fields[key]\n\t\tswitch key {\n\t\tcase \"name\":\n\t\t\tif err := json.Unmarshal(raw, &candidate.Name); err != nil {\n\t\t\t\treturn nil, err\n\t\t\t}\n\t\t\tif strings.TrimSpace(candidate.Name) == \"\" {\n\t\t\t\treturn nil, fmt.Errorf(\"empty name\")\n\t\t\t}\n\t\tcase \"port\":\n\t\t\tif err := json.Unmarshal(raw, &candidate.Port); err != nil {\n\t\t\t\treturn nil, err\n\t\t\t}\n\t\t\tif candidate.Port < 1 || candidate.Port > 65535 {\n\t\t\t\treturn nil, fmt.Errorf(\"invalid port\")\n\t\t\t}\n\t\tcase \"tags\":\n\t\t\tif err := json.Unmarshal(raw, &candidate.Tags); err != nil {\n\t\t\t\treturn nil, err\n\t\t\t}\n\t\t}\n\t}\n\t*cfg = candidate\n\treturn keys, nil\n}\nfunc main() {\n\tcfg := Config{\"local\", 8080, []string{\"old\"}}\n\tkeys, err := patch(&cfg, `{\"port\":9090,\"name\":\"dev\"}`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"name=%s port=%d changed=%v\\n\", cfg.Name, cfg.Port, keys)\n\t_, err = patch(&cfg, `{\"name\":\"broken\",\"unknown\":1}`)\n\tfmt.Printf(\"unknown=%t preserved=%t\\n\", err != nil, cfg.Name == \"dev\" && cfg.Port == 9090)\n\t_, err = patch(&cfg, `{\"name\":\"changed\",\"port\":\"bad\"}`)\n\tfmt.Printf(\"bad-type=%t preserved=%t\\n\", err != nil, cfg.Name == \"dev\" && cfg.Port == 9090)\n}\n",
+    "output": "name=dev port=9090 changed=[name port]\nunknown=true preserved=true\nbad-type=true preserved=true"
+  },
+  "example": {
+    "id": "go-example-200",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "配置补丁与未知键",
+    "summary": "应用白名单 JSON 配置补丁。拒绝未知键。保证任何失败都不修改原配置。",
+    "concepts": [
+      "json.RawMessage",
+      "白名单",
+      "失败无修改",
+      "排序补丁字段名"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"sort\"\n\t\"strings\"\n)\n\ntype Config struct {\n\tName string\n\tPort int\n\tTags []string\n}\n\nfunc patch(cfg *Config, text string) ([]string, error) {\n\tvar fields map[string]json.RawMessage\n\tif err := json.Unmarshal([]byte(text), &fields); err != nil {\n\t\treturn nil, err\n\t}\n\tkeys := []string{}\n\tfor key := range fields {\n\t\tkeys = append(keys, key)\n\t}\n\tsort.Strings(keys)\n\tfor _, key := range keys {\n\t\tif key != \"name\" && key != \"port\" && key != \"tags\" {\n\t\t\treturn nil, fmt.Errorf(\"unknown key %s\", key)\n\t\t}\n\t}\n\tcandidate := *cfg\n\tcandidate.Tags = append([]string(nil), cfg.Tags...)\n\tfor _, key := range keys {\n\t\traw := fields[key]\n\t\tswitch key {\n\t\tcase \"name\":\n\t\t\tif err := json.Unmarshal(raw, &candidate.Name); err != nil {\n\t\t\t\treturn nil, err\n\t\t\t}\n\t\t\tif strings.TrimSpace(candidate.Name) == \"\" {\n\t\t\t\treturn nil, fmt.Errorf(\"empty name\")\n\t\t\t}\n\t\tcase \"port\":\n\t\t\tif err := json.Unmarshal(raw, &candidate.Port); err != nil {\n\t\t\t\treturn nil, err\n\t\t\t}\n\t\t\tif candidate.Port < 1 || candidate.Port > 65535 {\n\t\t\t\treturn nil, fmt.Errorf(\"invalid port\")\n\t\t\t}\n\t\tcase \"tags\":\n\t\t\tif err := json.Unmarshal(raw, &candidate.Tags); err != nil {\n\t\t\t\treturn nil, err\n\t\t\t}\n\t\t}\n\t}\n\t*cfg = candidate\n\treturn keys, nil\n}\nfunc main() {\n\tcfg := Config{\"local\", 8080, []string{\"old\"}}\n\tkeys, err := patch(&cfg, `{\"port\":9090,\"name\":\"dev\"}`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"name=%s port=%d changed=%v\\n\", cfg.Name, cfg.Port, keys)\n\t_, err = patch(&cfg, `{\"name\":\"broken\",\"unknown\":1}`)\n\tfmt.Printf(\"unknown=%t preserved=%t\\n\", err != nil, cfg.Name == \"dev\" && cfg.Port == 9090)\n\t_, err = patch(&cfg, `{\"name\":\"changed\",\"port\":\"bad\"}`)\n\tfmt.Printf(\"bad-type=%t preserved=%t\\n\", err != nil, cfg.Name == \"dev\" && cfg.Port == 9090)\n}\n",
+    "expectedOutput": "name=dev port=9090 changed=[name port]\nunknown=true preserved=true\nbad-type=true preserved=true",
+    "templateType": "go"
+  }
+}

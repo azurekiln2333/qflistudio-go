@@ -1,0 +1,67 @@
+{
+  "id": "T257",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "valid=true\nvalid=false\nvalid=false\nvalid=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-257",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "ISBN13 校验",
+    "summary": "能忽略显示分隔符计算 ISBN13 加权校验，识别长度和校验错误。",
+    "concepts": [
+      "unicode",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能忽略显示分隔符计算 ISBN13 加权校验，识别长度和校验错误。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "不能用泛化的数字分类接受全角数字后再按 ASCII 字节相减。",
+      "ISBN10 使用另一套校验规则，不应把十位编号简单补零当成 ISBN13。"
+    ],
+    "exercises": [
+      {
+        "prompt": "返回规范化后的十三位编号及错误原因。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "把解析与校验分开：先构造规范字符串，再分别报告字符、长度和校验和错误。"
+      }
+    ],
+    "explain": "ISBN13 去掉允许的显示分隔符后应恰好十三位。位置从左开始交替使用一和三的权重，包含校验位的加权总和必须能被十整除。示例比较带横线、带空格、坏校验位和错误长度。校验通过只表示编号格式满足这套规则，并不证明图书已登记或库存确实存在。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"unicode\"\n)\n\nfunc isbn(text string) bool {\n\tvar digits strings.Builder\n\tfor _, c := range text {\n\t\tif c == '-' || unicode.IsSpace(c) {\n\t\t\tcontinue\n\t\t}\n\t\tif c < '0' || c > '9' {\n\t\t\treturn false\n\t\t}\n\t\tdigits.WriteRune(c)\n\t}\n\tcode := digits.String()\n\tif len(code) != 13 {\n\t\treturn false\n\t}\n\tsum := 0\n\tfor i := 0; i < len(code); i++ {\n\t\tweight := 1\n\t\tif i%2 == 1 {\n\t\t\tweight = 3\n\t\t}\n\t\tsum += int(code[i]-'0') * weight\n\t}\n\treturn sum%10 == 0\n}\nfunc main() {\n\tfor _, code := range []string{\"978-0-306-40615-7\", \"9780306406158\", \"978030640615\", \"978 0 306 40615 7\"} {\n\t\tfmt.Printf(\"valid=%t\\n\", isbn(code))\n\t}\n}\n",
+    "output": "valid=true\nvalid=false\nvalid=false\nvalid=true"
+  },
+  "example": {
+    "id": "go-example-257",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "ISBN13 校验",
+    "summary": "能忽略显示分隔符计算 ISBN13 加权校验，识别长度和校验错误。",
+    "concepts": [
+      "unicode",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"unicode\"\n)\n\nfunc isbn(text string) bool {\n\tvar digits strings.Builder\n\tfor _, c := range text {\n\t\tif c == '-' || unicode.IsSpace(c) {\n\t\t\tcontinue\n\t\t}\n\t\tif c < '0' || c > '9' {\n\t\t\treturn false\n\t\t}\n\t\tdigits.WriteRune(c)\n\t}\n\tcode := digits.String()\n\tif len(code) != 13 {\n\t\treturn false\n\t}\n\tsum := 0\n\tfor i := 0; i < len(code); i++ {\n\t\tweight := 1\n\t\tif i%2 == 1 {\n\t\t\tweight = 3\n\t\t}\n\t\tsum += int(code[i]-'0') * weight\n\t}\n\treturn sum%10 == 0\n}\nfunc main() {\n\tfor _, code := range []string{\"978-0-306-40615-7\", \"9780306406158\", \"978030640615\", \"978 0 306 40615 7\"} {\n\t\tfmt.Printf(\"valid=%t\\n\", isbn(code))\n\t}\n}\n",
+    "expectedOutput": "valid=true\nvalid=false\nvalid=false\nvalid=true",
+    "templateType": "go"
+  }
+}

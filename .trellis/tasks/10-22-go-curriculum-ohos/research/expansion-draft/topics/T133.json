@@ -1,0 +1,71 @@
+{
+  "id": "T133",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "page=[c d] next=4\ninvalid=true\nnegative=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-133",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "URL 安全 Base64 游标",
+    "summary": "把分页位置编码为 URL 安全游标。读取下一页并拒绝非法或负数位置。",
+    "concepts": [
+      "encoding/base64",
+      "encoding/json",
+      "分页游标",
+      "边界校验"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "把分页位置编码为 URL 安全游标。读取下一页并拒绝非法或负数位置。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "Base64 解码成功不代表 JSON 和分页范围合法。",
+      "切片上界计算必须在验证 offset 与 limit 后进行，避免越界或溢出。"
+    ],
+    "exercises": [
+      {
+        "prompt": "当剩余数据少于 limit 时返回剩余项，并用空游标表示结束。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "先计算 remaining := len(items)-offset，再取 min(limit, remaining)。只有 end < len(items) 时生成下一游标。避免先计算可能溢出的 offset+limit。"
+      }
+    ],
+    "explain": "游标用 JSON 保存 offset 与 limit。再通过 RawURLEncoding 生成无需填充的 URL 安全字符串。读取时按相反顺序解码。它把结构校验放在切片操作之前。有效游标读取 c、d 两项，下一页位置为四。程序会分别拒绝损坏编码与负偏移。游标不包含签名。服务端若依赖它做权限判断还需要认证。不能因为内容经过 Base64 就信任它。",
+    "code": "package main\n\nimport (\n\t\"encoding/base64\"\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Cursor struct {\n\tOffset int `json:\"offset\"`\n\tLimit  int `json:\"limit\"`\n}\n\nfunc encode(cursor Cursor) string {\n\tdata, err := json.Marshal(cursor)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\treturn base64.RawURLEncoding.EncodeToString(data)\n}\n\nfunc decode(text string) (Cursor, error) {\n\tvar cursor Cursor\n\tdata, err := base64.RawURLEncoding.DecodeString(text)\n\tif err != nil {\n\t\treturn cursor, err\n\t}\n\tif err := json.Unmarshal(data, &cursor); err != nil {\n\t\treturn cursor, err\n\t}\n\tif cursor.Offset < 0 || cursor.Limit < 1 || cursor.Limit > 50 {\n\t\treturn cursor, fmt.Errorf(\"invalid cursor bounds\")\n\t}\n\treturn cursor, nil\n}\n\nfunc page(items []string, cursor Cursor) ([]string, string, error) {\n\tif cursor.Offset < 0 || cursor.Offset > len(items) || cursor.Limit < 1 || cursor.Limit > 50 {\n\t\treturn nil, \"\", fmt.Errorf(\"invalid page bounds\")\n\t}\n\tcount := len(items) - cursor.Offset\n\tif count > cursor.Limit {\n\t\tcount = cursor.Limit\n\t}\n\tend := cursor.Offset + count\n\tnext := \"\"\n\tif end < len(items) {\n\t\tnext = encode(Cursor{end, cursor.Limit})\n\t}\n\treturn items[cursor.Offset:end], next, nil\n}\n\nfunc main() {\n\tcursor, err := decode(encode(Cursor{2, 2}))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\titems, next, err := page([]string{\"a\", \"b\", \"c\", \"d\", \"e\"}, cursor)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tnextCursor, err := decode(next)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"page=%v next=%d\\n\", items, nextCursor.Offset)\n\t_, err = decode(\"*\")\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n\t_, err = decode(encode(Cursor{-1, 2}))\n\tfmt.Printf(\"negative=%t\\n\", err != nil)\n}\n",
+    "output": "page=[c d] next=4\ninvalid=true\nnegative=true"
+  },
+  "example": {
+    "id": "go-example-133",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "URL 安全 Base64 游标",
+    "summary": "把分页位置编码为 URL 安全游标。读取下一页并拒绝非法或负数位置。",
+    "concepts": [
+      "encoding/base64",
+      "encoding/json",
+      "分页游标",
+      "边界校验"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/base64\"\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Cursor struct {\n\tOffset int `json:\"offset\"`\n\tLimit  int `json:\"limit\"`\n}\n\nfunc encode(cursor Cursor) string {\n\tdata, err := json.Marshal(cursor)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\treturn base64.RawURLEncoding.EncodeToString(data)\n}\n\nfunc decode(text string) (Cursor, error) {\n\tvar cursor Cursor\n\tdata, err := base64.RawURLEncoding.DecodeString(text)\n\tif err != nil {\n\t\treturn cursor, err\n\t}\n\tif err := json.Unmarshal(data, &cursor); err != nil {\n\t\treturn cursor, err\n\t}\n\tif cursor.Offset < 0 || cursor.Limit < 1 || cursor.Limit > 50 {\n\t\treturn cursor, fmt.Errorf(\"invalid cursor bounds\")\n\t}\n\treturn cursor, nil\n}\n\nfunc page(items []string, cursor Cursor) ([]string, string, error) {\n\tif cursor.Offset < 0 || cursor.Offset > len(items) || cursor.Limit < 1 || cursor.Limit > 50 {\n\t\treturn nil, \"\", fmt.Errorf(\"invalid page bounds\")\n\t}\n\tcount := len(items) - cursor.Offset\n\tif count > cursor.Limit {\n\t\tcount = cursor.Limit\n\t}\n\tend := cursor.Offset + count\n\tnext := \"\"\n\tif end < len(items) {\n\t\tnext = encode(Cursor{end, cursor.Limit})\n\t}\n\treturn items[cursor.Offset:end], next, nil\n}\n\nfunc main() {\n\tcursor, err := decode(encode(Cursor{2, 2}))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\titems, next, err := page([]string{\"a\", \"b\", \"c\", \"d\", \"e\"}, cursor)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tnextCursor, err := decode(next)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"page=%v next=%d\\n\", items, nextCursor.Offset)\n\t_, err = decode(\"*\")\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n\t_, err = decode(encode(Cursor{-1, 2}))\n\tfmt.Printf(\"negative=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "page=[c d] next=4\ninvalid=true\nnegative=true",
+    "templateType": "go"
+  }
+}

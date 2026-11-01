@@ -1,0 +1,70 @@
+{
+  "id": "T042",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "assert Name ok: true value: gopher\nassert Number while type is Name: false\nsingle-value assert panicked: true\nafter reassign assert Number ok: true value: 7\nany->string ok: text"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-042",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "接口的动态类型与类型断言",
+    "summary": "用逗号-ok 安全断言与单返回值断言，演示成功、失败与 panic。",
+    "concepts": [
+      "类型断言",
+      "动态类型",
+      "逗号-ok",
+      "panic"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用逗号-ok 做安全类型断言，并说明单返回值断言失败的 panic 代价。",
+    "prerequisites": [
+      "T041 接口基础与鸭子类型"
+    ],
+    "pitfalls": [
+      "用单返回值断言而不确定类型：失败即 panic；应优先逗号-ok。",
+      "断言到一个接口值不实现的类型：编译期就报错（impossible type assertion）。"
+    ],
+    "exercises": [
+      {
+        "prompt": "给 Stringer 增加一个断言：若动态类型实现了另一个接口，则调用其方法。",
+        "hint": "用 v, ok := s.(OtherInterface)。",
+        "answer": "if o, ok := s.(Other); ok { o.Method() }。"
+      }
+    ],
+    "explain": "接口值内部保存“动态类型 + 动态值”。类型断言 x.(T) 取出具体类型：逗号-ok 形式在失败时返回零值与 false，安全降级；单返回值形式失败时 panic。示例先对动态类型 Name 断言成功，再断言为 Number 失败（返回 false），并用 recover 演示单返回值断言的 panic 代价，然后改赋为 Number，断言成功。要注意：断言目标类型必须在编译期可能实现该接口，否则直接编译失败。",
+    "code": "// T042 接口的动态类型与类型断言。\n//\n// 接口值内部保存“动态类型 + 动态值”。用类型断言 x.(T) 取出具体类型：\n// 单返回值形式在失败时 panic，逗号-ok 形式安全返回零值与 false。\n// 本示例演示两种断言与安全降级。\npackage main\n\nimport \"fmt\"\n\n// Stringer 是一个简单接口。\ntype Stringer interface {\n\tString() string\n}\n\n// Name 实现了 Stringer。\ntype Name string\n\nfunc (n Name) String() string { return string(n) }\n\n// Number 也实现了 Stringer，便于在同一接口值上演示断言成功/失败。\ntype Number int\n\nfunc (n Number) String() string { return fmt.Sprintf(\"#%d\", int(n)) }\n\nfunc main() {\n\tvar s Stringer = Name(\"gopher\")\n\n\t// 安全的逗号-ok 断言：成功时 ok 为 true。\n\tname, ok := s.(Name)\n\tfmt.Println(\"assert Name ok:\", ok, \"value:\", name)\n\n\t// 失败断言：动态类型是 Name，断言为 Number 不成立，返回零值与 false。\n\t_, ok = s.(Number)\n\tfmt.Println(\"assert Number while type is Name:\", ok)\n\n\t// 单返回值形式在失败时 panic；示例用 recover 演示其代价。\n\tfunc() {\n\t\tdefer func() {\n\t\t\tif r := recover(); r != nil {\n\t\t\t\tfmt.Println(\"single-value assert panicked:\", r != nil)\n\t\t\t}\n\t\t}()\n\t\t_ = s.(Number) // 会 panic\n\t}()\n\n\t// 动态类型改赋为 Number；此时断言成功并取到值。\n\ts = Number(7)\n\tn, ok := s.(Number)\n\tfmt.Println(\"after reassign assert Number ok:\", ok, \"value:\", int(n))\n\n\t// 对 any 的接口值断言为 string。\n\tvar anyv any = \"text\"\n\tif str, ok := anyv.(string); ok {\n\t\tfmt.Println(\"any->string ok:\", str)\n\t}\n}\n",
+    "output": "assert Name ok: true value: gopher\nassert Number while type is Name: false\nsingle-value assert panicked: true\nafter reassign assert Number ok: true value: 7\nany->string ok: text"
+  },
+  "example": {
+    "id": "go-example-042",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "接口的动态类型与类型断言（示例）",
+    "summary": "对应主题 T042 的可运行示例。",
+    "concepts": [
+      "类型断言",
+      "动态类型",
+      "逗号-ok",
+      "panic"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T042 接口的动态类型与类型断言。\n//\n// 接口值内部保存“动态类型 + 动态值”。用类型断言 x.(T) 取出具体类型：\n// 单返回值形式在失败时 panic，逗号-ok 形式安全返回零值与 false。\n// 本示例演示两种断言与安全降级。\npackage main\n\nimport \"fmt\"\n\n// Stringer 是一个简单接口。\ntype Stringer interface {\n\tString() string\n}\n\n// Name 实现了 Stringer。\ntype Name string\n\nfunc (n Name) String() string { return string(n) }\n\n// Number 也实现了 Stringer，便于在同一接口值上演示断言成功/失败。\ntype Number int\n\nfunc (n Number) String() string { return fmt.Sprintf(\"#%d\", int(n)) }\n\nfunc main() {\n\tvar s Stringer = Name(\"gopher\")\n\n\t// 安全的逗号-ok 断言：成功时 ok 为 true。\n\tname, ok := s.(Name)\n\tfmt.Println(\"assert Name ok:\", ok, \"value:\", name)\n\n\t// 失败断言：动态类型是 Name，断言为 Number 不成立，返回零值与 false。\n\t_, ok = s.(Number)\n\tfmt.Println(\"assert Number while type is Name:\", ok)\n\n\t// 单返回值形式在失败时 panic；示例用 recover 演示其代价。\n\tfunc() {\n\t\tdefer func() {\n\t\t\tif r := recover(); r != nil {\n\t\t\t\tfmt.Println(\"single-value assert panicked:\", r != nil)\n\t\t\t}\n\t\t}()\n\t\t_ = s.(Number) // 会 panic\n\t}()\n\n\t// 动态类型改赋为 Number；此时断言成功并取到值。\n\ts = Number(7)\n\tn, ok := s.(Number)\n\tfmt.Println(\"after reassign assert Number ok:\", ok, \"value:\", int(n))\n\n\t// 对 any 的接口值断言为 string。\n\tvar anyv any = \"text\"\n\tif str, ok := anyv.(string); ok {\n\t\tfmt.Println(\"any->string ok:\", str)\n\t}\n}\n",
+    "expectedOutput": "assert Name ok: true value: gopher\nassert Number while type is Name: false\nsingle-value assert panicked: true\nafter reassign assert Number ok: true value: 7\nany->string ok: text",
+    "templateType": "go"
+  }
+}

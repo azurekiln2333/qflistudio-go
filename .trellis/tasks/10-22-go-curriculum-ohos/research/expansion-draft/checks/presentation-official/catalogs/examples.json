@@ -1,0 +1,213 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "go-example-241",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "模板金额辅助函数",
+      "summary": "能注册分币格式化 FuncMap，渲染订单明细与总价。",
+      "concepts": [
+        "text/template",
+        "bytes",
+        "模板与展示协议"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"text/template\"\n)\n\ntype Item struct {\n\tName      string\n\tQty, Unit int\n}\ntype Report struct {\n\tItems []Item\n\tTotal int\n}\n\nfunc money(cents int) string { return fmt.Sprintf(\"%d.%02d\", cents/100, cents%100) }\nfunc main() {\n\treport := Report{Items: []Item{{\"pen\", 2, 139}, {\"pad\", 1, 50}}}\n\tfor _, item := range report.Items {\n\t\treport.Total += item.Qty * item.Unit\n\t}\n\tsource := \"{{range .Items}}{{.Name}} {{.Qty}} x {{money .Unit}}\\n{{end}}total {{money .Total}}\\n\"\n\tt, err := template.New(\"invoice\").Funcs(template.FuncMap{\"money\": money}).Parse(source)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar out bytes.Buffer\n\tif err = t.Execute(&out, report); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Print(out.String())\n}\n",
+      "expectedOutput": "pen 2 x 1.39\npad 1 x 0.50\ntotal 3.28",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-242",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "HTML 自动转义",
+      "summary": "能渲染含标签的用户输入，验证正文与属性上下文的自动转义。",
+      "concepts": [
+        "html/template",
+        "bytes",
+        "模板与展示协议"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"html/template\"\n\t\"strings\"\n)\n\nfunc main() {\n\tt, err := template.New(\"message\").Parse(`<p title=\"{{.}}\">{{.}}</p>`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar out bytes.Buffer\n\tif err = t.Execute(&out, `<b>\"x\"</b>`); err != nil {\n\t\tpanic(err)\n\t}\n\thtml := out.String()\n\tfmt.Printf(\"escaped-tags=%t\\nescaped-quotes=%t\\nraw-tag-absent=%t\\n\", strings.Contains(html, \"&lt;b&gt;\"), strings.Contains(html, \"&#34;\"), !strings.Contains(html, \"<b>\"))\n}\n",
+      "expectedOutput": "escaped-tags=true\nescaped-quotes=true\nraw-tag-absent=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-243",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "模板块复用",
+      "summary": "能定义并复用页头和行模板，以不同数据生成两份报告。",
+      "concepts": [
+        "text/template",
+        "bytes",
+        "模板与展示协议"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"text/template\"\n)\n\ntype Row struct {\n\tName  string\n\tCount int\n}\ntype Report struct {\n\tTitle string\n\tRows  []Row\n}\n\nfunc main() {\n\tsource := `{{define \"header\"}}REPORT {{.}}{{end}}{{define \"row\"}}{{.Name}}={{.Count}}{{end}}{{define \"report\"}}{{template \"header\" .Title}}:{{range .Rows}} [{{template \"row\" .}}]{{end}}{{end}}`\n\tt, err := template.New(\"root\").Parse(source)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, report := range []Report{{\"north\", []Row{{\"books\", 3}, {\"pens\", 5}}}, {\"south\", []Row{{\"books\", 2}}}} {\n\t\tvar out bytes.Buffer\n\t\tif err := t.ExecuteTemplate(&out, \"report\", report); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Println(out.String())\n\t}\n}\n",
+      "expectedOutput": "REPORT north: [books=3] [pens=5]\nREPORT south: [books=2]",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-244",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "模板缺失键策略",
+      "summary": "能设置 missingkey=error，比较完整记录与缺字段记录的执行结果。",
+      "concepts": [
+        "text/template",
+        "bytes",
+        "模板与展示协议"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"text/template\"\n)\n\nfunc render(t *template.Template, data map[string]string) (string, error) {\n\tvar buffer bytes.Buffer\n\tif err := t.Execute(&buffer, data); err != nil {\n\t\treturn \"\", err\n\t}\n\treturn buffer.String(), nil\n}\nfunc main() {\n\tt, err := template.New(\"profile\").Option(\"missingkey=error\").Parse(\"name={{.name}} role={{.role}}\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfull, err := render(t, map[string]string{\"name\": \"Li\", \"role\": \"reader\"})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(full)\n\tpartial, err := render(t, map[string]string{\"name\": \"Yu\"})\n\tfmt.Printf(\"missing-rejected=%t\\npartial-published=%t\\n\", err != nil, partial != \"\")\n}\n",
+      "expectedOutput": "name=Li role=reader\nmissing-rejected=true\npartial-published=false",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-245",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "自定义 JSON 脱敏视图",
+      "summary": "能用 MarshalJSON 输出遮盖后的账号视图，同时保留内存原值。",
+      "concepts": [
+        "encoding/json",
+        "模板与展示协议"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"strings\"\n)\n\ntype Account struct{ Name, Token string }\n\nfunc (a Account) MarshalJSON() ([]byte, error) {\n\ttype View struct {\n\t\tName  string `json:\"name\"`\n\t\tToken string `json:\"token\"`\n\t}\n\tmasked := \"***\"\n\tif len(a.Token) >= 4 {\n\t\tmasked += a.Token[len(a.Token)-4:]\n\t}\n\treturn json.Marshal(View{a.Name, masked})\n}\nfunc main() {\n\taccount := Account{\"Li\", \"secret-1234\"}\n\twire, err := json.Marshal(account)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(string(wire))\n\tfmt.Printf(\"memory-intact=%t\\nsecret-absent=%t\\n\", account.Token == \"secret-1234\", !strings.Contains(string(wire), \"secret-\"))\n}\n",
+      "expectedOutput": "{\"name\":\"Li\",\"token\":\"***1234\"}\nmemory-intact=true\nsecret-absent=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-246",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "枚举文本协议",
+      "summary": "能为状态枚举实现 TextMarshaler/TextUnmarshaler，验证合法与非法值。",
+      "concepts": [
+        "encoding",
+        "encoding/json",
+        "模板与展示协议"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Status int\n\nconst (\n\tPending Status = iota\n\tReady\n)\n\nfunc (s Status) MarshalText() ([]byte, error) {\n\tswitch s {\n\tcase Pending:\n\t\treturn []byte(\"pending\"), nil\n\tcase Ready:\n\t\treturn []byte(\"ready\"), nil\n\t}\n\treturn nil, fmt.Errorf(\"unknown status\")\n}\nfunc (s *Status) UnmarshalText(text []byte) error {\n\tvar next Status\n\tswitch string(text) {\n\tcase \"pending\":\n\t\tnext = Pending\n\tcase \"ready\":\n\t\tnext = Ready\n\tdefault:\n\t\treturn fmt.Errorf(\"invalid status\")\n\t}\n\t*s = next\n\treturn nil\n}\nfunc main() {\n\twire, err := json.Marshal(Ready)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"wire=%s\\n\", wire)\n\tvar status Status\n\tif err = json.Unmarshal([]byte(`\"ready\"`), &status); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"roundtrip=%t\\n\", status == Ready)\n\terr = json.Unmarshal([]byte(`\"deleted\"`), &status)\n\tfmt.Printf(\"invalid=%t unchanged=%t\\n\", err != nil, status == Ready)\n}\n",
+      "expectedOutput": "wire=\"ready\"\nroundtrip=true\ninvalid=true unchanged=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-247",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "固定列宽 Unicode 表格",
+      "summary": "能按 rune 个数截断并填充离线摘要表，明确 rune 数并非显示宽度。",
+      "concepts": [
+        "unicode/utf8",
+        "strings",
+        "模板与展示协议"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"unicode/utf8\"\n)\n\nfunc cell(text string, width int) string {\n\trunes := []rune(text)\n\tif len(runes) > width {\n\t\trunes = runes[:width]\n\t}\n\tout := string(runes)\n\treturn out + strings.Repeat(\" \", width-utf8.RuneCountInString(out))\n}\nfunc main() {\n\tfor _, text := range []string{\"Go\", \"离线工具\", \"A😀BC\"} {\n\t\tvalue := cell(text, 3)\n\t\tfmt.Printf(\"|%s| runes=%d\\n\", value, utf8.RuneCountInString(value))\n\t}\n}\n",
+      "expectedOutput": "|Go | runes=3\n|离线工| runes=3\n|A😀B| runes=3",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-248",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "JSON Lines 报表",
+      "summary": "能逐行编码和解码不同记录，报告损坏行而继续处理后续行。",
+      "concepts": [
+        "encoding/json",
+        "bytes",
+        "模板与展示协议"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"bufio\"\n\t\"bytes\"\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\ntype Row struct {\n\tID    int    `json:\"id\"`\n\tValue string `json:\"value\"`\n}\n\nfunc main() {\n\tvar source bytes.Buffer\n\tencoder := json.NewEncoder(&source)\n\tfor _, row := range []Row{{1, \"a\"}, {2, \"b\"}} {\n\t\tif err := encoder.Encode(row); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tsource.WriteString(\"{broken}\\n\")\n\tif err := encoder.Encode(Row{3, \"c\"}); err != nil {\n\t\tpanic(err)\n\t}\n\tscanner := bufio.NewScanner(&source)\n\tline := 0\n\tvalid := 0\n\tfor scanner.Scan() {\n\t\tline++\n\t\tvar row Row\n\t\tif err := json.Unmarshal(scanner.Bytes(), &row); err != nil {\n\t\t\tfmt.Printf(\"line=%d invalid\\n\", line)\n\t\t\tcontinue\n\t\t}\n\t\tvalid++\n\t\tfmt.Printf(\"id=%d value=%s\\n\", row.ID, row.Value)\n\t}\n\tif err := scanner.Err(); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"valid=%d\\n\", valid)\n}\n",
+      "expectedOutput": "id=1 value=a\nid=2 value=b\nline=3 invalid\nid=3 value=c\nvalid=3",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-249",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "Markdown 表格转义",
+      "summary": "能为含管道符、反斜线和换行的字段生成合法 Markdown 表格。",
+      "concepts": [
+        "strings",
+        "模板与展示协议"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc escape(text string) string {\n\tr := strings.NewReplacer(\"\\\\\", \"\\\\\\\\\", \"|\", \"\\\\|\", \"\\r\\n\", \"<br>\", \"\\n\", \"<br>\", \"\\r\", \"<br>\")\n\treturn r.Replace(text)\n}\nfunc main() {\n\tfmt.Println(\"| name | notes |\")\n\tfmt.Println(\"| --- | --- |\")\n\tfor _, row := range [][2]string{{\"A|B\", `C:\\docs`}, {\"中文\", \"first\\nsecond\"}} {\n\t\tfmt.Printf(\"| %s | %s |\\n\", escape(row[0]), escape(row[1]))\n\t}\n}\n",
+      "expectedOutput": "| name | notes |\n| --- | --- |\n| A\\|B | C:\\\\docs |\n| 中文 | first<br>second |",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-250",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "进度条纯函数",
+      "summary": "能将已完成量和总量转换为固定宽度进度条，处理越界与零总量。",
+      "concepts": [
+        "strings",
+        "strconv",
+        "模板与展示协议"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc progress(done, total, width int) string {\n\tif width <= 0 {\n\t\treturn \"[]\"\n\t}\n\tif total <= 0 {\n\t\treturn \"[\" + strings.Repeat(\"-\", width) + \"] n/a\"\n\t}\n\tif done < 0 {\n\t\tdone = 0\n\t}\n\tif done > total {\n\t\tdone = total\n\t}\n\tfilled := int(float64(done) / float64(total) * float64(width))\n\treturn fmt.Sprintf(\"[%s%s] %d/%d\", strings.Repeat(\"#\", filled), strings.Repeat(\"-\", width-filled), done, total)\n}\nfunc main() {\n\tfor _, pair := range [][2]int{{0, 8}, {3, 8}, {10, 8}, {-2, 8}, {0, 0}} {\n\t\tfmt.Println(progress(pair[0], pair[1], 8))\n\t}\n}\n",
+      "expectedOutput": "[--------] 0/8\n[###-----] 3/8\n[########] 8/8\n[--------] 0/8\n[--------] n/a",
+      "templateType": "go",
+      "inputFixtures": {}
+    }
+  ]
+}

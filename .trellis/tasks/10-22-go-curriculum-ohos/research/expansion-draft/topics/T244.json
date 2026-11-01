@@ -1,0 +1,69 @@
+{
+  "id": "T244",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "name=Li role=reader\nmissing-rejected=true\npartial-published=false\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-244",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "模板缺失键策略",
+    "summary": "能设置 missingkey=error，比较完整记录与缺字段记录的执行结果。",
+    "concepts": [
+      "text/template",
+      "bytes",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能设置 missingkey=error，比较完整记录与缺字段记录的执行结果。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "Execute 返回错误时，目标 Writer 可能已收到部分内容。错误不会自动回滚输出。",
+      "missingkey 主要约束 map 键访问，不代替所有业务字段校验。"
+    ],
+    "exercises": [
+      {
+        "prompt": "保留上一份成功报告，在下一次渲染失败时不覆盖它。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "用临时字符串接收 render 结果。只有 err 为 nil 时再更新当前报告变量。"
+      }
+    ],
+    "explain": "missingkey=error 把缺字段从占位输出变成显式失败。模板执行可能在发现缺键前先写出部分文本。render 使用局部缓冲。只有完整成功才返回字符串。第一份资料生成完整报告。第二份缺少 role。渲染直接失败。半成品没有发布。这适合设置导出或报表字段不能缺失的场景。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"text/template\"\n)\n\nfunc render(t *template.Template, data map[string]string) (string, error) {\n\tvar buffer bytes.Buffer\n\tif err := t.Execute(&buffer, data); err != nil {\n\t\treturn \"\", err\n\t}\n\treturn buffer.String(), nil\n}\nfunc main() {\n\tt, err := template.New(\"profile\").Option(\"missingkey=error\").Parse(\"name={{.name}} role={{.role}}\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfull, err := render(t, map[string]string{\"name\": \"Li\", \"role\": \"reader\"})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(full)\n\tpartial, err := render(t, map[string]string{\"name\": \"Yu\"})\n\tfmt.Printf(\"missing-rejected=%t\\npartial-published=%t\\n\", err != nil, partial != \"\")\n}\n",
+    "output": "name=Li role=reader\nmissing-rejected=true\npartial-published=false"
+  },
+  "example": {
+    "id": "go-example-244",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "模板缺失键策略",
+    "summary": "能设置 missingkey=error，比较完整记录与缺字段记录的执行结果。",
+    "concepts": [
+      "text/template",
+      "bytes",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"text/template\"\n)\n\nfunc render(t *template.Template, data map[string]string) (string, error) {\n\tvar buffer bytes.Buffer\n\tif err := t.Execute(&buffer, data); err != nil {\n\t\treturn \"\", err\n\t}\n\treturn buffer.String(), nil\n}\nfunc main() {\n\tt, err := template.New(\"profile\").Option(\"missingkey=error\").Parse(\"name={{.name}} role={{.role}}\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfull, err := render(t, map[string]string{\"name\": \"Li\", \"role\": \"reader\"})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(full)\n\tpartial, err := render(t, map[string]string{\"name\": \"Yu\"})\n\tfmt.Printf(\"missing-rejected=%t\\npartial-published=%t\\n\", err != nil, partial != \"\")\n}\n",
+    "expectedOutput": "name=Li role=reader\nmissing-rejected=true\npartial-published=false",
+    "templateType": "go"
+  }
+}

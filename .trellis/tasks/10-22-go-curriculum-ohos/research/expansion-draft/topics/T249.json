@@ -1,0 +1,67 @@
+{
+  "id": "T249",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "| name | notes |\n| --- | --- |\n| A\\|B | C:\\\\docs |\n| 中文 | first<br>second |\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-249",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Markdown 表格转义",
+    "summary": "能为含管道符、反斜线和换行的字段生成合法 Markdown 表格。",
+    "concepts": [
+      "strings",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能为含管道符、反斜线和换行的字段生成合法 Markdown 表格。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "连续多次 ReplaceAll 的顺序不当会把刚插入的转义字符再次处理。",
+      "本例转义的是表格分隔语法，不是通用 HTML 消毒器。"
+    ],
+    "exercises": [
+      {
+        "prompt": "禁止字段内原始 HTML，而仅保留生成器自己的 br。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "先对原始字段执行 html.EscapeString。再处理表格语法和换行。不要把生成的 br 再整体转义。"
+      }
+    ],
+    "explain": "Markdown 表格把管道符当成列分隔符。字段里的管道符和反斜线要分别转义。物理换行也要转换。Replacer 一次扫描原始输入。后续替换不会再次扩张新生成的反斜线。示例保留 Windows 路径、中文和多行备注。不同渲染器对内联 HTML 支持有差异。导出协议需明确允许 br。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc escape(text string) string {\n\tr := strings.NewReplacer(\"\\\\\", \"\\\\\\\\\", \"|\", \"\\\\|\", \"\\r\\n\", \"<br>\", \"\\n\", \"<br>\", \"\\r\", \"<br>\")\n\treturn r.Replace(text)\n}\nfunc main() {\n\tfmt.Println(\"| name | notes |\")\n\tfmt.Println(\"| --- | --- |\")\n\tfor _, row := range [][2]string{{\"A|B\", `C:\\docs`}, {\"中文\", \"first\\nsecond\"}} {\n\t\tfmt.Printf(\"| %s | %s |\\n\", escape(row[0]), escape(row[1]))\n\t}\n}\n",
+    "output": "| name | notes |\n| --- | --- |\n| A\\|B | C:\\\\docs |\n| 中文 | first<br>second |"
+  },
+  "example": {
+    "id": "go-example-249",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Markdown 表格转义",
+    "summary": "能为含管道符、反斜线和换行的字段生成合法 Markdown 表格。",
+    "concepts": [
+      "strings",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc escape(text string) string {\n\tr := strings.NewReplacer(\"\\\\\", \"\\\\\\\\\", \"|\", \"\\\\|\", \"\\r\\n\", \"<br>\", \"\\n\", \"<br>\", \"\\r\", \"<br>\")\n\treturn r.Replace(text)\n}\nfunc main() {\n\tfmt.Println(\"| name | notes |\")\n\tfmt.Println(\"| --- | --- |\")\n\tfor _, row := range [][2]string{{\"A|B\", `C:\\docs`}, {\"中文\", \"first\\nsecond\"}} {\n\t\tfmt.Printf(\"| %s | %s |\\n\", escape(row[0]), escape(row[1]))\n\t}\n}\n",
+    "expectedOutput": "| name | notes |\n| --- | --- |\n| A\\|B | C:\\\\docs |\n| 中文 | first<br>second |",
+    "templateType": "go"
+  }
+}

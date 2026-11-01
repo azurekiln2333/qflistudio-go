@@ -1,0 +1,68 @@
+{
+  "id": "T005",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "0 1 2\npi as float64 = 3.14\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-005",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "常量、iota 与无类型常量",
+    "summary": "用 const 与 iota 构造枚举，并理解无类型常量的延迟定型。",
+    "concepts": [
+      "const",
+      "iota",
+      "无类型常量"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 iota 定义一组递增枚举常量，并说明无类型常量在赋值时才确定类型。",
+    "prerequisites": [
+      "T004 基础类型"
+    ],
+    "pitfalls": [
+      "以为 iota 是运行时计数器：iota 是编译期常量生成器，每个 const 块从 0 重新计数。",
+      "把无类型常量当作有具体类型：const pi = 3.14159 本身是无类型的，赋给 float64 变量时才成为 float64。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在第 2 个枚举后插入一行 _ 跳过某个 iota 值，观察后续常量数值变化。",
+        "hint": "iota 每行递增 1，_ 也占用一个 iota 值。",
+        "answer": "插入 _ 后，其后的枚举值会整体后移 1，说明 iota 按行计数，未命名的行同样递增。"
+      }
+    ],
+    "explain": "const 定义编译期常量，不能取地址、不能重新赋值。iota 在 const 块中从 0 开始、每行递增 1，用来写枚举。把枚举基于一个具名类型（如 type Weekday int）可以让类型更清晰。\n\n无类型常量是 Go 的独特之处：字面量 3.14159 在未赋给变量前没有确定类型，赋给 float64 变量时成为 float64，赋给 float32 时成为 float32，从而在不损失精度语义的前提下复用同一常量。\n\n本样例打印三个枚举的整数值，并把无类型常量 pi 赋给 float64 后再格式化输出。",
+    "code": "package main\n\nimport \"fmt\"\n\ntype Weekday int\n\nconst (\n\tSunday Weekday = iota\n\tMonday\n\tTuesday\n)\n\nfunc main() {\n\tfmt.Println(int(Sunday), int(Monday), int(Tuesday))\n\tconst pi = 3.14159 // 无类型常量，使用时才确定类型\n\tvar f float64 = pi\n\tfmt.Printf(\"pi as float64 = %.2f\\n\", f)\n}\n",
+    "output": "0 1 2\npi as float64 = 3.14"
+  },
+  "example": {
+    "id": "go-example-005",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "iota 枚举",
+    "summary": "用 iota 生成 0、1、2 的枚举值并打印。",
+    "concepts": [
+      "const",
+      "iota",
+      "无类型常量"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\ntype Weekday int\n\nconst (\n\tSunday Weekday = iota\n\tMonday\n\tTuesday\n)\n\nfunc main() {\n\tfmt.Println(int(Sunday), int(Monday), int(Tuesday))\n\tconst pi = 3.14159 // 无类型常量，使用时才确定类型\n\tvar f float64 = pi\n\tfmt.Printf(\"pi as float64 = %.2f\\n\", f)\n}\n",
+    "expectedOutput": "0 1 2\npi as float64 = 3.14",
+    "templateType": "go"
+  }
+}

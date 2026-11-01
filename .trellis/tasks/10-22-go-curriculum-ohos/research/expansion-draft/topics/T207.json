@@ -1,0 +1,71 @@
+{
+  "id": "T207",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "same=true\nsecret-bytes=32\nbad-key-rejected=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-207",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "密钥协商一致性",
+    "summary": "能两方生成临时 P256 密钥。独立推导共享秘密。比较一致性。",
+    "concepts": [
+      "crypto/ecdh",
+      "crypto/rand",
+      "bytes",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能两方生成临时 P256 密钥。独立推导共享秘密。比较一致性。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "共享秘密不可直接打印到日志或作为公开会话标识。",
+      "没有认证的公钥交换会面临中间人替换，秘密一致并不证明对方身份。"
+    ],
+    "exercises": [
+      {
+        "prompt": "将 Bob 公钥序列化后重新读取。再检查 Alice 推导的秘密是否一致。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "对 bob.PublicKey().Bytes() 调用 curve.NewPublicKey。检查错误。再交给 alice.ECDH。"
+      }
+    ],
+    "explain": "双方各自生成私钥，只交换公钥。Alice 的私钥配 Bob 的公钥、Bob 的私钥配 Alice 的公钥，会得到相同的共享秘密。示例不输出秘密。只检查一致性和长度。还会拒绝损坏公钥编码。ECDH 本身不验证对方身份，也不直接完成应用加密。生产协议还需要身份认证与密钥派生。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"crypto/ecdh\"\n\t\"crypto/rand\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tcurve := ecdh.P256()\n\talice, err := curve.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tbob, err := curve.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfirst, err := alice.ECDH(bob.PublicKey())\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tsecond, err := bob.ECDH(alice.PublicKey())\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"same=%t\\nsecret-bytes=%d\\n\", bytes.Equal(first, second), len(first))\n\t_, err = curve.NewPublicKey([]byte{1, 2, 3})\n\tfmt.Printf(\"bad-key-rejected=%t\\n\", err != nil)\n}\n",
+    "output": "same=true\nsecret-bytes=32\nbad-key-rejected=true"
+  },
+  "example": {
+    "id": "go-example-207",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "密钥协商一致性",
+    "summary": "能两方生成临时 P256 密钥。独立推导共享秘密。比较一致性。",
+    "concepts": [
+      "crypto/ecdh",
+      "crypto/rand",
+      "bytes",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"crypto/ecdh\"\n\t\"crypto/rand\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tcurve := ecdh.P256()\n\talice, err := curve.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tbob, err := curve.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfirst, err := alice.ECDH(bob.PublicKey())\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tsecond, err := bob.ECDH(alice.PublicKey())\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"same=%t\\nsecret-bytes=%d\\n\", bytes.Equal(first, second), len(first))\n\t_, err = curve.NewPublicKey([]byte{1, 2, 3})\n\tfmt.Printf(\"bad-key-rejected=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "same=true\nsecret-bytes=32\nbad-key-rejected=true",
+    "templateType": "go"
+  }
+}

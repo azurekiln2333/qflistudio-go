@@ -1,0 +1,71 @@
+{
+  "id": "T180",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "10:00 source=0 a0\n10:00 source=1 b0\n10:01 source=1 b1\n10:01 source=2 c0\n10:02 source=0 a1\n10:02 source=2 c1\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-180",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "多来源日志归并",
+    "summary": "归并三条已排序日志流，以时间、来源序号和来源内位置保持稳定顺序。",
+    "concepts": [
+      "container/heap",
+      "time.Before",
+      "多路归并",
+      "稳定并列"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "归并三条已排序日志流，以时间、来源序号和来源内位置保持稳定顺序。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "多路归并要求各输入流本身已经排序，不能静默接受乱序流。",
+      "相同时间戳需要额外决胜字段，否则日志顺序不确定。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加第四条空流，证明它不影响其他来源顺序且不会访问首项越界。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "初始化只把 len(stream)>0 的来源加入堆，已有的补入逻辑继续检查 next<len(stream)，空来源无需特殊占位项。"
+      }
+    ],
+    "explain": "堆中只保留每条流当前一项，取出后才补入该来源下一项，空间与来源数成正比。比较器先按时刻，再按来源编号，最后按来源内索引，因此相同时刻仍有稳定全序。开始归并前逐流验证单调排序，避免把错误前提带入算法。所有时间来自固定输入，既不依赖当前时钟，也不依赖实际并发调度。",
+    "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n\t\"time\"\n)\n\ntype Event struct {\n\tAt   time.Time\n\tText string\n}\ntype Cursor struct {\n\tEvent  Event\n\tSource int\n\tIndex  int\n}\ntype Queue []Cursor\n\nfunc (q Queue) Len() int { return len(q) }\nfunc (q Queue) Less(i, j int) bool {\n\tif !q[i].Event.At.Equal(q[j].Event.At) {\n\t\treturn q[i].Event.At.Before(q[j].Event.At)\n\t}\n\tif q[i].Source != q[j].Source {\n\t\treturn q[i].Source < q[j].Source\n\t}\n\treturn q[i].Index < q[j].Index\n}\nfunc (q Queue) Swap(i, j int)           { q[i], q[j] = q[j], q[i] }\nfunc (q *Queue) Push(value interface{}) { *q = append(*q, value.(Cursor)) }\nfunc (q *Queue) Pop() interface{} {\n\told := *q\n\tvalue := old[len(old)-1]\n\t*q = old[:len(old)-1]\n\treturn value\n}\nfunc merge(streams [][]Event) ([]Cursor, error) {\n\tqueue := &Queue{}\n\tfor source, stream := range streams {\n\t\tfor i := 1; i < len(stream); i++ {\n\t\t\tif stream[i].At.Before(stream[i-1].At) {\n\t\t\t\treturn nil, fmt.Errorf(\"unsorted stream\")\n\t\t\t}\n\t\t}\n\t\tif len(stream) > 0 {\n\t\t\theap.Push(queue, Cursor{stream[0], source, 0})\n\t\t}\n\t}\n\tresult := []Cursor{}\n\tfor queue.Len() > 0 {\n\t\tcurrent := heap.Pop(queue).(Cursor)\n\t\tresult = append(result, current)\n\t\tnext := current.Index + 1\n\t\tif next < len(streams[current.Source]) {\n\t\t\theap.Push(queue, Cursor{streams[current.Source][next], current.Source, next})\n\t\t}\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tbase := time.Date(2026, time.March, 12, 10, 0, 0, 0, time.UTC)\n\tstreams := [][]Event{{{base, \"a0\"}, {base.Add(2 * time.Minute), \"a1\"}}, {{base, \"b0\"}, {base.Add(time.Minute), \"b1\"}}, {{base.Add(time.Minute), \"c0\"}, {base.Add(2 * time.Minute), \"c1\"}}}\n\tresult, err := merge(streams)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, item := range result {\n\t\tfmt.Printf(\"%s source=%d %s\\n\", item.Event.At.Format(\"15:04\"), item.Source, item.Event.Text)\n\t}\n}\n",
+    "output": "10:00 source=0 a0\n10:00 source=1 b0\n10:01 source=1 b1\n10:01 source=2 c0\n10:02 source=0 a1\n10:02 source=2 c1"
+  },
+  "example": {
+    "id": "go-example-180",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "多来源日志归并",
+    "summary": "归并三条已排序日志流，以时间、来源序号和来源内位置保持稳定顺序。",
+    "concepts": [
+      "container/heap",
+      "time.Before",
+      "多路归并",
+      "稳定并列"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n\t\"time\"\n)\n\ntype Event struct {\n\tAt   time.Time\n\tText string\n}\ntype Cursor struct {\n\tEvent  Event\n\tSource int\n\tIndex  int\n}\ntype Queue []Cursor\n\nfunc (q Queue) Len() int { return len(q) }\nfunc (q Queue) Less(i, j int) bool {\n\tif !q[i].Event.At.Equal(q[j].Event.At) {\n\t\treturn q[i].Event.At.Before(q[j].Event.At)\n\t}\n\tif q[i].Source != q[j].Source {\n\t\treturn q[i].Source < q[j].Source\n\t}\n\treturn q[i].Index < q[j].Index\n}\nfunc (q Queue) Swap(i, j int)           { q[i], q[j] = q[j], q[i] }\nfunc (q *Queue) Push(value interface{}) { *q = append(*q, value.(Cursor)) }\nfunc (q *Queue) Pop() interface{} {\n\told := *q\n\tvalue := old[len(old)-1]\n\t*q = old[:len(old)-1]\n\treturn value\n}\nfunc merge(streams [][]Event) ([]Cursor, error) {\n\tqueue := &Queue{}\n\tfor source, stream := range streams {\n\t\tfor i := 1; i < len(stream); i++ {\n\t\t\tif stream[i].At.Before(stream[i-1].At) {\n\t\t\t\treturn nil, fmt.Errorf(\"unsorted stream\")\n\t\t\t}\n\t\t}\n\t\tif len(stream) > 0 {\n\t\t\theap.Push(queue, Cursor{stream[0], source, 0})\n\t\t}\n\t}\n\tresult := []Cursor{}\n\tfor queue.Len() > 0 {\n\t\tcurrent := heap.Pop(queue).(Cursor)\n\t\tresult = append(result, current)\n\t\tnext := current.Index + 1\n\t\tif next < len(streams[current.Source]) {\n\t\t\theap.Push(queue, Cursor{streams[current.Source][next], current.Source, next})\n\t\t}\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tbase := time.Date(2026, time.March, 12, 10, 0, 0, 0, time.UTC)\n\tstreams := [][]Event{{{base, \"a0\"}, {base.Add(2 * time.Minute), \"a1\"}}, {{base, \"b0\"}, {base.Add(time.Minute), \"b1\"}}, {{base.Add(time.Minute), \"c0\"}, {base.Add(2 * time.Minute), \"c1\"}}}\n\tresult, err := merge(streams)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, item := range result {\n\t\tfmt.Printf(\"%s source=%d %s\\n\", item.Event.At.Format(\"15:04\"), item.Source, item.Event.Text)\n\t}\n}\n",
+    "expectedOutput": "10:00 source=0 a0\n10:00 source=1 b0\n10:01 source=1 b1\n10:01 source=2 c0\n10:02 source=0 a1\n10:02 source=2 c1",
+    "templateType": "go"
+  }
+}

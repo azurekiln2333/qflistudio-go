@@ -1,0 +1,69 @@
+{
+  "id": "T174",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "2026-03-12=20m\n2026-03-13=25m\ntotal=45m preserved=true\nreversed=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-174",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "跨午夜区间拆分",
+    "summary": "把跨午夜会话按自然日拆分。核对各段时长之和等于原始会话。",
+    "concepts": [
+      "time.Date",
+      "自然日边界",
+      "时长守恒"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "把跨午夜会话按自然日拆分。核对各段时长之和等于原始会话。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "跨午夜不意味着总时长必须超过二十四小时。",
+      "按日期切分前必须固定地点，不同地点的午夜并非同一时刻。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加恰好在午夜结束的输入，保证不生成次日零时长段。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "循环条件保持 cursor.Before(end)。上一段恰好到达 end 后直接结束。不要用小于等于条件追加空段。"
+      }
+    ],
+    "explain": "每轮从当前游标构造下一自然日零点。取零点与总终点中较早者作为本段结束。再推进游标。会话 23:40 到次日 00:25 分成二十分钟与二十五分钟。使用 time.Date 构造下一日，而非增加固定二十四小时。保留日历边界含义。结束早于开始会失败。相等时产生零段。日期归属采用起点的地点。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\ntype Usage struct {\n\tDate     string\n\tDuration time.Duration\n}\n\nfunc split(start, end time.Time) ([]Usage, error) {\n\tif end.Before(start) {\n\t\treturn nil, fmt.Errorf(\"reversed interval\")\n\t}\n\tend = end.In(start.Location())\n\tresult := []Usage{}\n\tfor cursor := start; cursor.Before(end); {\n\t\tmidnight := time.Date(cursor.Year(), cursor.Month(), cursor.Day()+1, 0, 0, 0, 0, cursor.Location())\n\t\tstop := midnight\n\t\tif end.Before(stop) {\n\t\t\tstop = end\n\t\t}\n\t\tresult = append(result, Usage{cursor.Format(\"2006-01-02\"), stop.Sub(cursor)})\n\t\tcursor = stop\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tstart := time.Date(2026, time.March, 12, 23, 40, 0, 0, time.UTC)\n\tend := start.Add(45 * time.Minute)\n\tparts, err := split(start, end)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar total time.Duration\n\tfor _, part := range parts {\n\t\tfmt.Printf(\"%s=%.0fm\\n\", part.Date, part.Duration.Minutes())\n\t\ttotal += part.Duration\n\t}\n\tfmt.Printf(\"total=%.0fm preserved=%t\\n\", total.Minutes(), total == end.Sub(start))\n\t_, err = split(end, start)\n\tfmt.Printf(\"reversed=%t\\n\", err != nil)\n}\n",
+    "output": "2026-03-12=20m\n2026-03-13=25m\ntotal=45m preserved=true\nreversed=true"
+  },
+  "example": {
+    "id": "go-example-174",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "跨午夜区间拆分",
+    "summary": "把跨午夜会话按自然日拆分。核对各段时长之和等于原始会话。",
+    "concepts": [
+      "time.Date",
+      "自然日边界",
+      "时长守恒"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\ntype Usage struct {\n\tDate     string\n\tDuration time.Duration\n}\n\nfunc split(start, end time.Time) ([]Usage, error) {\n\tif end.Before(start) {\n\t\treturn nil, fmt.Errorf(\"reversed interval\")\n\t}\n\tend = end.In(start.Location())\n\tresult := []Usage{}\n\tfor cursor := start; cursor.Before(end); {\n\t\tmidnight := time.Date(cursor.Year(), cursor.Month(), cursor.Day()+1, 0, 0, 0, 0, cursor.Location())\n\t\tstop := midnight\n\t\tif end.Before(stop) {\n\t\t\tstop = end\n\t\t}\n\t\tresult = append(result, Usage{cursor.Format(\"2006-01-02\"), stop.Sub(cursor)})\n\t\tcursor = stop\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tstart := time.Date(2026, time.March, 12, 23, 40, 0, 0, time.UTC)\n\tend := start.Add(45 * time.Minute)\n\tparts, err := split(start, end)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar total time.Duration\n\tfor _, part := range parts {\n\t\tfmt.Printf(\"%s=%.0fm\\n\", part.Date, part.Duration.Minutes())\n\t\ttotal += part.Duration\n\t}\n\tfmt.Printf(\"total=%.0fm preserved=%t\\n\", total.Minutes(), total == end.Sub(start))\n\t_, err = split(end, start)\n\tfmt.Printf(\"reversed=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "2026-03-12=20m\n2026-03-13=25m\ntotal=45m preserved=true\nreversed=true",
+    "templateType": "go"
+  }
+}

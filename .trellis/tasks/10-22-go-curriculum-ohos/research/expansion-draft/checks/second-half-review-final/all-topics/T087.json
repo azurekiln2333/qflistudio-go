@@ -1,0 +1,70 @@
+{
+  "id": "T087",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "line 1: go is fun\nline 2: bufio scans lines\nline 3: and words too\ntotal lines: 3\ntotal words: 9"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-087",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "bufio：按行/按词扫描与缓冲写",
+    "summary": "用 bufio.Scanner 按行与按词两种方式扫描文本并统计。",
+    "concepts": [
+      "bufio.Scanner",
+      "按行",
+      "按词",
+      "缓冲"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 bufio.Scanner 处理文本，说明默认行上限与如何调大。",
+    "prerequisites": [
+      "T085 io.Reader / io.Writer 抽象"
+    ],
+    "pitfalls": [
+      "超长行（>64KB）未调大 Buffer：Scan 会因 token too long 返回 false，容易误判为 EOF。",
+      "忘记检查 Scanner.Err()：扫描中途的 IO 错误会被漏掉。"
+    ],
+    "exercises": [
+      {
+        "prompt": "统计每行单词数并打印行号。",
+        "hint": "对每行再用 strings.Fields 分词。",
+        "answer": "for lineScan.Scan() { n := len(strings.Fields(lineScan.Text())); ... }"
+      }
+    ],
+    "explain": "bufio.Scanner 把 Reader 包装成“按 token”迭器，默认按行切分，也可用 Split(bufio.ScanWords) 按词。它内部带缓冲，减少系统调用。示例对同一段文本先按行、再按词扫描并打印统计，输出确定。注意两个要点：一是默认单行上限约 64KB，超长行需要 scan.Buffer(make([]byte, 0, max), max) 调大；二是循环结束后应检查 scan.Err()，否则扫描中途的 IO 错误会被静默忽略。",
+    "code": "// T087 bufio：按行/按词扫描与缓冲写。\n//\n// bufio.Scanner 把 Reader 包装成\"按行/按词\"的迭代器，内部用缓冲减少系统调用。\n// 注意默认单行上限约 64KB，超长行需要 Buffer() 调大上限。\n// 本示例按行与按词两种方式扫描同一段文本，统计结果确定。\npackage main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\tconst text = \"go is fun\\nbufio scans lines\\nand words too\\n\"\n\n\t// 按行扫描。\n\tlineScan := bufio.NewScanner(strings.NewReader(text))\n\tlines := 0\n\tfor lineScan.Scan() {\n\t\tlines++\n\t\tfmt.Printf(\"line %d: %s\\n\", lines, lineScan.Text())\n\t}\n\tfmt.Println(\"total lines:\", lines)\n\n\t// 按词扫描：用 ScanWords 切分。\n\twordScan := bufio.NewScanner(strings.NewReader(text))\n\twordScan.Split(bufio.ScanWords)\n\twords := 0\n\tfor wordScan.Scan() {\n\t\twords++\n\t}\n\tfmt.Println(\"total words:\", words)\n}\n",
+    "output": "line 1: go is fun\nline 2: bufio scans lines\nline 3: and words too\ntotal lines: 3\ntotal words: 9"
+  },
+  "example": {
+    "id": "go-example-087",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "bufio：按行/按词扫描与缓冲写（示例）",
+    "summary": "对应主题 T087 的可运行示例。",
+    "concepts": [
+      "bufio.Scanner",
+      "按行",
+      "按词",
+      "缓冲"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T087 bufio：按行/按词扫描与缓冲写。\n//\n// bufio.Scanner 把 Reader 包装成\"按行/按词\"的迭代器，内部用缓冲减少系统调用。\n// 注意默认单行上限约 64KB，超长行需要 Buffer() 调大上限。\n// 本示例按行与按词两种方式扫描同一段文本，统计结果确定。\npackage main\n\nimport (\n\t\"bufio\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\tconst text = \"go is fun\\nbufio scans lines\\nand words too\\n\"\n\n\t// 按行扫描。\n\tlineScan := bufio.NewScanner(strings.NewReader(text))\n\tlines := 0\n\tfor lineScan.Scan() {\n\t\tlines++\n\t\tfmt.Printf(\"line %d: %s\\n\", lines, lineScan.Text())\n\t}\n\tfmt.Println(\"total lines:\", lines)\n\n\t// 按词扫描：用 ScanWords 切分。\n\twordScan := bufio.NewScanner(strings.NewReader(text))\n\twordScan.Split(bufio.ScanWords)\n\twords := 0\n\tfor wordScan.Scan() {\n\t\twords++\n\t}\n\tfmt.Println(\"total words:\", words)\n}\n",
+    "expectedOutput": "line 1: go is fun\nline 2: bufio scans lines\nline 3: and words too\ntotal lines: 3\ntotal words: 9",
+    "templateType": "go"
+  }
+}

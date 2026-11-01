@@ -1,0 +1,68 @@
+{
+  "id": "T011",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "95 -> A\n72 -> B\n50 -> C\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-011",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "if / else 与作用域块",
+    "summary": "利用 if 的初始化语句限定变量作用域，写出更紧凑的分支。",
+    "concepts": [
+      "if",
+      "else",
+      "作用域"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 if 初始化语句声明只在分支内可见的变量，并组织多分支条件。",
+    "prerequisites": [
+      "T010 运算符"
+    ],
+    "pitfalls": [
+      "在 if 初始化里声明的变量在分支外不可见：if v := f(); v > 0 {} 之后访问 v 会编译报错。",
+      "else 必须与 } 同行：Go 要求 } else { 写在同一行，换行会被自动分号插入破坏语法。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 classify 增加一个「不及格」分支，并把阈值改成 60，预测再运行。",
+        "hint": "按 10 分段的 v 值调整判断顺序。",
+        "answer": "增加 v >= 6 之前的低分分支后，50 分落到不及格档；运行输出随之改变。"
+      }
+    ],
+    "explain": "Go 的 if 支持一条初始化语句：if v := expr; cond {} 会先求值 expr、把结果绑定到 v，再判断 cond。v 的作用域严格限制在 if/else 链内部，避免污染外层命名空间，这在需要立即检查返回值时非常常用。\n\n另一个语法细节是 else 的书写位置：Go 依赖自动分号插入，} 后换行会被插入分号，导致 else 成为孤立语句而报错，因此必须写成 } else {。\n\n本样例用 if v := score / 10; 先算档位再分级，演示初始化语句与多分支。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc classify(score int) string {\n\tif v := score / 10; v >= 9 {\n\t\treturn \"A\"\n\t} else if v >= 7 {\n\t\treturn \"B\"\n\t} else {\n\t\treturn \"C\"\n\t}\n}\n\nfunc main() {\n\tfor _, s := range []int{95, 72, 50} {\n\t\tfmt.Printf(\"%d -> %s\\n\", s, classify(s))\n\t}\n}\n",
+    "output": "95 -> A\n72 -> B\n50 -> C"
+  },
+  "example": {
+    "id": "go-example-011",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "分数分级",
+    "summary": "按十分位把分数映射到 A/B/C 三档。",
+    "concepts": [
+      "if",
+      "else",
+      "作用域"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc classify(score int) string {\n\tif v := score / 10; v >= 9 {\n\t\treturn \"A\"\n\t} else if v >= 7 {\n\t\treturn \"B\"\n\t} else {\n\t\treturn \"C\"\n\t}\n}\n\nfunc main() {\n\tfor _, s := range []int{95, 72, 50} {\n\t\tfmt.Printf(\"%d -> %s\\n\", s, classify(s))\n\t}\n}\n",
+    "expectedOutput": "95 -> A\n72 -> B\n50 -> C",
+    "templateType": "go"
+  }
+}

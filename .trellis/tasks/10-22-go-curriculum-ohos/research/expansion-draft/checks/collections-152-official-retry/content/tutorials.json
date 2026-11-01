@@ -1,0 +1,53 @@
+[
+  {
+    "id": "go-tutorial-152",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "优先级任务队列",
+    "summary": "按截止时间和序号执行任务，并在队列中调整一个任务的优先级。",
+    "concepts": [
+      "container/heap",
+      "heap.Fix",
+      "元素索引",
+      "并列规则"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-152-lesson",
+        "title": "优先级任务队列",
+        "summary": "按截止时间和序号执行任务，并在队列中调整一个任务的优先级。",
+        "concepts": [
+          "container/heap",
+          "heap.Fix",
+          "元素索引",
+          "并列规则"
+        ],
+        "explain": "任务保存自己在堆中的索引，Swap 每次交换都更新索引。修改 Due 后调用 heap.Fix，只修复受影响位置，不需要重建整个队列。相同截止时间用 Seq 决胜，执行顺序可重复。Pop 清除底层引用并将 Index 设为负一，防止外部把已取出的任务当作仍在队列中更新。生产更新接口还应检查索引与对象身份。",
+        "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n)\n\ntype Task struct {\n\tName  string\n\tDue   int\n\tSeq   int\n\tIndex int\n}\ntype Tasks []*Task\n\nfunc (q Tasks) Len() int { return len(q) }\nfunc (q Tasks) Less(i, j int) bool {\n\tif q[i].Due != q[j].Due {\n\t\treturn q[i].Due < q[j].Due\n\t}\n\treturn q[i].Seq < q[j].Seq\n}\nfunc (q Tasks) Swap(i, j int) { q[i], q[j] = q[j], q[i]; q[i].Index = i; q[j].Index = j }\nfunc (q *Tasks) Push(value interface{}) {\n\ttask := value.(*Task)\n\ttask.Index = len(*q)\n\t*q = append(*q, task)\n}\nfunc (q *Tasks) Pop() interface{} {\n\told := *q\n\ttask := old[len(old)-1]\n\told[len(old)-1] = nil\n\t*q = old[:len(old)-1]\n\ttask.Index = -1\n\treturn task\n}\nfunc main() {\n\tqueue := &Tasks{}\n\tfirst := &Task{Name: \"A\", Due: 5, Seq: 1}\n\theap.Push(queue, first)\n\theap.Push(queue, &Task{Name: \"B\", Due: 3, Seq: 2})\n\theap.Push(queue, &Task{Name: \"C\", Due: 3, Seq: 3})\n\tfirst.Due = 2\n\theap.Fix(queue, first.Index)\n\tfor queue.Len() > 0 {\n\t\ttask := heap.Pop(queue).(*Task)\n\t\tfmt.Printf(\"%s@%d\\n\", task.Name, task.Due)\n\t}\n\tfmt.Printf(\"removed-index=%d\\n\", first.Index)\n}\n",
+        "output": "A@2\nB@3\nC@3\nremoved-index=-1",
+        "objective": "按截止时间和序号执行任务，并在队列中调整一个任务的优先级。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "Swap 忘记更新索引会让 Fix 修改错误的任务。",
+          "直接更改优先级而不调用 Fix 会破坏堆不变量。"
+        ],
+        "exercises": [
+          {
+            "prompt": "封装 Update，拒绝更新 Index 为负一的已出队任务。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "检查索引范围以及 queue[index] 是否正是传入指针，通过后设置 Due 并调用 heap.Fix；已取出对象返回错误。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  }
+]

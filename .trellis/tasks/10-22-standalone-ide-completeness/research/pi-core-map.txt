@@ -1,0 +1,2 @@
+Active task: .trellis/tasks/10-22-standalone-ide-completeness
+Planning-only read-only research. You are not alone; do not edit product, specs or other worker files. Inspect sibling qfli_studio_core contracts for learning language chips/badges, missing Go/Lua/Rust/SQL highlighting, file tree reopening state, persisted multi-root workspace, diagnostics wave underlines and Problems/Output/Debug Console/Terminal/Ports panels. Return exact existing paths, feasible optional APIs and regression boundaries. Shared core may have other coordinators; do not mutate it.

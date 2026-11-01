@@ -1,0 +1,71 @@
+{
+  "id": "T153",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "kept=3\nF=60\nC=50\nD=50\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-153",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "流式 Top K",
+    "summary": "在固定三项空间内保留最大订单，并以稳定规则输出最终结果。",
+    "concepts": [
+      "小根堆",
+      "有限空间",
+      "订单排序",
+      "并列选择"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "在固定三项空间内保留最大订单，并以稳定规则输出最终结果。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "Top K 最大值需要保留最差项在根部，不是直接维护最大堆。",
+      "堆中的并列优先级与最终排序必须一致，否则边界订单选择不稳定。"
+    ],
+    "exercises": [
+      {
+        "prompt": "支持 K 为零并立即返回空结果，拒绝负数 K。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "在建堆和访问根节点前检查 K：负数返回错误，零返回空切片，正数才进入流式维护。"
+      }
+    ],
+    "explain": "小根堆根部保存当前最差的保留项，新订单只有比根部更好才替换。金额相同采用 ID 字典序较小优先，堆内因此让较大的 ID 更差；最终输出则按金额降序、ID 升序排序。算法在读取六条订单期间最多保存三条，所需空间与总输入长度无关。这个全序同时定义选择与展示，避免两阶段并列规则矛盾。",
+    "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Order struct {\n\tID     string\n\tAmount int\n}\ntype Orders []Order\n\nfunc (h Orders) Len() int { return len(h) }\nfunc (h Orders) Less(i, j int) bool {\n\tif h[i].Amount != h[j].Amount {\n\t\treturn h[i].Amount < h[j].Amount\n\t}\n\treturn h[i].ID > h[j].ID\n}\nfunc (h Orders) Swap(i, j int)           { h[i], h[j] = h[j], h[i] }\nfunc (h *Orders) Push(value interface{}) { *h = append(*h, value.(Order)) }\nfunc (h *Orders) Pop() interface{} {\n\told := *h\n\tvalue := old[len(old)-1]\n\t*h = old[:len(old)-1]\n\treturn value\n}\nfunc main() {\n\tbest := &Orders{}\n\tfor _, order := range []Order{{\"A\", 40}, {\"B\", 10}, {\"C\", 50}, {\"D\", 50}, {\"E\", 30}, {\"F\", 60}} {\n\t\tif best.Len() < 3 {\n\t\t\theap.Push(best, order)\n\t\t\tcontinue\n\t\t}\n\t\tworst := (*best)[0]\n\t\tif order.Amount > worst.Amount || (order.Amount == worst.Amount && order.ID < worst.ID) {\n\t\t\t(*best)[0] = order\n\t\t\theap.Fix(best, 0)\n\t\t}\n\t}\n\tresult := append([]Order(nil), (*best)...)\n\tsort.Slice(result, func(i, j int) bool {\n\t\tif result[i].Amount != result[j].Amount {\n\t\t\treturn result[i].Amount > result[j].Amount\n\t\t}\n\t\treturn result[i].ID < result[j].ID\n\t})\n\tfmt.Printf(\"kept=%d\\n\", len(result))\n\tfor _, order := range result {\n\t\tfmt.Printf(\"%s=%d\\n\", order.ID, order.Amount)\n\t}\n}\n",
+    "output": "kept=3\nF=60\nC=50\nD=50"
+  },
+  "example": {
+    "id": "go-example-153",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "流式 Top K",
+    "summary": "在固定三项空间内保留最大订单，并以稳定规则输出最终结果。",
+    "concepts": [
+      "小根堆",
+      "有限空间",
+      "订单排序",
+      "并列选择"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype Order struct {\n\tID     string\n\tAmount int\n}\ntype Orders []Order\n\nfunc (h Orders) Len() int { return len(h) }\nfunc (h Orders) Less(i, j int) bool {\n\tif h[i].Amount != h[j].Amount {\n\t\treturn h[i].Amount < h[j].Amount\n\t}\n\treturn h[i].ID > h[j].ID\n}\nfunc (h Orders) Swap(i, j int)           { h[i], h[j] = h[j], h[i] }\nfunc (h *Orders) Push(value interface{}) { *h = append(*h, value.(Order)) }\nfunc (h *Orders) Pop() interface{} {\n\told := *h\n\tvalue := old[len(old)-1]\n\t*h = old[:len(old)-1]\n\treturn value\n}\nfunc main() {\n\tbest := &Orders{}\n\tfor _, order := range []Order{{\"A\", 40}, {\"B\", 10}, {\"C\", 50}, {\"D\", 50}, {\"E\", 30}, {\"F\", 60}} {\n\t\tif best.Len() < 3 {\n\t\t\theap.Push(best, order)\n\t\t\tcontinue\n\t\t}\n\t\tworst := (*best)[0]\n\t\tif order.Amount > worst.Amount || (order.Amount == worst.Amount && order.ID < worst.ID) {\n\t\t\t(*best)[0] = order\n\t\t\theap.Fix(best, 0)\n\t\t}\n\t}\n\tresult := append([]Order(nil), (*best)...)\n\tsort.Slice(result, func(i, j int) bool {\n\t\tif result[i].Amount != result[j].Amount {\n\t\t\treturn result[i].Amount > result[j].Amount\n\t\t}\n\t\treturn result[i].ID < result[j].ID\n\t})\n\tfmt.Printf(\"kept=%d\\n\", len(result))\n\tfor _, order := range result {\n\t\tfmt.Printf(\"%s=%d\\n\", order.ID, order.Amount)\n\t}\n}\n",
+    "expectedOutput": "kept=3\nF=60\nC=50\nD=50",
+    "templateType": "go"
+  }
+}

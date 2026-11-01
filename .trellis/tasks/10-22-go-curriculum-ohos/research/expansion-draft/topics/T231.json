@@ -1,0 +1,69 @@
+{
+  "id": "T231",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "ordered=[4 9 16 25]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-231",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有序并行转换",
+    "summary": "能多个 worker 处理索引化任务。收集后按输入顺序输出结果。",
+    "concepts": [
+      "sync",
+      "sort",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能多个 worker 处理索引化任务。收集后按输入顺序输出结果。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "无缓冲结果通道若在主协程 Wait 时无人接收，会造成死锁。",
+      "循环变量需要明确传递或复制，不能靠偶然调度读取正确任务。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把结果通道改为无缓冲。保持无死锁和输入顺序。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "启动唯一收尾协程。它等待 workers。再 close(results)。主协程同时 range 接收。最后按 Index 排序。"
+      }
+    ],
+    "explain": "任务附带输入下标，两个 worker 可以自由完成计算，收集端再按下标恢复输入顺序。结果通道容量等于任务数，因此主协程先等待 worker 退出不会堵塞发送。WaitGroup 的 Add 在启动前执行，全部 worker 完成后才关闭结果通道。并行完成顺序与最终展示顺序是两个独立问题，不能依赖调度恰好按输入发生。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\ntype Job struct{ Index, Value int }\ntype Result struct{ Index, Value int }\n\nfunc main() {\n\tinput := []int{2, 3, 4, 5}\n\tjobs := make(chan Job, len(input))\n\tresults := make(chan Result, len(input))\n\tfor i, value := range input {\n\t\tjobs <- Job{i, value}\n\t}\n\tclose(jobs)\n\tvar workers sync.WaitGroup\n\tfor n := 0; n < 2; n++ {\n\t\tworkers.Add(1)\n\t\tgo func() {\n\t\t\tdefer workers.Done()\n\t\t\tfor job := range jobs {\n\t\t\t\tresults <- Result{job.Index, job.Value * job.Value}\n\t\t\t}\n\t\t}()\n\t}\n\tworkers.Wait()\n\tclose(results)\n\tordered := []Result{}\n\tfor result := range results {\n\t\tordered = append(ordered, result)\n\t}\n\tsort.Slice(ordered, func(i, j int) bool { return ordered[i].Index < ordered[j].Index })\n\tvalues := []int{}\n\tfor _, result := range ordered {\n\t\tvalues = append(values, result.Value)\n\t}\n\tfmt.Printf(\"ordered=%v\\n\", values)\n}\n",
+    "output": "ordered=[4 9 16 25]"
+  },
+  "example": {
+    "id": "go-example-231",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有序并行转换",
+    "summary": "能多个 worker 处理索引化任务。收集后按输入顺序输出结果。",
+    "concepts": [
+      "sync",
+      "sort",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\ntype Job struct{ Index, Value int }\ntype Result struct{ Index, Value int }\n\nfunc main() {\n\tinput := []int{2, 3, 4, 5}\n\tjobs := make(chan Job, len(input))\n\tresults := make(chan Result, len(input))\n\tfor i, value := range input {\n\t\tjobs <- Job{i, value}\n\t}\n\tclose(jobs)\n\tvar workers sync.WaitGroup\n\tfor n := 0; n < 2; n++ {\n\t\tworkers.Add(1)\n\t\tgo func() {\n\t\t\tdefer workers.Done()\n\t\t\tfor job := range jobs {\n\t\t\t\tresults <- Result{job.Index, job.Value * job.Value}\n\t\t\t}\n\t\t}()\n\t}\n\tworkers.Wait()\n\tclose(results)\n\tordered := []Result{}\n\tfor result := range results {\n\t\tordered = append(ordered, result)\n\t}\n\tsort.Slice(ordered, func(i, j int) bool { return ordered[i].Index < ordered[j].Index })\n\tvalues := []int{}\n\tfor _, result := range ordered {\n\t\tvalues = append(values, result.Value)\n\t}\n\tfmt.Printf(\"ordered=%v\\n\", values)\n}\n",
+    "expectedOutput": "ordered=[4 9 16 25]",
+    "templateType": "go"
+  }
+}

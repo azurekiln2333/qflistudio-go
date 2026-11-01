@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "go-example-251",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "邮件地址解析",
+      "summary": "能解析显示名和邮箱，保留规范地址并拒绝不完整输入。",
+      "concepts": [
+        "net/mail",
+        "校验与状态机"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/mail\"\n)\n\nfunc main() {\n\tfor _, input := range []string{`Li Yu <li@example.test>`, `reader@example.test`, `bad@@example.test`} {\n\t\taddress, err := mail.ParseAddress(input)\n\t\tif err != nil {\n\t\t\tfmt.Println(\"invalid\")\n\t\t\tcontinue\n\t\t}\n\t\tfmt.Printf(\"name=%q address=%s\\n\", address.Name, address.Address)\n\t}\n\tlist, err := mail.ParseAddressList(\"a@example.test, B <b@example.test>\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"list=%d\\n\", len(list))\n}\n",
+      "expectedOutput": "name=\"Li Yu\" address=li@example.test\nname=\"\" address=reader@example.test\ninvalid\nlist=2",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-252",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "IP 与网段归属",
+      "summary": "能解析 IPv4/IPv6 地址与 CIDR，验证边界和非法字符串。",
+      "concepts": [
+        "net",
+        "校验与状态机"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net\"\n)\n\nfunc main() {\n\t_, subnet, err := net.ParseCIDR(\"192.0.2.0/24\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfor _, text := range []string{\"192.0.2.0\", \"192.0.2.255\", \"192.0.3.1\", \"not-ip\"} {\n\t\tip := net.ParseIP(text)\n\t\tfmt.Printf(\"%s valid=%t member=%t\\n\", text, ip != nil, ip != nil && subnet.Contains(ip))\n\t}\n\tip := net.ParseIP(\"2001:db8::1\")\n\t_, v6, err := net.ParseCIDR(\"2001:db8::/32\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"ipv6=%t\\n\", v6.Contains(ip))\n}\n",
+      "expectedOutput": "192.0.2.0 valid=true member=true\n192.0.2.255 valid=true member=true\n192.0.3.1 valid=true member=false\nnot-ip valid=false member=false\nipv6=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-253",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "离线 URL 白名单",
+      "summary": "能拒绝非 https、用户信息及非允许主机，避免主机后缀误判。",
+      "concepts": [
+        "net/url",
+        "strings",
+        "校验与状态机"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/url\"\n\t\"strings\"\n)\n\nfunc allowed(text string) bool {\n\tu, err := url.Parse(text)\n\tif err != nil || u.Scheme != \"https\" || u.User != nil || u.Opaque != \"\" {\n\t\treturn false\n\t}\n\thost := strings.ToLower(u.Hostname())\n\tif u.Port() != \"\" && u.Port() != \"443\" {\n\t\treturn false\n\t}\n\treturn host == \"example.test\" || strings.HasSuffix(host, \".example.test\")\n}\nfunc main() {\n\tfor _, text := range []string{\"https://api.example.test/a\", \"http://example.test\", \"https://user@example.test\", \"https://example.test.evil\", \"https://evil-example.test\", \"https://example.test:8443\"} {\n\t\tfmt.Printf(\"%s=%t\\n\", text, allowed(text))\n\t}\n}\n",
+      "expectedOutput": "https://api.example.test/a=true\nhttp://example.test=false\nhttps://user@example.test=false\nhttps://example.test.evil=false\nhttps://evil-example.test=false\nhttps://example.test:8443=false",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-254",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "主机名词法校验",
+      "summary": "能仅校验 ASCII 主机标签长度、连字符位置与字符集，不做 DNS 查询。",
+      "concepts": [
+        "strings",
+        "unicode",
+        "校验与状态机"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc hostname(text string) bool {\n\tif text == \"\" || len(text) > 253 {\n\t\treturn false\n\t}\n\tfor _, label := range strings.Split(text, \".\") {\n\t\tif len(label) == 0 || len(label) > 63 || label[0] == '-' || label[len(label)-1] == '-' {\n\t\t\treturn false\n\t\t}\n\t\tfor _, c := range label {\n\t\t\tif !(c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c >= '0' && c <= '9' || c == '-') {\n\t\t\t\treturn false\n\t\t\t}\n\t\t}\n\t}\n\treturn true\n}\nfunc main() {\n\tfor _, text := range []string{\"api.example.test\", \"-bad.test\", \"a..test\", \"中文.test\", strings.Repeat(\"a\", 64) + \".test\"} {\n\t\tfmt.Printf(\"valid=%t\\n\", hostname(text))\n\t}\n}\n",
+      "expectedOutput": "valid=true\nvalid=false\nvalid=false\nvalid=false\nvalid=false",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-255",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "语义版本排序",
+      "summary": "能比较主次补丁与预发布标识，稳定排序并拒绝坏版本。",
+      "concepts": [
+        "strconv",
+        "strings",
+        "sort",
+        "校验与状态机"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"strconv\"\n\t\"strings\"\n)\n\ntype Version struct {\n\tRaw   string\n\tParts [3]int\n\tPre   []string\n}\n\nfunc number(text string) (int, error) {\n\tif text == \"\" || len(text) > 1 && text[0] == '0' {\n\t\treturn 0, fmt.Errorf(\"bad number\")\n\t}\n\tfor _, c := range text {\n\t\tif c < '0' || c > '9' {\n\t\t\treturn 0, fmt.Errorf(\"bad digit\")\n\t\t}\n\t}\n\treturn strconv.Atoi(text)\n}\nfunc parse(text string) (Version, error) {\n\tv := Version{Raw: text}\n\tparts := strings.SplitN(text, \"-\", 2)\n\tcore := strings.Split(parts[0], \".\")\n\tif len(core) != 3 {\n\t\treturn v, fmt.Errorf(\"need three parts\")\n\t}\n\tfor i, part := range core {\n\t\tn, err := number(part)\n\t\tif err != nil {\n\t\t\treturn v, err\n\t\t}\n\t\tv.Parts[i] = n\n\t}\n\tif len(parts) == 2 {\n\t\tv.Pre = strings.Split(parts[1], \".\")\n\t\tfor _, id := range v.Pre {\n\t\t\tif id == \"\" {\n\t\t\t\treturn v, fmt.Errorf(\"empty prerelease\")\n\t\t\t}\n\t\t\tnumeric := true\n\t\t\tfor _, c := range id {\n\t\t\t\tif !(c >= '0' && c <= '9' || c >= 'a' && c <= 'z' || c >= 'A' && c <= 'Z' || c == '-') {\n\t\t\t\t\treturn v, fmt.Errorf(\"bad prerelease\")\n\t\t\t\t}\n\t\t\t\tif c < '0' || c > '9' {\n\t\t\t\t\tnumeric = false\n\t\t\t\t}\n\t\t\t}\n\t\t\tif numeric {\n\t\t\t\tif _, err := number(id); err != nil {\n\t\t\t\t\treturn v, err\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\treturn v, nil\n}\nfunc less(a, b Version) bool {\n\tfor i := 0; i < 3; i++ {\n\t\tif a.Parts[i] != b.Parts[i] {\n\t\t\treturn a.Parts[i] < b.Parts[i]\n\t\t}\n\t}\n\tif len(a.Pre) == 0 {\n\t\treturn false\n\t}\n\tif len(b.Pre) == 0 {\n\t\treturn true\n\t}\n\tfor i := 0; i < len(a.Pre) && i < len(b.Pre); i++ {\n\t\tx, y := a.Pre[i], b.Pre[i]\n\t\tif x == y {\n\t\t\tcontinue\n\t\t}\n\t\tnx, ex := strconv.Atoi(x)\n\t\tny, ey := strconv.Atoi(y)\n\t\tif ex == nil && ey == nil {\n\t\t\treturn nx < ny\n\t\t}\n\t\tif ex == nil {\n\t\t\treturn true\n\t\t}\n\t\tif ey == nil {\n\t\t\treturn false\n\t\t}\n\t\treturn x < y\n\t}\n\treturn len(a.Pre) < len(b.Pre)\n}\nfunc main() {\n\tversions := []Version{}\n\tfor _, text := range []string{\"2.0.0\", \"2.0.0-rc.10\", \"1.9.0\", \"2.0.0-alpha.1\", \"2.0.0-rc.2\"} {\n\t\tv, err := parse(text)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tversions = append(versions, v)\n\t}\n\tsort.SliceStable(versions, func(i, j int) bool { return less(versions[i], versions[j]) })\n\tfor _, v := range versions {\n\t\tfmt.Println(v.Raw)\n\t}\n\t_, err := parse(\"1.02.0\")\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "1.9.0\n2.0.0-alpha.1\n2.0.0-rc.2\n2.0.0-rc.10\n2.0.0\ninvalid=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-256",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "Luhn 校验与生成",
+      "summary": "能计算数字串校验位，验证合法号码并拒绝单字节改动。",
+      "concepts": [
+        "unicode",
+        "校验与状态机"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nfunc checkDigit(body string) (int, error) {\n\tsum := 0\n\tdouble := true\n\tfor i := len(body) - 1; i >= 0; i-- {\n\t\tc := body[i]\n\t\tif c < '0' || c > '9' {\n\t\t\treturn 0, fmt.Errorf(\"ASCII digits only\")\n\t\t}\n\t\tn := int(c - '0')\n\t\tif double {\n\t\t\tn *= 2\n\t\t\tif n > 9 {\n\t\t\t\tn -= 9\n\t\t\t}\n\t\t}\n\t\tsum += n\n\t\tdouble = !double\n\t}\n\tif body == \"\" {\n\t\treturn 0, fmt.Errorf(\"empty\")\n\t}\n\treturn (10 - sum%10) % 10, nil\n}\nfunc valid(code string) bool {\n\tif len(code) < 2 {\n\t\treturn false\n\t}\n\tdigit, err := checkDigit(code[:len(code)-1])\n\treturn err == nil && code[len(code)-1] == byte('0'+digit)\n}\nfunc main() {\n\tbody := \"7992739871\"\n\tdigit, err := checkDigit(body)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfull := body + strconv.Itoa(digit)\n\tfmt.Printf(\"code=%s\\nvalid=%t\\ntampered=%t\\n\", full, valid(full), valid(\"79927398714\"))\n\t_, err = checkDigit(\"12x\")\n\tfmt.Printf(\"bad-input=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "code=79927398713\nvalid=true\ntampered=false\nbad-input=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-257",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "ISBN13 校验",
+      "summary": "能忽略显示分隔符计算 ISBN13 加权校验，识别长度和校验错误。",
+      "concepts": [
+        "unicode",
+        "校验与状态机"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"unicode\"\n)\n\nfunc isbn(text string) bool {\n\tvar digits strings.Builder\n\tfor _, c := range text {\n\t\tif c == '-' || unicode.IsSpace(c) {\n\t\t\tcontinue\n\t\t}\n\t\tif c < '0' || c > '9' {\n\t\t\treturn false\n\t\t}\n\t\tdigits.WriteRune(c)\n\t}\n\tcode := digits.String()\n\tif len(code) != 13 {\n\t\treturn false\n\t}\n\tsum := 0\n\tfor i := 0; i < len(code); i++ {\n\t\tweight := 1\n\t\tif i%2 == 1 {\n\t\t\tweight = 3\n\t\t}\n\t\tsum += int(code[i]-'0') * weight\n\t}\n\treturn sum%10 == 0\n}\nfunc main() {\n\tfor _, code := range []string{\"978-0-306-40615-7\", \"9780306406158\", \"978030640615\", \"978 0 306 40615 7\"} {\n\t\tfmt.Printf(\"valid=%t\\n\", isbn(code))\n\t}\n}\n",
+      "expectedOutput": "valid=true\nvalid=false\nvalid=false\nvalid=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-258",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "带转义字段状态机",
+      "summary": "能解析用分号分隔且支持反斜线转义的记录，检测悬空转义。",
+      "concepts": [
+        "strings",
+        "校验与状态机"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc fields(text string) ([]string, error) {\n\tresult := []string{}\n\tvar current strings.Builder\n\tescaped := false\n\tfor _, c := range text {\n\t\tif escaped {\n\t\t\tif c != ';' && c != '\\\\' {\n\t\t\t\treturn nil, fmt.Errorf(\"bad escape\")\n\t\t\t}\n\t\t\tcurrent.WriteRune(c)\n\t\t\tescaped = false\n\t\t\tcontinue\n\t\t}\n\t\tswitch c {\n\t\tcase '\\\\':\n\t\t\tescaped = true\n\t\tcase ';':\n\t\t\tresult = append(result, current.String())\n\t\t\tcurrent.Reset()\n\t\tdefault:\n\t\t\tcurrent.WriteRune(c)\n\t\t}\n\t}\n\tif escaped {\n\t\treturn nil, fmt.Errorf(\"trailing escape\")\n\t}\n\treturn append(result, current.String()), nil\n}\nfunc main() {\n\tvalues, err := fields(`a\\;b;c\\\\d;`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"fields=%d\\nfirst=%s\\nsecond=%s\\nempty-last=%t\\n\", len(values), values[0], values[1], values[2] == \"\")\n\t_, err = fields(`bad\\x`)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "fields=3\nfirst=a;b\nsecond=c\\d\nempty-last=true\ninvalid=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-259",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "括号配对与错误位置",
+      "summary": "能用栈检查多类括号嵌套，并返回首个错误字节位置。",
+      "concepts": [
+        "fmt",
+        "校验与状态机"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n)\n\ntype Opening struct {\n\tRune   rune\n\tOffset int\n}\n\nfunc brackets(text string) (int, error) {\n\tstack := []Opening{}\n\tpairs := map[rune]rune{')': '(', ']': '[', '}': '{'}\n\tfor offset, c := range text {\n\t\tswitch c {\n\t\tcase '(', '[', '{':\n\t\t\tstack = append(stack, Opening{c, offset})\n\t\tcase ')', ']', '}':\n\t\t\tif len(stack) == 0 || stack[len(stack)-1].Rune != pairs[c] {\n\t\t\t\treturn offset, fmt.Errorf(\"mismatch\")\n\t\t\t}\n\t\t\tstack = stack[:len(stack)-1]\n\t\t}\n\t}\n\tif len(stack) > 0 {\n\t\treturn stack[len(stack)-1].Offset, fmt.Errorf(\"unclosed\")\n\t}\n\treturn -1, nil\n}\nfunc main() {\n\t_, err := brackets(\"中{a+[b*(c)]}\")\n\tfmt.Printf(\"nested-valid=%t\\n\", err == nil)\n\toffset, err := brackets(\"中(a]\")\n\tfmt.Printf(\"mismatch=%t byte-offset=%d\\n\", err != nil, offset)\n\toffset, err = brackets(\"abc(\")\n\tfmt.Printf(\"unclosed=%t byte-offset=%d\\n\", err != nil, offset)\n}\n",
+      "expectedOutput": "nested-valid=true\nmismatch=true byte-offset=5\nunclosed=true byte-offset=3",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-260",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "分片 UTF8 解码",
+      "summary": "能接收在中文字符中间切分的字节块，保留未完成字节并拒绝非法序列。",
+      "concepts": [
+        "unicode/utf8",
+        "bytes",
+        "校验与状态机"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"unicode/utf8\"\n)\n\ntype Decoder struct {\n\tPending []byte\n\tFailed  bool\n}\n\nfunc (d *Decoder) Feed(chunk []byte, final bool) (string, error) {\n\tif d.Failed {\n\t\treturn \"\", fmt.Errorf(\"decoder failed\")\n\t}\n\td.Pending = append(d.Pending, chunk...)\n\tvar out bytes.Buffer\n\tfor len(d.Pending) > 0 && utf8.FullRune(d.Pending) {\n\t\tr, size := utf8.DecodeRune(d.Pending)\n\t\tif r == utf8.RuneError && size == 1 {\n\t\t\td.Failed = true\n\t\t\treturn \"\", fmt.Errorf(\"invalid UTF8\")\n\t\t}\n\t\tout.WriteRune(r)\n\t\td.Pending = d.Pending[size:]\n\t}\n\tif final && len(d.Pending) > 0 {\n\t\td.Failed = true\n\t\treturn \"\", fmt.Errorf(\"incomplete UTF8\")\n\t}\n\treturn out.String(), nil\n}\nfunc main() {\n\tinput := []byte(\"中😀Go\")\n\tdecoder := &Decoder{}\n\ttext := \"\"\n\tfor i, part := range [][]byte{input[:2], input[2:5], input[5:]} {\n\t\tpiece, err := decoder.Feed(part, i == 2)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\ttext += piece\n\t}\n\tfmt.Printf(\"text=%s runes=%d\\n\", text, utf8.RuneCountInString(text))\n\tbad := &Decoder{}\n\t_, err := bad.Feed([]byte{0xff}, true)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n\tshort := &Decoder{}\n\t_, err = short.Feed([]byte{0xe4, 0xb8}, true)\n\tfmt.Printf(\"incomplete=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "text=中😀Go runes=4\ninvalid=true\nincomplete=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    }
+  ]
+}

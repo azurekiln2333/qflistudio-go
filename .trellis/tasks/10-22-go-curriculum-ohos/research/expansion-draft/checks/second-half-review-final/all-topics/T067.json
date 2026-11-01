@@ -1,0 +1,71 @@
+{
+  "id": "T067",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "default: addr=127.0.0.1:8080 readTimeout=5s maxConns=128 access=false\ncustom:  addr=0.0.0.0:9000 readTimeout=30s maxConns=1024 access=true"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-067",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "包级 API 设计与向后兼容",
+    "summary": "用函数选项模式（Functional Options）让构造函数在新增配置时不破坏既有调用方。",
+    "concepts": [
+      "函数选项",
+      "向后兼容",
+      "默认值",
+      "API 设计"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 Option func(*T) 模式设计可扩展、向后兼容的构造 API。",
+    "prerequisites": [
+      "T066 依赖注入：显式传递优于全局",
+      "T025 函数是一等值：高阶函数"
+    ],
+    "pitfalls": [
+      "用固定长参数列表：每加一个配置就破坏所有调用方，需要改签名。",
+      "选项里不先设默认值：未传选项时字段为零值，产生隐蔽 bug。"
+    ],
+    "exercises": [
+      {
+        "prompt": "新增一个 WithTLS(bool) 选项，并保证旧调用点无需修改。",
+        "hint": "只需新增一个返回 Option 的函数，NewServer 签名不变。",
+        "answer": "func WithTLS(on bool) Option { return func(s *Server){ s.TLS = on } }，现有调用零改动。"
+      }
+    ],
+    "explain": "包级 API 一旦发布就很难改签名。函数选项模式把“可变配置”做成 func(*Server) 类型，NewServer(opts ...Option) 接收零到多个选项：先建立安全默认值，再依次应用。于是未来新增 WithXxx 只是新增一个函数，不触碰 NewServer 的签名，因此对已有调用方完全向后兼容。这比“config 结构体指针”更有表达力（可只覆盖想改的字段而不必给其余字段填零值），也比大量重载更符合 Go 的单一函数风格。",
+    "code": "// T067 包级 API 设计与向后兼容：函数选项模式（Functional Options）。\n//\n// 直接暴露很多参数会让 API 一旦想加参数就破坏所有调用方。\n// 选项模式把\"可变配置\"做成 func(*Server) 类型，NewServer 接收 0..N 个选项，\n// 于是未来新增选项不会改变已有调用的签名——这就是向后兼容的关键。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\n// Server 是一个可配置的服务器描述（此处只做结构演示，不真正监听）。\ntype Server struct {\n\tAddr         string\n\tReadTimeout  time.Duration\n\tMaxConns     int\n\tEnableAccess bool\n}\n\n// Option 是作用于 *Server 的配置函数。\ntype Option func(*Server)\n\n// WithAddr 返回一个设置地址的选项。\nfunc WithAddr(addr string) Option {\n\treturn func(s *Server) { s.Addr = addr }\n}\n\n// WithReadTimeout 返回一个设置读超时的选项。\nfunc WithReadTimeout(d time.Duration) Option {\n\treturn func(s *Server) { s.ReadTimeout = d }\n}\n\n// WithMaxConns 返回一个设置最大连接数的选项。\nfunc WithMaxConns(n int) Option {\n\treturn func(s *Server) { s.MaxConns = n }\n}\n\n// WithAccessLog 打开访问日志。\nfunc WithAccessLog() Option {\n\treturn func(s *Server) { s.EnableAccess = true }\n}\n\n// NewServer 先建立一组安全默认值，再依次应用调用方传入的选项。\n// 未来新增 WithXxx 也只是新增一个函数，不触碰此签名。\nfunc NewServer(opts ...Option) *Server {\n\ts := &Server{\n\t\tAddr:        \"127.0.0.1:8080\",\n\t\tReadTimeout: 5 * time.Second,\n\t\tMaxConns:    128,\n\t}\n\tfor _, opt := range opts {\n\t\topt(s)\n\t}\n\treturn s\n}\n\nfunc main() {\n\tdef := NewServer()\n\tfmt.Printf(\"default: addr=%s readTimeout=%s maxConns=%d access=%v\\n\",\n\t\tdef.Addr, def.ReadTimeout, def.MaxConns, def.EnableAccess)\n\n\tcustom := NewServer(\n\t\tWithAddr(\"0.0.0.0:9000\"),\n\t\tWithReadTimeout(30*time.Second),\n\t\tWithMaxConns(1024),\n\t\tWithAccessLog(),\n\t)\n\tfmt.Printf(\"custom:  addr=%s readTimeout=%s maxConns=%d access=%v\\n\",\n\t\tcustom.Addr, custom.ReadTimeout, custom.MaxConns, custom.EnableAccess)\n}\n",
+    "output": "default: addr=127.0.0.1:8080 readTimeout=5s maxConns=128 access=false\ncustom:  addr=0.0.0.0:9000 readTimeout=30s maxConns=1024 access=true"
+  },
+  "example": {
+    "id": "go-example-067",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "包级 API 设计与向后兼容（示例）",
+    "summary": "对应主题 T067 的可运行示例。",
+    "concepts": [
+      "函数选项",
+      "向后兼容",
+      "默认值",
+      "API 设计"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T067 包级 API 设计与向后兼容：函数选项模式（Functional Options）。\n//\n// 直接暴露很多参数会让 API 一旦想加参数就破坏所有调用方。\n// 选项模式把\"可变配置\"做成 func(*Server) 类型，NewServer 接收 0..N 个选项，\n// 于是未来新增选项不会改变已有调用的签名——这就是向后兼容的关键。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"time\"\n)\n\n// Server 是一个可配置的服务器描述（此处只做结构演示，不真正监听）。\ntype Server struct {\n\tAddr         string\n\tReadTimeout  time.Duration\n\tMaxConns     int\n\tEnableAccess bool\n}\n\n// Option 是作用于 *Server 的配置函数。\ntype Option func(*Server)\n\n// WithAddr 返回一个设置地址的选项。\nfunc WithAddr(addr string) Option {\n\treturn func(s *Server) { s.Addr = addr }\n}\n\n// WithReadTimeout 返回一个设置读超时的选项。\nfunc WithReadTimeout(d time.Duration) Option {\n\treturn func(s *Server) { s.ReadTimeout = d }\n}\n\n// WithMaxConns 返回一个设置最大连接数的选项。\nfunc WithMaxConns(n int) Option {\n\treturn func(s *Server) { s.MaxConns = n }\n}\n\n// WithAccessLog 打开访问日志。\nfunc WithAccessLog() Option {\n\treturn func(s *Server) { s.EnableAccess = true }\n}\n\n// NewServer 先建立一组安全默认值，再依次应用调用方传入的选项。\n// 未来新增 WithXxx 也只是新增一个函数，不触碰此签名。\nfunc NewServer(opts ...Option) *Server {\n\ts := &Server{\n\t\tAddr:        \"127.0.0.1:8080\",\n\t\tReadTimeout: 5 * time.Second,\n\t\tMaxConns:    128,\n\t}\n\tfor _, opt := range opts {\n\t\topt(s)\n\t}\n\treturn s\n}\n\nfunc main() {\n\tdef := NewServer()\n\tfmt.Printf(\"default: addr=%s readTimeout=%s maxConns=%d access=%v\\n\",\n\t\tdef.Addr, def.ReadTimeout, def.MaxConns, def.EnableAccess)\n\n\tcustom := NewServer(\n\t\tWithAddr(\"0.0.0.0:9000\"),\n\t\tWithReadTimeout(30*time.Second),\n\t\tWithMaxConns(1024),\n\t\tWithAccessLog(),\n\t)\n\tfmt.Printf(\"custom:  addr=%s readTimeout=%s maxConns=%d access=%v\\n\",\n\t\tcustom.Addr, custom.ReadTimeout, custom.MaxConns, custom.EnableAccess)\n}\n",
+    "expectedOutput": "default: addr=127.0.0.1:8080 readTimeout=5s maxConns=128 access=false\ncustom:  addr=0.0.0.0:9000 readTimeout=30s maxConns=1024 access=true",
+    "templateType": "go"
+  }
+}

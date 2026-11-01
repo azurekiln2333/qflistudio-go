@@ -1,0 +1,67 @@
+{
+  "id": "T234",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "ready=3\nresults=[10 20 30]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-234",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "条件变量屏障",
+    "summary": "能用 Cond 等待所有成员就绪。再广播启动。收集确定结果。",
+    "concepts": [
+      "sync",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能用 Cond 等待所有成员就绪。再广播启动。收集确定结果。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "只调用 Broadcast 而不改变条件，会让等待者醒来后继续等待。",
+      "必须先持有 Cond 使用的锁。再调用 Wait。唤醒后重新检查条件。"
+    ],
+    "exercises": [
+      {
+        "prompt": "加入第四个成员。只修改成员总数。保持同一屏障逻辑。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "把 total 常量用于启动次数、ready 条件和结果接收次数。不要把三处边界分开写死。"
+      }
+    ],
+    "explain": "Cond 把等待与受锁保护的条件联系起来。每个成员登记就绪后等待 start。主协程也在循环中等待 ready 达到三。再设置条件。广播唤醒等待者。Wait 会暂时释放锁。收到唤醒后，它重新取得锁。所以所有判断都必须写成循环。结果另经通道收集。再排序。不让线程调度顺序污染断言。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\nfunc main() {\n\tvar mu sync.Mutex\n\tcond := sync.NewCond(&mu)\n\tready := 0\n\tstart := false\n\tresults := make(chan int, 3)\n\tfor id := 1; id <= 3; id++ {\n\t\tgo func(id int) {\n\t\t\tmu.Lock()\n\t\t\tready++\n\t\t\tcond.Broadcast()\n\t\t\tfor !start {\n\t\t\t\tcond.Wait()\n\t\t\t}\n\t\t\tmu.Unlock()\n\t\t\tresults <- id * 10\n\t\t}(id)\n\t}\n\tmu.Lock()\n\tfor ready < 3 {\n\t\tcond.Wait()\n\t}\n\tstart = true\n\tcond.Broadcast()\n\tmu.Unlock()\n\tvalues := []int{}\n\tfor i := 0; i < 3; i++ {\n\t\tvalues = append(values, <-results)\n\t}\n\tsort.Ints(values)\n\tfmt.Printf(\"ready=%d\\nresults=%v\\n\", ready, values)\n}\n",
+    "output": "ready=3\nresults=[10 20 30]"
+  },
+  "example": {
+    "id": "go-example-234",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "条件变量屏障",
+    "summary": "能用 Cond 等待所有成员就绪。再广播启动。收集确定结果。",
+    "concepts": [
+      "sync",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\nfunc main() {\n\tvar mu sync.Mutex\n\tcond := sync.NewCond(&mu)\n\tready := 0\n\tstart := false\n\tresults := make(chan int, 3)\n\tfor id := 1; id <= 3; id++ {\n\t\tgo func(id int) {\n\t\t\tmu.Lock()\n\t\t\tready++\n\t\t\tcond.Broadcast()\n\t\t\tfor !start {\n\t\t\t\tcond.Wait()\n\t\t\t}\n\t\t\tmu.Unlock()\n\t\t\tresults <- id * 10\n\t\t}(id)\n\t}\n\tmu.Lock()\n\tfor ready < 3 {\n\t\tcond.Wait()\n\t}\n\tstart = true\n\tcond.Broadcast()\n\tmu.Unlock()\n\tvalues := []int{}\n\tfor i := 0; i < 3; i++ {\n\t\tvalues = append(values, <-results)\n\t}\n\tsort.Ints(values)\n\tfmt.Printf(\"ready=%d\\nresults=%v\\n\", ready, values)\n}\n",
+    "expectedOutput": "ready=3\nresults=[10 20 30]",
+    "templateType": "go"
+  }
+}

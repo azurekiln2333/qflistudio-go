@@ -1,0 +1,71 @@
+{
+  "id": "T138",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "rows=2 roundtrip=true\nquotes-doubled=true\nline-preserved=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-138",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "CSV 安全导出",
+    "summary": "导出含逗号、双引号和换行的地址簿。再读回验证字段内容完全一致。",
+    "concepts": [
+      "csv.Writer",
+      "引号转义",
+      "多行字段",
+      "往返验证"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "导出含逗号、双引号和换行的地址簿。再读回验证字段内容完全一致。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "自己拼接逗号和引号容易破坏嵌套引号及多行字段。",
+      "格式正确不等于防电子表格公式执行。本例不把 CSV 转义当作公式防护。"
+    ],
+    "exercises": [
+      {
+        "prompt": "导出前识别以等号开头的地址字段。按明确的电子表格策略添加前缀。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "在业务层生成单独的表格导出副本。对危险前缀应用选定策略。再由 csv.Writer 处理格式。保留原始数据。同时说明该策略会改变单元格文本。"
+      }
+    ],
+    "explain": "CSV Writer 负责决定哪些字段需要引号。它把字段内部的双引号写成两个双引号。字段换行属于一条记录的内容。不能按文本行数计算联系人数量。程序把三行逻辑记录写到内存后重新解析。它逐字段对比，并单独检查双引号和换行是否保留。这里的安全指 CSV 格式保持。交给电子表格软件打开时，还要另行制定公式前缀处理策略。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/csv\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\trecords := [][]string{{\"name\", \"address\"}, {\"Lin\", \"East, Road\"}, {\"Yu\", \"\\\"Suite\\\" 3\\nFloor 2\"}}\n\tvar buffer bytes.Buffer\n\twriter := csv.NewWriter(&buffer)\n\tif err := writer.WriteAll(records); err != nil {\n\t\tpanic(err)\n\t}\n\tdecoded, err := csv.NewReader(strings.NewReader(buffer.String())).ReadAll()\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tequal := len(decoded) == len(records)\n\tif equal {\n\t\tfor i, row := range records {\n\t\t\tif len(decoded[i]) != len(row) {\n\t\t\t\tequal = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t\tfor j, value := range row {\n\t\t\t\tif decoded[i][j] != value {\n\t\t\t\t\tequal = false\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\tfmt.Printf(\"rows=%d roundtrip=%t\\n\", len(decoded)-1, equal)\n\tfmt.Printf(\"quotes-doubled=%t\\n\", strings.Contains(buffer.String(), `\"\"Suite\"\"`))\n\tfmt.Printf(\"line-preserved=%t\\n\", decoded[2][1] == \"\\\"Suite\\\" 3\\nFloor 2\")\n}\n",
+    "output": "rows=2 roundtrip=true\nquotes-doubled=true\nline-preserved=true"
+  },
+  "example": {
+    "id": "go-example-138",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "CSV 安全导出",
+    "summary": "导出含逗号、双引号和换行的地址簿。再读回验证字段内容完全一致。",
+    "concepts": [
+      "csv.Writer",
+      "引号转义",
+      "多行字段",
+      "往返验证"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/csv\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc main() {\n\trecords := [][]string{{\"name\", \"address\"}, {\"Lin\", \"East, Road\"}, {\"Yu\", \"\\\"Suite\\\" 3\\nFloor 2\"}}\n\tvar buffer bytes.Buffer\n\twriter := csv.NewWriter(&buffer)\n\tif err := writer.WriteAll(records); err != nil {\n\t\tpanic(err)\n\t}\n\tdecoded, err := csv.NewReader(strings.NewReader(buffer.String())).ReadAll()\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tequal := len(decoded) == len(records)\n\tif equal {\n\t\tfor i, row := range records {\n\t\t\tif len(decoded[i]) != len(row) {\n\t\t\t\tequal = false\n\t\t\t\tbreak\n\t\t\t}\n\t\t\tfor j, value := range row {\n\t\t\t\tif decoded[i][j] != value {\n\t\t\t\t\tequal = false\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}\n\tfmt.Printf(\"rows=%d roundtrip=%t\\n\", len(decoded)-1, equal)\n\tfmt.Printf(\"quotes-doubled=%t\\n\", strings.Contains(buffer.String(), `\"\"Suite\"\"`))\n\tfmt.Printf(\"line-preserved=%t\\n\", decoded[2][1] == \"\\\"Suite\\\" 3\\nFloor 2\")\n}\n",
+    "expectedOutput": "rows=2 roundtrip=true\nquotes-doubled=true\nline-preserved=true",
+    "templateType": "go"
+  }
+}

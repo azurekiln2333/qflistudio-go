@@ -1,0 +1,67 @@
+{
+  "id": "T270",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "0 zigzag=0 bytes=1 same=true\n-1 zigzag=1 bytes=1 same=true\n1 zigzag=2 bytes=1 same=true\n-2 zigzag=3 bytes=1 same=true\n2 zigzag=4 bytes=1 same=true\n-9223372036854775808 zigzag=18446744073709551615 bytes=10 same=true\n9223372036854775807 zigzag=18446744073709551614 bytes=10 same=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-270",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有符号 ZigZag 编码",
+    "summary": "能将正负小整数映射无符号 varint，验证边界值往返。",
+    "concepts": [
+      "encoding/binary",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能将正负小整数映射无符号 varint，验证边界值往返。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "直接把负 int64 转成 uint64 会得到很大的无符号数，失去小负数的空间收益。",
+      "恢复时的移位必须对无符号编码值进行，不能混入错误的符号扩展。"
+    ],
+    "exercises": [
+      {
+        "prompt": "对 -100 到 100 全部整数检查往返，并统计平均编码字节数。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "循环每个整数进行 PutUvarint/Uvarint 和 restore，累计 n；明确平均值的取整与展示规则。"
+      }
+    ],
+    "explain": "ZigZag 把零附近的正负整数交错映射为小无符号整数，再用 Uvarint 编码，使小负数也只占一个字节。恢复公式由最低位决定符号，再右移还原绝对大小。示例既覆盖零附近，也覆盖 int64 两端，核对 varint 消费长度和原值一致。它改变表示方式，不是加密或通用压缩器。",
+    "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n)\n\nfunc zigzag(value int64) uint64  { return uint64(value<<1) ^ uint64(value>>63) }\nfunc restore(value uint64) int64 { return int64(value>>1) ^ -int64(value&1) }\nfunc main() {\n\tfor _, value := range []int64{0, -1, 1, -2, 2, -9223372036854775808, 9223372036854775807} {\n\t\tencoded := zigzag(value)\n\t\tvar buffer [10]byte\n\t\tn := binary.PutUvarint(buffer[:], encoded)\n\t\tread, size := binary.Uvarint(buffer[:n])\n\t\tfmt.Printf(\"%d zigzag=%d bytes=%d same=%t\\n\", value, encoded, n, size == n && restore(read) == value)\n\t}\n}\n",
+    "output": "0 zigzag=0 bytes=1 same=true\n-1 zigzag=1 bytes=1 same=true\n1 zigzag=2 bytes=1 same=true\n-2 zigzag=3 bytes=1 same=true\n2 zigzag=4 bytes=1 same=true\n-9223372036854775808 zigzag=18446744073709551615 bytes=10 same=true\n9223372036854775807 zigzag=18446744073709551614 bytes=10 same=true"
+  },
+  "example": {
+    "id": "go-example-270",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有符号 ZigZag 编码",
+    "summary": "能将正负小整数映射无符号 varint，验证边界值往返。",
+    "concepts": [
+      "encoding/binary",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n)\n\nfunc zigzag(value int64) uint64  { return uint64(value<<1) ^ uint64(value>>63) }\nfunc restore(value uint64) int64 { return int64(value>>1) ^ -int64(value&1) }\nfunc main() {\n\tfor _, value := range []int64{0, -1, 1, -2, 2, -9223372036854775808, 9223372036854775807} {\n\t\tencoded := zigzag(value)\n\t\tvar buffer [10]byte\n\t\tn := binary.PutUvarint(buffer[:], encoded)\n\t\tread, size := binary.Uvarint(buffer[:n])\n\t\tfmt.Printf(\"%d zigzag=%d bytes=%d same=%t\\n\", value, encoded, n, size == n && restore(read) == value)\n\t}\n}\n",
+    "expectedOutput": "0 zigzag=0 bytes=1 same=true\n-1 zigzag=1 bytes=1 same=true\n1 zigzag=2 bytes=1 same=true\n-2 zigzag=3 bytes=1 same=true\n2 zigzag=4 bytes=1 same=true\n-9223372036854775808 zigzag=18446744073709551615 bytes=10 same=true\n9223372036854775807 zigzag=18446744073709551614 bytes=10 same=true",
+    "templateType": "go"
+  }
+}

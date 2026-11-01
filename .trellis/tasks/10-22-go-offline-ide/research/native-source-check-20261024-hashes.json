@@ -1,0 +1,104 @@
+{
+  "nativeSourceSha256": "61c25dceaa6d7dd067410c32a493378bfef82ab9686345902b79ae2d883f68e7",
+  "whitespaceIssues": [],
+  "duplicateTestNames": {},
+  "files": [
+    {
+      "file": "native/go_runtime/debugger.go",
+      "bytes": 19240,
+      "sha256": "77b9c8ef1ae2ab07a42fe1e352396c66c249c24ea9704acc309bede6c16723cb"
+    },
+    {
+      "file": "native/go_runtime/embedded_helper_lifetime_test.go",
+      "bytes": 3463,
+      "sha256": "26f3ae9b50182d30ffc6ef31a9c08e0efce1dba3dbd5ab23a5d825a3dcafd80c"
+    },
+    {
+      "file": "native/go_runtime/native_callback_provenance_test.go",
+      "bytes": 28642,
+      "sha256": "48de8363a68f0dda69d8e54f0e3a11c2a047d22a57f6c0d7fbf12ebb173e6fb7"
+    },
+    {
+      "file": "native/go_runtime/vendor/github.com/traefik/yaegi/interp/debugger.go",
+      "bytes": 28477,
+      "sha256": "84bc7df5e474c72ce6fc744df0fff906cd2fe1d680e5b2f16818cc75abb1e99a"
+    },
+    {
+      "file": "native/go_runtime/vendor/github.com/traefik/yaegi/interp/interp.go",
+      "bytes": 25891,
+      "sha256": "09b9679255503b795b93798b2920effa5340c47000bae08cea992a08395d0037"
+    },
+    {
+      "file": "native/go_runtime/vendor/github.com/traefik/yaegi/interp/run.go",
+      "bytes": 106837,
+      "sha256": "9b59c8b6324202b82859433e9a12fb4b7efa5c562fdfd946c742d60fb1e034aa"
+    },
+    {
+      "file": "native/go_runtime/vendor/github.com/traefik/yaegi/interp/qfli_callsite.go",
+      "bytes": 11752,
+      "sha256": "47e2cea06634dff7e8657b99a696c30c2e17f613bd394b60115e8a2b749f74e1"
+    },
+    {
+      "file": "native/go_runtime/vendor/github.com/traefik/yaegi/interp/qfli_execution.go",
+      "bytes": 6798,
+      "sha256": "0462f395dec4fb2f51617f550446cbe63798d1600a7cfb6e83a6335154500a44"
+    },
+    {
+      "file": "native/go_runtime/vendor/github.com/traefik/yaegi/interp/qfli_native_values.go",
+      "bytes": 2288,
+      "sha256": "dc63b8cee5e281c0b5fd79c757632aadbe0d6f8907cb58cad5bc7178ad55ebb2"
+    },
+    {
+      "file": ".trellis/spec/backend/native-go-runtime.md",
+      "bytes": 23529,
+      "sha256": "b8f788428ccb7bee6d28f63a756c3ef8f251057e438de812a72e78f82dfbbc44"
+    },
+    {
+      "file": ".trellis/tasks/10-22-go-offline-ide/research/native-final-validation-plan-20261023.md",
+      "bytes": 6550,
+      "sha256": "1dea87fccd02f726aa84fe6dafdc2bd3790c89e4845ec3401e6f122197846260"
+    },
+    {
+      "file": "native/build/go-sdk-1.27.1/go/VERSION",
+      "bytes": 35,
+      "sha256": "25eb74b09036e1ad894fb63b86cb0f0ee53342df8d2e2e860da4ff5079607758"
+    },
+    {
+      "file": "native/build/go-sdk-1.27.1/go/src/sort/slice.go",
+      "bytes": 1850,
+      "sha256": "842b1095d5a97a239e0d88726de1e7a7bbcf5bb7417e2d6a4dd7706dd6645ae9"
+    },
+    {
+      "file": "native/build/go-sdk-1.27.1/go/src/sort/search.go",
+      "bytes": 5809,
+      "sha256": "78418580ae0329bd5e5b33e91223f62c42010a3d16c17f37ff953ac094611686"
+    },
+    {
+      "file": "native/build/go-sdk-1.27.1/go/src/sort/zsortfunc.go",
+      "bytes": 11768,
+      "sha256": "35cdbcbc3a63372e12eebc815c249adfd420e9d783a99b0405998a7ccb00ac1a"
+    },
+    {
+      "file": "native/build/go-sdk-1.27.1/go/src/sort/sort.go",
+      "bytes": 10503,
+      "sha256": "100e49103d23dd6b8335a50b17ae6e9db2b056cb1217d964dcf58852c3c6f8a1"
+    },
+    {
+      "file": "native/go_runtime/vendor/github.com/traefik/yaegi/stdlib/go1_22_sort.go",
+      "bytes": 2031,
+      "sha256": "5c411a33e9c84bae0ce8b9e4f2783042843aaa1bc4e8f2ab6b21e4ac38e6ce62"
+    },
+    {
+      "file": "native/build/go-sdk-1.27.1/go/src/net/rpc/client.go",
+      "bytes": 9186,
+      "sha256": "e2c761997a75c3bf592b5a1d70252633f7f8a44c615307e194ecb8f727a7ad08"
+    },
+    {
+      "file": "native/go_runtime/vendor/github.com/traefik/yaegi/stdlib/go1_22_net_rpc.go",
+      "bytes": 3440,
+      "sha256": "8cebd8ffba0c22d5d638a60900ce062bb308929a143ee995825cff6c19b50180"
+    }
+  ],
+  "testNameScan": "Lightweight lexical removal of Go comments, raw strings, strings and runes; excludes embedded interpreted fixture declarations. Not a parser/compiler check.",
+  "reportWhitespaceIssues": []
+}

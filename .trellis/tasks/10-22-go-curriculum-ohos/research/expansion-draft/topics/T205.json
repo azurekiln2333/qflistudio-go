@@ -1,0 +1,69 @@
+{
+  "id": "T205",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "signature-bytes=64\nvalid=true\nchanged=false\nbad-signature=false\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-205",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Ed25519 签名校验",
+    "summary": "能生成临时密钥。签名本地清单。验证原文与篡改文。",
+    "concepts": [
+      "crypto/ed25519",
+      "crypto/rand",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能生成临时密钥。签名本地清单。验证原文与篡改文。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "不能把私钥放进需要公开分发的验证清单。",
+      "两个语义相同但空白不同的 JSON 字节串仍会产生不同签名输入。"
+    ],
+    "exercises": [
+      {
+        "prompt": "再生成一对密钥。用第二个公钥验证第一个私钥生成的签名。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "保留原始清单和签名。只替换 Verify 的 public 参数。结果应为 false。"
+      }
+    ],
+    "explain": "签名者保留私钥，验证者只需要公钥。Ed25519.Sign 直接签署清单字节。Verify 同时依赖清单、公钥和签名。示例先验证原清单。再分别修改清单和签名。程序拒绝这两种修改。程序每次使用临时密钥，输出长度与真假结果保持确定。公钥本身仍需通过可信渠道分发。",
+    "code": "package main\n\nimport (\n\t\"crypto/ed25519\"\n\t\"crypto/rand\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tpublic, private, err := ed25519.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tmanifest := []byte(\"files=2;version=3\")\n\tsignature := ed25519.Sign(private, manifest)\n\tfmt.Printf(\"signature-bytes=%d\\nvalid=%t\\nchanged=%t\\n\", len(signature), ed25519.Verify(public, manifest, signature), ed25519.Verify(public, []byte(\"files=9;version=3\"), signature))\n\tsignature[0] ^= 1\n\tfmt.Printf(\"bad-signature=%t\\n\", ed25519.Verify(public, manifest, signature))\n}\n",
+    "output": "signature-bytes=64\nvalid=true\nchanged=false\nbad-signature=false"
+  },
+  "example": {
+    "id": "go-example-205",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Ed25519 签名校验",
+    "summary": "能生成临时密钥。签名本地清单。验证原文与篡改文。",
+    "concepts": [
+      "crypto/ed25519",
+      "crypto/rand",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"crypto/ed25519\"\n\t\"crypto/rand\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tpublic, private, err := ed25519.GenerateKey(rand.Reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tmanifest := []byte(\"files=2;version=3\")\n\tsignature := ed25519.Sign(private, manifest)\n\tfmt.Printf(\"signature-bytes=%d\\nvalid=%t\\nchanged=%t\\n\", len(signature), ed25519.Verify(public, manifest, signature), ed25519.Verify(public, []byte(\"files=9;version=3\"), signature))\n\tsignature[0] ^= 1\n\tfmt.Printf(\"bad-signature=%t\\n\", ed25519.Verify(public, manifest, signature))\n}\n",
+    "expectedOutput": "signature-bytes=64\nvalid=true\nchanged=false\nbad-signature=false",
+    "templateType": "go"
+  }
+}

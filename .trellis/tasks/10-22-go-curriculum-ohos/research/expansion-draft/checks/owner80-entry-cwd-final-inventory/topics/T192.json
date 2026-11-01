@@ -1,0 +1,71 @@
+{
+  "id": "T192",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "port=9100 label=a=b default=8080\nbad-integer=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-192",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "环境键值快照",
+    "summary": "从显式环境切片读取配置，按后值覆盖规则处理重复键并拒绝坏端口。",
+    "concepts": [
+      "strings.Cut",
+      "strconv.Atoi",
+      "重复键",
+      "默认值"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "从显式环境切片读取配置，按后值覆盖规则处理重复键并拒绝坏端口。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "Split 后只取第二项会截断值中的等号。",
+      "缺失与显式空值不同，不能都默默使用默认配置。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为重复键改成报错策略，同时给出重复键名。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "写入快照 map 前检查键是否已存在，若存在返回包含键名的错误；保持每项只在第一个等号分隔。"
+      }
+    ],
+    "explain": "环境输入作为普通切片传入，解析过程既不读取也不修改宿主环境。Cut 只按第一个等号拆分，所以标签中的 a=b 可以完整保留。重复键采用后出现者覆盖，缺失端口使用默认八零八零；存在但为空或不是合法整数则返回错误，不能混同于缺失。端口最后验证一到六五五三五的业务范围。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\ntype Config struct {\n\tPort  int\n\tLabel string\n}\n\nfunc load(environment []string) (Config, error) {\n\tvalues := map[string]string{}\n\tfor _, entry := range environment {\n\t\tkey, value, ok := strings.Cut(entry, \"=\")\n\t\tif !ok || key == \"\" {\n\t\t\treturn Config{}, fmt.Errorf(\"bad environment entry\")\n\t\t}\n\t\tvalues[key] = value\n\t}\n\tcfg := Config{Port: 8080, Label: \"default\"}\n\tif value, exists := values[\"APP_PORT\"]; exists {\n\t\tport, err := strconv.Atoi(value)\n\t\tif err != nil || port < 1 || port > 65535 {\n\t\t\treturn Config{}, fmt.Errorf(\"invalid port\")\n\t\t}\n\t\tcfg.Port = port\n\t}\n\tif value, exists := values[\"APP_LABEL\"]; exists {\n\t\tcfg.Label = value\n\t}\n\treturn cfg, nil\n}\nfunc main() {\n\tcfg, err := load([]string{\"APP_PORT=9000\", \"APP_LABEL=a=b\", \"APP_PORT=9100\"})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefaults, err := load(nil)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"port=%d label=%s default=%d\\n\", cfg.Port, cfg.Label, defaults.Port)\n\t_, err = load([]string{\"APP_PORT=no\"})\n\tfmt.Printf(\"bad-integer=%t\\n\", err != nil)\n}\n",
+    "output": "port=9100 label=a=b default=8080\nbad-integer=true"
+  },
+  "example": {
+    "id": "go-example-192",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "环境键值快照",
+    "summary": "从显式环境切片读取配置，按后值覆盖规则处理重复键并拒绝坏端口。",
+    "concepts": [
+      "strings.Cut",
+      "strconv.Atoi",
+      "重复键",
+      "默认值"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\ntype Config struct {\n\tPort  int\n\tLabel string\n}\n\nfunc load(environment []string) (Config, error) {\n\tvalues := map[string]string{}\n\tfor _, entry := range environment {\n\t\tkey, value, ok := strings.Cut(entry, \"=\")\n\t\tif !ok || key == \"\" {\n\t\t\treturn Config{}, fmt.Errorf(\"bad environment entry\")\n\t\t}\n\t\tvalues[key] = value\n\t}\n\tcfg := Config{Port: 8080, Label: \"default\"}\n\tif value, exists := values[\"APP_PORT\"]; exists {\n\t\tport, err := strconv.Atoi(value)\n\t\tif err != nil || port < 1 || port > 65535 {\n\t\t\treturn Config{}, fmt.Errorf(\"invalid port\")\n\t\t}\n\t\tcfg.Port = port\n\t}\n\tif value, exists := values[\"APP_LABEL\"]; exists {\n\t\tcfg.Label = value\n\t}\n\treturn cfg, nil\n}\nfunc main() {\n\tcfg, err := load([]string{\"APP_PORT=9000\", \"APP_LABEL=a=b\", \"APP_PORT=9100\"})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tdefaults, err := load(nil)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"port=%d label=%s default=%d\\n\", cfg.Port, cfg.Label, defaults.Port)\n\t_, err = load([]string{\"APP_PORT=no\"})\n\tfmt.Printf(\"bad-integer=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "port=9100 label=a=b default=8080\nbad-integer=true",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "id": "T217",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "field=owner file=\"\" body=\"Li\"\nfield=upload file=\"notes.txt\" body=\"line1\\n\"\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-217",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内存 Multipart 表单",
+    "summary": "能构造含文本与文件的表单。逐 part 解码。核对文件内容。",
+    "concepts": [
+      "mime/multipart",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能构造含文本与文件的表单。逐 part 解码。核对文件内容。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "边界必须与 Content-Type 中声明的一致，不能随意猜测或省略关闭写入器。",
+      "上传文件名是不可信元数据，不能直接拼进落盘路径。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为每个 part 增加 32 字节预算。拒绝超过三个 part 的消息。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "用预算加一字节探测正文超量。在循环开始增加 part 计数。两项限制都在保存正文前核对。"
+      }
+    ],
+    "explain": "Multipart 在一个消息中封装多个带头部的 part。写入器创建普通 owner 字段和文件 upload 字段，Close 写出结束边界。读取器按同一 boundary 逐项解码。通过 FormName 和 FileName 可以区分字段与上传文件，而正文仍按流读取。整个示例只处理内存字节，不创建 HTTP 服务也不写上传文件到磁盘。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"mime/multipart\"\n)\n\nfunc main() {\n\tvar wire bytes.Buffer\n\tw := multipart.NewWriter(&wire)\n\tif err := w.SetBoundary(\"qfli-boundary\"); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := w.WriteField(\"owner\", \"Li\"); err != nil {\n\t\tpanic(err)\n\t}\n\tfile, err := w.CreateFormFile(\"upload\", \"notes.txt\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tif _, err = io.WriteString(file, \"line1\\n\"); err != nil {\n\t\tpanic(err)\n\t}\n\tif err = w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr := multipart.NewReader(&wire, w.Boundary())\n\tfor {\n\t\tpart, err := r.NextPart()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tbody, err := io.ReadAll(part)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tpart.Close()\n\t\tfmt.Printf(\"field=%s file=%q body=%q\\n\", part.FormName(), part.FileName(), string(body))\n\t}\n}\n",
+    "output": "field=owner file=\"\" body=\"Li\"\nfield=upload file=\"notes.txt\" body=\"line1\\n\""
+  },
+  "example": {
+    "id": "go-example-217",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内存 Multipart 表单",
+    "summary": "能构造含文本与文件的表单。逐 part 解码。核对文件内容。",
+    "concepts": [
+      "mime/multipart",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"mime/multipart\"\n)\n\nfunc main() {\n\tvar wire bytes.Buffer\n\tw := multipart.NewWriter(&wire)\n\tif err := w.SetBoundary(\"qfli-boundary\"); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := w.WriteField(\"owner\", \"Li\"); err != nil {\n\t\tpanic(err)\n\t}\n\tfile, err := w.CreateFormFile(\"upload\", \"notes.txt\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tif _, err = io.WriteString(file, \"line1\\n\"); err != nil {\n\t\tpanic(err)\n\t}\n\tif err = w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr := multipart.NewReader(&wire, w.Boundary())\n\tfor {\n\t\tpart, err := r.NextPart()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tbody, err := io.ReadAll(part)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tpart.Close()\n\t\tfmt.Printf(\"field=%s file=%q body=%q\\n\", part.FormName(), part.FileName(), string(body))\n\t}\n}\n",
+    "expectedOutput": "field=owner file=\"\" body=\"Li\"\nfield=upload file=\"notes.txt\" body=\"line1\\n\"",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "T212",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "small=small valid=true\nexpanded-rejected=true\nexact-limit=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-212",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Zlib 解压预算",
+    "summary": "能对压缩输入限制解压后字节数。拒绝超预算载荷。",
+    "concepts": [
+      "compress/zlib",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能对压缩输入限制解压后字节数。拒绝超预算载荷。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "只用 LimitReader 的 budget 字节。仅判断无错误。这样会把超量输入误当成恰好上限。",
+      "预算必须非负且不能在加一时溢出，公共接口应先验证参数。"
+    ],
+    "exercises": [
+      {
+        "prompt": "让 decode 拒绝负预算。增加 budget=0 的空数据测试。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "参数小于零立即返回错误。零预算可以接受空明文。探测到一个字节就拒绝。"
+      }
+    ],
+    "explain": "压缩文件的输入大小无法代表解压后的内存成本。decode 只允许读取预算加一字节。额外字节用来区分恰好达到上限和实际超量。超限时丢弃结果并返回错误。三个输入分别覆盖小载荷、大量重复内容和恰好八字节。这个限制约束解压输出。压缩输入与处理时间在真实应用中也应另设预算。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"compress/zlib\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc compress(text string) []byte {\n\tvar out bytes.Buffer\n\tw := zlib.NewWriter(&out)\n\tif _, err := io.WriteString(w, text); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\treturn out.Bytes()\n}\nfunc decode(data []byte, budget int64) (string, error) {\n\tr, err := zlib.NewReader(bytes.NewReader(data))\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\tdefer r.Close()\n\ttext, err := io.ReadAll(io.LimitReader(r, budget+1))\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\tif int64(len(text)) > budget {\n\t\treturn \"\", fmt.Errorf(\"expanded data over budget\")\n\t}\n\treturn string(text), nil\n}\nfunc main() {\n\ttext, err := decode(compress(\"small\"), 8)\n\tfmt.Printf(\"small=%s valid=%t\\n\", text, err == nil)\n\t_, err = decode(compress(strings.Repeat(\"a\", 1000)), 8)\n\tfmt.Printf(\"expanded-rejected=%t\\n\", err != nil)\n\ttext, err = decode(compress(\"12345678\"), 8)\n\tfmt.Printf(\"exact-limit=%t\\n\", err == nil && len(text) == 8)\n}\n",
+    "output": "small=small valid=true\nexpanded-rejected=true\nexact-limit=true"
+  },
+  "example": {
+    "id": "go-example-212",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Zlib 解压预算",
+    "summary": "能对压缩输入限制解压后字节数。拒绝超预算载荷。",
+    "concepts": [
+      "compress/zlib",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"compress/zlib\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc compress(text string) []byte {\n\tvar out bytes.Buffer\n\tw := zlib.NewWriter(&out)\n\tif _, err := io.WriteString(w, text); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\treturn out.Bytes()\n}\nfunc decode(data []byte, budget int64) (string, error) {\n\tr, err := zlib.NewReader(bytes.NewReader(data))\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\tdefer r.Close()\n\ttext, err := io.ReadAll(io.LimitReader(r, budget+1))\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\tif int64(len(text)) > budget {\n\t\treturn \"\", fmt.Errorf(\"expanded data over budget\")\n\t}\n\treturn string(text), nil\n}\nfunc main() {\n\ttext, err := decode(compress(\"small\"), 8)\n\tfmt.Printf(\"small=%s valid=%t\\n\", text, err == nil)\n\t_, err = decode(compress(strings.Repeat(\"a\", 1000)), 8)\n\tfmt.Printf(\"expanded-rejected=%t\\n\", err != nil)\n\ttext, err = decode(compress(\"12345678\"), 8)\n\tfmt.Printf(\"exact-limit=%t\\n\", err == nil && len(text) == 8)\n}\n",
+    "expectedOutput": "small=small valid=true\nexpanded-rejected=true\nexact-limit=true",
+    "templateType": "go"
+  }
+}

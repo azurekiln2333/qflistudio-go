@@ -1,0 +1,71 @@
+{
+  "id": "T156",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "distance=6 path=[A C B D] stale=2\nnegative-rejected=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-156",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "带权路线规划",
+    "summary": "求配送图的最短距离，回溯路线并跳过堆中已失效的旧距离。",
+    "concepts": [
+      "Dijkstra",
+      "container/heap",
+      "失效节点",
+      "路径回溯"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "求配送图的最短距离，回溯路线并跳过堆中已失效的旧距离。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "带负权边时 Dijkstra 的贪心前提不成立，必须拒绝或改用其他算法。",
+      "同一节点可能存在多个堆项。不能把每次出队都当作最新状态。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在计算候选距离前加入 int 溢出保护，并保持原图不变。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "已经保证边权非负后，检查 edge.Cost > MaxInt-current.Distance 则返回错误。图只读，拒绝后不修改调用方图结构。"
+      }
+    ],
+    "explain": "每次从最小堆取当前最小距离。松弛出边并把改进后的距离再次入堆。无需在堆中查找旧项。旧项出队时若不等于 dist 中的最新值就跳过。固定图让 B 与 D 都发生距离改进，因此可观察两个失效项。Dijkstra 要求非负边。程序先遍历验证这一前提，再开始更新状态。生产长距离还需检查距离加法溢出。",
+    "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n)\n\ntype Edge struct {\n\tTo   string\n\tCost int\n}\ntype State struct {\n\tNode     string\n\tDistance int\n}\ntype Frontier []State\n\nfunc (h Frontier) Len() int { return len(h) }\nfunc (h Frontier) Less(i, j int) bool {\n\tif h[i].Distance != h[j].Distance {\n\t\treturn h[i].Distance < h[j].Distance\n\t}\n\treturn h[i].Node < h[j].Node\n}\nfunc (h Frontier) Swap(i, j int)           { h[i], h[j] = h[j], h[i] }\nfunc (h *Frontier) Push(value interface{}) { *h = append(*h, value.(State)) }\nfunc (h *Frontier) Pop() interface{} {\n\told := *h\n\tvalue := old[len(old)-1]\n\t*h = old[:len(old)-1]\n\treturn value\n}\nfunc shortest(graph map[string][]Edge, start, target string) (int, []string, int, error) {\n\tfor _, edges := range graph {\n\t\tfor _, edge := range edges {\n\t\t\tif edge.Cost < 0 {\n\t\t\t\treturn 0, nil, 0, fmt.Errorf(\"negative edge\")\n\t\t\t}\n\t\t}\n\t}\n\tdistances := map[string]int{start: 0}\n\tparent := map[string]string{}\n\tqueue := &Frontier{}\n\theap.Push(queue, State{start, 0})\n\tstale := 0\n\tfor queue.Len() > 0 {\n\t\tcurrent := heap.Pop(queue).(State)\n\t\tif current.Distance != distances[current.Node] {\n\t\t\tstale++\n\t\t\tcontinue\n\t\t}\n\t\tfor _, edge := range graph[current.Node] {\n\t\t\tcandidate := current.Distance + edge.Cost\n\t\t\told, exists := distances[edge.To]\n\t\t\tif !exists || candidate < old {\n\t\t\t\tdistances[edge.To] = candidate\n\t\t\t\tparent[edge.To] = current.Node\n\t\t\t\theap.Push(queue, State{edge.To, candidate})\n\t\t\t}\n\t\t}\n\t}\n\tdistance, exists := distances[target]\n\tif !exists {\n\t\treturn 0, nil, stale, fmt.Errorf(\"unreachable\")\n\t}\n\tpath := []string{}\n\tfor node := target; node != \"\"; node = parent[node] {\n\t\tpath = append(path, node)\n\t}\n\tfor i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {\n\t\tpath[i], path[j] = path[j], path[i]\n\t}\n\treturn distance, path, stale, nil\n}\nfunc main() {\n\tgraph := map[string][]Edge{\"A\": {{\"B\", 5}, {\"C\", 1}}, \"C\": {{\"B\", 2}, {\"D\", 8}}, \"B\": {{\"D\", 3}}}\n\tdistance, path, stale, err := shortest(graph, \"A\", \"D\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"distance=%d path=%v stale=%d\\n\", distance, path, stale)\n\t_, _, _, err = shortest(map[string][]Edge{\"A\": {{\"B\", -1}}}, \"A\", \"B\")\n\tfmt.Printf(\"negative-rejected=%t\\n\", err != nil)\n}\n",
+    "output": "distance=6 path=[A C B D] stale=2\nnegative-rejected=true"
+  },
+  "example": {
+    "id": "go-example-156",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "带权路线规划",
+    "summary": "求配送图的最短距离，回溯路线并跳过堆中已失效的旧距离。",
+    "concepts": [
+      "Dijkstra",
+      "container/heap",
+      "失效节点",
+      "路径回溯"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"container/heap\"\n\t\"fmt\"\n)\n\ntype Edge struct {\n\tTo   string\n\tCost int\n}\ntype State struct {\n\tNode     string\n\tDistance int\n}\ntype Frontier []State\n\nfunc (h Frontier) Len() int { return len(h) }\nfunc (h Frontier) Less(i, j int) bool {\n\tif h[i].Distance != h[j].Distance {\n\t\treturn h[i].Distance < h[j].Distance\n\t}\n\treturn h[i].Node < h[j].Node\n}\nfunc (h Frontier) Swap(i, j int)           { h[i], h[j] = h[j], h[i] }\nfunc (h *Frontier) Push(value interface{}) { *h = append(*h, value.(State)) }\nfunc (h *Frontier) Pop() interface{} {\n\told := *h\n\tvalue := old[len(old)-1]\n\t*h = old[:len(old)-1]\n\treturn value\n}\nfunc shortest(graph map[string][]Edge, start, target string) (int, []string, int, error) {\n\tfor _, edges := range graph {\n\t\tfor _, edge := range edges {\n\t\t\tif edge.Cost < 0 {\n\t\t\t\treturn 0, nil, 0, fmt.Errorf(\"negative edge\")\n\t\t\t}\n\t\t}\n\t}\n\tdistances := map[string]int{start: 0}\n\tparent := map[string]string{}\n\tqueue := &Frontier{}\n\theap.Push(queue, State{start, 0})\n\tstale := 0\n\tfor queue.Len() > 0 {\n\t\tcurrent := heap.Pop(queue).(State)\n\t\tif current.Distance != distances[current.Node] {\n\t\t\tstale++\n\t\t\tcontinue\n\t\t}\n\t\tfor _, edge := range graph[current.Node] {\n\t\t\tcandidate := current.Distance + edge.Cost\n\t\t\told, exists := distances[edge.To]\n\t\t\tif !exists || candidate < old {\n\t\t\t\tdistances[edge.To] = candidate\n\t\t\t\tparent[edge.To] = current.Node\n\t\t\t\theap.Push(queue, State{edge.To, candidate})\n\t\t\t}\n\t\t}\n\t}\n\tdistance, exists := distances[target]\n\tif !exists {\n\t\treturn 0, nil, stale, fmt.Errorf(\"unreachable\")\n\t}\n\tpath := []string{}\n\tfor node := target; node != \"\"; node = parent[node] {\n\t\tpath = append(path, node)\n\t}\n\tfor i, j := 0, len(path)-1; i < j; i, j = i+1, j-1 {\n\t\tpath[i], path[j] = path[j], path[i]\n\t}\n\treturn distance, path, stale, nil\n}\nfunc main() {\n\tgraph := map[string][]Edge{\"A\": {{\"B\", 5}, {\"C\", 1}}, \"C\": {{\"B\", 2}, {\"D\", 8}}, \"B\": {{\"D\", 3}}}\n\tdistance, path, stale, err := shortest(graph, \"A\", \"D\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"distance=%d path=%v stale=%d\\n\", distance, path, stale)\n\t_, _, _, err = shortest(map[string][]Edge{\"A\": {{\"B\", -1}}}, \"A\", \"B\")\n\tfmt.Printf(\"negative-rejected=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "distance=6 path=[A C B D] stale=2\nnegative-rejected=true",
+    "templateType": "go"
+  }
+}

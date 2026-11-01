@@ -1,0 +1,69 @@
+{
+  "id": "T241",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "pen 2 x 1.39\npad 1 x 0.50\ntotal 3.28\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-241",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "模板金额辅助函数",
+    "summary": "能注册分币格式化 FuncMap，渲染订单明细与总价。",
+    "concepts": [
+      "text/template",
+      "bytes",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能注册分币格式化 FuncMap，渲染订单明细与总价。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "Funcs 在解析之后才注册。模板可能因未知函数解析失败。",
+      "这里 money 只处理非负金额，负数的余数格式需要显式处理符号。"
+    ],
+    "exercises": [
+      {
+        "prompt": "支持退款金额 -139 分，输出 -1.39。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "先单独处理负号。再格式化绝对金额。最小整数不能直接取负。应选择清晰的受限金额范围。"
+      }
+    ],
+    "explain": "金额在计算阶段使用整数分。模板函数只把结果展示成两位小数。Funcs 在 Parse 前注册 money。模板才能识别函数名。报表先计算总额。报表再把完整数据交给模板。业务运算不散落在展示字符串里。执行先写临时缓冲。确认成功后再输出。这样能避免把半成品报告作为完整结果输出。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"text/template\"\n)\n\ntype Item struct {\n\tName      string\n\tQty, Unit int\n}\ntype Report struct {\n\tItems []Item\n\tTotal int\n}\n\nfunc money(cents int) string { return fmt.Sprintf(\"%d.%02d\", cents/100, cents%100) }\nfunc main() {\n\treport := Report{Items: []Item{{\"pen\", 2, 139}, {\"pad\", 1, 50}}}\n\tfor _, item := range report.Items {\n\t\treport.Total += item.Qty * item.Unit\n\t}\n\tsource := \"{{range .Items}}{{.Name}} {{.Qty}} x {{money .Unit}}\\n{{end}}total {{money .Total}}\\n\"\n\tt, err := template.New(\"invoice\").Funcs(template.FuncMap{\"money\": money}).Parse(source)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar out bytes.Buffer\n\tif err = t.Execute(&out, report); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Print(out.String())\n}\n",
+    "output": "pen 2 x 1.39\npad 1 x 0.50\ntotal 3.28"
+  },
+  "example": {
+    "id": "go-example-241",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "模板金额辅助函数",
+    "summary": "能注册分币格式化 FuncMap，渲染订单明细与总价。",
+    "concepts": [
+      "text/template",
+      "bytes",
+      "模板与展示协议"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"text/template\"\n)\n\ntype Item struct {\n\tName      string\n\tQty, Unit int\n}\ntype Report struct {\n\tItems []Item\n\tTotal int\n}\n\nfunc money(cents int) string { return fmt.Sprintf(\"%d.%02d\", cents/100, cents%100) }\nfunc main() {\n\treport := Report{Items: []Item{{\"pen\", 2, 139}, {\"pad\", 1, 50}}}\n\tfor _, item := range report.Items {\n\t\treport.Total += item.Qty * item.Unit\n\t}\n\tsource := \"{{range .Items}}{{.Name}} {{.Qty}} x {{money .Unit}}\\n{{end}}total {{money .Total}}\\n\"\n\tt, err := template.New(\"invoice\").Funcs(template.FuncMap{\"money\": money}).Parse(source)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar out bytes.Buffer\n\tif err = t.Execute(&out, report); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Print(out.String())\n}\n",
+    "expectedOutput": "pen 2 x 1.39\npad 1 x 0.50\ntotal 3.28",
+    "templateType": "go"
+  }
+}

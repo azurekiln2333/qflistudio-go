@@ -1,0 +1,71 @@
+{
+  "id": "T194",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "expanded=docs/guide cost=$5 empty=\nmissing=true\nplain=hello[world]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-194",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "受控变量展开",
+    "summary": "用显式变量表展开模板。区分缺失键、空值、转义美元符与普通文字。",
+    "concepts": [
+      "os.Expand",
+      "映射回调",
+      "缺失变量",
+      "美元符转义"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "用显式变量表展开模板。区分缺失键、空值、转义美元符与普通文字。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "把缺失键和空字符串混在一起，会悄悄生成不完整路径。",
+      "直接使用 ExpandEnv 会引入宿主环境依赖，失去显式输入的可重复性。"
+    ],
+    "exercises": [
+      {
+        "prompt": "同一个缺失变量出现多次时，只在错误中列出一次。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "回调内部维护 missingSeen 集合。只有首次缺失才追加有序列表。仍然拒绝整次结果。不返回截断的成功文本。"
+      }
+    ],
+    "explain": "os.Expand 通过映射函数请求变量。回调从给定 map 查询而不读取环境。存在但为空的 EMPTY 合法。记录缺失键，并让整次展开返回错误。双美元符对应特殊变量名美元。回调把它还原为普通美元字符。因此 $$5 显示为 $5。普通方括号文本保持不变。本例遵循 Expand 的变量语法。不宣称提供任意模板语言。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\t\"strings\"\n)\n\nfunc expand(text string, values map[string]string) (string, error) {\n\tmissing := []string{}\n\tresult := os.Expand(text, func(name string) string {\n\t\tif name == \"$\" {\n\t\t\treturn \"$\"\n\t\t}\n\t\tvalue, ok := values[name]\n\t\tif !ok {\n\t\t\tmissing = append(missing, name)\n\t\t}\n\t\treturn value\n\t})\n\tif len(missing) > 0 {\n\t\treturn \"\", fmt.Errorf(\"missing variables: %s\", strings.Join(missing, \",\"))\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tvalues := map[string]string{\"ROOT\": \"docs\", \"NAME\": \"guide\", \"EMPTY\": \"\"}\n\tresult, err := expand(`${ROOT}/$NAME cost=$$5 empty=${EMPTY}`, values)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"expanded=%s\\n\", result)\n\t_, err = expand(`${MISSING}`, values)\n\tfmt.Printf(\"missing=%t\\n\", err != nil)\n\tplain, err := expand(\"hello[world]\", values)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"plain=%s\\n\", plain)\n}\n",
+    "output": "expanded=docs/guide cost=$5 empty=\nmissing=true\nplain=hello[world]"
+  },
+  "example": {
+    "id": "go-example-194",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "受控变量展开",
+    "summary": "用显式变量表展开模板。区分缺失键、空值、转义美元符与普通文字。",
+    "concepts": [
+      "os.Expand",
+      "映射回调",
+      "缺失变量",
+      "美元符转义"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"os\"\n\t\"strings\"\n)\n\nfunc expand(text string, values map[string]string) (string, error) {\n\tmissing := []string{}\n\tresult := os.Expand(text, func(name string) string {\n\t\tif name == \"$\" {\n\t\t\treturn \"$\"\n\t\t}\n\t\tvalue, ok := values[name]\n\t\tif !ok {\n\t\t\tmissing = append(missing, name)\n\t\t}\n\t\treturn value\n\t})\n\tif len(missing) > 0 {\n\t\treturn \"\", fmt.Errorf(\"missing variables: %s\", strings.Join(missing, \",\"))\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tvalues := map[string]string{\"ROOT\": \"docs\", \"NAME\": \"guide\", \"EMPTY\": \"\"}\n\tresult, err := expand(`${ROOT}/$NAME cost=$$5 empty=${EMPTY}`, values)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"expanded=%s\\n\", result)\n\t_, err = expand(`${MISSING}`, values)\n\tfmt.Printf(\"missing=%t\\n\", err != nil)\n\tplain, err := expand(\"hello[world]\", values)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"plain=%s\\n\", plain)\n}\n",
+    "expectedOutput": "expanded=docs/guide cost=$5 empty=\nmissing=true\nplain=hello[world]",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,69 @@
+{
+  "id": "T196",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "errors=port must be 1..65535 | timeout must be positive | tls requires certificate and key\nvalid=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-196",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "配置交叉字段校验",
+    "summary": "一次返回端口、超时与 TLS 证书路径之间的全部配置约束错误。",
+    "concepts": [
+      "聚合错误",
+      "TLS 关联约束",
+      "time.Duration"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "一次返回端口、超时与 TLS 证书路径之间的全部配置约束错误。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "只返回第一个问题会导致用户反复修改和重试。",
+      "路径字符串非空不证明文件存在或证书合法，不能混淆验证层次。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为每个诊断增加字段名与错误码，让界面能够定位相关输入框。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "将 []string 改为 []Issue，包含 Field、Code、Message；TLS 关联错误可使用字段组或明确指向缺失的 keyPath。"
+      }
+    ],
+    "explain": "Validate 为各独立约束追加诊断而不是遇到第一个错误就退出，让用户一次修复整组问题。检查顺序固定，输出也固定；开启 TLS 要求证书和私钥路径同时存在，关闭时不允许残留路径。该层只检查配置关系，不声称路径存在或证书内容有效，后续 I/O 和密码校验仍需各自执行。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"time\"\n)\n\ntype Config struct {\n\tPort        int\n\tTimeout     time.Duration\n\tTLS         bool\n\tCertificate string\n\tKey         string\n}\n\nfunc validate(cfg Config) []string {\n\tissues := []string{}\n\tif cfg.Port < 1 || cfg.Port > 65535 {\n\t\tissues = append(issues, \"port must be 1..65535\")\n\t}\n\tif cfg.Timeout <= 0 {\n\t\tissues = append(issues, \"timeout must be positive\")\n\t}\n\tif cfg.TLS && (cfg.Certificate == \"\" || cfg.Key == \"\") {\n\t\tissues = append(issues, \"tls requires certificate and key\")\n\t}\n\tif !cfg.TLS && (cfg.Certificate != \"\" || cfg.Key != \"\") {\n\t\tissues = append(issues, \"tls paths require tls enabled\")\n\t}\n\treturn issues\n}\nfunc main() {\n\tbad := Config{Port: 70000, TLS: true, Certificate: \"cert.pem\"}\n\tfmt.Printf(\"errors=%s\\n\", strings.Join(validate(bad), \" | \"))\n\tgood := Config{443, 2 * time.Second, true, \"cert.pem\", \"key.pem\"}\n\tfmt.Printf(\"valid=%t\\n\", len(validate(good)) == 0)\n}\n",
+    "output": "errors=port must be 1..65535 | timeout must be positive | tls requires certificate and key\nvalid=true"
+  },
+  "example": {
+    "id": "go-example-196",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "配置交叉字段校验",
+    "summary": "一次返回端口、超时与 TLS 证书路径之间的全部配置约束错误。",
+    "concepts": [
+      "聚合错误",
+      "TLS 关联约束",
+      "time.Duration"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n\t\"time\"\n)\n\ntype Config struct {\n\tPort        int\n\tTimeout     time.Duration\n\tTLS         bool\n\tCertificate string\n\tKey         string\n}\n\nfunc validate(cfg Config) []string {\n\tissues := []string{}\n\tif cfg.Port < 1 || cfg.Port > 65535 {\n\t\tissues = append(issues, \"port must be 1..65535\")\n\t}\n\tif cfg.Timeout <= 0 {\n\t\tissues = append(issues, \"timeout must be positive\")\n\t}\n\tif cfg.TLS && (cfg.Certificate == \"\" || cfg.Key == \"\") {\n\t\tissues = append(issues, \"tls requires certificate and key\")\n\t}\n\tif !cfg.TLS && (cfg.Certificate != \"\" || cfg.Key != \"\") {\n\t\tissues = append(issues, \"tls paths require tls enabled\")\n\t}\n\treturn issues\n}\nfunc main() {\n\tbad := Config{Port: 70000, TLS: true, Certificate: \"cert.pem\"}\n\tfmt.Printf(\"errors=%s\\n\", strings.Join(validate(bad), \" | \"))\n\tgood := Config{443, 2 * time.Second, true, \"cert.pem\", \"key.pem\"}\n\tfmt.Printf(\"valid=%t\\n\", len(validate(good)) == 0)\n}\n",
+    "expectedOutput": "errors=port must be 1..65535 | timeout must be positive | tls requires certificate and key\nvalid=true",
+    "templateType": "go"
+  }
+}

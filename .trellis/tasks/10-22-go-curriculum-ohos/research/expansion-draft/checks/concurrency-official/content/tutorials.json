@@ -1,0 +1,484 @@
+[
+  {
+    "id": "go-tutorial-231",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有序并行转换",
+    "summary": "能多个 worker 处理索引化任务，收集后按输入顺序输出结果。",
+    "concepts": [
+      "sync",
+      "sort",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-231-lesson",
+        "title": "有序并行转换",
+        "summary": "能多个 worker 处理索引化任务，收集后按输入顺序输出结果。",
+        "concepts": [
+          "sync",
+          "sort",
+          "并发与所有权"
+        ],
+        "explain": "任务附带输入下标，两个 worker 可以自由完成计算，收集端再按下标恢复输入顺序。结果通道容量等于任务数，因此主协程先等待 worker 退出不会堵塞发送。WaitGroup 的 Add 在启动前执行，全部 worker 完成后才关闭结果通道。并行完成顺序与最终展示顺序是两个独立问题，不能依赖调度恰好按输入发生。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\ntype Job struct{ Index, Value int }\ntype Result struct{ Index, Value int }\n\nfunc main() {\n\tinput := []int{2, 3, 4, 5}\n\tjobs := make(chan Job, len(input))\n\tresults := make(chan Result, len(input))\n\tfor i, value := range input {\n\t\tjobs <- Job{i, value}\n\t}\n\tclose(jobs)\n\tvar workers sync.WaitGroup\n\tfor n := 0; n < 2; n++ {\n\t\tworkers.Add(1)\n\t\tgo func() {\n\t\t\tdefer workers.Done()\n\t\t\tfor job := range jobs {\n\t\t\t\tresults <- Result{job.Index, job.Value * job.Value}\n\t\t\t}\n\t\t}()\n\t}\n\tworkers.Wait()\n\tclose(results)\n\tordered := []Result{}\n\tfor result := range results {\n\t\tordered = append(ordered, result)\n\t}\n\tsort.Slice(ordered, func(i, j int) bool { return ordered[i].Index < ordered[j].Index })\n\tvalues := []int{}\n\tfor _, result := range ordered {\n\t\tvalues = append(values, result.Value)\n\t}\n\tfmt.Printf(\"ordered=%v\\n\", values)\n}\n",
+        "output": "ordered=[4 9 16 25]",
+        "objective": "能多个 worker 处理索引化任务，收集后按输入顺序输出结果。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "无缓冲结果通道若在主协程 Wait 时无人接收，会造成死锁。",
+          "循环变量需要明确传递或复制，不能靠偶然调度读取正确任务。"
+        ],
+        "exercises": [
+          {
+            "prompt": "把结果通道改为无缓冲，同时保持无死锁和输入顺序。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "启动唯一收尾协程等待 workers 后 close(results)，主协程同时 range 接收，最后仍按 Index 排序。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-232",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "有界并发闸门",
+    "summary": "能用缓冲通道限制并发，验证所有任务完成且峰值不超过上限。",
+    "concepts": [
+      "sync",
+      "sync/atomic",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-232-lesson",
+        "title": "有界并发闸门",
+        "summary": "能用缓冲通道限制并发，验证所有任务完成且峰值不超过上限。",
+        "concepts": [
+          "sync",
+          "sync/atomic",
+          "并发与所有权"
+        ],
+        "explain": "容量为二的通道作为并发闸门，拿到槽位后才进入受限区域，结束前归还槽位。原子计数跟踪当前数量、峰值和完成数，比较交换循环只在新值更大时更新峰值。调度可能让实际峰值是一或二，因此断言的是不超过上限而非虚构固定并发顺序。Wait 后 active 为零证明所有受限工作已退出。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"sync/atomic\"\n)\n\nfunc main() {\n\tgate := make(chan struct{}, 2)\n\tvar workers sync.WaitGroup\n\tvar active, peak, completed int32\n\tfor i := 0; i < 6; i++ {\n\t\tworkers.Add(1)\n\t\tgo func() {\n\t\t\tdefer workers.Done()\n\t\t\tgate <- struct{}{}\n\t\t\tcurrent := atomic.AddInt32(&active, 1)\n\t\t\tfor {\n\t\t\t\told := atomic.LoadInt32(&peak)\n\t\t\t\tif current <= old || atomic.CompareAndSwapInt32(&peak, old, current) {\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t\tatomic.AddInt32(&completed, 1)\n\t\t\tatomic.AddInt32(&active, -1)\n\t\t\t<-gate\n\t\t}()\n\t}\n\tworkers.Wait()\n\tfmt.Printf(\"completed=%d\\npeak-bounded=%t\\nactive=%d\\n\", completed, peak >= 1 && peak <= 2, active)\n}\n",
+        "output": "completed=6\npeak-bounded=true\nactive=0",
+        "objective": "能用缓冲通道限制并发，验证所有任务完成且峰值不超过上限。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "只限制结果缓冲大小不会限制正在执行的工作数。",
+          "获取槽位之后的错误或 panic 路径也必须归还槽位，真实任务通常需要 defer。"
+        ],
+        "exercises": [
+          {
+            "prompt": "把闸门封装成 runLimited 函数，并用 defer 归还槽位。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "进入后立即登记 defer，再执行用户任务；WaitGroup.Done 也应由 worker 最外层 defer 执行。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-233",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "同键请求合并",
+    "summary": "能在自实现调用表中合并并发相同键请求，断言实际装载仅一次。",
+    "concepts": [
+      "sync",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-233-lesson",
+        "title": "同键请求合并",
+        "summary": "能在自实现调用表中合并并发相同键请求，断言实际装载仅一次。",
+        "concepts": [
+          "sync",
+          "并发与所有权"
+        ],
+        "explain": "调用表用键关联进行中的装载。首个请求创建完成通道并执行 load，后续请求等同一通道关闭后读取结果；完成时删除表项，所以它合并重叠请求而不是永久缓存。测试用 joined 和 release 精确保证五个等待者已加入，再放行装载，避免靠 Sleep 猜测调度。通道关闭建立结果写入与等待者读取之间的同步关系。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\ntype Call struct {\n\tDone  chan struct{}\n\tValue string\n}\ntype Group struct {\n\tmu     sync.Mutex\n\tcalls  map[string]*Call\n\tjoined chan struct{}\n}\n\nfunc (g *Group) Do(key string, load func() string) string {\n\tg.mu.Lock()\n\tif existing := g.calls[key]; existing != nil {\n\t\tg.mu.Unlock()\n\t\tg.joined <- struct{}{}\n\t\t<-existing.Done\n\t\treturn existing.Value\n\t}\n\tcall := &Call{Done: make(chan struct{})}\n\tg.calls[key] = call\n\tg.mu.Unlock()\n\tcall.Value = load()\n\tg.mu.Lock()\n\tdelete(g.calls, key)\n\tclose(call.Done)\n\tg.mu.Unlock()\n\treturn call.Value\n}\nfunc main() {\n\tgroup := &Group{calls: map[string]*Call{}, joined: make(chan struct{}, 5)}\n\tstarted := make(chan struct{})\n\trelease := make(chan struct{})\n\tresults := make(chan string, 6)\n\tloads := 0\n\tfor i := 0; i < 6; i++ {\n\t\tgo func() {\n\t\t\tresults <- group.Do(\"catalog\", func() string { loads++; close(started); <-release; return \"ready\" })\n\t\t}()\n\t}\n\t<-started\n\tfor i := 0; i < 5; i++ {\n\t\t<-group.joined\n\t}\n\tclose(release)\n\tmatches := 0\n\tfor i := 0; i < 6; i++ {\n\t\tif <-results == \"ready\" {\n\t\t\tmatches++\n\t\t}\n\t}\n\tfmt.Printf(\"loads=%d\\nmatched=%d\\n\", loads, matches)\n}\n",
+        "output": "loads=1\nmatched=6",
+        "objective": "能在自实现调用表中合并并发相同键请求，断言实际装载仅一次。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "必须在结果字段写好之后关闭完成通道，否则等待者可能读到零值。",
+          "装载 panic 或提前返回也要解除等待并清理表项，生产实现需完整异常收尾。"
+        ],
+        "exercises": [
+          {
+            "prompt": "为 Call 增加 Err，合并一次失败装载并让所有等待者看到同一错误。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "保存 value 和 err 后统一关闭 Done；等待者读两个字段，失败完成同样删除进行中表项。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-234",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "条件变量屏障",
+    "summary": "能用 Cond 等待所有成员就绪，再广播启动并收集确定结果。",
+    "concepts": [
+      "sync",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-234-lesson",
+        "title": "条件变量屏障",
+        "summary": "能用 Cond 等待所有成员就绪，再广播启动并收集确定结果。",
+        "concepts": [
+          "sync",
+          "并发与所有权"
+        ],
+        "explain": "Cond 把等待与受锁保护的条件联系起来。每个成员登记就绪后等待 start，主协程也在循环中等待 ready 达到三，再设置条件并广播。Wait 会暂时释放锁，被唤醒后重新取得锁，所以所有判断都必须写成循环。结果另经通道收集并排序，不让线程调度顺序污染断言。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\nfunc main() {\n\tvar mu sync.Mutex\n\tcond := sync.NewCond(&mu)\n\tready := 0\n\tstart := false\n\tresults := make(chan int, 3)\n\tfor id := 1; id <= 3; id++ {\n\t\tgo func(id int) {\n\t\t\tmu.Lock()\n\t\t\tready++\n\t\t\tcond.Broadcast()\n\t\t\tfor !start {\n\t\t\t\tcond.Wait()\n\t\t\t}\n\t\t\tmu.Unlock()\n\t\t\tresults <- id * 10\n\t\t}(id)\n\t}\n\tmu.Lock()\n\tfor ready < 3 {\n\t\tcond.Wait()\n\t}\n\tstart = true\n\tcond.Broadcast()\n\tmu.Unlock()\n\tvalues := []int{}\n\tfor i := 0; i < 3; i++ {\n\t\tvalues = append(values, <-results)\n\t}\n\tsort.Ints(values)\n\tfmt.Printf(\"ready=%d\\nresults=%v\\n\", ready, values)\n}\n",
+        "output": "ready=3\nresults=[10 20 30]",
+        "objective": "能用 Cond 等待所有成员就绪，再广播启动并收集确定结果。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "只调用 Broadcast 而不改变条件，会让等待者醒来后继续等待。",
+          "必须先持有 Cond 使用的锁再调用 Wait，且唤醒后重新检查条件。"
+        ],
+        "exercises": [
+          {
+            "prompt": "加入第四个成员，只修改成员总数，保持同一屏障逻辑。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "把 total 常量用于启动次数、ready 条件和结果接收次数；不要把三处边界分开写死。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-235",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "流水线取消传播",
+    "summary": "能达到固定消费数量时取消上游，等待所有阶段退出并打印已消费值。",
+    "concepts": [
+      "context",
+      "sync",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-235-lesson",
+        "title": "流水线取消传播",
+        "summary": "能达到固定消费数量时取消上游，等待所有阶段退出并打印已消费值。",
+        "concepts": [
+          "context",
+          "sync",
+          "并发与所有权"
+        ],
+        "explain": "流水线的每个潜在阻塞发送和接收都同时监听取消。消费者拿到前三个平方后主动 cancel，再 Wait 所有阶段，确认上游没有遗留阻塞发送。通道只由产生该通道的阶段关闭，消费者不越权关闭上游通道。这里输出前三项确定，但取消后阶段可能在停止前多做少量准备，因此不声称精确处理总次数。",
+        "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n\t\"sync\"\n)\n\nfunc main() {\n\tctx, cancel := context.WithCancel(context.Background())\n\tdefer cancel()\n\tnumbers := make(chan int)\n\tsquares := make(chan int)\n\tvar stages sync.WaitGroup\n\tstages.Add(2)\n\tgo func() {\n\t\tdefer stages.Done()\n\t\tdefer close(numbers)\n\t\tfor n := 1; ; n++ {\n\t\t\tselect {\n\t\t\tcase numbers <- n:\n\t\t\tcase <-ctx.Done():\n\t\t\t\treturn\n\t\t\t}\n\t\t}\n\t}()\n\tgo func() {\n\t\tdefer stages.Done()\n\t\tdefer close(squares)\n\t\tfor {\n\t\t\tselect {\n\t\t\tcase <-ctx.Done():\n\t\t\t\treturn\n\t\t\tcase n, ok := <-numbers:\n\t\t\t\tif !ok {\n\t\t\t\t\treturn\n\t\t\t\t}\n\t\t\t\tselect {\n\t\t\t\tcase squares <- n * n:\n\t\t\t\tcase <-ctx.Done():\n\t\t\t\t\treturn\n\t\t\t\t}\n\t\t\t}\n\t\t}\n\t}()\n\tconsumed := []int{}\n\tfor len(consumed) < 3 {\n\t\tconsumed = append(consumed, <-squares)\n\t}\n\tcancel()\n\tstages.Wait()\n\tfmt.Printf(\"consumed=%v\\nstages-exited=true\\n\", consumed)\n}\n",
+        "output": "consumed=[1 4 9]\nstages-exited=true",
+        "objective": "能达到固定消费数量时取消上游，等待所有阶段退出并打印已消费值。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "只在循环顶端检查取消，随后无条件发送仍可能永久阻塞。",
+          "消费者关闭生产者仍在发送的通道会触发 panic。"
+        ],
+        "exercises": [
+          {
+            "prompt": "让第二阶段在收到负数时返回错误并取消整条流水线。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "添加容量为一的错误通道保存首个错误；错误阶段调用 cancel，主协程等待全部 stages 后再报告错误。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-236",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "只读快照发布",
+    "summary": "能发布不可变配置快照，多个读者始终看到一个完整版本。",
+    "concepts": [
+      "sync/atomic",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-236-lesson",
+        "title": "只读快照发布",
+        "summary": "能发布不可变配置快照，多个读者始终看到一个完整版本。",
+        "concepts": [
+          "sync/atomic",
+          "并发与所有权"
+        ],
+        "explain": "发布端构造完整 Config 值后一次 Store，读取者一次 Load 得到同一版本的字段组合。四个读者反复检查 Version 和 Label 的关联，最终版本固定为二十。示例使用只含值字段的结构，不共享可变 map 或切片。atomic.Value 保证发布原子性，却不会替你把内部引用指向的数据变成不可变。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"sync/atomic\"\n)\n\ntype Config struct {\n\tVersion int\n\tLabel   string\n}\n\nfunc main() {\n\tvar current atomic.Value\n\tcurrent.Store(Config{1, \"v1\"})\n\tready := make(chan struct{})\n\tvar readers sync.WaitGroup\n\tvar invalid int32\n\tfor i := 0; i < 4; i++ {\n\t\treaders.Add(1)\n\t\tgo func() {\n\t\t\tdefer readers.Done()\n\t\t\t<-ready\n\t\t\tfor n := 0; n < 100; n++ {\n\t\t\t\tsnapshot := current.Load().(Config)\n\t\t\t\tif snapshot.Label != fmt.Sprintf(\"v%d\", snapshot.Version) {\n\t\t\t\t\tatomic.AddInt32(&invalid, 1)\n\t\t\t\t}\n\t\t\t}\n\t\t}()\n\t}\n\tclose(ready)\n\tfor version := 2; version <= 20; version++ {\n\t\tcurrent.Store(Config{version, fmt.Sprintf(\"v%d\", version)})\n\t}\n\treaders.Wait()\n\tfinal := current.Load().(Config)\n\tfmt.Printf(\"invalid=%d\\nfinal=%d:%s\\n\", invalid, final.Version, final.Label)\n}\n",
+        "output": "invalid=0\nfinal=20:v20",
+        "objective": "能发布不可变配置快照，多个读者始终看到一个完整版本。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "同一个 atomic.Value 的 Store 必须保持具体类型一致，不能一会存 Config 一会存指针。",
+          "发布后修改其中的 map 或切片仍会造成共享数据竞争，应先深复制。"
+        ],
+        "exercises": [
+          {
+            "prompt": "在 Config 加入端口切片，并保证发布后不被外部修改。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "构造快照时复制切片；读取接口也不要将可修改内部切片直接暴露给调用方。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-237",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "扇入关闭协调",
+    "summary": "能合并两个生产者输出，唯一收尾方在 Wait 后关闭结果通道。",
+    "concepts": [
+      "sync",
+      "sort",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-237-lesson",
+        "title": "扇入关闭协调",
+        "summary": "能合并两个生产者输出，唯一收尾方在 Wait 后关闭结果通道。",
+        "concepts": [
+          "sync",
+          "sort",
+          "并发与所有权"
+        ],
+        "explain": "扇入函数为每个输入启动转发者，所有转发者共享输出但不负责关闭它。唯一收尾协程等待 WaitGroup，再关闭输出，主协程才能安全 range 到结束。两个生产者各自关闭自己的通道。这个 merge 保留每条输入内部顺序，却不承诺跨输入顺序，所以最终断言前排序。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\nfunc produce(values []int) <-chan int {\n\tout := make(chan int)\n\tgo func() {\n\t\tdefer close(out)\n\t\tfor _, value := range values {\n\t\t\tout <- value\n\t\t}\n\t}()\n\treturn out\n}\nfunc merge(inputs ...<-chan int) <-chan int {\n\tout := make(chan int)\n\tvar workers sync.WaitGroup\n\tfor _, input := range inputs {\n\t\tworkers.Add(1)\n\t\tgo func(input <-chan int) {\n\t\t\tdefer workers.Done()\n\t\t\tfor value := range input {\n\t\t\t\tout <- value\n\t\t\t}\n\t\t}(input)\n\t}\n\tgo func() { workers.Wait(); close(out) }()\n\treturn out\n}\nfunc main() {\n\tvalues := []int{}\n\tfor value := range merge(produce([]int{1, 3}), produce([]int{2, 4})) {\n\t\tvalues = append(values, value)\n\t}\n\tsort.Ints(values)\n\tfmt.Printf(\"merged=%v\\n\", values)\n}\n",
+        "output": "merged=[1 2 3 4]",
+        "objective": "能合并两个生产者输出，唯一收尾方在 Wait 后关闭结果通道。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "任意一个转发者提前关闭共享输出，其他转发者可能向已关闭通道发送。",
+          "若消费者提前停止读取，这个无取消版本会留下阻塞协程，扩展时需传播取消。"
+        ],
+        "exercises": [
+          {
+            "prompt": "让 merge 接受 context，并允许消费者读到两项后退出。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "给转发发送增加 select 的 ctx.Done 分支；取消后等待全部转发者，再由唯一收尾方关闭输出。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-238",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "任务结果与错误聚合",
+    "summary": "能并行校验记录，按输入序号汇总成功结果和全部错误。",
+    "concepts": [
+      "sync",
+      "errors",
+      "sort",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-238-lesson",
+        "title": "任务结果与错误聚合",
+        "summary": "能并行校验记录，按输入序号汇总成功结果和全部错误。",
+        "concepts": [
+          "sync",
+          "errors",
+          "sort",
+          "并发与所有权"
+        ],
+        "explain": "每个并行任务返回独立 Result，包含输入下标、计算值和错误。收集后按下标排列，成功和全部失败都被报告，而非遇到第一个错误就取消其他验证。结果通道容量足够容纳全部任务，所以等待完成后再收集不会死锁。这样的模式适合需要向用户一次展示整批问题的离线校验。",
+        "code": "package main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n\t\"sort\"\n\t\"sync\"\n)\n\ntype Result struct {\n\tIndex int\n\tValue int\n\tErr   error\n}\n\nfunc main() {\n\tinput := []int{4, -2, 0, 7}\n\tout := make(chan Result, len(input))\n\tvar workers sync.WaitGroup\n\tfor index, value := range input {\n\t\tworkers.Add(1)\n\t\tgo func(index, value int) {\n\t\t\tdefer workers.Done()\n\t\t\tr := Result{Index: index, Value: value * 2}\n\t\t\tif value <= 0 {\n\t\t\t\tr.Err = errors.New(\"must be positive\")\n\t\t\t}\n\t\t\tout <- r\n\t\t}(index, value)\n\t}\n\tworkers.Wait()\n\tclose(out)\n\trows := []Result{}\n\tfor r := range out {\n\t\trows = append(rows, r)\n\t}\n\tsort.Slice(rows, func(i, j int) bool { return rows[i].Index < rows[j].Index })\n\tfailures := 0\n\tfor _, r := range rows {\n\t\tif r.Err != nil {\n\t\t\tfailures++\n\t\t\tfmt.Printf(\"%d:error=%s\\n\", r.Index, r.Err)\n\t\t} else {\n\t\t\tfmt.Printf(\"%d:value=%d\\n\", r.Index, r.Value)\n\t\t}\n\t}\n\tfmt.Printf(\"failures=%d\\n\", failures)\n}\n",
+        "output": "0:value=8\n1:error=must be positive\n2:error=must be positive\n3:value=14\nfailures=2",
+        "objective": "能并行校验记录，按输入序号汇总成功结果和全部错误。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "用共享 err 变量在多个协程中赋值会产生竞争并丢失部分错误。",
+          "错误结果中的 Value 不应被当作已验证的有效业务结果。"
+        ],
+        "exercises": [
+          {
+            "prompt": "把错误增加原始输入值与字段名，保持错误顺序稳定。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "使用 fmt.Errorf 包含 index、value 和字段；仍按 Result.Index 排序后统一展示。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-239",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "请求响应通道",
+    "summary": "能用每请求独立响应通道实现本地 actor，验证状态更新和取消请求。",
+    "concepts": [
+      "context",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-239-lesson",
+        "title": "请求响应通道",
+        "summary": "能用每请求独立响应通道实现本地 actor，验证状态更新和取消请求。",
+        "concepts": [
+          "context",
+          "并发与所有权"
+        ],
+        "explain": "actor 协程独占 balance，外部通过请求通道提交增量，每个请求拥有独立的一格响应通道。预先取消的请求不会进入队列，正常请求依次得到五和七。回复缓冲保证调用方在请求已提交后放弃等待时，actor 仍能完成回复而不阻塞。示例只保证预取消不修改状态；提交后取消可能已经执行，不能承诺事务回滚。",
+        "code": "package main\n\nimport (\n\t\"context\"\n\t\"fmt\"\n)\n\ntype Request struct {\n\tDelta   int\n\tReply   chan int\n\tContext context.Context\n}\n\nfunc main() {\n\trequests := make(chan Request)\n\tdone := make(chan struct{})\n\tgo func() {\n\t\tdefer close(done)\n\t\tbalance := 0\n\t\tfor request := range requests {\n\t\t\tif request.Context.Err() != nil {\n\t\t\t\tcontinue\n\t\t\t}\n\t\t\tbalance += request.Delta\n\t\t\trequest.Reply <- balance\n\t\t}\n\t}()\n\task := func(ctx context.Context, delta int) (int, bool) {\n\t\tif ctx.Err() != nil {\n\t\t\treturn 0, false\n\t\t}\n\t\treply := make(chan int, 1)\n\t\tselect {\n\t\tcase requests <- Request{delta, reply, ctx}:\n\t\tcase <-ctx.Done():\n\t\t\treturn 0, false\n\t\t}\n\t\tselect {\n\t\tcase value := <-reply:\n\t\t\treturn value, true\n\t\tcase <-ctx.Done():\n\t\t\treturn 0, false\n\t\t}\n\t}\n\tfirst, _ := ask(context.Background(), 5)\n\tctx, cancel := context.WithCancel(context.Background())\n\tcancel()\n\t_, accepted := ask(ctx, 100)\n\tlast, _ := ask(context.Background(), 2)\n\tclose(requests)\n\t<-done\n\tfmt.Printf(\"first=%d\\ncancelled-accepted=%t\\nfinal=%d\\n\", first, accepted, last)\n}\n",
+        "output": "first=5\ncancelled-accepted=false\nfinal=7",
+        "objective": "能用每请求独立响应通道实现本地 actor，验证状态更新和取消请求。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "调用方取消等待不代表已经提交的请求被撤销，需要明确协议语义。",
+          "响应通道无缓冲时，已取消调用方不再接收会堵住 actor。"
+        ],
+        "exercises": [
+          {
+            "prompt": "加入只读查询请求，不改变 balance。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "在 Request 增加操作类型，由 actor 对 query 直接回复当前余额，对 add 才执行 Delta。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-240",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "一次性初始化结果",
+    "summary": "能用 Once 共享可失败初始化结果，验证多次调用不会重复初始化。",
+    "concepts": [
+      "sync",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-240-lesson",
+        "title": "一次性初始化结果",
+        "summary": "能用 Once 共享可失败初始化结果，验证多次调用不会重复初始化。",
+        "concepts": [
+          "sync",
+          "并发与所有权"
+        ],
+        "explain": "Once 只执行初始化闭包一次，并让其他调用等待初始化结束。结构把成功值与错误一起保留，所以初始化失败后所有调用得到同一错误，而不是重新尝试。四个并发调用的错误通过通道汇总，Wait 后检查尝试次数为一。若业务要求失败后重试，就需要另一套状态机，不能假设 Once 自动重置。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n)\n\ntype Service struct {\n\tonce     sync.Once\n\tvalue    string\n\terr      error\n\tattempts int\n}\n\nfunc (s *Service) Get() (string, error) {\n\ts.once.Do(func() { s.attempts++; s.err = fmt.Errorf(\"local config missing\") })\n\treturn s.value, s.err\n}\nfunc main() {\n\tservice := &Service{}\n\tvar callers sync.WaitGroup\n\terrors := make(chan string, 4)\n\tfor i := 0; i < 4; i++ {\n\t\tcallers.Add(1)\n\t\tgo func() {\n\t\t\tdefer callers.Done()\n\t\t\t_, err := service.Get()\n\t\t\tif err != nil {\n\t\t\t\terrors <- err.Error()\n\t\t\t}\n\t\t}()\n\t}\n\tcallers.Wait()\n\tclose(errors)\n\tcount := 0\n\tsame := true\n\tfor message := range errors {\n\t\tcount++\n\t\tsame = same && message == \"local config missing\"\n\t}\n\tfmt.Printf(\"attempts=%d\\nerrors=%d\\nsame=%t\\n\", service.attempts, count, same)\n}\n",
+        "output": "attempts=1\nerrors=4\nsame=true",
+        "objective": "能用 Once 共享可失败初始化结果，验证多次调用不会重复初始化。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "Once 的初始化失败也算已经执行，后续 Do 不会自动重试。",
+          "只保存成功值、不保存错误，会让后续调用误认为零值是有效初始化结果。"
+        ],
+        "exercises": [
+          {
+            "prompt": "把初始化改成从给定字节配置解码，分别创建成功和失败的 Service。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "每个 Service 保留自己的 once、value 和 err；对两个实例分别检查只执行一次和结果稳定。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  }
+]

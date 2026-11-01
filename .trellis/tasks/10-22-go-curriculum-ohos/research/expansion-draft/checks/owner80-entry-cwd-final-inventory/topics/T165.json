@@ -1,0 +1,69 @@
+{
+  "id": "T165",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "value=10 average=10.0 count=1\nvalue=20 average=15.0 count=2\nvalue=30 average=20.0 count=3\nvalue=50 average=33.3 count=3\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-165",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "滑动窗口平均",
+    "summary": "用固定三个槽位与运行和计算最近读数平均，正确处理窗口尚未填满。",
+    "concepts": [
+      "环形窗口",
+      "运行和",
+      "预热期"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "用固定三个槽位与运行和计算最近读数平均，正确处理窗口尚未填满。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "预热期始终除以容量会低估前几个平均值。",
+      "覆盖旧槽前忘记从运行和扣除旧值，会变成累计平均而非滑动平均。"
+    ],
+    "exercises": [
+      {
+        "prompt": "返回当前最旧到最新的窗口内容，并验证复制结果不能修改内部状态。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "按 (Next-Count+容量)%容量 找起点，复制 Count 个值到新切片；调用者修改副本后重新读取窗口应保持不变。"
+      }
+    ],
+    "explain": "写入新值前，若窗口已满就减掉将被覆盖的旧值；尚未满时只增加有效数量。平均值除以 Count，因此第一个与第二个样本不会被尚未写入的零槽稀释。读数 10、20、30、50 的最后窗口为 20、30、50，平均为 100/3。每次更新的时间固定，但整数运行和仍受 int64 范围限制。",
+    "code": "package main\n\nimport \"fmt\"\n\ntype Window struct {\n\tValues []int64\n\tNext   int\n\tCount  int\n\tSum    int64\n}\n\nfunc newWindow(size int) *Window {\n\tif size <= 0 {\n\t\tpanic(\"invalid window\")\n\t}\n\treturn &Window{Values: make([]int64, size)}\n}\nfunc (w *Window) Add(value int64) float64 {\n\tif w.Count == len(w.Values) {\n\t\tw.Sum -= w.Values[w.Next]\n\t} else {\n\t\tw.Count++\n\t}\n\tw.Values[w.Next] = value\n\tw.Sum += value\n\tw.Next = (w.Next + 1) % len(w.Values)\n\treturn float64(w.Sum) / float64(w.Count)\n}\nfunc main() {\n\twindow := newWindow(3)\n\tfor _, value := range []int64{10, 20, 30, 50} {\n\t\taverage := window.Add(value)\n\t\tfmt.Printf(\"value=%d average=%.1f count=%d\\n\", value, average, window.Count)\n\t}\n}\n",
+    "output": "value=10 average=10.0 count=1\nvalue=20 average=15.0 count=2\nvalue=30 average=20.0 count=3\nvalue=50 average=33.3 count=3"
+  },
+  "example": {
+    "id": "go-example-165",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "滑动窗口平均",
+    "summary": "用固定三个槽位与运行和计算最近读数平均，正确处理窗口尚未填满。",
+    "concepts": [
+      "环形窗口",
+      "运行和",
+      "预热期"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport \"fmt\"\n\ntype Window struct {\n\tValues []int64\n\tNext   int\n\tCount  int\n\tSum    int64\n}\n\nfunc newWindow(size int) *Window {\n\tif size <= 0 {\n\t\tpanic(\"invalid window\")\n\t}\n\treturn &Window{Values: make([]int64, size)}\n}\nfunc (w *Window) Add(value int64) float64 {\n\tif w.Count == len(w.Values) {\n\t\tw.Sum -= w.Values[w.Next]\n\t} else {\n\t\tw.Count++\n\t}\n\tw.Values[w.Next] = value\n\tw.Sum += value\n\tw.Next = (w.Next + 1) % len(w.Values)\n\treturn float64(w.Sum) / float64(w.Count)\n}\nfunc main() {\n\twindow := newWindow(3)\n\tfor _, value := range []int64{10, 20, 30, 50} {\n\t\taverage := window.Add(value)\n\t\tfmt.Printf(\"value=%d average=%.1f count=%d\\n\", value, average, window.Count)\n\t}\n}\n",
+    "expectedOutput": "value=10 average=10.0 count=1\nvalue=20 average=15.0 count=2\nvalue=30 average=20.0 count=3\nvalue=50 average=33.3 count=3",
+    "templateType": "go"
+  }
+}

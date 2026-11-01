@@ -1,0 +1,660 @@
+{
+  "schemaVersion": 1,
+  "evidenceLevel": "host-native-shipped-source",
+  "deviceExecution": false,
+  "backend": "native",
+  "inventorySha256": "57884cabfb2d45dc2ca4153aef11c7b2292bea215d7dbe1ce3e2f25a140e7bcd",
+  "catalogs": {
+    "tutorial": {
+      "sha256": "5d1e6342519fcc646e8e63c724e3787dc4c8677279acc0fb8a0a0be9eb64192e",
+      "fileName": "tutorials.json",
+      "goEntries": 120
+    },
+    "example": {
+      "sha256": "d0241afee654ec0da38a92861cf551765f92704939930ea84ffa92fd7375aec2",
+      "fileName": "examples.json",
+      "goEntries": 120
+    }
+  },
+  "nativeSourceSha256": "830bbb5213d09c1af86015c3a42cba7fbb0cfc26cf7f2f4fa0120945e89f3e25",
+  "exhaustive": false,
+  "inventoryIssues": [],
+  "records": [
+    {
+      "id": "tutorial/go-tutorial-008/go-tutorial-008-lesson",
+      "topic": "T008",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "ed0bd19e6c9b4a6524b77ad24d8626a5c4feeea8ca64906ce9cafd0ba27883f3",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "v={3 4} +v={X:3 Y:4}\nd=42 q=\"go\" t=main.point\nf=3.14 e=1.234500e+03"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "v={3 4} +v={X:3 Y:4}\nd=42 q=\"go\" t=main.point\nf=3.14 e=1.234500e+03\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 46,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "tutorial/go-tutorial-040/go-tutorial-040-lesson",
+      "topic": "T040",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "484e31233a4af04cdc2c61d0b8d17038e28305505e5476b52c00a87cab235dc2",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "method value 12\nmethod expression 12\npointer call 12"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "method value 12\nmethod expression 12\npointer call 12\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 45,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "tutorial/go-tutorial-045/go-tutorial-045-lesson",
+      "topic": "T045",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "3587057ff06e789a183346ffaf99675217cb0a6c605fd15eaefeeee34954dcde",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "color: RED\ncolor with %v: GREEN, %d: 1\nunknown: Color(99)\nerror: validation failed on age: must be positive\nsame error: true"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "color: RED\ncolor with %v: GREEN, %d: 1\nunknown: Color(99)\nerror: validation failed on age: must be positive\nsame error: true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 31,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "tutorial/go-tutorial-047/go-tutorial-047-lesson",
+      "topic": "T047",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "d2baf750b28d87f7e1cfd38942e62a0e4a9d43b666f2e7d0645bd5bb37b31fa8",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "normal total: 100\ndiscount total: 80\ndecorated run: run build\nlog lines:\n  before run build\n  after run build"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "normal total: 100\ndiscount total: 80\ndecorated run: run build\nlog lines:\n  before run build\n  after run build\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 32,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "tutorial/go-tutorial-048/go-tutorial-048-lesson",
+      "topic": "T048",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "87495c1e4139b4da3c6f5649a6958bc6b4623da85871055a55cad0cd41192191",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 33,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "tutorial/go-tutorial-052/go-tutorial-052-lesson",
+      "topic": "T052",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "eb3157234b2dd17531bf270f9c0256e0925ad2dfda4291bf600c9025ce5d4120",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "Is ErrPermission: true\nAs PathError -> path: secret.cfg op: open\nAs on wrapped: true read"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "Is ErrPermission: true\nAs PathError -> path: secret.cfg op: open\nAs on wrapped: true read\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 33,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "tutorial/go-tutorial-053/go-tutorial-053-lesson",
+      "topic": "T053",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "e875d2386c9f64908211d5ad9368af18f8d49a189bc704e542b5ba64d2d447d2",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "text: query \"SELECT 1\" failed: timeout\nIs ErrTimeout: true\nSQL field: SELECT 1\nCause field: timeout\nUnwrap == ErrTimeout: true"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "text: query \"SELECT 1\" failed: timeout\nIs ErrTimeout: true\nSQL field: SELECT 1\nCause field: timeout\nUnwrap == ErrTimeout: true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 34,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "tutorial/go-tutorial-054/go-tutorial-054-lesson",
+      "topic": "T054",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "19c04e2d0622695f378a46de9bde7ad034240c6e5306e9dd59a225f885dc63aa",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "10/2: 5 err: <nil>\n1/0 -> 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "10/2: 5 err: <nil>\n1/0 -> 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 36,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "tutorial/go-tutorial-058/go-tutorial-058-lesson",
+      "topic": "T058",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "9eb9cff4bc52dff1b737a154d0abae8ad3f851b8a9e5f1daf90530dc638b8d81",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "collected errors: 2\n  task 2 failed\n  task 4 failed\nall-ok err is nil: true\nsingle Unwrap(join) is nil: true"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "collected errors: 2\n  task 2 failed\n  task 4 failed\nall-ok err is nil: true\nsingle Unwrap(join) is nil: true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 34,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "tutorial/go-tutorial-062/go-tutorial-062-lesson",
+      "topic": "T062",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "377156c5e8ff074e6381d0f5604f91c871b98a5840fcc8c239a93765074080a0",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string](\"pear\", \"apple\") = apple\nMax[float64](2.5, 1.5) = 2.5"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string](\"pear\", \"apple\") = apple\nMax[float64](2.5, 1.5) = 2.5\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 34,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "example/go-example-008",
+      "topic": "T008",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "ed0bd19e6c9b4a6524b77ad24d8626a5c4feeea8ca64906ce9cafd0ba27883f3",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "v={3 4} +v={X:3 Y:4}\nd=42 q=\"go\" t=main.point\nf=3.14 e=1.234500e+03"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "v={3 4} +v={X:3 Y:4}\nd=42 q=\"go\" t=main.point\nf=3.14 e=1.234500e+03\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 37,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "example/go-example-040",
+      "topic": "T040",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "484e31233a4af04cdc2c61d0b8d17038e28305505e5476b52c00a87cab235dc2",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "method value 12\nmethod expression 12\npointer call 12"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "method value 12\nmethod expression 12\npointer call 12\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 34,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "example/go-example-045",
+      "topic": "T045",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "3587057ff06e789a183346ffaf99675217cb0a6c605fd15eaefeeee34954dcde",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "color: RED\ncolor with %v: GREEN, %d: 1\nunknown: Color(99)\nerror: validation failed on age: must be positive\nsame error: true"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "color: RED\ncolor with %v: GREEN, %d: 1\nunknown: Color(99)\nerror: validation failed on age: must be positive\nsame error: true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 37,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "example/go-example-047",
+      "topic": "T047",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "d2baf750b28d87f7e1cfd38942e62a0e4a9d43b666f2e7d0645bd5bb37b31fa8",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "normal total: 100\ndiscount total: 80\ndecorated run: run build\nlog lines:\n  before run build\n  after run build"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "normal total: 100\ndiscount total: 80\ndecorated run: run build\nlog lines:\n  before run build\n  after run build\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 36,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "example/go-example-048",
+      "topic": "T048",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "87495c1e4139b4da3c6f5649a6958bc6b4623da85871055a55cad0cd41192191",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 33,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "example/go-example-052",
+      "topic": "T052",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "eb3157234b2dd17531bf270f9c0256e0925ad2dfda4291bf600c9025ce5d4120",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "Is ErrPermission: true\nAs PathError -> path: secret.cfg op: open\nAs on wrapped: true read"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "Is ErrPermission: true\nAs PathError -> path: secret.cfg op: open\nAs on wrapped: true read\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 34,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "example/go-example-053",
+      "topic": "T053",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "e875d2386c9f64908211d5ad9368af18f8d49a189bc704e542b5ba64d2d447d2",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "text: query \"SELECT 1\" failed: timeout\nIs ErrTimeout: true\nSQL field: SELECT 1\nCause field: timeout\nUnwrap == ErrTimeout: true"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "text: query \"SELECT 1\" failed: timeout\nIs ErrTimeout: true\nSQL field: SELECT 1\nCause field: timeout\nUnwrap == ErrTimeout: true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 32,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "example/go-example-054",
+      "topic": "T054",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "19c04e2d0622695f378a46de9bde7ad034240c6e5306e9dd59a225f885dc63aa",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "10/2: 5 err: <nil>\n1/0 -> 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "10/2: 5 err: <nil>\n1/0 -> 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 31,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "example/go-example-058",
+      "topic": "T058",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "9eb9cff4bc52dff1b737a154d0abae8ad3f851b8a9e5f1daf90530dc638b8d81",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "collected errors: 2\n  task 2 failed\n  task 4 failed\nall-ok err is nil: true\nsingle Unwrap(join) is nil: true"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "collected errors: 2\n  task 2 failed\n  task 4 failed\nall-ok err is nil: true\nsingle Unwrap(join) is nil: true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 35,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "example/go-example-062",
+      "topic": "T062",
+      "shape": "displayed-code-only",
+      "operation": "program",
+      "contentSha256": "377156c5e8ff074e6381d0f5604f91c871b98a5840fcc8c239a93765074080a0",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string](\"pear\", \"apple\") = apple\nMax[float64](2.5, 1.5) = 2.5"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string](\"pear\", \"apple\") = apple\nMax[float64](2.5, 1.5) = 2.5\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 32,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "canonical/T008",
+      "topic": "T008",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "contentSha256": "a97077bc365b63be93f1fbfe7b38f9c63f65d9604f457c489ffcdd365f315246",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "v={3 4} +v={X:3 Y:4}\nd=42 q=\"go\" t=main.point\nf=3.14 e=1.234500e+03\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "v={3 4} +v={X:3 Y:4}\nd=42 q=\"go\" t=main.point\nf=3.14 e=1.234500e+03\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 32,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "canonical/T040",
+      "topic": "T040",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "contentSha256": "cf28b4b5747c39de259a92f57fd258921d2698e965102c2dc8b4331a164fcd02",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "method value 12\nmethod expression 12\npointer call 12\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "method value 12\nmethod expression 12\npointer call 12\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 32,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "canonical/T045",
+      "topic": "T045",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "contentSha256": "13234104630bff5e82587403a7b04afc628fa9ed59cc50953af9e4b0cbee878e",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "color: RED\ncolor with %v: GREEN, %d: 1\nunknown: Color(99)\nerror: validation failed on age: must be positive\nsame error: true"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "color: RED\ncolor with %v: GREEN, %d: 1\nunknown: Color(99)\nerror: validation failed on age: must be positive\nsame error: true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 32,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "canonical/T047",
+      "topic": "T047",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "contentSha256": "4729b0f1cdae6c43ed9dae202071b0334ac8d9c7ab9a5b11ddbcb8d0fa1edb03",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "normal total: 100\ndiscount total: 80\ndecorated run: run build\nlog lines:\n  before run build\n  after run build"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "normal total: 100\ndiscount total: 80\ndecorated run: run build\nlog lines:\n  before run build\n  after run build\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 36,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "canonical/T048",
+      "topic": "T048",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "contentSha256": "5eb5d9729009d5f255bbe59ccee1ac8581fb00de6c9385fd7387cbb11116e932",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 39,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "canonical/T052",
+      "topic": "T052",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "contentSha256": "c515f15eb91b0c03946079f07a3042728ec16fc21918ffc780e2844eb5f1bd35",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "Is ErrPermission: true\nAs PathError -> path: secret.cfg op: open\nAs on wrapped: true read"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "Is ErrPermission: true\nAs PathError -> path: secret.cfg op: open\nAs on wrapped: true read\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 34,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "canonical/T053",
+      "topic": "T053",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "contentSha256": "6f35ca2792d9dd0a2146d27b446212dc42bf4b53ef3770bea4c7157fbb241f33",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "text: query \"SELECT 1\" failed: timeout\nIs ErrTimeout: true\nSQL field: SELECT 1\nCause field: timeout\nUnwrap == ErrTimeout: true"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "text: query \"SELECT 1\" failed: timeout\nIs ErrTimeout: true\nSQL field: SELECT 1\nCause field: timeout\nUnwrap == ErrTimeout: true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 35,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "canonical/T054",
+      "topic": "T054",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "contentSha256": "39ff629eb87938304ca7f912da26d0bfa873e5638550176c1e9f1a33937a5472",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "10/2: 5 err: <nil>\n1/0 -> 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "10/2: 5 err: <nil>\n1/0 -> 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 31,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "canonical/T058",
+      "topic": "T058",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "contentSha256": "ede952e4e92b108d50ecf7492fa940832afa3f74cb9d3e0e5aa3ebffcd251a09",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "collected errors: 2\n  task 2 failed\n  task 4 failed\nall-ok err is nil: true\nsingle Unwrap(join) is nil: true"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "collected errors: 2\n  task 2 failed\n  task 4 failed\nall-ok err is nil: true\nsingle Unwrap(join) is nil: true\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 33,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "canonical/T062",
+      "topic": "T062",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "contentSha256": "905f99dc5d7e0f65116e2c5c7d45b35e015b1e252682db0718d70db5d8d8f9ee",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string](\"pear\", \"apple\") = apple\nMax[float64](2.5, 1.5) = 2.5"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "native",
+      "stdout": "Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string](\"pear\", \"apple\") = apple\nMax[float64](2.5, 1.5) = 2.5\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 34,
+      "passed": true,
+      "assertionErrors": []
+    }
+  ],
+  "testBinarySha256": "84acc63157eafbe5ef2a47c73d490335e8794d15a721af9958dc6daf70a1837c",
+  "coverageIssues": [],
+  "total": 30,
+  "passed": 30,
+  "failed": 0,
+  "success": true
+}

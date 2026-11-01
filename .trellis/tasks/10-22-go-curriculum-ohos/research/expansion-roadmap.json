@@ -1,0 +1,2044 @@
+{
+  "status": "coordinator-approved-for-draft",
+  "review": {"reviewer": "main coordinating session", "date": "2026-10-23", "scope": "160 distinct concrete programs approved before authoring"},
+  "baselineGate": "original T001–T120 host 364/364 before draft authoring; original OHOS 364/364 before bundled publication",
+  "topics": [
+    {
+      "id": "T121",
+      "group": "文本与日志",
+      "title": "统一混合换行",
+      "packages": [
+        "strings"
+      ],
+      "behavior": "把 CRLF、CR 与 LF 日志统一为逐行记录，保留末行无换行的内容",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T122",
+      "group": "文本与日志",
+      "title": "Unicode 标识清洗",
+      "packages": [
+        "unicode",
+        "strings"
+      ],
+      "behavior": "将含中文、空白和标点的标题变为稳定标识，合并分隔符并保留字母数字",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T123",
+      "group": "文本与日志",
+      "title": "日志字段脱敏",
+      "packages": [
+        "regexp",
+        "strings"
+      ],
+      "behavior": "仅隐藏日志中的 email 与 token 字段，保留时间、级别和消息结构",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T124",
+      "group": "文本与日志",
+      "title": "词频 Top N 与并列规则",
+      "packages": [
+        "bufio",
+        "sort",
+        "strings"
+      ],
+      "behavior": "统计多行文档词频，按次数降序、词字典序处理并列，取前三名",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T125",
+      "group": "文本与日志",
+      "title": "带引号键值解析",
+      "packages": [
+        "strings",
+        "strconv"
+      ],
+      "behavior": "解析 name=\"Li Yu\" enabled=true 一类配置并报告未闭合引号",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T126",
+      "group": "文本与日志",
+      "title": "最长公共前后缀",
+      "packages": [
+        "strings",
+        "unicode/utf8"
+      ],
+      "behavior": "对文件版本名计算公共前后缀，避免切断 UTF-8 中文字符",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T127",
+      "group": "文本与日志",
+      "title": "逐行差异定位",
+      "packages": [
+        "bufio",
+        "strings"
+      ],
+      "behavior": "对比两份文本，输出新增、删除及改变的行号和内容",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T128",
+      "group": "文本与日志",
+      "title": "扫描器长行预算",
+      "packages": [
+        "bufio",
+        "strings"
+      ],
+      "behavior": "设置最大行长，分别处理合法长行与超出预算输入并显式报告错误",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T129",
+      "group": "文本与日志",
+      "title": "多模式替换优先级",
+      "packages": [
+        "strings"
+      ],
+      "behavior": "用单次 Replacer 同时转义日志分隔符，验证新生成文本不会被二次替换",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T130",
+      "group": "文本与日志",
+      "title": "词边界倒排索引",
+      "packages": [
+        "unicode",
+        "sort"
+      ],
+      "behavior": "为三篇本地文档建立去重词到文档 ID 索引，求两个词的交集",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T131",
+      "group": "编码与结构化数据",
+      "title": "十六进制校验输入",
+      "packages": [
+        "encoding/hex"
+      ],
+      "behavior": "解析分组十六进制字节，拒绝奇数长度和非法字符，输出规范字节串",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T132",
+      "group": "编码与结构化数据",
+      "title": "Base32 人工核对编号",
+      "packages": [
+        "encoding/base32"
+      ],
+      "behavior": "生成无填充批次编号并验证解码往返与大小写输入策略",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T133",
+      "group": "编码与结构化数据",
+      "title": "URL 安全 Base64 游标",
+      "packages": [
+        "encoding/base64",
+        "encoding/json"
+      ],
+      "behavior": "编码分页游标结构，验证非法游标和下一页位置",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T134",
+      "group": "编码与结构化数据",
+      "title": "严格 JSON 配置",
+      "packages": [
+        "encoding/json"
+      ],
+      "behavior": "拒绝未知字段与尾随第二个 JSON 值，保留有字段缺失时的默认值",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T135",
+      "group": "编码与结构化数据",
+      "title": "JSON 多态消息",
+      "packages": [
+        "encoding/json"
+      ],
+      "behavior": "先读取 kind 再用 RawMessage 解码两类载荷，拒绝未知事件类型",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T136",
+      "group": "编码与结构化数据",
+      "title": "JSON 部分更新的三态",
+      "packages": [
+        "encoding/json"
+      ],
+      "behavior": "区分字段缺失、null 与实际值，对用户资料应用部分更新",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T137",
+      "group": "编码与结构化数据",
+      "title": "CSV 账单汇总",
+      "packages": [
+        "encoding/csv",
+        "strconv"
+      ],
+      "behavior": "按表头索引读取含引号的账单，拒绝坏金额并汇总有效行",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T138",
+      "group": "编码与结构化数据",
+      "title": "CSV 安全导出",
+      "packages": [
+        "encoding/csv",
+        "strings"
+      ],
+      "behavior": "导出含逗号、双引号和换行的地址簿，再读回验证字段不变",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T139",
+      "group": "编码与结构化数据",
+      "title": "XML 库存与属性",
+      "packages": [
+        "encoding/xml"
+      ],
+      "behavior": "读取 XML 属性及嵌套项目，修改低库存项目并重新编码",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T140",
+      "group": "编码与结构化数据",
+      "title": "Gob 快照兼容读取",
+      "packages": [
+        "encoding/gob",
+        "bytes"
+      ],
+      "behavior": "在内存中写入状态快照，用新增字段的结构读取并验证零值兼容",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T141",
+      "group": "字节流与资源预算",
+      "title": "长度前缀消息",
+      "packages": [
+        "encoding/binary",
+        "io"
+      ],
+      "behavior": "编码两帧消息，逐帧读取并拒绝截断及超预算长度",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T142",
+      "group": "字节流与资源预算",
+      "title": "固定容量环形日志",
+      "packages": [
+        "bytes"
+      ],
+      "behavior": "保存最后三条记录，覆盖最旧项并按时间顺序导出",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T143",
+      "group": "字节流与资源预算",
+      "title": "串联分片流",
+      "packages": [
+        "io",
+        "strings"
+      ],
+      "behavior": "用 MultiReader 合并头部与多个分片，边读边验证完整内容",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T144",
+      "group": "字节流与资源预算",
+      "title": "边复制边计算摘要",
+      "packages": [
+        "io",
+        "crypto/sha256"
+      ],
+      "behavior": "用 TeeReader 在不重复读取数据的前提下复制并校验摘要",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T145",
+      "group": "字节流与资源预算",
+      "title": "随机访问区间",
+      "packages": [
+        "io",
+        "strings"
+      ],
+      "behavior": "用 SectionReader 从同一 ReaderAt 读取两个独立区间并检查边界",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T146",
+      "group": "字节流与资源预算",
+      "title": "完整读取与截断分类",
+      "packages": [
+        "io",
+        "bytes"
+      ],
+      "behavior": "区分空输入 EOF 与半条记录 UnexpectedEOF，输出可恢复处理结果",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T147",
+      "group": "字节流与资源预算",
+      "title": "受限读取防超量",
+      "packages": [
+        "io",
+        "strings"
+      ],
+      "behavior": "用预算加一字节探测过长输入，区分刚好上限与被截断数据",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T148",
+      "group": "字节流与资源预算",
+      "title": "复用缓冲复制",
+      "packages": [
+        "io",
+        "bytes"
+      ],
+      "behavior": "借助固定缓冲与计数 Writer 复制数据，验证字节数和内容",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T149",
+      "group": "字节流与资源预算",
+      "title": "前瞻协议探测",
+      "packages": [
+        "bufio",
+        "bytes"
+      ],
+      "behavior": "Peek 识别协议前缀后消费一条记录，证明前瞻不会丢失数据",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T150",
+      "group": "字节流与资源预算",
+      "title": "批量写入与 Flush",
+      "packages": [
+        "bufio",
+        "bytes"
+      ],
+      "behavior": "写入前后检查底层数据可见性，Flush 后核对完整批次",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T151",
+      "group": "集合与图算法",
+      "title": "LRU 缓存淘汰",
+      "packages": [
+        "container/list"
+      ],
+      "behavior": "实现容量为二的缓存，命中提升热度并断言淘汰最久未使用键",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T152",
+      "group": "集合与图算法",
+      "title": "优先级任务队列",
+      "packages": [
+        "container/heap"
+      ],
+      "behavior": "按截止时间及序号执行任务，支持调整一个任务的优先级",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T153",
+      "group": "集合与图算法",
+      "title": "流式 Top K",
+      "packages": [
+        "container/heap"
+      ],
+      "behavior": "用小根堆在有限空间保留最大三条订单，稳定输出结果",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T154",
+      "group": "集合与图算法",
+      "title": "最短跳数路径",
+      "packages": [
+        "container/list"
+      ],
+      "behavior": "用 BFS 在站点图找最少换乘路径，并处理不可达终点",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T155",
+      "group": "集合与图算法",
+      "title": "依赖环定位",
+      "packages": [
+        "sort"
+      ],
+      "behavior": "用 DFS 颜色与路径栈报告依赖闭环，验证无环图",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T156",
+      "group": "集合与图算法",
+      "title": "带权路线规划",
+      "packages": [
+        "container/heap"
+      ],
+      "behavior": "用 Dijkstra 求配送最短距离并回溯路径，跳过失效堆节点",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T157",
+      "group": "集合与图算法",
+      "title": "时间段合并",
+      "packages": [
+        "sort"
+      ],
+      "behavior": "合并重叠及首尾相接的预约区间，保留独立区间",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T158",
+      "group": "集合与图算法",
+      "title": "有序数据游标分页",
+      "packages": [
+        "sort"
+      ],
+      "behavior": "用二分定位排他游标，处理不存在的游标和末页",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T159",
+      "group": "集合与图算法",
+      "title": "并查集合并账号",
+      "packages": [
+        "sort"
+      ],
+      "behavior": "通过共享邮箱合并账号，进行路径压缩并稳定导出分组",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T160",
+      "group": "集合与图算法",
+      "title": "前缀树补全",
+      "packages": [
+        "sort"
+      ],
+      "behavior": "建立单词 trie，按字典序输出某前缀的有限候选项",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T161",
+      "group": "数值与业务计算",
+      "title": "整数分币与折扣",
+      "packages": [
+        "strconv"
+      ],
+      "behavior": "用整数分表示金额，按明确舍入规则计算折扣和税费",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T162",
+      "group": "数值与业务计算",
+      "title": "精确分数分账",
+      "packages": [
+        "math/big"
+      ],
+      "behavior": "用 Rat 分摊三份费用，说明小数显示与精确总和的区别",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T163",
+      "group": "数值与业务计算",
+      "title": "大整数排列组合",
+      "packages": [
+        "math/big"
+      ],
+      "behavior": "计算超出 int64 的组合数，用乘除递推避免浮点误差",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T164",
+      "group": "数值与业务计算",
+      "title": "在线均值与方差",
+      "packages": [
+        "math"
+      ],
+      "behavior": "用 Welford 更新流式统计，并与已知数据核对样本方差",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T165",
+      "group": "数值与业务计算",
+      "title": "滑动窗口平均",
+      "packages": [
+        "fmt"
+      ],
+      "behavior": "用环形槽和运行和计算最近三个读数平均，处理窗口未满",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T166",
+      "group": "数值与业务计算",
+      "title": "百分位插值",
+      "packages": [
+        "sort",
+        "math"
+      ],
+      "behavior": "排序延迟样本，线性插值计算 P50 和 P90 并验证单样本边界",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T167",
+      "group": "数值与业务计算",
+      "title": "按区间直方图",
+      "packages": [
+        "sort"
+      ],
+      "behavior": "为延迟数据分桶，明确端点包含规则并累计溢出桶",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T168",
+      "group": "数值与业务计算",
+      "title": "库存多维聚合",
+      "packages": [
+        "sort"
+      ],
+      "behavior": "按仓库和商品汇总数量，输出排序后的低库存清单",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T169",
+      "group": "数值与业务计算",
+      "title": "有符号安全求和",
+      "packages": [
+        "math"
+      ],
+      "behavior": "在累加账目时检测 int64 正负溢出，保留错误发生前的总额",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T170",
+      "group": "数值与业务计算",
+      "title": "单位换算与量纲",
+      "packages": [
+        "strconv",
+        "strings"
+      ],
+      "behavior": "解析 KB、MiB 和原始字节三种单位，拒绝未知后缀和负容量",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T171",
+      "group": "时间与调度",
+      "title": "时区与同一时刻",
+      "packages": [
+        "time"
+      ],
+      "behavior": "解析带偏移 RFC3339 时间，转 UTC 并验证不同时区表示同一时刻",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T172",
+      "group": "时间与调度",
+      "title": "UTC 时间桶聚合",
+      "packages": [
+        "time",
+        "sort"
+      ],
+      "behavior": "把乱序事件按十五分钟 UTC 桶汇总，稳定输出空桶与非空桶",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T173",
+      "group": "时间与调度",
+      "title": "工作日日期推进",
+      "packages": [
+        "time"
+      ],
+      "behavior": "按日历日期跳过周末计算第三个工作日，避免把天数当固定小时",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T174",
+      "group": "时间与调度",
+      "title": "跨午夜区间拆分",
+      "packages": [
+        "time"
+      ],
+      "behavior": "将一个会话拆为两个自然日的使用量，验证总时长守恒",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T175",
+      "group": "时间与调度",
+      "title": "可预测指数退避",
+      "packages": [
+        "time"
+      ],
+      "behavior": "计算带上限的重试等待序列，避免乘法溢出并输出累计预算",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T176",
+      "group": "时间与调度",
+      "title": "逻辑时钟 TTL 缓存",
+      "packages": [
+        "time",
+        "sort"
+      ],
+      "behavior": "向缓存显式传入 now，验证到期边界和清理过程而不实际等待",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T177",
+      "group": "时间与调度",
+      "title": "每日定点计划",
+      "packages": [
+        "time"
+      ],
+      "behavior": "从给定 now 求下一个每日执行时刻，处理当天已过的情况",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T178",
+      "group": "时间与调度",
+      "title": "日期严格校验",
+      "packages": [
+        "time"
+      ],
+      "behavior": "往返格式化检查非法日期与闰年边界，避免静默修正日期",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T179",
+      "group": "时间与调度",
+      "title": "计费时长向上取整",
+      "packages": [
+        "time"
+      ],
+      "behavior": "将多次使用时长按十五分钟计费，区分每段取整与总时长取整",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T180",
+      "group": "时间与调度",
+      "title": "多来源日志归并",
+      "packages": [
+        "time",
+        "container/heap"
+      ],
+      "behavior": "以时间和来源序号归并三条已排序日志流，保持稳定顺序",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T181",
+      "group": "文件与虚拟文件系统",
+      "title": "项目路径约束",
+      "packages": [
+        "path",
+        "strings"
+      ],
+      "behavior": "清洗相对路径并拒绝绝对路径和越界路径，说明词法校验边界",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T182",
+      "group": "文件与虚拟文件系统",
+      "title": "内存配置文件树",
+      "packages": [
+        "testing/fstest",
+        "io/fs"
+      ],
+      "behavior": "用 MapFS 加载默认配置与子目录配置，处理不存在文件",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T183",
+      "group": "文件与虚拟文件系统",
+      "title": "Glob 与确定性列表",
+      "packages": [
+        "testing/fstest",
+        "io/fs"
+      ],
+      "behavior": "按模式查找文档，解释单层通配与递归遍历差别",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T184",
+      "group": "文件与虚拟文件系统",
+      "title": "遍历时跳过目录",
+      "packages": [
+        "testing/fstest",
+        "io/fs"
+      ],
+      "behavior": "WalkDir 忽略缓存目录，统计其余源文件数与总字节数",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T185",
+      "group": "文件与虚拟文件系统",
+      "title": "临时文件替换",
+      "packages": [
+        "os",
+        "path/filepath"
+      ],
+      "behavior": "在同一临时目录写入替代文件并 Rename，核对新内容与清理",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T186",
+      "group": "文件与虚拟文件系统",
+      "title": "目录树差异清单",
+      "packages": [
+        "testing/fstest",
+        "io/fs",
+        "sort"
+      ],
+      "behavior": "对比两棵虚拟文件树的新增、删除和修改文件",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T187",
+      "group": "文件与虚拟文件系统",
+      "title": "重复文件内容索引",
+      "packages": [
+        "crypto/sha256",
+        "sort"
+      ],
+      "behavior": "按内容摘要将不同路径文件分组，输出重复组并排除唯一文件",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T188",
+      "group": "文件与虚拟文件系统",
+      "title": "相对路径重定位",
+      "packages": [
+        "path/filepath"
+      ],
+      "behavior": "计算文档链接相对路径，验证移动根目录后链接目标一致",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T189",
+      "group": "文件与虚拟文件系统",
+      "title": "文件扩展名路由",
+      "packages": [
+        "path",
+        "strings"
+      ],
+      "behavior": "按最后一个扩展名分类文件，处理点文件、多后缀和大小写",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T190",
+      "group": "文件与虚拟文件系统",
+      "title": "文件权限位解释",
+      "packages": [
+        "io/fs"
+      ],
+      "behavior": "从 FileMode 提取读写执行和目录标记，输出可读权限摘要",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T191",
+      "group": "配置与命令行",
+      "title": "独立 FlagSet 子命令",
+      "packages": [
+        "flag",
+        "bytes"
+      ],
+      "behavior": "解析 import/export 两个子命令，错误返回到缓冲而不退出进程",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T192",
+      "group": "配置与命令行",
+      "title": "环境键值快照",
+      "packages": [
+        "strings",
+        "strconv"
+      ],
+      "behavior": "从给定环境切片读取配置，处理重复键、坏整数与默认值",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T193",
+      "group": "配置与命令行",
+      "title": "多来源配置优先级",
+      "packages": [
+        "encoding/json"
+      ],
+      "behavior": "按默认、文件、环境、命令行顺序覆盖，并输出最终来源记录",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T194",
+      "group": "配置与命令行",
+      "title": "受控变量展开",
+      "packages": [
+        "os",
+        "strings"
+      ],
+      "behavior": "用映射函数展开模板变量，区分缺失键、转义美元符和普通文字",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T195",
+      "group": "配置与命令行",
+      "title": "INI 分节解析",
+      "packages": [
+        "bufio",
+        "strings"
+      ],
+      "behavior": "解析分节键值，处理注释、空行、重复键及行号错误",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T196",
+      "group": "配置与命令行",
+      "title": "配置交叉字段校验",
+      "packages": [
+        "fmt",
+        "strings"
+      ],
+      "behavior": "聚合端口、超时和 TLS 路径间的约束错误，一次返回全部问题",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T197",
+      "group": "配置与命令行",
+      "title": "表格对齐输出",
+      "packages": [
+        "text/tabwriter",
+        "bytes"
+      ],
+      "behavior": "用 TabWriter 输出含不同长度字段的表格，核对列对齐与 Flush",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T198",
+      "group": "配置与命令行",
+      "title": "简单参数词法分析",
+      "packages": [
+        "unicode"
+      ],
+      "behavior": "解析带引号和转义的参数列表，仅构造参数数组而不调用 shell",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T199",
+      "group": "配置与命令行",
+      "title": "ANSI 控制序列清理",
+      "packages": [
+        "strings"
+      ],
+      "behavior": "用状态机删除 SGR 颜色序列，保留普通方括号文本与中文",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T200",
+      "group": "配置与命令行",
+      "title": "配置补丁与未知键",
+      "packages": [
+        "encoding/json",
+        "sort"
+      ],
+      "behavior": "将白名单 JSON patch 应用到现有配置，拒绝未知键且保证失败无修改",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T201",
+      "group": "摘要与密码基础",
+      "title": "摘要清单验证",
+      "packages": [
+        "crypto/sha256",
+        "encoding/hex"
+      ],
+      "behavior": "验证两个离线文件的摘要清单，分别报告匹配和被修改文件",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T202",
+      "group": "摘要与密码基础",
+      "title": "HMAC 消息认证",
+      "packages": [
+        "crypto/hmac",
+        "crypto/sha256"
+      ],
+      "behavior": "为消息生成标签，验证正确消息并拒绝修改后的内容",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T203",
+      "group": "摘要与密码基础",
+      "title": "定长令牌比较",
+      "packages": [
+        "crypto/subtle"
+      ],
+      "behavior": "先校验长度再比较固定字节令牌，展示错误输入和有效输入",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T204",
+      "group": "摘要与密码基础",
+      "title": "AES GCM 往返和篡改",
+      "packages": [
+        "crypto/aes",
+        "crypto/cipher",
+        "crypto/rand"
+      ],
+      "behavior": "每次生成新 nonce，往返验证消息并确认篡改密文会认证失败",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T205",
+      "group": "摘要与密码基础",
+      "title": "Ed25519 签名校验",
+      "packages": [
+        "crypto/ed25519",
+        "crypto/rand"
+      ],
+      "behavior": "生成临时密钥，签名本地清单并验证原文与篡改文",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T206",
+      "group": "摘要与密码基础",
+      "title": "ECDSA 摘要签名",
+      "packages": [
+        "crypto/ecdsa",
+        "crypto/elliptic",
+        "crypto/rand"
+      ],
+      "behavior": "对 SHA256 摘要进行 ASN1 签名与验证，拒绝另一摘要",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T207",
+      "group": "摘要与密码基础",
+      "title": "密钥协商一致性",
+      "packages": [
+        "crypto/ecdh",
+        "crypto/rand",
+        "bytes"
+      ],
+      "behavior": "两方生成临时 P256 密钥，独立推导共享秘密并比较一致性",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T208",
+      "group": "摘要与密码基础",
+      "title": "公钥 PEM 往返",
+      "packages": [
+        "crypto/ed25519",
+        "crypto/x509",
+        "encoding/pem"
+      ],
+      "behavior": "编码和读取公钥 PEM，检查块类型并验证恢复后的公钥",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T209",
+      "group": "摘要与密码基础",
+      "title": "CRC32 分片校验",
+      "packages": [
+        "hash/crc32"
+      ],
+      "behavior": "分片更新校验和并与一次性校验对比，演示一个字节变化的检测",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T210",
+      "group": "摘要与密码基础",
+      "title": "流式多摘要",
+      "packages": [
+        "hash",
+        "crypto/sha256",
+        "crypto/sha512",
+        "io"
+      ],
+      "behavior": "用 MultiWriter 一次消费输入同时计算两类摘要并验证长度与一致性",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T211",
+      "group": "压缩与封装",
+      "title": "Gzip 日志封装",
+      "packages": [
+        "compress/gzip",
+        "bytes",
+        "io"
+      ],
+      "behavior": "压缩多行日志并解压，检查关闭写入器后的完整尾部与内容",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T212",
+      "group": "压缩与封装",
+      "title": "Zlib 解压预算",
+      "packages": [
+        "compress/zlib",
+        "io"
+      ],
+      "behavior": "对压缩输入限制解压后字节数，拒绝超预算载荷",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T213",
+      "group": "压缩与封装",
+      "title": "Tar 选择性提取",
+      "packages": [
+        "archive/tar",
+        "bytes",
+        "io"
+      ],
+      "behavior": "遍历内存归档，只读取目标文档并核对条目类型和长度",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T214",
+      "group": "压缩与封装",
+      "title": "Zip 报表归档",
+      "packages": [
+        "archive/zip",
+        "bytes",
+        "io"
+      ],
+      "behavior": "创建含两个报表的 zip，读取所有条目并稳定输出摘要",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T215",
+      "group": "压缩与封装",
+      "title": "归档路径验证",
+      "packages": [
+        "archive/zip",
+        "path",
+        "strings"
+      ],
+      "behavior": "在提取前验证条目路径，拒绝越界、绝对路径与符号链接",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T216",
+      "group": "压缩与封装",
+      "title": "Tar 元数据清单",
+      "packages": [
+        "archive/tar",
+        "sort"
+      ],
+      "behavior": "从归档头读取权限和大小，跳过目录内容并生成稳定清单",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T217",
+      "group": "压缩与封装",
+      "title": "内存 Multipart 表单",
+      "packages": [
+        "mime/multipart",
+        "bytes",
+        "io"
+      ],
+      "behavior": "构造含文本与文件的表单，逐 part 解码并核对文件内容",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T218",
+      "group": "压缩与封装",
+      "title": "MIME 媒体类型参数",
+      "packages": [
+        "mime"
+      ],
+      "behavior": "解析带引号参数和字符集的媒体类型，规范重组并处理非法输入",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T219",
+      "group": "压缩与封装",
+      "title": "流式 Base64 编解码",
+      "packages": [
+        "encoding/base64",
+        "io",
+        "bytes"
+      ],
+      "behavior": "跨多次 Write 编码并关闭刷新尾块，再以 Reader 解码",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T220",
+      "group": "压缩与封装",
+      "title": "Quoted Printable 文本",
+      "packages": [
+        "mime/quotedprintable",
+        "io",
+        "strings"
+      ],
+      "behavior": "解码软换行和转义字节，再编码 UTF-8 邮件片段并验证往返",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T221",
+      "group": "本地 HTTP 与 URL",
+      "title": "内存路由与方法约束",
+      "packages": [
+        "net/http",
+        "net/http/httptest"
+      ],
+      "behavior": "直接对 Handler 发送本地请求，区分合法 GET、404 和 405",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T222",
+      "group": "本地 HTTP 与 URL",
+      "title": "严格 JSON POST",
+      "packages": [
+        "net/http",
+        "net/http/httptest",
+        "encoding/json"
+      ],
+      "behavior": "验证请求媒体类型、未知字段和响应状态，完全使用内存 Recorder",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T223",
+      "group": "本地 HTTP 与 URL",
+      "title": "请求标识中间件",
+      "packages": [
+        "net/http",
+        "net/http/httptest"
+      ],
+      "behavior": "从请求头取 ID 或确定性创建 ID，传入 context 并回写响应头",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T224",
+      "group": "本地 HTTP 与 URL",
+      "title": "条件请求 ETag",
+      "packages": [
+        "net/http",
+        "net/http/httptest",
+        "crypto/sha256"
+      ],
+      "behavior": "生成资源 ETag，验证匹配返回 304 且不写响应体",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T225",
+      "group": "本地 HTTP 与 URL",
+      "title": "字节范围响应",
+      "packages": [
+        "net/http",
+        "net/http/httptest",
+        "strings"
+      ],
+      "behavior": "用 ServeContent 响应一个单范围请求，检查 206、Content-Range 与载荷",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T226",
+      "group": "本地 HTTP 与 URL",
+      "title": "内容协商权重",
+      "packages": [
+        "mime",
+        "strconv",
+        "sort"
+      ],
+      "behavior": "解析 Accept 的 q 参数，选择可提供格式并处理 q=0",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T227",
+      "group": "本地 HTTP 与 URL",
+      "title": "Cookie 属性往返",
+      "packages": [
+        "net/http",
+        "net/http/httptest"
+      ],
+      "behavior": "设置 HttpOnly、SameSite Cookie，再构造请求读回值",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T228",
+      "group": "本地 HTTP 与 URL",
+      "title": "查询参数规范化",
+      "packages": [
+        "net/url",
+        "sort"
+      ],
+      "behavior": "按允许键筛选查询参数，保留重复值并生成稳定查询串",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T229",
+      "group": "本地 HTTP 与 URL",
+      "title": "相对 URL 解析",
+      "packages": [
+        "net/url"
+      ],
+      "behavior": "以目录 URL 为基准解析相对链接，比较路径、查询和片段变化",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T230",
+      "group": "本地 HTTP 与 URL",
+      "title": "HTTP 响应报文读取",
+      "packages": [
+        "net/http",
+        "bufio",
+        "strings"
+      ],
+      "behavior": "读取内存 chunked 响应，验证解码正文与 trailer 字段",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T231",
+      "group": "并发与所有权",
+      "title": "有序并行转换",
+      "packages": [
+        "sync",
+        "sort"
+      ],
+      "behavior": "多个 worker 处理索引化任务，收集后按输入顺序输出结果",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T232",
+      "group": "并发与所有权",
+      "title": "有界并发闸门",
+      "packages": [
+        "sync",
+        "sync/atomic"
+      ],
+      "behavior": "用缓冲通道限制并发，验证所有任务完成且峰值不超过上限",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T233",
+      "group": "并发与所有权",
+      "title": "同键请求合并",
+      "packages": [
+        "sync"
+      ],
+      "behavior": "在自实现调用表中合并并发相同键请求，断言实际装载仅一次",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T234",
+      "group": "并发与所有权",
+      "title": "条件变量屏障",
+      "packages": [
+        "sync"
+      ],
+      "behavior": "用 Cond 等待所有成员就绪，再广播启动并收集确定结果",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T235",
+      "group": "并发与所有权",
+      "title": "流水线取消传播",
+      "packages": [
+        "context",
+        "sync"
+      ],
+      "behavior": "达到固定消费数量时取消上游，等待所有阶段退出并打印已消费值",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T236",
+      "group": "并发与所有权",
+      "title": "只读快照发布",
+      "packages": [
+        "sync/atomic"
+      ],
+      "behavior": "发布不可变配置快照，多个读者始终看到一个完整版本",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T237",
+      "group": "并发与所有权",
+      "title": "扇入关闭协调",
+      "packages": [
+        "sync",
+        "sort"
+      ],
+      "behavior": "合并两个生产者输出，唯一收尾方在 Wait 后关闭结果通道",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T238",
+      "group": "并发与所有权",
+      "title": "任务结果与错误聚合",
+      "packages": [
+        "sync",
+        "errors",
+        "sort"
+      ],
+      "behavior": "并行校验记录，按输入序号汇总成功结果和全部错误",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T239",
+      "group": "并发与所有权",
+      "title": "请求响应通道",
+      "packages": [
+        "context"
+      ],
+      "behavior": "用每请求独立响应通道实现本地 actor，验证状态更新和取消请求",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T240",
+      "group": "并发与所有权",
+      "title": "一次性初始化结果",
+      "packages": [
+        "sync"
+      ],
+      "behavior": "用 Once 共享可失败初始化结果，验证多次调用不会重复初始化",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T241",
+      "group": "模板与展示协议",
+      "title": "模板金额辅助函数",
+      "packages": [
+        "text/template",
+        "bytes"
+      ],
+      "behavior": "注册分币格式化 FuncMap，渲染订单明细与总价",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T242",
+      "group": "模板与展示协议",
+      "title": "HTML 自动转义",
+      "packages": [
+        "html/template",
+        "bytes"
+      ],
+      "behavior": "渲染含标签的用户输入，验证正文与属性上下文的自动转义",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T243",
+      "group": "模板与展示协议",
+      "title": "模板块复用",
+      "packages": [
+        "text/template",
+        "bytes"
+      ],
+      "behavior": "定义并复用页头和行模板，以不同数据生成两份报告",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T244",
+      "group": "模板与展示协议",
+      "title": "模板缺失键策略",
+      "packages": [
+        "text/template",
+        "bytes"
+      ],
+      "behavior": "设置 missingkey=error，比较完整记录与缺字段记录的执行结果",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T245",
+      "group": "模板与展示协议",
+      "title": "自定义 JSON 脱敏视图",
+      "packages": [
+        "encoding/json"
+      ],
+      "behavior": "用 MarshalJSON 输出遮盖后的账号视图，同时保留内存原值",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T246",
+      "group": "模板与展示协议",
+      "title": "枚举文本协议",
+      "packages": [
+        "encoding",
+        "encoding/json"
+      ],
+      "behavior": "为状态枚举实现 TextMarshaler/TextUnmarshaler，验证合法与非法值",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T247",
+      "group": "模板与展示协议",
+      "title": "固定列宽 Unicode 表格",
+      "packages": [
+        "unicode/utf8",
+        "strings"
+      ],
+      "behavior": "按 rune 个数截断并填充离线摘要表，明确 rune 数并非显示宽度",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T248",
+      "group": "模板与展示协议",
+      "title": "JSON Lines 报表",
+      "packages": [
+        "encoding/json",
+        "bytes"
+      ],
+      "behavior": "逐行编码和解码不同记录，报告损坏行而继续处理后续行",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T249",
+      "group": "模板与展示协议",
+      "title": "Markdown 表格转义",
+      "packages": [
+        "strings"
+      ],
+      "behavior": "为含管道符、反斜线和换行的字段生成合法 Markdown 表格",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T250",
+      "group": "模板与展示协议",
+      "title": "进度条纯函数",
+      "packages": [
+        "strings",
+        "strconv"
+      ],
+      "behavior": "将已完成量和总量转换为固定宽度进度条，处理越界与零总量",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T251",
+      "group": "校验与状态机",
+      "title": "邮件地址解析",
+      "packages": [
+        "net/mail"
+      ],
+      "behavior": "解析显示名和邮箱，保留规范地址并拒绝不完整输入",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T252",
+      "group": "校验与状态机",
+      "title": "IP 与网段归属",
+      "packages": [
+        "net"
+      ],
+      "behavior": "解析 IPv4/IPv6 地址与 CIDR，验证边界和非法字符串",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T253",
+      "group": "校验与状态机",
+      "title": "离线 URL 白名单",
+      "packages": [
+        "net/url",
+        "strings"
+      ],
+      "behavior": "拒绝非 https、用户信息及非允许主机，避免主机后缀误判",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T254",
+      "group": "校验与状态机",
+      "title": "主机名词法校验",
+      "packages": [
+        "strings",
+        "unicode"
+      ],
+      "behavior": "仅校验 ASCII 主机标签长度、连字符位置与字符集，不做 DNS 查询",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T255",
+      "group": "校验与状态机",
+      "title": "语义版本排序",
+      "packages": [
+        "strconv",
+        "strings",
+        "sort"
+      ],
+      "behavior": "比较主次补丁与预发布标识，稳定排序并拒绝坏版本",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T256",
+      "group": "校验与状态机",
+      "title": "Luhn 校验与生成",
+      "packages": [
+        "unicode"
+      ],
+      "behavior": "计算数字串校验位，验证合法号码并拒绝单字节改动",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T257",
+      "group": "校验与状态机",
+      "title": "ISBN13 校验",
+      "packages": [
+        "unicode"
+      ],
+      "behavior": "忽略显示分隔符计算 ISBN13 加权校验，识别长度和校验错误",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T258",
+      "group": "校验与状态机",
+      "title": "带转义字段状态机",
+      "packages": [
+        "strings"
+      ],
+      "behavior": "解析用分号分隔且支持反斜线转义的记录，检测悬空转义",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T259",
+      "group": "校验与状态机",
+      "title": "括号配对与错误位置",
+      "packages": [
+        "fmt"
+      ],
+      "behavior": "用栈检查多类括号嵌套，并返回首个错误字节位置",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T260",
+      "group": "校验与状态机",
+      "title": "分片 UTF8 解码",
+      "packages": [
+        "unicode/utf8",
+        "bytes"
+      ],
+      "behavior": "接收在中文字符中间切分的字节块，保留未完成字节并拒绝非法序列",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T261",
+      "group": "二进制协议与位图",
+      "title": "带 CRC 的二进制帧",
+      "packages": [
+        "encoding/binary",
+        "hash/crc32"
+      ],
+      "behavior": "组装版本、长度、载荷与校验码，拒绝坏版本和篡改帧",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T262",
+      "group": "二进制协议与位图",
+      "title": "传感器位字段",
+      "packages": [
+        "encoding/binary"
+      ],
+      "behavior": "从 uint16 帧提取标志、量程和数值，并验证重新打包一致",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T263",
+      "group": "二进制协议与位图",
+      "title": "差分 Varint 压缩",
+      "packages": [
+        "encoding/binary"
+      ],
+      "behavior": "对递增事件 ID 存储差分，逐项解码还原并处理截断",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T264",
+      "group": "二进制协议与位图",
+      "title": "Netstring 消息解析",
+      "packages": [
+        "strconv",
+        "strings"
+      ],
+      "behavior": "解析 length:data, 格式的连续消息，验证长度与结尾逗号",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T265",
+      "group": "二进制协议与位图",
+      "title": "DNS 标签编码",
+      "packages": [
+        "bytes",
+        "strings"
+      ],
+      "behavior": "将域名编码为标签长度序列，仅做离线格式处理并拒绝超长标签",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T266",
+      "group": "二进制协议与位图",
+      "title": "分片帧解包器",
+      "packages": [
+        "encoding/binary",
+        "bytes"
+      ],
+      "behavior": "把随机切分的长度帧喂给解包器，缓存半帧并输出多帧",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T267",
+      "group": "二进制协议与位图",
+      "title": "位图空闲槽分配",
+      "packages": [
+        "math/bits"
+      ],
+      "behavior": "用 uint64 位图申请、释放资源槽，检测用尽并重用空槽",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T268",
+      "group": "二进制协议与位图",
+      "title": "位集合交并差",
+      "packages": [
+        "math/bits"
+      ],
+      "behavior": "以位集合表达权限，计算交并差并列出最终授权项",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T269",
+      "group": "二进制协议与位图",
+      "title": "IEEE754 字节往返",
+      "packages": [
+        "math",
+        "encoding/binary"
+      ],
+      "behavior": "以固定字节序编码浮点数，验证普通值和负零的位模式",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T270",
+      "group": "二进制协议与位图",
+      "title": "有符号 ZigZag 编码",
+      "packages": [
+        "encoding/binary"
+      ],
+      "behavior": "将正负小整数映射无符号 varint，验证边界值往返",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T271",
+      "group": "综合离线应用",
+      "title": "账本对账器",
+      "packages": [
+        "encoding/csv",
+        "sort"
+      ],
+      "behavior": "按交易 ID 对比两份账本，输出缺失、重复与金额不一致记录",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T272",
+      "group": "综合离线应用",
+      "title": "依赖构建顺序",
+      "packages": [
+        "container/heap"
+      ],
+      "behavior": "用拓扑排序与字典序队列生成稳定构建计划，并报告剩余环节点",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T273",
+      "group": "综合离线应用",
+      "title": "会议室分配",
+      "packages": [
+        "container/heap",
+        "sort"
+      ],
+      "behavior": "按结束时间复用会议室，输出每个预约的房间和最少房间数",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T274",
+      "group": "综合离线应用",
+      "title": "包清单完整性检查",
+      "packages": [
+        "encoding/json",
+        "crypto/sha256"
+      ],
+      "behavior": "读取包文件清单并校验文件存在、长度和摘要，聚合全部错误",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T275",
+      "group": "综合离线应用",
+      "title": "本地记录查询器",
+      "packages": [
+        "sort",
+        "strings"
+      ],
+      "behavior": "实现过滤、分组与排序的查询步骤，对订单输出部门统计",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T276",
+      "group": "综合离线应用",
+      "title": "事件溯源余额",
+      "packages": [
+        "encoding/json"
+      ],
+      "behavior": "依序重放开户、入账、扣款事件，拒绝非法事件且保留此前状态",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T277",
+      "group": "综合离线应用",
+      "title": "内存事务回滚",
+      "packages": [
+        "fmt"
+      ],
+      "behavior": "在副本上执行多步库存变更，遇到负库存回滚全部操作",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T278",
+      "group": "综合离线应用",
+      "title": "逻辑时钟令牌桶",
+      "packages": [
+        "time",
+        "math"
+      ],
+      "behavior": "用显式 now 更新令牌余额，验证突发、补充与拒绝而不实际睡眠",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T279",
+      "group": "综合离线应用",
+      "title": "批处理检查点恢复",
+      "packages": [
+        "encoding/json"
+      ],
+      "behavior": "按批保存已完成偏移，模拟失败后从检查点恢复且避免重复提交",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    },
+    {
+      "id": "T280",
+      "group": "综合离线应用",
+      "title": "中缀表达式计算器",
+      "packages": [
+        "strconv",
+        "unicode"
+      ],
+      "behavior": "用操作符栈处理括号与优先级，报告除零及不完整表达式",
+      "shape": "single-file",
+      "verification": "stdout-exact",
+      "inputs": "fixed in-memory fixture; no external network; output assertions include failure boundaries"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "id": "T251",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "name=\"Li Yu\" address=li@example.test\nname=\"\" address=reader@example.test\ninvalid\nlist=2\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-251",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "邮件地址解析",
+    "summary": "能解析显示名和邮箱，保留规范地址并拒绝不完整输入。",
+    "concepts": [
+      "net/mail",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能解析显示名和邮箱，保留规范地址并拒绝不完整输入。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "解析成功不代表地址可投递，更不证明邮箱归属。",
+      "显示名不能代替 Address 做身份比较。两个显示名可能对应不同邮箱。"
+    ],
+    "exercises": [
+      {
+        "prompt": "对联系人列表按 Address 去重，保留第一次出现的显示名。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "用地址字符串作集合键。保留输入顺序。避免未经业务约定就更改邮箱本地部分的大小写。"
+      }
+    ],
+    "explain": "net/mail 按邮件地址语法区分显示名与真正的地址。不需要自己寻找最后一个尖括号或 at 字符。ParseAddress 读取单个地址。ParseAddressList 读取逗号分隔列表。示例还拒绝两个 at 的错误输入。语法解析不连接邮件服务器。它也不能证明邮箱存在。它更不能证明收件人拥有该地址。业务验证需要另行设计。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/mail\"\n)\n\nfunc main() {\n\tfor _, input := range []string{`Li Yu <li@example.test>`, `reader@example.test`, `bad@@example.test`} {\n\t\taddress, err := mail.ParseAddress(input)\n\t\tif err != nil {\n\t\t\tfmt.Println(\"invalid\")\n\t\t\tcontinue\n\t\t}\n\t\tfmt.Printf(\"name=%q address=%s\\n\", address.Name, address.Address)\n\t}\n\tlist, err := mail.ParseAddressList(\"a@example.test, B <b@example.test>\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"list=%d\\n\", len(list))\n}\n",
+    "output": "name=\"Li Yu\" address=li@example.test\nname=\"\" address=reader@example.test\ninvalid\nlist=2"
+  },
+  "example": {
+    "id": "go-example-251",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "邮件地址解析",
+    "summary": "能解析显示名和邮箱，保留规范地址并拒绝不完整输入。",
+    "concepts": [
+      "net/mail",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/mail\"\n)\n\nfunc main() {\n\tfor _, input := range []string{`Li Yu <li@example.test>`, `reader@example.test`, `bad@@example.test`} {\n\t\taddress, err := mail.ParseAddress(input)\n\t\tif err != nil {\n\t\t\tfmt.Println(\"invalid\")\n\t\t\tcontinue\n\t\t}\n\t\tfmt.Printf(\"name=%q address=%s\\n\", address.Name, address.Address)\n\t}\n\tlist, err := mail.ParseAddressList(\"a@example.test, B <b@example.test>\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"list=%d\\n\", len(list))\n}\n",
+    "expectedOutput": "name=\"Li Yu\" address=li@example.test\nname=\"\" address=reader@example.test\ninvalid\nlist=2",
+    "templateType": "go"
+  }
+}

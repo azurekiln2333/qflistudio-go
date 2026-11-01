@@ -1,0 +1,68 @@
+{
+  "id": "T028",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "body\nresult: 42\nsecond deferred\nfirst deferred\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-028",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "defer 基础与执行顺序",
+    "summary": "用 defer 注册延迟调用，理解 LIFO 顺序与对命名返回值的影响。",
+    "concepts": [
+      "defer",
+      "LIFO",
+      "命名返回值"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能说明 defer 的后进先出执行顺序，并演示 defer 修改命名返回值。",
+    "prerequisites": [
+      "T023 命名返回值"
+    ],
+    "pitfalls": [
+      "以为 defer 在 return 之后执行：defer 在函数返回前、返回值确定后执行，因此能修改命名返回值。",
+      "在循环里 defer 大量资源：defer 直到函数返回才执行，循环内堆积会延迟释放，应把循环体抽成函数或用显式关闭。"
+    ],
+    "exercises": [
+      {
+        "prompt": "写一个函数用三个 defer 打印 1、2、3，预测并验证顺序。",
+        "hint": "defer 后进先出。",
+        "answer": "实际打印 3、2、1，因为最后注册的先执行。"
+      }
+    ],
+    "explain": "defer 把一次调用压入当前函数的延迟栈，函数返回前逆序（后进先出，LIFO）执行。它常用于释放资源，让「打开」与「关闭」在代码上相邻。样例在 main 里注册两条 defer，输出顺序是先执行 body，再按 second、first 的顺序执行延迟调用。\n\ndefer 还能读取并修改命名返回值：double 用命名返回 result，并通过 defer 在返回前把它乘 2，于是 return n 先设定 result=n，再由 defer 修改成 2n。\n\n在循环中 defer 会累积到函数返回才执行，可能延迟资源释放，需要时把循环体抽成独立函数。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tdefer fmt.Println(\"first deferred\")\n\tdefer fmt.Println(\"second deferred\")\n\tfmt.Println(\"body\")\n\t// 命名返回值与 defer 配合可修改返回值\n\tfmt.Println(\"result:\", double(21))\n}\n\nfunc double(n int) (result int) {\n\tdefer func() { result *= 2 }()\n\treturn n\n}\n",
+    "output": "body\nresult: 42\nsecond deferred\nfirst deferred"
+  },
+  "example": {
+    "id": "go-example-028",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "defer 基础与执行顺序",
+    "summary": "用 defer 注册延迟调用，理解 LIFO 顺序与对命名返回值的影响。",
+    "concepts": [
+      "defer",
+      "LIFO",
+      "命名返回值"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc main() {\n\tdefer fmt.Println(\"first deferred\")\n\tdefer fmt.Println(\"second deferred\")\n\tfmt.Println(\"body\")\n\t// 命名返回值与 defer 配合可修改返回值\n\tfmt.Println(\"result:\", double(21))\n}\n\nfunc double(n int) (result int) {\n\tdefer func() { result *= 2 }()\n\treturn n\n}\n",
+    "expectedOutput": "body\nresult: 42\nsecond deferred\nfirst deferred",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,67 @@
+{
+  "id": "T262",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "enabled=true range=3 value=1234\nwire=b4d2\nroundtrip=true\noverflow=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-262",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "传感器位字段",
+    "summary": "能从 uint16 帧提取标志、量程和数值，并验证重新打包一致。",
+    "concepts": [
+      "encoding/binary",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能从 uint16 帧提取标志、量程和数值，并验证重新打包一致。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "移位后不做掩码可能把邻近标志位混入数值。",
+      "把超范围值直接截断会静默修改业务数据，应在打包前拒绝。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把开关设为 false、量程七、数值 4095，验证所有边界。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "检查最高位清零。其余十五位应全为一。测试数值 4096。打包应拒绝该数值。"
+      }
+    ],
+    "explain": "十六位字用最高位表示开关。接着三位表示量程。低十二位表示数值。pack 在移位之前拒绝字段超限。解码用移位和掩码隔离字段。再重新打包验证位模式一致。binary.BigEndian 明确线上的字节顺序。因此结果不依赖本机处理器字节序。位字段协议必须写清每一位的归属。",
+    "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n)\n\nfunc pack(enabled bool, scale, value uint16) (uint16, error) {\n\tif scale > 7 || value > 4095 {\n\t\treturn 0, fmt.Errorf(\"field overflow\")\n\t}\n\tword := scale<<12 | value\n\tif enabled {\n\t\tword |= 1 << 15\n\t}\n\treturn word, nil\n}\nfunc main() {\n\tword, err := pack(true, 3, 1234)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar bytes [2]byte\n\tbinary.BigEndian.PutUint16(bytes[:], word)\n\trestored := binary.BigEndian.Uint16(bytes[:])\n\tenabled := restored&(1<<15) != 0\n\tscale := (restored >> 12) & 7\n\tvalue := restored & 0x0fff\n\tagain, err := pack(enabled, scale, value)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"enabled=%t range=%d value=%d\\nwire=%x\\nroundtrip=%t\\n\", enabled, scale, value, bytes, again == word)\n\t_, err = pack(false, 8, 0)\n\tfmt.Printf(\"overflow=%t\\n\", err != nil)\n}\n",
+    "output": "enabled=true range=3 value=1234\nwire=b4d2\nroundtrip=true\noverflow=true"
+  },
+  "example": {
+    "id": "go-example-262",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "传感器位字段",
+    "summary": "能从 uint16 帧提取标志、量程和数值，并验证重新打包一致。",
+    "concepts": [
+      "encoding/binary",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n)\n\nfunc pack(enabled bool, scale, value uint16) (uint16, error) {\n\tif scale > 7 || value > 4095 {\n\t\treturn 0, fmt.Errorf(\"field overflow\")\n\t}\n\tword := scale<<12 | value\n\tif enabled {\n\t\tword |= 1 << 15\n\t}\n\treturn word, nil\n}\nfunc main() {\n\tword, err := pack(true, 3, 1234)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar bytes [2]byte\n\tbinary.BigEndian.PutUint16(bytes[:], word)\n\trestored := binary.BigEndian.Uint16(bytes[:])\n\tenabled := restored&(1<<15) != 0\n\tscale := (restored >> 12) & 7\n\tvalue := restored & 0x0fff\n\tagain, err := pack(enabled, scale, value)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"enabled=%t range=%d value=%d\\nwire=%x\\nroundtrip=%t\\n\", enabled, scale, value, bytes, again == word)\n\t_, err = pack(false, 8, 0)\n\tfmt.Printf(\"overflow=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "enabled=true range=3 value=1234\nwire=b4d2\nroundtrip=true\noverflow=true",
+    "templateType": "go"
+  }
+}

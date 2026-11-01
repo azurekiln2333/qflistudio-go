@@ -1,0 +1,504 @@
+[
+  {
+    "id": "go-tutorial-211",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Gzip 日志封装",
+    "summary": "能压缩多行日志并解压，检查关闭写入器后的完整尾部与内容。",
+    "concepts": [
+      "compress/gzip",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-211-lesson",
+        "title": "Gzip 日志封装",
+        "summary": "能压缩多行日志并解压，检查关闭写入器后的完整尾部与内容。",
+        "concepts": [
+          "compress/gzip",
+          "bytes",
+          "io",
+          "压缩与封装"
+        ],
+        "explain": "Gzip 写入器会缓存压缩状态，Close 写入最后的压缩数据和校验尾部。只有关闭成功后，内存缓冲才是一份完整封装。解压时必须读取到末尾才能检查尾部完整性，示例删除最后三个字节后，NewReader 仍可能成功，但 ReadAll 报错。正常路径还核对全部原文和行数，防止仅验证压缩器能被创建。",
+        "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"compress/gzip\"\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc main() {\n\tinput := []byte(\"first\\nsecond\\n\")\n\tvar compressed bytes.Buffer\n\twriter := gzip.NewWriter(&compressed)\n\tif _, err := writer.Write(input); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := writer.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\treader, err := gzip.NewReader(bytes.NewReader(compressed.Bytes()))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\trestored, err := io.ReadAll(reader)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tif err = reader.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"roundtrip=%t\\nlines=%d\\n\", bytes.Equal(input, restored), bytes.Count(restored, []byte{'\\n'}))\n\ttruncated := compressed.Bytes()[:compressed.Len()-3]\n\tbroken, err := gzip.NewReader(bytes.NewReader(truncated))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\t_, err = io.ReadAll(broken)\n\tbroken.Close()\n\tfmt.Printf(\"missing-trailer=%t\\n\", err != nil)\n}\n",
+        "output": "roundtrip=true\nlines=2\nmissing-trailer=true",
+        "objective": "能压缩多行日志并解压，检查关闭写入器后的完整尾部与内容。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "Flush 不等于 Close，刷新不能代替最终尾部。",
+          "只创建解压读取器而不读完正文，会漏掉尾部截断和校验错误。"
+        ],
+        "exercises": [
+          {
+            "prompt": "将输入改成空日志，验证压缩和解压仍成功且行数为零。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "保留 Close 和 ReadAll 检查；gzip 空流不是零字节文件，但解压结果应为空切片。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-212",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Zlib 解压预算",
+    "summary": "能对压缩输入限制解压后字节数，拒绝超预算载荷。",
+    "concepts": [
+      "compress/zlib",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-212-lesson",
+        "title": "Zlib 解压预算",
+        "summary": "能对压缩输入限制解压后字节数，拒绝超预算载荷。",
+        "concepts": [
+          "compress/zlib",
+          "io",
+          "压缩与封装"
+        ],
+        "explain": "压缩文件的输入大小无法代表解压后的内存成本。decode 只允许读取预算加一字节，用额外字节区分恰好达到上限和实际超量；超限时丢弃结果并返回错误。三个输入分别覆盖小载荷、大量重复内容和恰好八字节。这个限制约束解压输出，压缩输入与处理时间在真实应用中也应另设预算。",
+        "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"compress/zlib\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc compress(text string) []byte {\n\tvar out bytes.Buffer\n\tw := zlib.NewWriter(&out)\n\tif _, err := io.WriteString(w, text); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\treturn out.Bytes()\n}\nfunc decode(data []byte, budget int64) (string, error) {\n\tr, err := zlib.NewReader(bytes.NewReader(data))\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\tdefer r.Close()\n\ttext, err := io.ReadAll(io.LimitReader(r, budget+1))\n\tif err != nil {\n\t\treturn \"\", err\n\t}\n\tif int64(len(text)) > budget {\n\t\treturn \"\", fmt.Errorf(\"expanded data over budget\")\n\t}\n\treturn string(text), nil\n}\nfunc main() {\n\ttext, err := decode(compress(\"small\"), 8)\n\tfmt.Printf(\"small=%s valid=%t\\n\", text, err == nil)\n\t_, err = decode(compress(strings.Repeat(\"a\", 1000)), 8)\n\tfmt.Printf(\"expanded-rejected=%t\\n\", err != nil)\n\ttext, err = decode(compress(\"12345678\"), 8)\n\tfmt.Printf(\"exact-limit=%t\\n\", err == nil && len(text) == 8)\n}\n",
+        "output": "small=small valid=true\nexpanded-rejected=true\nexact-limit=true",
+        "objective": "能对压缩输入限制解压后字节数，拒绝超预算载荷。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "只用 LimitReader 的 budget 字节并判断无错误，会把超量输入误当成恰好上限。",
+          "预算必须非负且不能在加一时溢出，公共接口应先验证参数。"
+        ],
+        "exercises": [
+          {
+            "prompt": "让 decode 拒绝负预算，并增加 budget=0 的空数据测试。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "参数小于零立即返回错误；零预算可接受空明文，但只要探测到一个字节就拒绝。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-213",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Tar 选择性提取",
+    "summary": "能遍历内存归档，只读取目标文档并核对条目类型和长度。",
+    "concepts": [
+      "archive/tar",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-213-lesson",
+        "title": "Tar 选择性提取",
+        "summary": "能遍历内存归档，只读取目标文档并核对条目类型和长度。",
+        "concepts": [
+          "archive/tar",
+          "bytes",
+          "io",
+          "压缩与封装"
+        ],
+        "explain": "tar.Reader 按顺序呈现条目，每次 Next 会移动到下一条记录。程序跳过不相关文件，只在名字匹配、类型为普通文件且长度符合预算时读取目标正文。全过程留在内存，没有把条目路径直接写到磁盘。归档创建时必须声明准确的 Size，写入器据此组织后续头部和填充。",
+        "code": "package main\n\nimport (\n\t\"archive/tar\"\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc main() {\n\tvar archive bytes.Buffer\n\tw := tar.NewWriter(&archive)\n\tfor _, item := range []struct{ name, text string }{{\"notes.txt\", \"skip\"}, {\"docs/readme.txt\", \"offline guide\"}} {\n\t\tif err := w.WriteHeader(&tar.Header{Name: item.name, Mode: 0600, Size: int64(len(item.text)), Typeflag: tar.TypeReg}); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif _, err := io.WriteString(w, item.text); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr := tar.NewReader(bytes.NewReader(archive.Bytes()))\n\tfound := \"\"\n\tfor {\n\t\th, err := r.Next()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif h.Name != \"docs/readme.txt\" {\n\t\t\tcontinue\n\t\t}\n\t\tif h.Typeflag != tar.TypeReg || h.Size > 64 {\n\t\t\tpanic(\"invalid target\")\n\t\t}\n\t\tdata, err := io.ReadAll(r)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfound = string(data)\n\t}\n\tfmt.Printf(\"document=%s\\nbytes=%d\\n\", found, len(found))\n}\n",
+        "output": "document=offline guide\nbytes=13",
+        "objective": "能遍历内存归档，只读取目标文档并核对条目类型和长度。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "不能把目录、符号链接或设备条目当成普通文件读取并提取。",
+          "归档头中的名字属于输入数据，实际落盘还必须校验路径包含关系。"
+        ],
+        "exercises": [
+          {
+            "prompt": "增加 docs/readme.txt 缺失时的明确错误，而不是把空字符串当成合法空文档。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "另设 found 布尔变量；允许目标内容长度为零，扫描结束后单独判断是否匹配过条目。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-214",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Zip 报表归档",
+    "summary": "能创建含两个报表的 zip，读取所有条目并稳定输出摘要。",
+    "concepts": [
+      "archive/zip",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-214-lesson",
+        "title": "Zip 报表归档",
+        "summary": "能创建含两个报表的 zip，读取所有条目并稳定输出摘要。",
+        "concepts": [
+          "archive/zip",
+          "bytes",
+          "io",
+          "压缩与封装"
+        ],
+        "explain": "ZIP 写入器在 Close 时补齐中央目录，所以必须先关闭才能创建读取器。两个报表分别通过 Create 建立条目，打开归档后逐项读取并核对实际解压字节数。输出先排序，使条目写入顺序不影响报告。每个 Open 返回的读取器都应及时关闭，不能把整个循环的清理都推迟到程序最后。",
+        "code": "package main\n\nimport (\n\t\"archive/zip\"\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"sort\"\n)\n\nfunc main() {\n\tvar data bytes.Buffer\n\tw := zip.NewWriter(&data)\n\tfor _, item := range []struct{ name, text string }{{\"sales.csv\", \"a,10\\n\"}, {\"stock.csv\", \"a,3\\n\"}} {\n\t\tf, err := w.Create(item.name)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif _, err = io.WriteString(f, item.text); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr, err := zip.NewReader(bytes.NewReader(data.Bytes()), int64(data.Len()))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\trows := []string{}\n\tfor _, file := range r.File {\n\t\tf, err := file.Open()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tbody, err := io.ReadAll(f)\n\t\tf.Close()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\trows = append(rows, fmt.Sprintf(\"%s:%d\", file.Name, len(body)))\n\t}\n\tsort.Strings(rows)\n\tfor _, row := range rows {\n\t\tfmt.Println(row)\n\t}\n\tfmt.Printf(\"entries=%d\\n\", len(rows))\n}\n",
+        "output": "sales.csv:5\nstock.csv:4\nentries=2",
+        "objective": "能创建含两个报表的 zip，读取所有条目并稳定输出摘要。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "ZIP 总字节数不是所有明文的总字节数，不能用压缩长度验证报表内容长度。",
+          "未关闭写入器便读取归档，可能缺少中央目录而失败。"
+        ],
+        "exercises": [
+          {
+            "prompt": "将每个条目的明文限制为 16 字节。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "用 LimitReader(f,17) 读取并检查长度是否超过 16，同时继续处理读取器关闭和错误。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-215",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "归档路径验证",
+    "summary": "能在提取前验证条目路径，拒绝越界、绝对路径与符号链接。",
+    "concepts": [
+      "archive/zip",
+      "path",
+      "strings",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-215-lesson",
+        "title": "归档路径验证",
+        "summary": "能在提取前验证条目路径，拒绝越界、绝对路径与符号链接。",
+        "concepts": [
+          "archive/zip",
+          "path",
+          "strings",
+          "压缩与封装"
+        ],
+        "explain": "提取归档前先按归档的斜线路径规则校验条目。程序拒绝绝对路径、向上逃逸、Windows 驱动器形式、反斜线与符号链接，并接受普通子目录文件。这里仅验证头部，不进行落盘；真正写盘时仍要解析目标父目录的文件系统别名，防止目标目录中已有符号链接把写入引向外部。",
+        "code": "package main\n\nimport (\n\t\"archive/zip\"\n\t\"fmt\"\n\t\"os\"\n\t\"path\"\n\t\"strings\"\n)\n\nfunc safe(h *zip.FileHeader) bool {\n\tname := h.Name\n\tif name == \"\" || strings.Contains(name, \"\\\\\") || strings.Contains(name, \":\") || path.IsAbs(name) || h.Mode()&os.ModeSymlink != 0 {\n\t\treturn false\n\t}\n\tclean := path.Clean(name)\n\treturn clean != \".\" && clean != \"..\" && !strings.HasPrefix(clean, \"../\")\n}\nfunc main() {\n\tfor _, name := range []string{\"docs/a.txt\", \"../escape\", \"/etc/file\", \"C:/file\", \"docs\\\\..\\\\escape\"} {\n\t\th := &zip.FileHeader{Name: name}\n\t\tfmt.Printf(\"%s=%t\\n\", name, safe(h))\n\t}\n\tlink := &zip.FileHeader{Name: \"docs/link\"}\n\tlink.SetMode(os.ModeSymlink | 0600)\n\tfmt.Printf(\"symlink=%t\\n\", safe(link))\n}\n",
+        "output": "docs/a.txt=true\n../escape=false\n/etc/file=false\nC:/file=false\ndocs\\..\\escape=false\nsymlink=false",
+        "objective": "能在提取前验证条目路径，拒绝越界、绝对路径与符号链接。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "字符串不含 ../ 并不代表安全，清洗后仍应检查向上逃逸和平台路径形式。",
+          "词法校验不能解决目标目录中已有符号链接造成的物理越界。"
+        ],
+        "exercises": [
+          {
+            "prompt": "将允许条目规范化后放进集合，拒绝两个不同名字映射到相同目标。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "使用 path.Clean 的结果作键；a/../b 与 b 冲突时在任何写入前拒绝整个提取计划。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-216",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Tar 元数据清单",
+    "summary": "能从归档头读取权限和大小，跳过目录内容并生成稳定清单。",
+    "concepts": [
+      "archive/tar",
+      "sort",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-216-lesson",
+        "title": "Tar 元数据清单",
+        "summary": "能从归档头读取权限和大小，跳过目录内容并生成稳定清单。",
+        "concepts": [
+          "archive/tar",
+          "sort",
+          "压缩与封装"
+        ],
+        "explain": "tar.Header 保存文件类型、权限位和明文大小。示例创建一个目录和一个可执行脚本，再只遍历头部生成清单；Next 会跳过尚未消费的正文。权限使用八进制显示，避免把 0750 与十进制 750 混淆。报告描述归档中声明的元数据，不代表这些权限已经应用到当前系统。",
+        "code": "package main\n\nimport (\n\t\"archive/tar\"\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"sort\"\n)\n\nfunc main() {\n\tvar data bytes.Buffer\n\tw := tar.NewWriter(&data)\n\tfor _, h := range []*tar.Header{{Name: \"docs/\", Mode: 0755, Typeflag: tar.TypeDir}, {Name: \"docs/run.sh\", Mode: 0750, Size: 3, Typeflag: tar.TypeReg}} {\n\t\tif err := w.WriteHeader(h); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif h.Size > 0 {\n\t\t\tif _, err := w.Write([]byte(\"go\\n\")); err != nil {\n\t\t\t\tpanic(err)\n\t\t\t}\n\t\t}\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr := tar.NewReader(bytes.NewReader(data.Bytes()))\n\trows := []string{}\n\tfor {\n\t\th, err := r.Next()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tkind := \"file\"\n\t\tif h.Typeflag == tar.TypeDir {\n\t\t\tkind = \"dir\"\n\t\t}\n\t\trows = append(rows, fmt.Sprintf(\"%s %s %04o %d\", h.Name, kind, h.Mode, h.Size))\n\t}\n\tsort.Strings(rows)\n\tfor _, row := range rows {\n\t\tfmt.Println(row)\n\t}\n}\n",
+        "output": "docs/ dir 0755 0\ndocs/run.sh file 0750 3",
+        "objective": "能从归档头读取权限和大小，跳过目录内容并生成稳定清单。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "目录条目不应按普通文件写入 Size 字节的正文。",
+          "归档权限来自输入，真实提取程序需要过滤特殊权限位并采用本机安全策略。"
+        ],
+        "exercises": [
+          {
+            "prompt": "清单增加可执行标记，只要任意执行位被设置就输出 executable=true。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "检查 h.Mode&0111 != 0；目录的搜索权限与普通文件的可执行语义需要在界面中区分。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-217",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内存 Multipart 表单",
+    "summary": "能构造含文本与文件的表单，逐 part 解码并核对文件内容。",
+    "concepts": [
+      "mime/multipart",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-217-lesson",
+        "title": "内存 Multipart 表单",
+        "summary": "能构造含文本与文件的表单，逐 part 解码并核对文件内容。",
+        "concepts": [
+          "mime/multipart",
+          "bytes",
+          "io",
+          "压缩与封装"
+        ],
+        "explain": "Multipart 在一个消息中封装多个带头部的 part。写入器生成普通 owner 字段和文件 upload 字段，Close 写出结束边界；读取器按同一 boundary 逐项解码。通过 FormName 和 FileName 可以区分字段与上传文件，而正文仍按流读取。整个示例只处理内存字节，不创建 HTTP 服务也不写上传文件到磁盘。",
+        "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"mime/multipart\"\n)\n\nfunc main() {\n\tvar wire bytes.Buffer\n\tw := multipart.NewWriter(&wire)\n\tif err := w.SetBoundary(\"qfli-boundary\"); err != nil {\n\t\tpanic(err)\n\t}\n\tif err := w.WriteField(\"owner\", \"Li\"); err != nil {\n\t\tpanic(err)\n\t}\n\tfile, err := w.CreateFormFile(\"upload\", \"notes.txt\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tif _, err = io.WriteString(file, \"line1\\n\"); err != nil {\n\t\tpanic(err)\n\t}\n\tif err = w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr := multipart.NewReader(&wire, w.Boundary())\n\tfor {\n\t\tpart, err := r.NextPart()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tbody, err := io.ReadAll(part)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tpart.Close()\n\t\tfmt.Printf(\"field=%s file=%q body=%q\\n\", part.FormName(), part.FileName(), string(body))\n\t}\n}\n",
+        "output": "field=owner file=\"\" body=\"Li\"\nfield=upload file=\"notes.txt\" body=\"line1\\n\"",
+        "objective": "能构造含文本与文件的表单，逐 part 解码并核对文件内容。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "边界必须与 Content-Type 中声明的一致，不能随意猜测或省略关闭写入器。",
+          "上传文件名是不可信元数据，不能直接拼进落盘路径。"
+        ],
+        "exercises": [
+          {
+            "prompt": "为每个 part 增加 32 字节预算，并拒绝超过三个 part 的消息。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "用预算加一字节探测正文超量，并在循环开始增加 part 计数；两项限制都在保存正文前检查。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-218",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "MIME 媒体类型参数",
+    "summary": "能解析带引号参数和字符集的媒体类型，规范重组并处理非法输入。",
+    "concepts": [
+      "mime",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-218-lesson",
+        "title": "MIME 媒体类型参数",
+        "summary": "能解析带引号参数和字符集的媒体类型，规范重组并处理非法输入。",
+        "concepts": [
+          "mime",
+          "压缩与封装"
+        ],
+        "explain": "媒体类型的参数可能包含空格、引号和分号，不能简单按空格拆分。ParseMediaType 规范化主类型并返回参数映射，FormatMediaType 根据需要补上引号，生成稳定字符串。示例读取带空格标题，再处理缺少参数值的错误输入。字符集名是协议声明，这个解析过程不会自动把正文转码。",
+        "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"mime\"\n)\n\nfunc main() {\n\tmedia, params, err := mime.ParseMediaType(`Text/Plain; charset=utf-8; title=\"QFLI report\"`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"type=%s\\ntitle=%s\\nnormalized=%s\\n\", media, params[\"title\"], mime.FormatMediaType(media, params))\n\t_, _, err = mime.ParseMediaType(\"text/plain; charset\")\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+        "output": "type=text/plain\ntitle=QFLI report\nnormalized=text/plain; charset=utf-8; title=\"QFLI report\"\ninvalid=true",
+        "objective": "能解析带引号参数和字符集的媒体类型，规范重组并处理非法输入。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "对 Content-Type 直接做字符串相等比较会错误拒绝大小写或合法参数形式。",
+          "解析出 charset 并不代表正文已按该字符集解码。"
+        ],
+        "exercises": [
+          {
+            "prompt": "添加 filename 参数 a;b.txt 并验证格式化后还能正确读回。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "把参数放入映射交给 FormatMediaType；再 ParseMediaType，检查 filename 保留分号而没有被拆成新参数。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-219",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "流式 Base64 编解码",
+    "summary": "能跨多次 Write 编码并关闭刷新尾块，再以 Reader 解码。",
+    "concepts": [
+      "encoding/base64",
+      "io",
+      "bytes",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-219-lesson",
+        "title": "流式 Base64 编解码",
+        "summary": "能跨多次 Write 编码并关闭刷新尾块，再以 Reader 解码。",
+        "concepts": [
+          "encoding/base64",
+          "io",
+          "bytes",
+          "压缩与封装"
+        ],
+        "explain": "Base64 每三个输入字节形成一组，流式编码器会保留不足一组的尾部。程序把五字节消息拆成四次写入，关闭前底层只能看到完整三字节对应的编码，Close 后才出现含填充的尾块。解码器作为 Reader 消费整份编码并还原消息。分片边界可以任意变化，但最终结果必须等同一次性编码。",
+        "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/base64\"\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc main() {\n\tvar wire bytes.Buffer\n\tw := base64.NewEncoder(base64.StdEncoding, &wire)\n\tfor _, chunk := range []string{\"g\", \"o\", \":\", \"42\"} {\n\t\tif _, err := io.WriteString(w, chunk); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tfmt.Printf(\"before=%s\\n\", wire.String())\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"after=%s\\n\", wire.String())\n\tdecoded, err := io.ReadAll(base64.NewDecoder(base64.StdEncoding, bytes.NewReader(wire.Bytes())))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"roundtrip=%t\\n\", string(decoded) == \"go:42\")\n}\n",
+        "output": "before=Z286\nafter=Z286NDI=\nroundtrip=true",
+        "objective": "能跨多次 Write 编码并关闭刷新尾块，再以 Reader 解码。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "未关闭编码器会丢失最后一到两个输入字节的编码。",
+          "标准 Base64 与 URL 安全编码的字母表、填充约定可能不同，双方必须一致。"
+        ],
+        "exercises": [
+          {
+            "prompt": "将输入分片改成每次一个字节，断言最终编码保持不变。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "逐字节调用 Write；Close 后仍应得到 Z286NDI=，然后使用相同 StdEncoding 解码。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-220",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Quoted Printable 文本",
+    "summary": "能解码软换行和转义字节，再编码 UTF-8 邮件片段并验证往返。",
+    "concepts": [
+      "mime/quotedprintable",
+      "io",
+      "strings",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "lessons": [
+      {
+        "id": "go-tutorial-220-lesson",
+        "title": "Quoted Printable 文本",
+        "summary": "能解码软换行和转义字节，再编码 UTF-8 邮件片段并验证往返。",
+        "concepts": [
+          "mime/quotedprintable",
+          "io",
+          "strings",
+          "压缩与封装"
+        ],
+        "explain": "Quoted Printable 以 =HH 表示字节，并用等号紧接 CRLF 表示软换行。第一段数据里的软换行不属于正文，所以解码后 hello 与 world 相连。第二段把中文和等号按 UTF8 字节编码再解码，核对完整字节一致。这是 MIME 传输编码，不能与 URL 百分号编码或 HTML 实体混用。",
+        "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n\t\"mime/quotedprintable\"\n\t\"strings\"\n)\n\nfunc main() {\n\tdecoded, err := io.ReadAll(quotedprintable.NewReader(strings.NewReader(\"Subject=3A hello=\\r\\nworld=21\")))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"decoded=%s\\n\", decoded)\n\toriginal := []byte(\"你好=go\")\n\tvar wire bytes.Buffer\n\tw := quotedprintable.NewWriter(&wire)\n\tif _, err = w.Write(original); err != nil {\n\t\tpanic(err)\n\t}\n\tif err = w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\trestored, err := io.ReadAll(quotedprintable.NewReader(&wire))\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"utf8-roundtrip=%t\\n\", bytes.Equal(restored, original))\n}\n",
+        "output": "decoded=Subject: helloworld!\nutf8-roundtrip=true",
+        "objective": "能解码软换行和转义字节，再编码 UTF-8 邮件片段并验证往返。",
+        "prerequisites": [
+          "T035",
+          "T049"
+        ],
+        "pitfalls": [
+          "软换行会被移除，真实正文换行不能随意写成等号加 CRLF。",
+          "编解码按字节操作，不会自动决定邮件头或正文使用的字符集。"
+        ],
+        "exercises": [
+          {
+            "prompt": "在原始正文中加入真实 CRLF，验证它与软换行有不同结果。",
+            "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+            "answer": "分别解码 a\r\nb 和 a=\r\nb，前者保留换行，后者变成 ab。"
+          }
+        ],
+        "inputFixtures": {}
+      }
+    ]
+  }
+]

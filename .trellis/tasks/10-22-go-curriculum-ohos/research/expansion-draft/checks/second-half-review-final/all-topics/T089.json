@@ -1,0 +1,70 @@
+{
+  "id": "T089",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "marshal: {\"name\":\"gopher\",\"age\":15,\"hobbies\":[\"coding\",\"reading\"]}\nunmarshal name: gopher\nunmarshal age: 15\nunmarshal hobbies: [coding reading]\nround-trip stable: true"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-089",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "JSON 一：Marshal/Unmarshal 基础",
+    "summary": "用 json.Marshal/Unmarshal 在结构体与 JSON 之间往返转换。",
+    "concepts": [
+      "encoding/json",
+      "Marshal",
+      "Unmarshal",
+      "往返"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 Marshal/Unmarshal 编解码结构体，并说明导出字段才被编码。",
+    "prerequisites": [
+      "T037 结构体定义、字面量与字段访问"
+    ],
+    "pitfalls": [
+      "字段未导出（小写）：不会被编码，产出为空对象。",
+      "Unmarshal 传入非指针：无法写回，报错或静默无效果。"
+    ],
+    "exercises": [
+      {
+        "prompt": "给 Profile 增加一个 []int 字段并验证往返一致。",
+        "hint": "切片字段也要导出并带 tag。",
+        "answer": "加 Scores []int `json:\"scores\"`；重新 Marshal/Unmarshal 比较。"
+      }
+    ],
+    "explain": "encoding/json 是 Go 与 JSON 互转的标准方式。Marshal 把 Go 值编码为 JSON 字节切片，Unmarshal 把 JSON 解析回指定类型（需传指针）。结构体字段必须导出（首字母大写）才会参与编码，否则被忽略。示例对 Profile 做往返：编码得到 JSON，再解码回结构体，并比较再次编码结果是否稳定，作为确定性断言。这类往返不变性是验证编解码正确性的常用手段。",
+    "code": "// T089 JSON 一：Marshal/Unmarshal 基础。\n//\n// encoding/json 在 Go 值与 JSON 文本之间转换。Marshal 把结构体转成 JSON\n// 字节；Unmarshal 把 JSON 解析回结构体。结构体字段必须是导出的（首字母大写）\n// 才会被编码，否则会被忽略。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\n// Profile 是要被编解码的结构体。字段都导出。\ntype Profile struct {\n\tName    string   `json:\"name\"`\n\tAge     int      `json:\"age\"`\n\tHobbies []string `json:\"hobbies\"`\n}\n\nfunc main() {\n\tp := Profile{\n\t\tName:    \"gopher\",\n\t\tAge:     15,\n\t\tHobbies: []string{\"coding\", \"reading\"},\n\t}\n\n\t// 结构体 -> JSON。\n\tdata, err := json.Marshal(p)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"marshal:\", string(data))\n\n\t// JSON -> 结构体。\n\tvar back Profile\n\tif err := json.Unmarshal(data, &back); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"unmarshal name:\", back.Name)\n\tfmt.Println(\"unmarshal age:\", back.Age)\n\tfmt.Println(\"unmarshal hobbies:\", back.Hobbies)\n\n\t// 往返一致：编码再解码应得到相等结构（切片需用元素比较）。\n\tagain, _ := json.Marshal(back)\n\tfmt.Println(\"round-trip stable:\", string(again) == string(data))\n}\n",
+    "output": "marshal: {\"name\":\"gopher\",\"age\":15,\"hobbies\":[\"coding\",\"reading\"]}\nunmarshal name: gopher\nunmarshal age: 15\nunmarshal hobbies: [coding reading]\nround-trip stable: true"
+  },
+  "example": {
+    "id": "go-example-089",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "JSON 一：Marshal/Unmarshal 基础（示例）",
+    "summary": "对应主题 T089 的可运行示例。",
+    "concepts": [
+      "encoding/json",
+      "Marshal",
+      "Unmarshal",
+      "往返"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T089 JSON 一：Marshal/Unmarshal 基础。\n//\n// encoding/json 在 Go 值与 JSON 文本之间转换。Marshal 把结构体转成 JSON\n// 字节；Unmarshal 把 JSON 解析回结构体。结构体字段必须是导出的（首字母大写）\n// 才会被编码，否则会被忽略。\npackage main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n)\n\n// Profile 是要被编解码的结构体。字段都导出。\ntype Profile struct {\n\tName    string   `json:\"name\"`\n\tAge     int      `json:\"age\"`\n\tHobbies []string `json:\"hobbies\"`\n}\n\nfunc main() {\n\tp := Profile{\n\t\tName:    \"gopher\",\n\t\tAge:     15,\n\t\tHobbies: []string{\"coding\", \"reading\"},\n\t}\n\n\t// 结构体 -> JSON。\n\tdata, err := json.Marshal(p)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"marshal:\", string(data))\n\n\t// JSON -> 结构体。\n\tvar back Profile\n\tif err := json.Unmarshal(data, &back); err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Println(\"unmarshal name:\", back.Name)\n\tfmt.Println(\"unmarshal age:\", back.Age)\n\tfmt.Println(\"unmarshal hobbies:\", back.Hobbies)\n\n\t// 往返一致：编码再解码应得到相等结构（切片需用元素比较）。\n\tagain, _ := json.Marshal(back)\n\tfmt.Println(\"round-trip stable:\", string(again) == string(data))\n}\n",
+    "expectedOutput": "marshal: {\"name\":\"gopher\",\"age\":15,\"hobbies\":[\"coding\",\"reading\"]}\nunmarshal name: gopher\nunmarshal age: 15\nunmarshal hobbies: [coding reading]\nround-trip stable: true",
+    "templateType": "go"
+  }
+}

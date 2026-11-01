@@ -1,0 +1,69 @@
+{
+  "id": "T146",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "empty:EOF bytes=0\npartial:UnexpectedEOF bytes=2\nfull:complete bytes=4\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-146",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "完整读取与截断分类",
+    "summary": "区分完全没有下一条记录与记录只剩一部分。保留实际读取字节数。",
+    "concepts": [
+      "io.ReadFull",
+      "io.EOF",
+      "io.ErrUnexpectedEOF"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "区分完全没有下一条记录与记录只剩一部分。保留实际读取字节数。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "EOF 与 UnexpectedEOF 的恢复策略不同，不能统一吞掉。",
+      "发生截断时缓冲尾部不是有效输入，只能使用 buffer[:n]。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把三条输入改成一个连续流。读取两条完整记录后报告最后半条。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "循环对同一 Reader 调用 ReadFull，nil 时处理完整记录。EOF 时正常退出，UnexpectedEOF 时输出 n 和有效前缀再停止。"
+      }
+    ],
+    "explain": "固定四字节记录用 ReadFull 读取。空流在尚未读到任何字节时返回 EOF。这表示可以正常停止寻找下一条。只读到 ab 后结束则返回 UnexpectedEOF。这说明已有记录发生截断。完整 abcd 返回四字节和 nil。程序显式分类这三种情况。它不会把任何错误都当成正常结束。它也不会把不完整缓冲当成完整记录处理。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc main() {\n\tfor _, input := range []struct {\n\t\tLabel string\n\t\tData  string\n\t}{{\"empty\", \"\"}, {\"partial\", \"ab\"}, {\"full\", \"abcd\"}} {\n\t\tbuffer := make([]byte, 4)\n\t\tn, err := io.ReadFull(bytes.NewReader([]byte(input.Data)), buffer)\n\t\tstatus := \"complete\"\n\t\tif err == io.EOF {\n\t\t\tstatus = \"EOF\"\n\t\t} else if err == io.ErrUnexpectedEOF {\n\t\t\tstatus = \"UnexpectedEOF\"\n\t\t} else if err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s:%s bytes=%d\\n\", input.Label, status, n)\n\t}\n}\n",
+    "output": "empty:EOF bytes=0\npartial:UnexpectedEOF bytes=2\nfull:complete bytes=4"
+  },
+  "example": {
+    "id": "go-example-146",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "完整读取与截断分类",
+    "summary": "区分完全没有下一条记录与记录只剩一部分。保留实际读取字节数。",
+    "concepts": [
+      "io.ReadFull",
+      "io.EOF",
+      "io.ErrUnexpectedEOF"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc main() {\n\tfor _, input := range []struct {\n\t\tLabel string\n\t\tData  string\n\t}{{\"empty\", \"\"}, {\"partial\", \"ab\"}, {\"full\", \"abcd\"}} {\n\t\tbuffer := make([]byte, 4)\n\t\tn, err := io.ReadFull(bytes.NewReader([]byte(input.Data)), buffer)\n\t\tstatus := \"complete\"\n\t\tif err == io.EOF {\n\t\t\tstatus = \"EOF\"\n\t\t} else if err == io.ErrUnexpectedEOF {\n\t\t\tstatus = \"UnexpectedEOF\"\n\t\t} else if err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfmt.Printf(\"%s:%s bytes=%d\\n\", input.Label, status, n)\n\t}\n}\n",
+    "expectedOutput": "empty:EOF bytes=0\npartial:UnexpectedEOF bytes=2\nfull:complete bytes=4",
+    "templateType": "go"
+  }
+}

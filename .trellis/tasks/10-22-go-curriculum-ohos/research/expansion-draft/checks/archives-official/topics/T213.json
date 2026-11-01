@@ -1,0 +1,71 @@
+{
+  "id": "T213",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "document=offline guide\nbytes=13\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-213",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Tar 选择性提取",
+    "summary": "能遍历内存归档，只读取目标文档并核对条目类型和长度。",
+    "concepts": [
+      "archive/tar",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能遍历内存归档，只读取目标文档并核对条目类型和长度。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "不能把目录、符号链接或设备条目当成普通文件读取并提取。",
+      "归档头中的名字属于输入数据，实际落盘还必须校验路径包含关系。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加 docs/readme.txt 缺失时的明确错误，而不是把空字符串当成合法空文档。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "另设 found 布尔变量；允许目标内容长度为零，扫描结束后单独判断是否匹配过条目。"
+      }
+    ],
+    "explain": "tar.Reader 按顺序呈现条目，每次 Next 会移动到下一条记录。程序跳过不相关文件，只在名字匹配、类型为普通文件且长度符合预算时读取目标正文。全过程留在内存，没有把条目路径直接写到磁盘。归档创建时必须声明准确的 Size，写入器据此组织后续头部和填充。",
+    "code": "package main\n\nimport (\n\t\"archive/tar\"\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc main() {\n\tvar archive bytes.Buffer\n\tw := tar.NewWriter(&archive)\n\tfor _, item := range []struct{ name, text string }{{\"notes.txt\", \"skip\"}, {\"docs/readme.txt\", \"offline guide\"}} {\n\t\tif err := w.WriteHeader(&tar.Header{Name: item.name, Mode: 0600, Size: int64(len(item.text)), Typeflag: tar.TypeReg}); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif _, err := io.WriteString(w, item.text); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr := tar.NewReader(bytes.NewReader(archive.Bytes()))\n\tfound := \"\"\n\tfor {\n\t\th, err := r.Next()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif h.Name != \"docs/readme.txt\" {\n\t\t\tcontinue\n\t\t}\n\t\tif h.Typeflag != tar.TypeReg || h.Size > 64 {\n\t\t\tpanic(\"invalid target\")\n\t\t}\n\t\tdata, err := io.ReadAll(r)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfound = string(data)\n\t}\n\tfmt.Printf(\"document=%s\\nbytes=%d\\n\", found, len(found))\n}\n",
+    "output": "document=offline guide\nbytes=13"
+  },
+  "example": {
+    "id": "go-example-213",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Tar 选择性提取",
+    "summary": "能遍历内存归档，只读取目标文档并核对条目类型和长度。",
+    "concepts": [
+      "archive/tar",
+      "bytes",
+      "io",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"archive/tar\"\n\t\"bytes\"\n\t\"fmt\"\n\t\"io\"\n)\n\nfunc main() {\n\tvar archive bytes.Buffer\n\tw := tar.NewWriter(&archive)\n\tfor _, item := range []struct{ name, text string }{{\"notes.txt\", \"skip\"}, {\"docs/readme.txt\", \"offline guide\"}} {\n\t\tif err := w.WriteHeader(&tar.Header{Name: item.name, Mode: 0600, Size: int64(len(item.text)), Typeflag: tar.TypeReg}); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif _, err := io.WriteString(w, item.text); err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t}\n\tif err := w.Close(); err != nil {\n\t\tpanic(err)\n\t}\n\tr := tar.NewReader(bytes.NewReader(archive.Bytes()))\n\tfound := \"\"\n\tfor {\n\t\th, err := r.Next()\n\t\tif err == io.EOF {\n\t\t\tbreak\n\t\t}\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tif h.Name != \"docs/readme.txt\" {\n\t\t\tcontinue\n\t\t}\n\t\tif h.Typeflag != tar.TypeReg || h.Size > 64 {\n\t\t\tpanic(\"invalid target\")\n\t\t}\n\t\tdata, err := io.ReadAll(r)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tfound = string(data)\n\t}\n\tfmt.Printf(\"document=%s\\nbytes=%d\\n\", found, len(found))\n}\n",
+    "expectedOutput": "document=offline guide\nbytes=13",
+    "templateType": "go"
+  }
+}

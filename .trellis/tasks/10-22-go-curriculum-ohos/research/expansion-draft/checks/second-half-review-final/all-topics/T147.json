@@ -1,0 +1,69 @@
+{
+  "id": "T147",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "exact=data\noversized=true\nzero=0 valid=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-147",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "受限读取防超量",
+    "summary": "用上限加一个字节检测超量输入，区分刚好达到预算与被静默截断。",
+    "concepts": [
+      "io.LimitReader",
+      "预算加一",
+      "容量检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "用上限加一个字节检测超量输入，区分刚好达到预算与被静默截断。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "LimitReader 的 EOF 可能只是达到人为上限，不代表原始流结束。",
+      "max+1 之前必须验证 max，避免整数溢出和不合理预算。"
+    ],
+    "exercises": [
+      {
+        "prompt": "允许调用者区分预算参数错误和输入过大错误。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "定义两个独立哨兵错误，分别在参数检查和长度检查返回，用 errors.Is 在调用层分类。"
+      }
+    ],
+    "explain": "只读 max 字节无法判断输入刚好结束还是还有更多内容，因此本例读取 max+1 字节。长度超过 max 才返回超量错误，恰好四字节的 data 保持成功；零预算只接受空输入。预算本身先限制在零到一千零二十四之间，确保加一不溢出且不会允许无限内存读取。实际协议若还有后续消息，需自行决定是否消费或保留探测到的多余字节。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc readBudget(reader io.Reader, max int64) ([]byte, error) {\n\tif max < 0 || max > 1024 {\n\t\treturn nil, fmt.Errorf(\"invalid budget\")\n\t}\n\tdata, err := io.ReadAll(io.LimitReader(reader, max+1))\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\tif int64(len(data)) > max {\n\t\treturn nil, fmt.Errorf(\"input exceeds budget\")\n\t}\n\treturn data, nil\n}\nfunc main() {\n\tdata, err := readBudget(strings.NewReader(\"data\"), 4)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"exact=%s\\n\", data)\n\t_, err = readBudget(strings.NewReader(\"extra\"), 4)\n\tfmt.Printf(\"oversized=%t\\n\", err != nil)\n\tempty, err := readBudget(strings.NewReader(\"\"), 0)\n\tfmt.Printf(\"zero=%d valid=%t\\n\", len(empty), err == nil)\n}\n",
+    "output": "exact=data\noversized=true\nzero=0 valid=true"
+  },
+  "example": {
+    "id": "go-example-147",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "受限读取防超量",
+    "summary": "用上限加一个字节检测超量输入，区分刚好达到预算与被静默截断。",
+    "concepts": [
+      "io.LimitReader",
+      "预算加一",
+      "容量检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\nfunc readBudget(reader io.Reader, max int64) ([]byte, error) {\n\tif max < 0 || max > 1024 {\n\t\treturn nil, fmt.Errorf(\"invalid budget\")\n\t}\n\tdata, err := io.ReadAll(io.LimitReader(reader, max+1))\n\tif err != nil {\n\t\treturn nil, err\n\t}\n\tif int64(len(data)) > max {\n\t\treturn nil, fmt.Errorf(\"input exceeds budget\")\n\t}\n\treturn data, nil\n}\nfunc main() {\n\tdata, err := readBudget(strings.NewReader(\"data\"), 4)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"exact=%s\\n\", data)\n\t_, err = readBudget(strings.NewReader(\"extra\"), 4)\n\tfmt.Printf(\"oversized=%t\\n\", err != nil)\n\tempty, err := readBudget(strings.NewReader(\"\"), 0)\n\tfmt.Printf(\"zero=%d valid=%t\\n\", len(empty), err == nil)\n}\n",
+    "expectedOutput": "exact=data\noversized=true\nzero=0 valid=true",
+    "templateType": "go"
+  }
+}

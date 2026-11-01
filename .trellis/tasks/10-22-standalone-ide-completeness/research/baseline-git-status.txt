@@ -1,0 +1,17 @@
+ M ohos/AppScope/app.json5
+ M ohos/AppScope/resources/base/media/app_icon.png
+ M ohos/build-profile.json5
+ M ohos/entry/build-profile.json5
+ M ohos/entry/src/main/module.json5
+ M ohos/entry/src/main/resources/base/media/icon.png
+?? .codex/
+?? .trellis/tasks/10-22-go-curriculum-ohos/
+?? .trellis/tasks/10-22-go-offline-ide/
+?? .trellis/tasks/10-22-standalone-ide-completeness/
+?? .trellis/tasks/10-22-standalone-integration/
+?? LICENSE
+?? linux/flutter/generated_plugin_registrant.cc
+?? linux/flutter/generated_plugin_registrant.h
+?? macos/Flutter/GeneratedPluginRegistrant.swift
+?? windows/flutter/generated_plugin_registrant.cc
+?? windows/flutter/generated_plugin_registrant.h

@@ -1,0 +1,70 @@
+{
+  "id": "T074",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "count: 5\nsum: 15\nafter close: value = 0 ok = false"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-074",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "channel 三：close 与 range 接收",
+    "summary": "用 close 通知消费者结束，配合 range 优雅收尾，并用逗号-ok 检测关闭。",
+    "concepts": [
+      "close",
+      "range",
+      "逗号-ok",
+      "收尾"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 close+range 优雅结束消费者，并用逗号-ok 区分“零值”与“已关闭”。",
+    "prerequisites": [
+      "T073 channel 二：有缓冲与容量语义"
+    ],
+    "pitfalls": [
+      "由接收方 close channel：通常应让发送方关闭，否则可能向已关闭 channel 发送而 panic。",
+      "对端仍在发送时 close：会 panic（send on closed channel）。"
+    ],
+    "exercises": [
+      {
+        "prompt": "让生产者发送 1..100 后关闭，消费者在收到第一个偶数时提前 break，并统计已读数量。",
+        "hint": "range 中 break 不会读取剩余值，但 channel 需被关闭以免泄漏生产者。",
+        "answer": "range 中判断偶数后 break；生产者发送方 close，不会被阻塞。"
+      }
+    ],
+    "explain": "close(ch) 表示“不会再有值发送”。对已关闭的 channel，接收会立即返回缓冲区剩余值，取空后返回零值与 ok=false。range 正是利用这一点：它在 channel 关闭且缓冲为空时自动结束循环，因此消费者无需知道具体条数。惯例是发送方负责 close。示例用 range 累加求和，关闭后再用逗号-ok 验证 ok 变为 false。注意：close 之后再发送会 panic，close 一个已关闭的 channel 也会 panic。",
+    "code": "// T074 channel 三：close 与 range 接收。\n//\n// close(ch) 表示\"不会再有值发送进来\"。对已关闭的 channel，range 会在\n// 缓冲区取空后自然结束，接收的第二个返回值 ok 会变为 false。\n// 发送方关闭、接收方用 range，是 producer/consumer 的惯用收尾方式。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\tch := make(chan int)\n\n\t// 生产者：发送 1..5 后关闭 channel，通知消费者结束。\n\tgo func() {\n\t\tfor i := 1; i <= 5; i++ {\n\t\t\tch <- i\n\t\t}\n\t\tclose(ch)\n\t}()\n\n\t// 消费者：range 会一直读到 channel 关闭且缓冲为空。\n\tsum := 0\n\tcount := 0\n\tfor v := range ch {\n\t\tsum += v\n\t\tcount++\n\t}\n\tfmt.Println(\"count:\", count)\n\tfmt.Println(\"sum:\", sum)\n\n\t// 逗号-ok 形式：关闭后再接收不阻塞，直接返回零值与 false。\n\tv, ok := <-ch\n\tfmt.Println(\"after close: value =\", v, \"ok =\", ok)\n}\n",
+    "output": "count: 5\nsum: 15\nafter close: value = 0 ok = false"
+  },
+  "example": {
+    "id": "go-example-074",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "channel 三：close 与 range 接收（示例）",
+    "summary": "对应主题 T074 的可运行示例。",
+    "concepts": [
+      "close",
+      "range",
+      "逗号-ok",
+      "收尾"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T074 channel 三：close 与 range 接收。\n//\n// close(ch) 表示\"不会再有值发送进来\"。对已关闭的 channel，range 会在\n// 缓冲区取空后自然结束，接收的第二个返回值 ok 会变为 false。\n// 发送方关闭、接收方用 range，是 producer/consumer 的惯用收尾方式。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\tch := make(chan int)\n\n\t// 生产者：发送 1..5 后关闭 channel，通知消费者结束。\n\tgo func() {\n\t\tfor i := 1; i <= 5; i++ {\n\t\t\tch <- i\n\t\t}\n\t\tclose(ch)\n\t}()\n\n\t// 消费者：range 会一直读到 channel 关闭且缓冲为空。\n\tsum := 0\n\tcount := 0\n\tfor v := range ch {\n\t\tsum += v\n\t\tcount++\n\t}\n\tfmt.Println(\"count:\", count)\n\tfmt.Println(\"sum:\", sum)\n\n\t// 逗号-ok 形式：关闭后再接收不阻塞，直接返回零值与 false。\n\tv, ok := <-ch\n\tfmt.Println(\"after close: value =\", v, \"ok =\", ok)\n}\n",
+    "expectedOutput": "count: 5\nsum: 15\nafter close: value = 0 ok = false",
+    "templateType": "go"
+  }
+}

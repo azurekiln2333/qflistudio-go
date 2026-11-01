@@ -1,0 +1,70 @@
+{
+  "id": "T073",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "buffered: 2 cap: 2\nthird send succeeded: false\nfirst out: 10\nsend after one receive succeeded: true\nremaining: 20 30"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-073",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "channel 二：有缓冲与容量语义",
+    "summary": "用容量为 2 的 channel 演示缓冲满/空时的阻塞，并用 select+default 做非阻塞探测。",
+    "concepts": [
+      "有缓冲 channel",
+      "容量",
+      "非阻塞探测",
+      "select"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能解释有缓冲 channel 的容量语义，并用 select+default 把阻塞转成确定布尔结果。",
+    "prerequisites": [
+      "T072 channel 一：无缓冲与同步通信"
+    ],
+    "pitfalls": [
+      "在有缓冲 channel 上假定发送永不阻塞：缓冲满时照样阻塞。",
+      "用 len(ch) 判断“还能不能发”存在竞态，应改用 select+default。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把容量改为 3，验证第 4 次发送才阻塞，并打印每步 len/cap。",
+        "hint": "每次发送后打印 len(ch)。",
+        "answer": "容量 3 时前三次发送成功、第四次 select default 分支。"
+      }
+    ],
+    "explain": "有缓冲 channel 维护一个 FIFO 缓冲：只要未满，发送不阻塞；只有缓冲满时发送才阻塞，缓冲空时接收才阻塞。示例用容量 2 的通道展示：前两次发送立即成功，第三次用 select 探测（带 default 则立即返回），得到确定结果 false，而不是让程序卡住。取走一个后再探测则成功。这样就把“会不会阻塞”这个取决于运行状态的问题，转成了确定的布尔判断，且不依赖时间。",
+    "code": "// T073 channel 二：有缓冲与容量语义。\n//\n// 有缓冲 channel 在缓冲未满时发送不阻塞，缓冲为空时接收才阻塞。\n// 本示例用容量为 2 的通道：前两次发送立即成功，第三次会在缓冲满时阻塞，\n// 于是我们用一个带 default 的 select 探测\"是否还能发送\"，把非确定性\n// 的阻塞转成一个确定的布尔结果。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\tch := make(chan int, 2) // 容量 2\n\n\t// 前两次发送不会阻塞。\n\tch <- 10\n\tch <- 20\n\tfmt.Println(\"buffered:\", len(ch), \"cap:\", cap(ch))\n\n\t// 第三次发送：缓冲已满。用 select+default 非阻塞探测，得到确定结果。\n\tsent := false\n\tselect {\n\tcase ch <- 30:\n\t\tsent = true\n\tdefault:\n\t\tsent = false\n\t}\n\tfmt.Println(\"third send succeeded:\", sent)\n\n\t// 取走一个后，容量腾出，再次探测就能成功。\n\tfirst := <-ch\n\tfmt.Println(\"first out:\", first)\n\n\tagain := false\n\tselect {\n\tcase ch <- 30:\n\t\tagain = true\n\tdefault:\n\t\tagain = false\n\t}\n\tfmt.Println(\"send after one receive succeeded:\", again)\n\n\t// 清空：按 FIFO 顺序取出剩余元素，顺序确定。\n\tfmt.Println(\"remaining:\", <-ch, <-ch)\n}\n",
+    "output": "buffered: 2 cap: 2\nthird send succeeded: false\nfirst out: 10\nsend after one receive succeeded: true\nremaining: 20 30"
+  },
+  "example": {
+    "id": "go-example-073",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "channel 二：有缓冲与容量语义（示例）",
+    "summary": "对应主题 T073 的可运行示例。",
+    "concepts": [
+      "有缓冲 channel",
+      "容量",
+      "非阻塞探测",
+      "select"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T073 channel 二：有缓冲与容量语义。\n//\n// 有缓冲 channel 在缓冲未满时发送不阻塞，缓冲为空时接收才阻塞。\n// 本示例用容量为 2 的通道：前两次发送立即成功，第三次会在缓冲满时阻塞，\n// 于是我们用一个带 default 的 select 探测\"是否还能发送\"，把非确定性\n// 的阻塞转成一个确定的布尔结果。\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\tch := make(chan int, 2) // 容量 2\n\n\t// 前两次发送不会阻塞。\n\tch <- 10\n\tch <- 20\n\tfmt.Println(\"buffered:\", len(ch), \"cap:\", cap(ch))\n\n\t// 第三次发送：缓冲已满。用 select+default 非阻塞探测，得到确定结果。\n\tsent := false\n\tselect {\n\tcase ch <- 30:\n\t\tsent = true\n\tdefault:\n\t\tsent = false\n\t}\n\tfmt.Println(\"third send succeeded:\", sent)\n\n\t// 取走一个后，容量腾出，再次探测就能成功。\n\tfirst := <-ch\n\tfmt.Println(\"first out:\", first)\n\n\tagain := false\n\tselect {\n\tcase ch <- 30:\n\t\tagain = true\n\tdefault:\n\t\tagain = false\n\t}\n\tfmt.Println(\"send after one receive succeeded:\", again)\n\n\t// 清空：按 FIFO 顺序取出剩余元素，顺序确定。\n\tfmt.Println(\"remaining:\", <-ch, <-ch)\n}\n",
+    "expectedOutput": "buffered: 2 cap: 2\nthird send succeeded: false\nfirst out: 10\nsend after one receive succeeded: true\nremaining: 20 30",
+    "templateType": "go"
+  }
+}

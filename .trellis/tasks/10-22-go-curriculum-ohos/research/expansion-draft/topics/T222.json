@@ -1,0 +1,71 @@
+{
+  "id": "T222",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "200\n400\n400\n415\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-222",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "严格 JSON POST",
+    "summary": "能验证请求媒体类型、未知字段和响应状态。完全使用内存 Recorder。",
+    "concepts": [
+      "net/http",
+      "net/http/httptest",
+      "encoding/json",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能验证请求媒体类型、未知字段和响应状态。完全使用内存 Recorder。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "一次 Decode 成功不代表整个请求体只有一个 JSON 值。",
+      "结构解码成功不代表字段满足业务约束，空名字仍需拒绝。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 name 增加最多 20 个 Unicode 字符的限制。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "使用 utf8.RuneCountInString 而非 len 统计字符数。将失败与其他业务验证统一返回 400。"
+      }
+    ],
+    "explain": "严格 JSON 入口先解析媒体类型。再对有大小限制的请求体解码。DisallowUnknownFields 拒绝拼写错误或未授权字段。第二次 Decode 必须得到 EOF。这样才能防止第一份合法对象后夹带另一份值。成功时返回 JSON，错误媒体类型使用 415，内容问题使用 400。所有请求由 Recorder 驱动，输入没有任何远程依赖。",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"io\"\n\t\"mime\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"strings\"\n)\n\ntype Input struct {\n\tName string `json:\"name\"`\n}\n\nfunc post(w http.ResponseWriter, r *http.Request) {\n\tmedia, _, err := mime.ParseMediaType(r.Header.Get(\"Content-Type\"))\n\tif err != nil || media != \"application/json\" {\n\t\thttp.Error(w, \"media\", 415)\n\t\treturn\n\t}\n\tdecoder := json.NewDecoder(http.MaxBytesReader(w, r.Body, 128))\n\tdecoder.DisallowUnknownFields()\n\tvar input Input\n\tif err = decoder.Decode(&input); err != nil {\n\t\thttp.Error(w, \"json\", 400)\n\t\treturn\n\t}\n\tvar tail interface{}\n\tif decoder.Decode(&tail) != io.EOF || input.Name == \"\" {\n\t\thttp.Error(w, \"payload\", 400)\n\t\treturn\n\t}\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tjson.NewEncoder(w).Encode(input)\n}\nfunc main() {\n\tfor _, item := range []struct{ media, body string }{{\"application/json\", `{\"name\":\"Li\"}`}, {\"application/json\", `{\"name\":\"Li\",\"admin\":true}`}, {\"application/json\", `{\"name\":\"Li\"}{}`}, {\"text/plain\", `{\"name\":\"Li\"}`}} {\n\t\tr := httptest.NewRequest(\"POST\", \"/profile\", strings.NewReader(item.body))\n\t\tr.Header.Set(\"Content-Type\", item.media)\n\t\tw := httptest.NewRecorder()\n\t\tpost(w, r)\n\t\tfmt.Println(w.Code)\n\t}\n}\n",
+    "output": "200\n400\n400\n415"
+  },
+  "example": {
+    "id": "go-example-222",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "严格 JSON POST",
+    "summary": "能验证请求媒体类型、未知字段和响应状态。完全使用内存 Recorder。",
+    "concepts": [
+      "net/http",
+      "net/http/httptest",
+      "encoding/json",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"io\"\n\t\"mime\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n\t\"strings\"\n)\n\ntype Input struct {\n\tName string `json:\"name\"`\n}\n\nfunc post(w http.ResponseWriter, r *http.Request) {\n\tmedia, _, err := mime.ParseMediaType(r.Header.Get(\"Content-Type\"))\n\tif err != nil || media != \"application/json\" {\n\t\thttp.Error(w, \"media\", 415)\n\t\treturn\n\t}\n\tdecoder := json.NewDecoder(http.MaxBytesReader(w, r.Body, 128))\n\tdecoder.DisallowUnknownFields()\n\tvar input Input\n\tif err = decoder.Decode(&input); err != nil {\n\t\thttp.Error(w, \"json\", 400)\n\t\treturn\n\t}\n\tvar tail interface{}\n\tif decoder.Decode(&tail) != io.EOF || input.Name == \"\" {\n\t\thttp.Error(w, \"payload\", 400)\n\t\treturn\n\t}\n\tw.Header().Set(\"Content-Type\", \"application/json\")\n\tjson.NewEncoder(w).Encode(input)\n}\nfunc main() {\n\tfor _, item := range []struct{ media, body string }{{\"application/json\", `{\"name\":\"Li\"}`}, {\"application/json\", `{\"name\":\"Li\",\"admin\":true}`}, {\"application/json\", `{\"name\":\"Li\"}{}`}, {\"text/plain\", `{\"name\":\"Li\"}`}} {\n\t\tr := httptest.NewRequest(\"POST\", \"/profile\", strings.NewReader(item.body))\n\t\tr.Header.Set(\"Content-Type\", item.media)\n\t\tw := httptest.NewRecorder()\n\t\tpost(w, r)\n\t\tfmt.Println(w.Code)\n\t}\n}\n",
+    "expectedOutput": "200\n400\n400\n415",
+    "templateType": "go"
+  }
+}

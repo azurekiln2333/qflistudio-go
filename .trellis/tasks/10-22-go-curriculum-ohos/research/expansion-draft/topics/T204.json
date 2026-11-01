@@ -1,0 +1,71 @@
+{
+  "id": "T204",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "roundtrip=true\ntamper-rejected=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-204",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "AES GCM 往返和篡改",
+    "summary": "能每次生成新 nonce。往返验证消息。篡改密文会认证失败。",
+    "concepts": [
+      "crypto/aes",
+      "crypto/cipher",
+      "crypto/rand",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能每次生成新 nonce。往返验证消息。篡改密文会认证失败。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "同一密钥下重复使用 nonce 会破坏 GCM 安全性，不能把示例 nonce 改成固定常量。",
+      "附加数据必须在解密时逐字节一致，它不会自动包含在密文中。"
+    ],
+    "exercises": [
+      {
+        "prompt": "保持密文不变。只修改附加数据。再验证认证失败。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "用 report:v2 调用 Open。断言错误非 nil。失败返回的明文不应消费。"
+      }
+    ],
+    "explain": "GCM 同时提供加密与认证，Seal 接收 nonce、明文和需要认证但不加密的附加数据。每次运行生成新密钥和 nonce，因此不对随机密文字节作固定断言，只验证往返一致性。翻转认证密文最后一个字节后，Open 返回错误。接收端必须先验证成功，才能使用返回的明文。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"crypto/aes\"\n\t\"crypto/cipher\"\n\t\"crypto/rand\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tkey := make([]byte, 32)\n\tif _, err := rand.Read(key); err != nil {\n\t\tpanic(err)\n\t}\n\tblock, err := aes.NewCipher(key)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tgcm, err := cipher.NewGCM(block)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tnonce := make([]byte, gcm.NonceSize())\n\tif _, err := rand.Read(nonce); err != nil {\n\t\tpanic(err)\n\t}\n\tmessage := []byte(\"offline report\")\n\taad := []byte(\"report:v1\")\n\tsealed := gcm.Seal(nil, nonce, message, aad)\n\tplain, err := gcm.Open(nil, nonce, sealed, aad)\n\tfmt.Printf(\"roundtrip=%t\\n\", err == nil && bytes.Equal(plain, message))\n\tsealed[len(sealed)-1] ^= 1\n\t_, err = gcm.Open(nil, nonce, sealed, aad)\n\tfmt.Printf(\"tamper-rejected=%t\\n\", err != nil)\n}\n",
+    "output": "roundtrip=true\ntamper-rejected=true"
+  },
+  "example": {
+    "id": "go-example-204",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "AES GCM 往返和篡改",
+    "summary": "能每次生成新 nonce。往返验证消息。篡改密文会认证失败。",
+    "concepts": [
+      "crypto/aes",
+      "crypto/cipher",
+      "crypto/rand",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"crypto/aes\"\n\t\"crypto/cipher\"\n\t\"crypto/rand\"\n\t\"fmt\"\n)\n\nfunc main() {\n\tkey := make([]byte, 32)\n\tif _, err := rand.Read(key); err != nil {\n\t\tpanic(err)\n\t}\n\tblock, err := aes.NewCipher(key)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tgcm, err := cipher.NewGCM(block)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tnonce := make([]byte, gcm.NonceSize())\n\tif _, err := rand.Read(nonce); err != nil {\n\t\tpanic(err)\n\t}\n\tmessage := []byte(\"offline report\")\n\taad := []byte(\"report:v1\")\n\tsealed := gcm.Seal(nil, nonce, message, aad)\n\tplain, err := gcm.Open(nil, nonce, sealed, aad)\n\tfmt.Printf(\"roundtrip=%t\\n\", err == nil && bytes.Equal(plain, message))\n\tsealed[len(sealed)-1] ^= 1\n\t_, err = gcm.Open(nil, nonce, sealed, aad)\n\tfmt.Printf(\"tamper-rejected=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "roundtrip=true\ntamper-rejected=true",
+    "templateType": "go"
+  }
+}

@@ -1,0 +1,71 @@
+{
+  "id": "T215",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "docs/a.txt=true\n../escape=false\n/etc/file=false\nC:/file=false\ndocs\\..\\escape=false\nsymlink=false\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-215",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "归档路径验证",
+    "summary": "能在提取前验证条目路径。拒绝越界、绝对路径与符号链接。",
+    "concepts": [
+      "archive/zip",
+      "path",
+      "strings",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能在提取前验证条目路径。拒绝越界、绝对路径与符号链接。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "字符串不含 ../ 并不代表安全，清洗后仍应校验向上逃逸和平台路径形式。",
+      "词法校验不能解决目标目录中已有符号链接造成的物理越界。"
+    ],
+    "exercises": [
+      {
+        "prompt": "将允许条目规范化后放进集合。拒绝两个不同名字映射到同一目标。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "使用 path.Clean 的结果作键。a/../b 与 b 冲突时，在任何写入前拒绝整个提取计划。"
+      }
+    ],
+    "explain": "提取归档前先按归档的斜线路径规则校验条目。程序拒绝绝对路径、向上逃逸、Windows 驱动器形式、反斜线与符号链接。程序同时接受普通子目录文件。这里仅验证头部，不进行落盘。真正写盘时仍要解析目标父目录的文件系统别名。这样可防止目标目录中已有符号链接把写入引向外部。",
+    "code": "package main\n\nimport (\n\t\"archive/zip\"\n\t\"fmt\"\n\t\"os\"\n\t\"path\"\n\t\"strings\"\n)\n\nfunc safe(h *zip.FileHeader) bool {\n\tname := h.Name\n\tif name == \"\" || strings.Contains(name, \"\\\\\") || strings.Contains(name, \":\") || path.IsAbs(name) || h.Mode()&os.ModeSymlink != 0 {\n\t\treturn false\n\t}\n\tclean := path.Clean(name)\n\treturn clean != \".\" && clean != \"..\" && !strings.HasPrefix(clean, \"../\")\n}\nfunc main() {\n\tfor _, name := range []string{\"docs/a.txt\", \"../escape\", \"/etc/file\", \"C:/file\", \"docs\\\\..\\\\escape\"} {\n\t\th := &zip.FileHeader{Name: name}\n\t\tfmt.Printf(\"%s=%t\\n\", name, safe(h))\n\t}\n\tlink := &zip.FileHeader{Name: \"docs/link\"}\n\tlink.SetMode(os.ModeSymlink | 0600)\n\tfmt.Printf(\"symlink=%t\\n\", safe(link))\n}\n",
+    "output": "docs/a.txt=true\n../escape=false\n/etc/file=false\nC:/file=false\ndocs\\..\\escape=false\nsymlink=false"
+  },
+  "example": {
+    "id": "go-example-215",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "归档路径验证",
+    "summary": "能在提取前验证条目路径。拒绝越界、绝对路径与符号链接。",
+    "concepts": [
+      "archive/zip",
+      "path",
+      "strings",
+      "压缩与封装"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"archive/zip\"\n\t\"fmt\"\n\t\"os\"\n\t\"path\"\n\t\"strings\"\n)\n\nfunc safe(h *zip.FileHeader) bool {\n\tname := h.Name\n\tif name == \"\" || strings.Contains(name, \"\\\\\") || strings.Contains(name, \":\") || path.IsAbs(name) || h.Mode()&os.ModeSymlink != 0 {\n\t\treturn false\n\t}\n\tclean := path.Clean(name)\n\treturn clean != \".\" && clean != \"..\" && !strings.HasPrefix(clean, \"../\")\n}\nfunc main() {\n\tfor _, name := range []string{\"docs/a.txt\", \"../escape\", \"/etc/file\", \"C:/file\", \"docs\\\\..\\\\escape\"} {\n\t\th := &zip.FileHeader{Name: name}\n\t\tfmt.Printf(\"%s=%t\\n\", name, safe(h))\n\t}\n\tlink := &zip.FileHeader{Name: \"docs/link\"}\n\tlink.SetMode(os.ModeSymlink | 0600)\n\tfmt.Printf(\"symlink=%t\\n\", safe(link))\n}\n",
+    "expectedOutput": "docs/a.txt=true\n../escape=false\n/etc/file=false\nC:/file=false\ndocs\\..\\escape=false\nsymlink=false",
+    "templateType": "go"
+  }
+}

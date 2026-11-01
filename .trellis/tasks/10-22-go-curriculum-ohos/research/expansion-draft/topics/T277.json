@@ -1,0 +1,67 @@
+{
+  "id": "T277",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "failed=true pen=10 pad=4\ncommitted=true pen=7 pad=6\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-277",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内存事务回滚",
+    "summary": "能在副本上执行多步库存变更。遇到负库存就回滚全部操作。",
+    "concepts": [
+      "fmt",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能在副本上执行多步库存变更。遇到负库存就回滚全部操作。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "直接在原表逐项变更。后面的失败不会自动撤销前面的成功变更。",
+      "当前实现没有并发隔离。并发调用仍需同一把锁。也可以改用 actor 所有权。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加一个新商品的创建操作，并保证失败时不会留下它。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "让 Change 显式区分 create 与 adjust。在 next 副本中先验证存在性。再把对应操作应用到该副本。最后统一提交新增键。"
+      }
+    ],
+    "explain": "事务先复制库存表。然后在副本上逐步执行变更。全部通过后才写回原表。第一批先减少笔再让便笺变负。整批失败后两个库存仍为原值。第二批合法才同时提交。这是单协程的内存级原子业务操作。它不是数据库持久事务。若库存值包含切片或指针，浅复制 map 仍会共享内部可变数据。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n)\n\ntype Change struct {\n\tItem  string\n\tDelta int\n}\n\nfunc transact(stock map[string]int, changes []Change) error {\n\tnext := map[string]int{}\n\tfor item, value := range stock {\n\t\tnext[item] = value\n\t}\n\tfor _, change := range changes {\n\t\tvalue, exists := next[change.Item]\n\t\tif !exists {\n\t\t\treturn fmt.Errorf(\"unknown item\")\n\t\t}\n\t\tvalue += change.Delta\n\t\tif value < 0 {\n\t\t\treturn fmt.Errorf(\"negative stock\")\n\t\t}\n\t\tnext[change.Item] = value\n\t}\n\tfor item, value := range next {\n\t\tstock[item] = value\n\t}\n\treturn nil\n}\nfunc main() {\n\tstock := map[string]int{\"pen\": 10, \"pad\": 4}\n\terr := transact(stock, []Change{{\"pen\", -3}, {\"pad\", -9}})\n\tfmt.Printf(\"failed=%t pen=%d pad=%d\\n\", err != nil, stock[\"pen\"], stock[\"pad\"])\n\terr = transact(stock, []Change{{\"pen\", -3}, {\"pad\", 2}})\n\tfmt.Printf(\"committed=%t pen=%d pad=%d\\n\", err == nil, stock[\"pen\"], stock[\"pad\"])\n}\n",
+    "output": "failed=true pen=10 pad=4\ncommitted=true pen=7 pad=6"
+  },
+  "example": {
+    "id": "go-example-277",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "内存事务回滚",
+    "summary": "能在副本上执行多步库存变更。遇到负库存就回滚全部操作。",
+    "concepts": [
+      "fmt",
+      "综合离线应用"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n)\n\ntype Change struct {\n\tItem  string\n\tDelta int\n}\n\nfunc transact(stock map[string]int, changes []Change) error {\n\tnext := map[string]int{}\n\tfor item, value := range stock {\n\t\tnext[item] = value\n\t}\n\tfor _, change := range changes {\n\t\tvalue, exists := next[change.Item]\n\t\tif !exists {\n\t\t\treturn fmt.Errorf(\"unknown item\")\n\t\t}\n\t\tvalue += change.Delta\n\t\tif value < 0 {\n\t\t\treturn fmt.Errorf(\"negative stock\")\n\t\t}\n\t\tnext[change.Item] = value\n\t}\n\tfor item, value := range next {\n\t\tstock[item] = value\n\t}\n\treturn nil\n}\nfunc main() {\n\tstock := map[string]int{\"pen\": 10, \"pad\": 4}\n\terr := transact(stock, []Change{{\"pen\", -3}, {\"pad\", -9}})\n\tfmt.Printf(\"failed=%t pen=%d pad=%d\\n\", err != nil, stock[\"pen\"], stock[\"pad\"])\n\terr = transact(stock, []Change{{\"pen\", -3}, {\"pad\", 2}})\n\tfmt.Printf(\"committed=%t pen=%d pad=%d\\n\", err == nil, stock[\"pen\"], stock[\"pad\"])\n}\n",
+    "expectedOutput": "failed=true pen=10 pad=4\ncommitted=true pen=7 pad=6",
+    "templateType": "go"
+  }
+}

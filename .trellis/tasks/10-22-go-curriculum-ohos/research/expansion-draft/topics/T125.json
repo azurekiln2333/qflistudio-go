@@ -1,0 +1,71 @@
+{
+  "id": "T125",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "name=Li Yu enabled=true note=say \"hi\"\nunclosed=true\nmissing-separator=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-125",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "带引号键值解析",
+    "summary": "解析含空格与转义的 key=value 配置，并明确报告未闭合引号。",
+    "concepts": [
+      "词法扫描",
+      "strconv.Unquote",
+      "转义状态",
+      "错误边界"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "解析含空格与转义的 key=value 配置，并明确报告未闭合引号。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "只查找下一个双引号会把转义引号误当作结束位置。",
+      "Unquote 成功不意味着 enabled 是合法布尔值，还需 ParseBool。"
+    ],
+    "exercises": [
+      {
+        "prompt": "改为拒绝重复键，并返回重复键名。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "在 result[key]=value 前用 _, exists := result[key] 检查。若已存在就返回 fmt.Errorf，避免静默覆盖。"
+      }
+    ],
+    "explain": "解析器每次消费一个键和一个值。引号值用 escaped 状态跳过反斜杠保护的字符。找到真正的结束引号后，它交给 strconv.Unquote 处理转义。普通值消费到下一个空白。引号后必须是空白或输入结尾。这样可防止错误地接受 name=\"Lin\"junk。最后单独 ParseBool。词法正确与值的业务类型正确是两个不同检查。重复键在此采用后值覆盖策略。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc parse(text string) (map[string]string, error) {\n\tresult := map[string]string{}\n\tfor text = strings.TrimSpace(text); text != \"\"; text = strings.TrimSpace(text) {\n\t\teq := strings.IndexByte(text, '=')\n\t\tif eq < 1 {\n\t\t\treturn nil, fmt.Errorf(\"missing key or equals\")\n\t\t}\n\t\tkey := strings.TrimSpace(text[:eq])\n\t\ttext = strings.TrimSpace(text[eq+1:])\n\t\tif text == \"\" {\n\t\t\treturn nil, fmt.Errorf(\"missing value for %s\", key)\n\t\t}\n\t\tvalue := \"\"\n\t\tif text[0] == '\"' {\n\t\t\tend, escaped := -1, false\n\t\t\tfor i := 1; i < len(text); i++ {\n\t\t\t\tif escaped {\n\t\t\t\t\tescaped = false\n\t\t\t\t\tcontinue\n\t\t\t\t}\n\t\t\t\tif text[i] == '\\\\' {\n\t\t\t\t\tescaped = true\n\t\t\t\t\tcontinue\n\t\t\t\t}\n\t\t\t\tif text[i] == '\"' {\n\t\t\t\t\tend = i\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t\tif end < 0 {\n\t\t\t\treturn nil, fmt.Errorf(\"unclosed quote\")\n\t\t\t}\n\t\t\tvar err error\n\t\t\tvalue, err = strconv.Unquote(text[:end+1])\n\t\t\tif err != nil {\n\t\t\t\treturn nil, err\n\t\t\t}\n\t\t\ttext = text[end+1:]\n\t\t\tif text != \"\" && !strings.ContainsAny(text[:1], \" \\t\\r\\n\") {\n\t\t\t\treturn nil, fmt.Errorf(\"missing field separator\")\n\t\t\t}\n\t\t} else {\n\t\t\tend := strings.IndexAny(text, \" \\t\\r\\n\")\n\t\t\tif end < 0 {\n\t\t\t\tend = len(text)\n\t\t\t}\n\t\t\tvalue, text = text[:end], text[end:]\n\t\t}\n\t\tresult[key] = value\n\t}\n\treturn result, nil\n}\n\nfunc main() {\n\tvalues, err := parse(`name=\"Li Yu\" enabled=true note=\"say \\\"hi\\\"\"`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tenabled, err := strconv.ParseBool(values[\"enabled\"])\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"name=%s enabled=%t note=%s\\n\", values[\"name\"], enabled, values[\"note\"])\n\t_, err = parse(`name=\"unfinished`)\n\tfmt.Printf(\"unclosed=%t\\n\", err != nil)\n\t_, err = parse(`name=\"Lin\"junk`)\n\tfmt.Printf(\"missing-separator=%t\\n\", err != nil)\n}\n",
+    "output": "name=Li Yu enabled=true note=say \"hi\"\nunclosed=true\nmissing-separator=true"
+  },
+  "example": {
+    "id": "go-example-125",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "带引号键值解析",
+    "summary": "解析含空格与转义的 key=value 配置，并明确报告未闭合引号。",
+    "concepts": [
+      "词法扫描",
+      "strconv.Unquote",
+      "转义状态",
+      "错误边界"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc parse(text string) (map[string]string, error) {\n\tresult := map[string]string{}\n\tfor text = strings.TrimSpace(text); text != \"\"; text = strings.TrimSpace(text) {\n\t\teq := strings.IndexByte(text, '=')\n\t\tif eq < 1 {\n\t\t\treturn nil, fmt.Errorf(\"missing key or equals\")\n\t\t}\n\t\tkey := strings.TrimSpace(text[:eq])\n\t\ttext = strings.TrimSpace(text[eq+1:])\n\t\tif text == \"\" {\n\t\t\treturn nil, fmt.Errorf(\"missing value for %s\", key)\n\t\t}\n\t\tvalue := \"\"\n\t\tif text[0] == '\"' {\n\t\t\tend, escaped := -1, false\n\t\t\tfor i := 1; i < len(text); i++ {\n\t\t\t\tif escaped {\n\t\t\t\t\tescaped = false\n\t\t\t\t\tcontinue\n\t\t\t\t}\n\t\t\t\tif text[i] == '\\\\' {\n\t\t\t\t\tescaped = true\n\t\t\t\t\tcontinue\n\t\t\t\t}\n\t\t\t\tif text[i] == '\"' {\n\t\t\t\t\tend = i\n\t\t\t\t\tbreak\n\t\t\t\t}\n\t\t\t}\n\t\t\tif end < 0 {\n\t\t\t\treturn nil, fmt.Errorf(\"unclosed quote\")\n\t\t\t}\n\t\t\tvar err error\n\t\t\tvalue, err = strconv.Unquote(text[:end+1])\n\t\t\tif err != nil {\n\t\t\t\treturn nil, err\n\t\t\t}\n\t\t\ttext = text[end+1:]\n\t\t\tif text != \"\" && !strings.ContainsAny(text[:1], \" \\t\\r\\n\") {\n\t\t\t\treturn nil, fmt.Errorf(\"missing field separator\")\n\t\t\t}\n\t\t} else {\n\t\t\tend := strings.IndexAny(text, \" \\t\\r\\n\")\n\t\t\tif end < 0 {\n\t\t\t\tend = len(text)\n\t\t\t}\n\t\t\tvalue, text = text[:end], text[end:]\n\t\t}\n\t\tresult[key] = value\n\t}\n\treturn result, nil\n}\n\nfunc main() {\n\tvalues, err := parse(`name=\"Li Yu\" enabled=true note=\"say \\\"hi\\\"\"`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tenabled, err := strconv.ParseBool(values[\"enabled\"])\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"name=%s enabled=%t note=%s\\n\", values[\"name\"], enabled, values[\"note\"])\n\t_, err = parse(`name=\"unfinished`)\n\tfmt.Printf(\"unclosed=%t\\n\", err != nil)\n\t_, err = parse(`name=\"Lin\"junk`)\n\tfmt.Printf(\"missing-separator=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "name=Li Yu enabled=true note=say \"hi\"\nunclosed=true\nmissing-separator=true",
+    "templateType": "go"
+  }
+}

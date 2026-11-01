@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "evidenceLevel": "official-host",
+  "deviceExecution": false,
+  "backend": "official",
+  "inventorySha256": "71883fa4e0d81efbf6d8a96c69f85a86b9ccba87fb50b19ab6b5b7659a9065c2",
+  "catalogs": {
+    "tutorial": {
+      "sha256": "08102a17e5783e9f280376af9aa9e443ad456f2d035c8f8f6ef88f7ee566068e",
+      "fileName": "tutorials.json",
+      "goEntries": 1
+    },
+    "example": {
+      "sha256": "7a941ebc48dd653eb9e1019ba42e6a38500ef0101dfe9bde0e02e84b597fbfd4",
+      "fileName": "examples.json",
+      "goEntries": 1
+    }
+  },
+  "nativeSourceSha256": "15cfb54c38315f00abb7ac2b1ef05acde42d8766d6f87a63834934dda34d4164",
+  "exhaustive": true,
+  "inventoryIssues": [],
+  "records": [
+    {
+      "id": "tutorial/go-tutorial-152/go-tutorial-152-lesson",
+      "topic": "T152",
+      "shape": "displayed-import",
+      "operation": "program",
+      "contentSha256": "8b640f914857ca3c9ca22a5a35901ba46920fdd11c518d4dda4ac306d8de00e7",
+      "projectSha256": "e76643d2f7509e3b63f26c777495c3fe8792271107c430fb226e0696462220d5",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "A@2\nB@3\nC@3\nremoved-index=-1"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "official",
+      "stdout": "A@2\nB@3\nC@3\nremoved-index=-1\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1399,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "example/go-example-152",
+      "topic": "T152",
+      "shape": "displayed-import",
+      "operation": "program",
+      "contentSha256": "8b640f914857ca3c9ca22a5a35901ba46920fdd11c518d4dda4ac306d8de00e7",
+      "projectSha256": "e76643d2f7509e3b63f26c777495c3fe8792271107c430fb226e0696462220d5",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "A@2\nB@3\nC@3\nremoved-index=-1"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "official",
+      "stdout": "A@2\nB@3\nC@3\nremoved-index=-1\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1324,
+      "passed": true,
+      "assertionErrors": []
+    },
+    {
+      "id": "canonical/T152",
+      "topic": "T152",
+      "shape": "canonical-sample",
+      "operation": "program",
+      "contentSha256": "2da5d71baf27fafeaa44a596a15cf43f22cc93e26b538690df04aaf2974a341b",
+      "projectSha256": "2da5d71baf27fafeaa44a596a15cf43f22cc93e26b538690df04aaf2974a341b",
+      "verification": {
+        "kind": "stdout-exact",
+        "expected": "A@2\nB@3\nC@3\nremoved-index=-1\n"
+      },
+      "expectedExitCode": 0,
+      "expectedStderr": "",
+      "backend": "official",
+      "stdout": "A@2\nB@3\nC@3\nremoved-index=-1\n",
+      "stderr": "",
+      "exitCode": 0,
+      "timedOut": false,
+      "durationMs": 1326,
+      "passed": true,
+      "assertionErrors": []
+    }
+  ],
+  "coverageIssues": [],
+  "total": 3,
+  "passed": 3,
+  "failed": 0,
+  "success": true
+}

@@ -1,0 +1,69 @@
+{
+  "id": "T227",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "httponly=true secure=true lax=true\nrequest-value=local-42\nmissing=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-227",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Cookie 属性往返",
+    "summary": "能设置 HttpOnly、SameSite Cookie，再构造请求读回值。",
+    "concepts": [
+      "net/http",
+      "net/http/httptest",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能设置 HttpOnly、SameSite Cookie，再构造请求读回值。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "请求 Cookie 头不会回传 HttpOnly 等属性，不能在请求端据此判断原设置。",
+      "Secure 依赖真实浏览器和 HTTPS 发送策略，内存 AddCookie 不会自动实施这些约束。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加另一个偏好 Cookie，并按名字逐个读取。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "为响应分别调用 SetCookie；解析得到两个 Cookie 后逐个 AddCookie，避免把整条 Set-Cookie 当成一个值。"
+      }
+    ],
+    "explain": "Set-Cookie 携带服务器设置的属性，后续 Cookie 请求头只回传名字和值。程序先解析响应中的 HttpOnly、Secure 和 SameSite，再通过 AddCookie 构造本地请求并读回值。读取不存在的键返回 ErrNoCookie。Recorder 和手工请求不会执行浏览器的 Cookie 策略，本例验证协议字段往返，不等于浏览器行为验收。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n)\n\nfunc main() {\n\tw := httptest.NewRecorder()\n\thttp.SetCookie(w, &http.Cookie{Name: \"session\", Value: \"local-42\", Path: \"/\", HttpOnly: true, Secure: true, SameSite: http.SameSiteLaxMode})\n\tresponse := w.Result()\n\tdefer response.Body.Close()\n\tcookies := response.Cookies()\n\tif len(cookies) != 1 {\n\t\tpanic(\"cookie count\")\n\t}\n\tcookie := cookies[0]\n\tfmt.Printf(\"httponly=%t secure=%t lax=%t\\n\", cookie.HttpOnly, cookie.Secure, cookie.SameSite == http.SameSiteLaxMode)\n\tr := httptest.NewRequest(\"GET\", \"https://example.test/\", nil)\n\tr.AddCookie(cookie)\n\tread, err := r.Cookie(\"session\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"request-value=%s\\n\", read.Value)\n\t_, err = r.Cookie(\"missing\")\n\tfmt.Printf(\"missing=%t\\n\", err == http.ErrNoCookie)\n}\n",
+    "output": "httponly=true secure=true lax=true\nrequest-value=local-42\nmissing=true"
+  },
+  "example": {
+    "id": "go-example-227",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Cookie 属性往返",
+    "summary": "能设置 HttpOnly、SameSite Cookie，再构造请求读回值。",
+    "concepts": [
+      "net/http",
+      "net/http/httptest",
+      "本地 HTTP 与 URL"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"net/http\"\n\t\"net/http/httptest\"\n)\n\nfunc main() {\n\tw := httptest.NewRecorder()\n\thttp.SetCookie(w, &http.Cookie{Name: \"session\", Value: \"local-42\", Path: \"/\", HttpOnly: true, Secure: true, SameSite: http.SameSiteLaxMode})\n\tresponse := w.Result()\n\tdefer response.Body.Close()\n\tcookies := response.Cookies()\n\tif len(cookies) != 1 {\n\t\tpanic(\"cookie count\")\n\t}\n\tcookie := cookies[0]\n\tfmt.Printf(\"httponly=%t secure=%t lax=%t\\n\", cookie.HttpOnly, cookie.Secure, cookie.SameSite == http.SameSiteLaxMode)\n\tr := httptest.NewRequest(\"GET\", \"https://example.test/\", nil)\n\tr.AddCookie(cookie)\n\tread, err := r.Cookie(\"session\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"request-value=%s\\n\", read.Value)\n\t_, err = r.Cookie(\"missing\")\n\tfmt.Printf(\"missing=%t\\n\", err == http.ErrNoCookie)\n}\n",
+    "expectedOutput": "httponly=true secure=true lax=true\nrequest-value=local-42\nmissing=true",
+    "templateType": "go"
+  }
+}

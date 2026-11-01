@@ -1,0 +1,69 @@
+{
+  "id": "T269",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "wire=3ff8000000000000 same-bits=true negative=false\nwire=8000000000000000 same-bits=true negative=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-269",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "IEEE754 字节往返",
+    "summary": "能以固定字节序编码浮点数，验证普通值和负零的位模式。",
+    "concepts": [
+      "math",
+      "encoding/binary",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能以固定字节序编码浮点数，验证普通值和负零的位模式。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "把 float64 直接转换成 uint64 是数值转换，不是取得 IEEE754 位模式。",
+      "浮点相等不能区分正零和负零，也不能用于验证 NaN 的逐位往返。"
+    ],
+    "exercises": [
+      {
+        "prompt": "加入正无穷和一个自定义 NaN 位模式。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "使用 math.Inf 和 Float64frombits 构造输入，始终以 Float64bits 比较恢复结果，另外检查 IsInf 或 IsNaN。"
+      }
+    ],
+    "explain": "Float64bits 暴露 IEEE754 的六十四位表示，再用固定大端字节序写入八字节协议。恢复时先还原整数位模式，再调用 Float64frombits。示例特别覆盖负零：它与正零数值相等，但符号位不同，因此往返检查应比较位模式。对于 NaN，普通相等比较也无法表达位级保存要求。",
+    "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n\t\"math\"\n)\n\nfunc roundtrip(value float64) (float64, []byte) {\n\twire := make([]byte, 8)\n\tbinary.BigEndian.PutUint64(wire, math.Float64bits(value))\n\treturn math.Float64frombits(binary.BigEndian.Uint64(wire)), wire\n}\nfunc main() {\n\tfor _, value := range []float64{1.5, math.Copysign(0, -1)} {\n\t\trestored, wire := roundtrip(value)\n\t\tfmt.Printf(\"wire=%x same-bits=%t negative=%t\\n\", wire, math.Float64bits(value) == math.Float64bits(restored), math.Signbit(restored))\n\t}\n}\n",
+    "output": "wire=3ff8000000000000 same-bits=true negative=false\nwire=8000000000000000 same-bits=true negative=true"
+  },
+  "example": {
+    "id": "go-example-269",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "IEEE754 字节往返",
+    "summary": "能以固定字节序编码浮点数，验证普通值和负零的位模式。",
+    "concepts": [
+      "math",
+      "encoding/binary",
+      "二进制协议与位图"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n\t\"math\"\n)\n\nfunc roundtrip(value float64) (float64, []byte) {\n\twire := make([]byte, 8)\n\tbinary.BigEndian.PutUint64(wire, math.Float64bits(value))\n\treturn math.Float64frombits(binary.BigEndian.Uint64(wire)), wire\n}\nfunc main() {\n\tfor _, value := range []float64{1.5, math.Copysign(0, -1)} {\n\t\trestored, wire := roundtrip(value)\n\t\tfmt.Printf(\"wire=%x same-bits=%t negative=%t\\n\", wire, math.Float64bits(value) == math.Float64bits(restored), math.Signbit(restored))\n\t}\n}\n",
+    "expectedOutput": "wire=3ff8000000000000 same-bits=true negative=false\nwire=8000000000000000 same-bits=true negative=true",
+    "templateType": "go"
+  }
+}

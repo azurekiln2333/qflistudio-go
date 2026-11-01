@@ -1,0 +1,71 @@
+{
+  "id": "T134",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "name=local timeout=3 enabled=false\nunknown=true\ntrailing=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-134",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "严格 JSON 配置",
+    "summary": "严格读取配置，拒绝未知字段和尾随第二个 JSON 值，并保留缺失字段的默认值。",
+    "concepts": [
+      "json.Decoder",
+      "DisallowUnknownFields",
+      "默认值",
+      "尾随输入"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "严格读取配置，拒绝未知字段和尾随第二个 JSON 值，并保留缺失字段的默认值。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "把 false 视作缺失会覆盖用户明确关闭的选项。",
+      "第一次 Decode 成功后输入仍可能有第二个值，必须检查 EOF。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加 timeout 必须大于零且不超过六十秒的业务约束。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "在两次解码检查全部成功之后验证 Timeout 范围；这样未知字段或尾随内容不会被业务检查掩盖。"
+      }
+    ],
+    "explain": "解码前初始化默认配置，JSON 中未出现的字段保持原值，而显式 false 会覆盖 true。DisallowUnknownFields 阻止拼错字段被静默忽略；首次 Decode 成功之后还要再次解码并要求 io.EOF，才能拒绝两个相邻 JSON 对象。默认值、结构校验与完整输入校验分别解决不同问题，不能只完成其中一步。",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\ntype Config struct {\n\tName    string `json:\"name\"`\n\tTimeout int    `json:\"timeout\"`\n\tEnabled bool   `json:\"enabled\"`\n}\n\nfunc load(text string) (Config, error) {\n\tcfg := Config{Name: \"default\", Timeout: 3, Enabled: true}\n\tdecoder := json.NewDecoder(strings.NewReader(text))\n\tdecoder.DisallowUnknownFields()\n\tif err := decoder.Decode(&cfg); err != nil {\n\t\treturn cfg, err\n\t}\n\tvar extra interface{}\n\tif err := decoder.Decode(&extra); err != io.EOF {\n\t\tif err == nil {\n\t\t\terr = fmt.Errorf(\"second JSON value\")\n\t\t}\n\t\treturn cfg, err\n\t}\n\treturn cfg, nil\n}\n\nfunc main() {\n\tcfg, err := load(`{\"name\":\"local\",\"enabled\":false}`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"name=%s timeout=%d enabled=%t\\n\", cfg.Name, cfg.Timeout, cfg.Enabled)\n\t_, err = load(`{\"timeuot\":8}`)\n\tfmt.Printf(\"unknown=%t\\n\", err != nil)\n\t_, err = load(`{} {}`)\n\tfmt.Printf(\"trailing=%t\\n\", err != nil)\n}\n",
+    "output": "name=local timeout=3 enabled=false\nunknown=true\ntrailing=true"
+  },
+  "example": {
+    "id": "go-example-134",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "严格 JSON 配置",
+    "summary": "严格读取配置，拒绝未知字段和尾随第二个 JSON 值，并保留缺失字段的默认值。",
+    "concepts": [
+      "json.Decoder",
+      "DisallowUnknownFields",
+      "默认值",
+      "尾随输入"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"encoding/json\"\n\t\"fmt\"\n\t\"io\"\n\t\"strings\"\n)\n\ntype Config struct {\n\tName    string `json:\"name\"`\n\tTimeout int    `json:\"timeout\"`\n\tEnabled bool   `json:\"enabled\"`\n}\n\nfunc load(text string) (Config, error) {\n\tcfg := Config{Name: \"default\", Timeout: 3, Enabled: true}\n\tdecoder := json.NewDecoder(strings.NewReader(text))\n\tdecoder.DisallowUnknownFields()\n\tif err := decoder.Decode(&cfg); err != nil {\n\t\treturn cfg, err\n\t}\n\tvar extra interface{}\n\tif err := decoder.Decode(&extra); err != io.EOF {\n\t\tif err == nil {\n\t\t\terr = fmt.Errorf(\"second JSON value\")\n\t\t}\n\t\treturn cfg, err\n\t}\n\treturn cfg, nil\n}\n\nfunc main() {\n\tcfg, err := load(`{\"name\":\"local\",\"enabled\":false}`)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"name=%s timeout=%d enabled=%t\\n\", cfg.Name, cfg.Timeout, cfg.Enabled)\n\t_, err = load(`{\"timeuot\":8}`)\n\tfmt.Printf(\"unknown=%t\\n\", err != nil)\n\t_, err = load(`{} {}`)\n\tfmt.Printf(\"trailing=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "name=local timeout=3 enabled=false\nunknown=true\ntrailing=true",
+    "templateType": "go"
+  }
+}

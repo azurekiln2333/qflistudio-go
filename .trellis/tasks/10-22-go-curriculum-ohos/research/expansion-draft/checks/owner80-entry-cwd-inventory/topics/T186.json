@@ -1,0 +1,71 @@
+{
+  "id": "T186",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "added added.txt\nmodified change.txt\ndeleted deleted.txt\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-186",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "目录树差异清单",
+    "summary": "比较两棵虚拟文件树，稳定列出新增、删除和内容修改文件。",
+    "concepts": [
+      "fs.WalkDir",
+      "内容快照",
+      "bytes.Equal",
+      "集合并集"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "比较两棵虚拟文件树，稳定列出新增、删除和内容修改文件。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "相同大小或时间戳不代表内容相同。",
+      "不排序并集会让变更清单顺序不稳定。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把修改输出增加为 old-bytes 和 new-bytes，但不要把目录误作文件。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "在 modified 分支分别计算 len(before[name]) 与 len(after[name])；快照继续只收集非目录项。"
+      }
+    ],
+    "explain": "快照函数把每个文件路径映射到原始字节，忽略目录节点；对两份路径集合求并集再排序。只在新树出现是新增，只在旧树出现是删除，两边都有但字节不同是修改，相同内容不输出。这里按内容比较，不依赖修改时间，适合小型离线工程；大树应使用流式摘要和资源预算而非无界保留全部字节。",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io/fs\"\n\t\"sort\"\n\t\"testing/fstest\"\n)\n\nfunc snapshot(tree fs.FS) (map[string][]byte, error) {\n\tfiles := map[string][]byte{}\n\terr := fs.WalkDir(tree, \".\", func(name string, entry fs.DirEntry, err error) error {\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tif entry.IsDir() {\n\t\t\treturn nil\n\t\t}\n\t\tdata, err := fs.ReadFile(tree, name)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfiles[name] = data\n\t\treturn nil\n\t})\n\treturn files, err\n}\nfunc main() {\n\tbefore, err := snapshot(fstest.MapFS{\"keep.txt\": &fstest.MapFile{Data: []byte(\"same\")}, \"change.txt\": &fstest.MapFile{Data: []byte(\"old\")}, \"deleted.txt\": &fstest.MapFile{Data: []byte(\"gone\")}})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tafter, err := snapshot(fstest.MapFS{\"keep.txt\": &fstest.MapFile{Data: []byte(\"same\")}, \"change.txt\": &fstest.MapFile{Data: []byte(\"new\")}, \"added.txt\": &fstest.MapFile{Data: []byte(\"hello\")}})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tunion := map[string]bool{}\n\tfor name := range before {\n\t\tunion[name] = true\n\t}\n\tfor name := range after {\n\t\tunion[name] = true\n\t}\n\tnames := []string{}\n\tfor name := range union {\n\t\tnames = append(names, name)\n\t}\n\tsort.Strings(names)\n\tfor _, name := range names {\n\t\told, was := before[name]\n\t\tcurrent, is := after[name]\n\t\tkind := \"\"\n\t\tif !was {\n\t\t\tkind = \"added\"\n\t\t} else if !is {\n\t\t\tkind = \"deleted\"\n\t\t} else if !bytes.Equal(old, current) {\n\t\t\tkind = \"modified\"\n\t\t}\n\t\tif kind != \"\" {\n\t\t\tfmt.Printf(\"%s %s\\n\", kind, name)\n\t\t}\n\t}\n}\n",
+    "output": "added added.txt\nmodified change.txt\ndeleted deleted.txt"
+  },
+  "example": {
+    "id": "go-example-186",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "目录树差异清单",
+    "summary": "比较两棵虚拟文件树，稳定列出新增、删除和内容修改文件。",
+    "concepts": [
+      "fs.WalkDir",
+      "内容快照",
+      "bytes.Equal",
+      "集合并集"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"io/fs\"\n\t\"sort\"\n\t\"testing/fstest\"\n)\n\nfunc snapshot(tree fs.FS) (map[string][]byte, error) {\n\tfiles := map[string][]byte{}\n\terr := fs.WalkDir(tree, \".\", func(name string, entry fs.DirEntry, err error) error {\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tif entry.IsDir() {\n\t\t\treturn nil\n\t\t}\n\t\tdata, err := fs.ReadFile(tree, name)\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tfiles[name] = data\n\t\treturn nil\n\t})\n\treturn files, err\n}\nfunc main() {\n\tbefore, err := snapshot(fstest.MapFS{\"keep.txt\": &fstest.MapFile{Data: []byte(\"same\")}, \"change.txt\": &fstest.MapFile{Data: []byte(\"old\")}, \"deleted.txt\": &fstest.MapFile{Data: []byte(\"gone\")}})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tafter, err := snapshot(fstest.MapFS{\"keep.txt\": &fstest.MapFile{Data: []byte(\"same\")}, \"change.txt\": &fstest.MapFile{Data: []byte(\"new\")}, \"added.txt\": &fstest.MapFile{Data: []byte(\"hello\")}})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tunion := map[string]bool{}\n\tfor name := range before {\n\t\tunion[name] = true\n\t}\n\tfor name := range after {\n\t\tunion[name] = true\n\t}\n\tnames := []string{}\n\tfor name := range union {\n\t\tnames = append(names, name)\n\t}\n\tsort.Strings(names)\n\tfor _, name := range names {\n\t\told, was := before[name]\n\t\tcurrent, is := after[name]\n\t\tkind := \"\"\n\t\tif !was {\n\t\t\tkind = \"added\"\n\t\t} else if !is {\n\t\t\tkind = \"deleted\"\n\t\t} else if !bytes.Equal(old, current) {\n\t\t\tkind = \"modified\"\n\t\t}\n\t\tif kind != \"\" {\n\t\t\tfmt.Printf(\"%s %s\\n\", kind, name)\n\t\t}\n\t}\n}\n",
+    "expectedOutput": "added added.txt\nmodified change.txt\ndeleted deleted.txt",
+    "templateType": "go"
+  }
+}

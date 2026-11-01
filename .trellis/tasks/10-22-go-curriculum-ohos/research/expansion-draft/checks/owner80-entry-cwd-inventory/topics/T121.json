@@ -1,0 +1,69 @@
+{
+  "id": "T121",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "records=3\n1:alpha\n2:beta\n3:gamma\nempty=0 trailing=1\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-121",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "统一混合换行",
+    "summary": "统一 CRLF、CR 和 LF，保留没有结尾换行的最后一条日志。",
+    "concepts": [
+      "strings.ReplaceAll",
+      "日志记录",
+      "末行处理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "统一 CRLF、CR 和 LF，保留没有结尾换行的最后一条日志。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "先替换 CR 会让 CRLF 变成两个 LF，凭空增加记录。",
+      "TrimSpace 会改变正文；不能用它代替精确处理最后一个换行。"
+    ],
+    "exercises": [
+      {
+        "prompt": "增加输入 a\\n\\n，保留其中一条真实空日志，同时去掉结束符产生的空记录。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "现有实现只删除切片末尾一个空字符串，得到 [a 空字符串]；不要循环删除所有空项。"
+      }
+    ],
+    "explain": "不同系统产生的日志可能混用三种行结束符。先把双字符 CRLF 替换成 LF，再替换单独的 CR，避免把一组 CRLF 拆成两个空行。只去掉表示文件结束的一枚空记录，不能对每行 TrimSpace，否则日志正文中的空格会丢失。空输入返回零条记录；没有换行结尾的 gamma 仍作为第三条记录保留。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc records(text string) []string {\n\tif text == \"\" {\n\t\treturn nil\n\t}\n\ttext = strings.ReplaceAll(text, \"\\r\\n\", \"\\n\")\n\ttext = strings.ReplaceAll(text, \"\\r\", \"\\n\")\n\tlines := strings.Split(text, \"\\n\")\n\tif lines[len(lines)-1] == \"\" {\n\t\tlines = lines[:len(lines)-1]\n\t}\n\treturn lines\n}\n\nfunc main() {\n\tlines := records(\"alpha\\r\\nbeta\\rgamma\")\n\tfmt.Printf(\"records=%d\\n\", len(lines))\n\tfor i, line := range lines {\n\t\tfmt.Printf(\"%d:%s\\n\", i+1, line)\n\t}\n\tfmt.Printf(\"empty=%d trailing=%d\\n\", len(records(\"\")), len(records(\"one\\n\")))\n}\n",
+    "output": "records=3\n1:alpha\n2:beta\n3:gamma\nempty=0 trailing=1"
+  },
+  "example": {
+    "id": "go-example-121",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "统一混合换行",
+    "summary": "统一 CRLF、CR 和 LF，保留没有结尾换行的最后一条日志。",
+    "concepts": [
+      "strings.ReplaceAll",
+      "日志记录",
+      "末行处理"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc records(text string) []string {\n\tif text == \"\" {\n\t\treturn nil\n\t}\n\ttext = strings.ReplaceAll(text, \"\\r\\n\", \"\\n\")\n\ttext = strings.ReplaceAll(text, \"\\r\", \"\\n\")\n\tlines := strings.Split(text, \"\\n\")\n\tif lines[len(lines)-1] == \"\" {\n\t\tlines = lines[:len(lines)-1]\n\t}\n\treturn lines\n}\n\nfunc main() {\n\tlines := records(\"alpha\\r\\nbeta\\rgamma\")\n\tfmt.Printf(\"records=%d\\n\", len(lines))\n\tfor i, line := range lines {\n\t\tfmt.Printf(\"%d:%s\\n\", i+1, line)\n\t}\n\tfmt.Printf(\"empty=%d trailing=%d\\n\", len(records(\"\")), len(records(\"one\\n\")))\n}\n",
+    "expectedOutput": "records=3\n1:alpha\n2:beta\n3:gamma\nempty=0 trailing=1",
+    "templateType": "go"
+  }
+}

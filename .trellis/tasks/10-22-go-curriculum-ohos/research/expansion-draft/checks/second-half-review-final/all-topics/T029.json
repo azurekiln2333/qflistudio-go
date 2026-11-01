@@ -1,0 +1,70 @@
+{
+  "id": "T029",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "after byValue 1\nafter byPtr 100\naddress of x is non-nil: true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-029",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "指针一：地址、解引用与值/指针参数",
+    "summary": "用 & 取地址、* 解引用，对比值参数与指针参数对实参的影响。",
+    "concepts": [
+      "指针",
+      "&",
+      "*",
+      "值/指针参数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能取变量地址、通过指针修改目标值，并说明值参数不会影响实参。",
+    "prerequisites": [
+      "T003 变量与零值"
+    ],
+    "pitfalls": [
+      "混淆 & 与 *：&x 取地址得到 *T，*p 解引用得到 T，写反会类型错误或误解语义。",
+      "解引用 nil 指针导致 panic：声明但未指向的指针为 nil，解引用前必须确保已指向有效内存。"
+    ],
+    "exercises": [
+      {
+        "prompt": "写 swap(a, b *int) 交换两个值，并用两个变量验证。",
+        "hint": "通过临时变量交换 *a 与 *b。",
+        "answer": "swap(&x,&y) 后 x、y 互换，说明指针参数能修改调用方变量。"
+      }
+    ],
+    "explain": "指针保存变量的内存地址。&x 取地址得到 *T 类型；*p 解引用读取或写入 p 指向的内存。函数参数默认按值传递：byValue 修改的是副本，调用方 x 不变；byPtr 收到的是地址，*n=100 直接写入调用方的 x。\n\n这解释了为什么需要在函数内修改大对象或调用方状态时传指针。声明而未初始化的指针为 nil，解引用 nil 会 panic，因此使用前要确保它指向有效对象。\n\n本样例对比两种参数并打印 &x 非 nil。",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc byValue(n int)  { n = 100 }\nfunc byPtr(n *int)   { *n = 100 }\n\nfunc main() {\n\tx := 1\n\tbyValue(x)\n\tfmt.Println(\"after byValue\", x)\n\tbyPtr(&x)\n\tfmt.Println(\"after byPtr\", x)\n\tfmt.Printf(\"address of x is non-nil: %t\\n\", &x != nil)\n}\n",
+    "output": "after byValue 1\nafter byPtr 100\naddress of x is non-nil: true"
+  },
+  "example": {
+    "id": "go-example-029",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "指针一：地址、解引用与值/指针参数",
+    "summary": "用 & 取地址、* 解引用，对比值参数与指针参数对实参的影响。",
+    "concepts": [
+      "指针",
+      "&",
+      "*",
+      "值/指针参数"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\nfunc byValue(n int)  { n = 100 }\nfunc byPtr(n *int)   { *n = 100 }\n\nfunc main() {\n\tx := 1\n\tbyValue(x)\n\tfmt.Println(\"after byValue\", x)\n\tbyPtr(&x)\n\tfmt.Println(\"after byPtr\", x)\n\tfmt.Printf(\"address of x is non-nil: %t\\n\", &x != nil)\n}\n",
+    "expectedOutput": "after byValue 1\nafter byPtr 100\naddress of x is non-nil: true",
+    "templateType": "go"
+  }
+}

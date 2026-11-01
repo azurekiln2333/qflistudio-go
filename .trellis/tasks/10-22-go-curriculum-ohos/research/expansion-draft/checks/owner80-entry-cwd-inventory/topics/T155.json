@@ -1,0 +1,71 @@
+{
+  "id": "T155",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "cycle=[app db cache app]\nacyclic=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-155",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "依赖环定位",
+    "summary": "用 DFS 颜色与路径栈输出具体依赖闭环，并验证无环依赖图。",
+    "concepts": [
+      "深度优先搜索",
+      "三色标记",
+      "路径栈",
+      "确定性遍历"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "用 DFS 颜色与路径栈输出具体依赖闭环，并验证无环依赖图。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "把所有已访问节点都判为环，会误伤合法的共享依赖。",
+      "没有排序的 map 遍历会让多个闭环时的报告顺序漂移。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为无环图输出一个合法构建顺序，保证依赖先于使用者。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "在 DFS 节点变黑时追加节点到结果，图边表示使用者指向依赖时该后序结果已满足依赖在前；检测到环则拒绝输出构建顺序。"
+      }
+    ],
+    "explain": "白色节点尚未访问，灰色节点处于当前递归路径，黑色节点已经完成。只有遇到灰色邻居才构成环，路径栈及节点位置可截取具体闭环；遇到黑色节点表示共享依赖，不应误报。排序根节点和各邻居使首个环的选择稳定。例子输出 app→db→cache→app，另一组 build→parse→scan 则没有闭环。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc cycle(graph map[string][]string) []string {\n\tcolors := map[string]int{}\n\tpositions := map[string]int{}\n\tstack := []string{}\n\tresult := []string{}\n\tnodes := map[string]bool{}\n\tfor node, next := range graph {\n\t\tnodes[node] = true\n\t\tfor _, name := range next {\n\t\t\tnodes[name] = true\n\t\t}\n\t}\n\tkeys := []string{}\n\tfor node := range nodes {\n\t\tkeys = append(keys, node)\n\t}\n\tsort.Strings(keys)\n\tvar visit func(string) bool\n\tvisit = func(node string) bool {\n\t\tcolors[node] = 1\n\t\tpositions[node] = len(stack)\n\t\tstack = append(stack, node)\n\t\tneighbors := append([]string(nil), graph[node]...)\n\t\tsort.Strings(neighbors)\n\t\tfor _, next := range neighbors {\n\t\t\tif colors[next] == 1 {\n\t\t\t\tresult = append([]string(nil), stack[positions[next]:]...)\n\t\t\t\tresult = append(result, next)\n\t\t\t\treturn true\n\t\t\t}\n\t\t\tif colors[next] == 0 && visit(next) {\n\t\t\t\treturn true\n\t\t\t}\n\t\t}\n\t\tstack = stack[:len(stack)-1]\n\t\tdelete(positions, node)\n\t\tcolors[node] = 2\n\t\treturn false\n\t}\n\tfor _, node := range keys {\n\t\tif colors[node] == 0 && visit(node) {\n\t\t\treturn result\n\t\t}\n\t}\n\treturn nil\n}\nfunc main() {\n\tfmt.Printf(\"cycle=%v\\n\", cycle(map[string][]string{\"app\": {\"db\"}, \"db\": {\"cache\"}, \"cache\": {\"app\"}}))\n\tfmt.Printf(\"acyclic=%t\\n\", cycle(map[string][]string{\"build\": {\"parse\"}, \"parse\": {\"scan\"}, \"scan\": {}}) == nil)\n}\n",
+    "output": "cycle=[app db cache app]\nacyclic=true"
+  },
+  "example": {
+    "id": "go-example-155",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "依赖环定位",
+    "summary": "用 DFS 颜色与路径栈输出具体依赖闭环，并验证无环依赖图。",
+    "concepts": [
+      "深度优先搜索",
+      "三色标记",
+      "路径栈",
+      "确定性遍历"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\nfunc cycle(graph map[string][]string) []string {\n\tcolors := map[string]int{}\n\tpositions := map[string]int{}\n\tstack := []string{}\n\tresult := []string{}\n\tnodes := map[string]bool{}\n\tfor node, next := range graph {\n\t\tnodes[node] = true\n\t\tfor _, name := range next {\n\t\t\tnodes[name] = true\n\t\t}\n\t}\n\tkeys := []string{}\n\tfor node := range nodes {\n\t\tkeys = append(keys, node)\n\t}\n\tsort.Strings(keys)\n\tvar visit func(string) bool\n\tvisit = func(node string) bool {\n\t\tcolors[node] = 1\n\t\tpositions[node] = len(stack)\n\t\tstack = append(stack, node)\n\t\tneighbors := append([]string(nil), graph[node]...)\n\t\tsort.Strings(neighbors)\n\t\tfor _, next := range neighbors {\n\t\t\tif colors[next] == 1 {\n\t\t\t\tresult = append([]string(nil), stack[positions[next]:]...)\n\t\t\t\tresult = append(result, next)\n\t\t\t\treturn true\n\t\t\t}\n\t\t\tif colors[next] == 0 && visit(next) {\n\t\t\t\treturn true\n\t\t\t}\n\t\t}\n\t\tstack = stack[:len(stack)-1]\n\t\tdelete(positions, node)\n\t\tcolors[node] = 2\n\t\treturn false\n\t}\n\tfor _, node := range keys {\n\t\tif colors[node] == 0 && visit(node) {\n\t\t\treturn result\n\t\t}\n\t}\n\treturn nil\n}\nfunc main() {\n\tfmt.Printf(\"cycle=%v\\n\", cycle(map[string][]string{\"app\": {\"db\"}, \"db\": {\"cache\"}, \"cache\": {\"app\"}}))\n\tfmt.Printf(\"acyclic=%t\\n\", cycle(map[string][]string{\"build\": {\"parse\"}, \"parse\": {\"scan\"}, \"scan\": {}}) == nil)\n}\n",
+    "expectedOutput": "cycle=[app db cache app]\nacyclic=true",
+    "templateType": "go"
+  }
+}

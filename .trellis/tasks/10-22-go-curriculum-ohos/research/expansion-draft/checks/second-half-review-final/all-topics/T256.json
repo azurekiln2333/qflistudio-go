@@ -1,0 +1,67 @@
+{
+  "id": "T256",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "code=79927398713\nvalid=true\ntampered=false\nbad-input=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-256",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Luhn 校验与生成",
+    "summary": "能计算数字串校验位，验证合法号码并拒绝单字节改动。",
+    "concepts": [
+      "unicode",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能计算数字串校验位，验证合法号码并拒绝单字节改动。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "加倍起点取决于是否已经包含校验位，混淆会让奇偶长度结果错误。",
+      "Luhn 不是密码学认证，攻击者可以重新计算合法校验位。"
+    ],
+    "exercises": [
+      {
+        "prompt": "允许显示输入中的空格和横线，但拒绝其他标点。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "在进入 checkDigit 前仅移除明确允许的显示分隔符，再对规范数字串执行现有检查。"
+      }
+    ],
+    "explain": "Luhn 校验从校验位左边开始交替加倍，超过九的乘积减九，然后选择让总和为十倍数的最后一位。生成器只接受 ASCII 数字并拒绝空输入，验证器重新计算前缀的校验位。示例生成已知编号并拒绝一位变更。它用于发现常见录入错误，不提供抗伪造能力。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nfunc checkDigit(body string) (int, error) {\n\tsum := 0\n\tdouble := true\n\tfor i := len(body) - 1; i >= 0; i-- {\n\t\tc := body[i]\n\t\tif c < '0' || c > '9' {\n\t\t\treturn 0, fmt.Errorf(\"ASCII digits only\")\n\t\t}\n\t\tn := int(c - '0')\n\t\tif double {\n\t\t\tn *= 2\n\t\t\tif n > 9 {\n\t\t\t\tn -= 9\n\t\t\t}\n\t\t}\n\t\tsum += n\n\t\tdouble = !double\n\t}\n\tif body == \"\" {\n\t\treturn 0, fmt.Errorf(\"empty\")\n\t}\n\treturn (10 - sum%10) % 10, nil\n}\nfunc valid(code string) bool {\n\tif len(code) < 2 {\n\t\treturn false\n\t}\n\tdigit, err := checkDigit(code[:len(code)-1])\n\treturn err == nil && code[len(code)-1] == byte('0'+digit)\n}\nfunc main() {\n\tbody := \"7992739871\"\n\tdigit, err := checkDigit(body)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfull := body + strconv.Itoa(digit)\n\tfmt.Printf(\"code=%s\\nvalid=%t\\ntampered=%t\\n\", full, valid(full), valid(\"79927398714\"))\n\t_, err = checkDigit(\"12x\")\n\tfmt.Printf(\"bad-input=%t\\n\", err != nil)\n}\n",
+    "output": "code=79927398713\nvalid=true\ntampered=false\nbad-input=true"
+  },
+  "example": {
+    "id": "go-example-256",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Luhn 校验与生成",
+    "summary": "能计算数字串校验位，验证合法号码并拒绝单字节改动。",
+    "concepts": [
+      "unicode",
+      "校验与状态机"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n)\n\nfunc checkDigit(body string) (int, error) {\n\tsum := 0\n\tdouble := true\n\tfor i := len(body) - 1; i >= 0; i-- {\n\t\tc := body[i]\n\t\tif c < '0' || c > '9' {\n\t\t\treturn 0, fmt.Errorf(\"ASCII digits only\")\n\t\t}\n\t\tn := int(c - '0')\n\t\tif double {\n\t\t\tn *= 2\n\t\t\tif n > 9 {\n\t\t\t\tn -= 9\n\t\t\t}\n\t\t}\n\t\tsum += n\n\t\tdouble = !double\n\t}\n\tif body == \"\" {\n\t\treturn 0, fmt.Errorf(\"empty\")\n\t}\n\treturn (10 - sum%10) % 10, nil\n}\nfunc valid(code string) bool {\n\tif len(code) < 2 {\n\t\treturn false\n\t}\n\tdigit, err := checkDigit(code[:len(code)-1])\n\treturn err == nil && code[len(code)-1] == byte('0'+digit)\n}\nfunc main() {\n\tbody := \"7992739871\"\n\tdigit, err := checkDigit(body)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfull := body + strconv.Itoa(digit)\n\tfmt.Printf(\"code=%s\\nvalid=%t\\ntampered=%t\\n\", full, valid(full), valid(\"79927398714\"))\n\t_, err = checkDigit(\"12x\")\n\tfmt.Printf(\"bad-input=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "code=79927398713\nvalid=true\ntampered=false\nbad-input=true",
+    "templateType": "go"
+  }
+}

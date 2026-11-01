@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "mode": "CONTROL_ONLY",
+  "grant": "C580-Go180-20261025",
+  "nextOwner": "c-coordinator",
+  "outerToolHandle": null,
+  "wrapperPid": 70572,
+  "startedAt": "2026-10-25T17:02:48.945427+00:00",
+  "root": "D:\\MyNewProjects\\qfli_go",
+  "planSeconds": 15,
+  "workSeconds": 10,
+  "cleanupDeadlineSeconds": 13,
+  "phases": [
+    {
+      "name": "control-normal",
+      "command": [
+        "D:\\ProgramFiles\\Python\\Python313\\python.exe",
+        "-I",
+        "-c",
+        "print('normal suspended/assigned root', flush=True)"
+      ],
+      "cwd": "D:\\MyNewProjects\\qfli_go",
+      "startedAt": "2026-10-25T17:02:48.946902+00:00",
+      "budgetSeconds": 3,
+      "timedOut": false,
+      "errors": [],
+      "cleanupConfirmed": true,
+      "stdout": "D:\\MyNewProjects\\qfli_go\\.trellis\\tasks\\10-22-go-offline-ide\\research\\c580-go-20261026-controls\\control-normal.stdout.bin",
+      "stderr": "D:\\MyNewProjects\\qfli_go\\.trellis\\tasks\\10-22-go-offline-ide\\research\\c580-go-20261026-controls\\control-normal.stderr.bin",
+      "process": {
+        "rootCreated": true,
+        "terminal": true,
+        "exitCode": 0,
+        "jobActiveProcesses": 0,
+        "assignedBeforeResume": true,
+        "errors": [],
+        "handlesClosed": true,
+        "jobHandleDecimal": "396",
+        "jobHandleHex": "0x18c",
+        "processHandleDecimal": "380",
+        "processHandleHex": "0x17c",
+        "pid": 69904,
+        "threadId": 68716,
+        "createdSuspended": true,
+        "createdObservedAt": "2026-10-25T17:02:48.954697+00:00",
+        "creationFiletime100ns": "134374213689519626",
+        "resumed": true,
+        "lastObservedAt": "2026-10-25T17:02:49.007217+00:00"
+      },
+      "cleanupConfirmedAt": "2026-10-25T17:02:49.007226+00:00",
+      "cleanupConfirmedElapsedSeconds": 0.065,
+      "elapsedSeconds": 0.061,
+      "passed": true
+    },
+    {
+      "name": "control-root-exit-child-live",
+      "command": [
+        "D:\\ProgramFiles\\Python\\Python313\\python.exe",
+        "-I",
+        "-c",
+        "import os, subprocess, sys; child = subprocess.Popen([sys.executable, '-I', '-c', \"import time; print('held child is live', flush=True); time.sleep(60)\"]); print('owned held child PID=' + str(child.pid), flush=True); os._exit(0)"
+      ],
+      "cwd": "D:\\MyNewProjects\\qfli_go",
+      "startedAt": "2026-10-25T17:02:49.009301+00:00",
+      "budgetSeconds": 5,
+      "timedOut": false,
+      "errors": [],
+      "cleanupConfirmed": true,
+      "stdout": "D:\\MyNewProjects\\qfli_go\\.trellis\\tasks\\10-22-go-offline-ide\\research\\c580-go-20261026-controls\\control-root-exit-child-live.stdout.bin",
+      "stderr": "D:\\MyNewProjects\\qfli_go\\.trellis\\tasks\\10-22-go-offline-ide\\research\\c580-go-20261026-controls\\control-root-exit-child-live.stderr.bin",
+      "process": {
+        "rootCreated": true,
+        "terminal": true,
+        "exitCode": 0,
+        "jobActiveProcesses": 0,
+        "assignedBeforeResume": true,
+        "errors": [],
+        "handlesClosed": true,
+        "jobHandleDecimal": "420",
+        "jobHandleHex": "0x1a4",
+        "processHandleDecimal": "432",
+        "processHandleHex": "0x1b0",
+        "pid": 73396,
+        "threadId": 11180,
+        "createdSuspended": true,
+        "createdObservedAt": "2026-10-25T17:02:49.013745+00:00",
+        "creationFiletime100ns": "134374213690111615",
+        "resumed": true,
+        "lastObservedAt": "2026-10-25T17:02:49.166084+00:00",
+        "ownedJobTerminationRequested": true
+      },
+      "rootTerminalWithHeldChild": {
+        "rootCreated": true,
+        "terminal": true,
+        "exitCode": 0,
+        "jobActiveProcesses": 2,
+        "assignedBeforeResume": true,
+        "errors": [],
+        "handlesClosed": false,
+        "jobHandleDecimal": "420",
+        "jobHandleHex": "0x1a4",
+        "processHandleDecimal": "432",
+        "processHandleHex": "0x1b0",
+        "pid": 73396,
+        "threadId": 11180,
+        "createdSuspended": true,
+        "createdObservedAt": "2026-10-25T17:02:49.013745+00:00",
+        "creationFiletime100ns": "134374213690111615",
+        "resumed": true,
+        "lastObservedAt": "2026-10-25T17:02:49.115650+00:00"
+      },
+      "negativeReleaseGateRejected": true,
+      "cleanupConfirmedAt": "2026-10-25T17:02:49.166099+00:00",
+      "cleanupConfirmedElapsedSeconds": 0.224,
+      "elapsedSeconds": 0.157,
+      "passed": true
+    }
+  ],
+  "errors": [],
+  "releaseScope": "CONTROL_PROCESSES_ONLY; parent retains the named grant",
+  "publication": {
+    "state": "NOT_ATTEMPTED",
+    "reason": "Parent polls/publishes exact report"
+  },
+  "environment": {
+    "SystemRoot": "C:\\Windows",
+    "WINDIR": "C:\\Windows",
+    "COMSPEC": "C:\\Windows\\system32\\cmd.exe",
+    "TEMP": "D:\\AppData\\Local\\Temp",
+    "TMP": "D:\\AppData\\Local\\Temp",
+    "USERPROFILE": "C:\\Users\\lichengyu",
+    "LOCALAPPDATA": "D:\\AppData\\Local",
+    "APPDATA": "D:\\AppData\\Roaming",
+    "PROGRAMDATA": "C:\\ProgramData",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.CPL",
+    "PATH": "C:\\Windows\\System32"
+  },
+  "toolIdentitiesBefore": {
+    "D:\\MyNewProjects\\qfli_go\\.trellis\\tasks\\10-22-go-offline-ide\\research\\fixtures\\run_native_window.py": {
+      "bytes": 38484,
+      "sha256": "9a80246e8e958f0023b9b80a1c92b6bb11404e4a29780779fa920549c84834a8"
+    },
+    "D:\\ProgramFiles\\Python\\Python313\\python.exe": {
+      "bytes": 105832,
+      "sha256": "d87063e5597f257004c731b66c59c56c91038861c6877b1a3dca6b8c4e919125"
+    }
+  },
+  "toolIdentitiesAfter": {
+    "D:\\MyNewProjects\\qfli_go\\.trellis\\tasks\\10-22-go-offline-ide\\research\\fixtures\\run_native_window.py": {
+      "bytes": 38484,
+      "sha256": "9a80246e8e958f0023b9b80a1c92b6bb11404e4a29780779fa920549c84834a8"
+    },
+    "D:\\ProgramFiles\\Python\\Python313\\python.exe": {
+      "bytes": 105832,
+      "sha256": "d87063e5597f257004c731b66c59c56c91038861c6877b1a3dca6b8c4e919125"
+    }
+  },
+  "toolDrift": [],
+  "release": "RELEASE",
+  "finishedAt": "2026-10-25T17:02:49.168346+00:00",
+  "elapsedSeconds": 0.227,
+  "withinPlanSeconds": true,
+  "within150Seconds": true,
+  "result": "PASS"
+}

@@ -1,0 +1,68 @@
+{
+  "id": "T032",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "[{Al 25} {Cy 25} {Bob 30}]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-032",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "排序：sort.Slice 与自定义比较",
+    "summary": "用 sort.Slice 按多字段比较函数排序结构体切片。",
+    "concepts": [
+      "sort.Slice",
+      "比较函数",
+      "多字段排序"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能写比较函数让 sort.Slice 按主次字段稳定排序切片。",
+    "prerequisites": [
+      "T025 高阶函数"
+    ],
+    "pitfalls": [
+      "比较函数不满足严格弱序：less 必须在相等时返回 false，否则排序结果未定义；返回 <= 会导致不一致。",
+      "认为 sort.Slice 稳定：它不保证稳定，需稳定排序时用 sort.SliceStable。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把排序改为只按 Age 降序，预测输出。",
+        "hint": "比较函数改为 people[i].Age > people[j].Age。",
+        "answer": "输出按年龄从大到小，同岁不再按姓名排序。"
+      }
+    ],
+    "explain": "sort.Slice 接受一个切片和一个 less(i,j) 函数，按 less 定义的顺序就地排序。less 每对元素可能被多次询问，必须满足严格弱序：当两元素「相等」时必须返回 false，否则排序行为未定义。样例先按 Age 升序、Age 相等再按 Name 升序，实现多字段排序。\n\nsort.Slice 不保证稳定；若相等元素的原始顺序必须保留，用 sort.SliceStable。对基本类型切片可用 sort.Ints/sort.Strings 等便捷函数。\n\n本样例对人员切片做多字段排序。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype person struct {\n\tName string\n\tAge  int\n}\n\nfunc main() {\n\tpeople := []person{\n\t\t{\"Bob\", 30},\n\t\t{\"Al\", 25},\n\t\t{\"Cy\", 25},\n\t}\n\tsort.Slice(people, func(i, j int) bool {\n\t\tif people[i].Age != people[j].Age {\n\t\t\treturn people[i].Age < people[j].Age\n\t\t}\n\t\treturn people[i].Name < people[j].Name\n\t})\n\tfmt.Println(people)\n}\n",
+    "output": "[{Al 25} {Cy 25} {Bob 30}]"
+  },
+  "example": {
+    "id": "go-example-032",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "排序：sort.Slice 与自定义比较",
+    "summary": "用 sort.Slice 按多字段比较函数排序结构体切片。",
+    "concepts": [
+      "sort.Slice",
+      "比较函数",
+      "多字段排序"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sort\"\n)\n\ntype person struct {\n\tName string\n\tAge  int\n}\n\nfunc main() {\n\tpeople := []person{\n\t\t{\"Bob\", 30},\n\t\t{\"Al\", 25},\n\t\t{\"Cy\", 25},\n\t}\n\tsort.Slice(people, func(i, j int) bool {\n\t\tif people[i].Age != people[j].Age {\n\t\t\treturn people[i].Age < people[j].Age\n\t\t}\n\t\treturn people[i].Name < people[j].Name\n\t})\n\tfmt.Println(people)\n}\n",
+    "expectedOutput": "[{Al 25} {Cy 25} {Bob 30}]",
+    "templateType": "go"
+  }
+}

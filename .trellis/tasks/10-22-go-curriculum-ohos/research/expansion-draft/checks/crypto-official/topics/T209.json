@@ -1,0 +1,67 @@
+{
+  "id": "T209",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "same=true\nchanged=true\nempty=0\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-209",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "CRC32 分片校验",
+    "summary": "能分片更新校验和并与一次性校验对比，演示一个字节变化的检测。",
+    "concepts": [
+      "hash/crc32",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能分片更新校验和并与一次性校验对比，演示一个字节变化的检测。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "每个分片都从零开始计算再相加，不等于整条流的 CRC。",
+      "不同 CRC 多项式不能混用，编码端和验证端必须约定同一张表。"
+    ],
+    "exercises": [
+      {
+        "prompt": "插入一个空分片，检查最终 CRC 是否改变。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "以原来的 rolling 调用 Update 并传入空切片，结果保持不变，再继续后续分片。"
+      }
+    ],
+    "explain": "CRC32.Update 接收此前的校验和，因此可以沿分片连续更新，不需要为校验拼接整份大输入。示例额外拼接一份数据，仅用于与一次性 ChecksumIEEE 对照；改动最后一个字节后再次校验，结果发生变化。空输入的校验值也被明确展示。CRC 适合检测传输错误，不能代替密码学认证。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"hash/crc32\"\n)\n\nfunc main() {\n\tchunks := [][]byte{[]byte(\"sensor:\"), []byte(\"north:\"), []byte(\"21.5\")}\n\trolling := uint32(0)\n\tall := []byte{}\n\tfor _, chunk := range chunks {\n\t\trolling = crc32.Update(rolling, crc32.IEEETable, chunk)\n\t\tall = append(all, chunk...)\n\t}\n\tfmt.Printf(\"same=%t\\n\", rolling == crc32.ChecksumIEEE(all))\n\tall[len(all)-1] ^= 1\n\tfmt.Printf(\"changed=%t\\n\", rolling != crc32.ChecksumIEEE(all))\n\tfmt.Printf(\"empty=%d\\n\", crc32.ChecksumIEEE(nil))\n}\n",
+    "output": "same=true\nchanged=true\nempty=0"
+  },
+  "example": {
+    "id": "go-example-209",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "CRC32 分片校验",
+    "summary": "能分片更新校验和并与一次性校验对比，演示一个字节变化的检测。",
+    "concepts": [
+      "hash/crc32",
+      "摘要与密码基础"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"hash/crc32\"\n)\n\nfunc main() {\n\tchunks := [][]byte{[]byte(\"sensor:\"), []byte(\"north:\"), []byte(\"21.5\")}\n\trolling := uint32(0)\n\tall := []byte{}\n\tfor _, chunk := range chunks {\n\t\trolling = crc32.Update(rolling, crc32.IEEETable, chunk)\n\t\tall = append(all, chunk...)\n\t}\n\tfmt.Printf(\"same=%t\\n\", rolling == crc32.ChecksumIEEE(all))\n\tall[len(all)-1] ^= 1\n\tfmt.Printf(\"changed=%t\\n\", rolling != crc32.ChecksumIEEE(all))\n\tfmt.Printf(\"empty=%d\\n\", crc32.ChecksumIEEE(nil))\n}\n",
+    "expectedOutput": "same=true\nchanged=true\nempty=0",
+    "templateType": "go"
+  }
+}

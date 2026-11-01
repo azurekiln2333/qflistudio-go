@@ -1,0 +1,68 @@
+{
+  "id": "T039",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "count 2\nafter copy inc: 2 3\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-039",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "方法：值接收者与指针接收者",
+    "summary": "按是否修改状态选择接收者类型，理解值接收者作用于副本。",
+    "concepts": [
+      "方法",
+      "值接收者",
+      "指针接收者"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能根据是否修改状态选择接收者类型，并说明值接收者调用作用于副本。",
+    "prerequisites": [
+      "T038 嵌入"
+    ],
+    "pitfalls": [
+      "值接收者方法无法改原值：func (c counter) inc() 只是改了副本，必须用指针接收者 func (c *counter) inc()。",
+      "同一类型混用值/指针接收者：虽然合法，但会让人难以判断方法集与接口满足情况，应保持一致。"
+    ],
+    "exercises": [
+      {
+        "prompt": "把 value() 改成指针接收者并观察接口满足是否需要 &。",
+        "hint": "指针接收者方法仅 *T 满足接口，T 不满足。",
+        "answer": "改成指针接收者后，只有 *counter 满足含该方法的接口，counter 值不再满足。"
+      }
+    ],
+    "explain": "方法可以定义在值或指针接收者上。值接收者在调用时复制接收者，因此无法修改原对象；指针接收者共享同一对象，可修改状态。选择规则很直接：需要修改接收者或避免大对象复制时用指针接收者，否则值接收者更安全。\n\n样例中 counter 的 inc 用指针接收者递增 n，value 用值接收者只读。把 c 复制给 cp 后调用 cp.inc() 修改的是副本，因此 c.n 仍为 2、cp.n 为 3，直观说明值语义。\n\n方法集还决定类型是否满足接口：指针接收者方法只属于 *T。",
+    "code": "package main\n\nimport \"fmt\"\n\ntype counter struct {\n\tn int\n}\n\nfunc (c counter) value() int { return c.n } // 值接收者：拷贝\nfunc (c *counter) inc()      { c.n++ }      // 指针接收者：可修改\n\nfunc main() {\n\tc := counter{}\n\tc.inc()\n\tc.inc()\n\tfmt.Println(\"count\", c.value())\n\t// 值接收者方法作用在副本上，不影响原值\n\tcp := c\n\tcp.inc()\n\tfmt.Println(\"after copy inc:\", c.n, cp.n)\n}\n",
+    "output": "count 2\nafter copy inc: 2 3"
+  },
+  "example": {
+    "id": "go-example-039",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "方法：值接收者与指针接收者",
+    "summary": "按是否修改状态选择接收者类型，理解值接收者作用于副本。",
+    "concepts": [
+      "方法",
+      "值接收者",
+      "指针接收者"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "package main\n\nimport \"fmt\"\n\ntype counter struct {\n\tn int\n}\n\nfunc (c counter) value() int { return c.n } // 值接收者：拷贝\nfunc (c *counter) inc()      { c.n++ }      // 指针接收者：可修改\n\nfunc main() {\n\tc := counter{}\n\tc.inc()\n\tc.inc()\n\tfmt.Println(\"count\", c.value())\n\t// 值接收者方法作用在副本上，不影响原值\n\tcp := c\n\tcp.inc()\n\tfmt.Println(\"after copy inc:\", c.n, cp.n)\n}\n",
+    "expectedOutput": "count 2\nafter copy inc: 2 3",
+    "templateType": "go"
+  }
+}

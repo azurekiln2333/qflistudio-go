@@ -1,0 +1,70 @@
+{
+  "id": "T056",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "error chain: start: loadConfig: not found\nstill Is ErrNotFound: true\n  - start: loadConfig: not found\n  - loadConfig: not found\n  - not found\nstarted ok"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-056",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "错误处理模式：立即返回与上下文补充",
+    "summary": "在调用链每层用 %w 补充上下文，到边界统一处理，既不丢因又可定位。",
+    "concepts": [
+      "错误上下文",
+      "%w",
+      "调用链",
+      "分层"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能在各层补充上下文并保留底层错误，理解“立即返回 + 上下文补充”模式。",
+    "prerequisites": [
+      "T051 错误包装与 %w 的解包链"
+    ],
+    "pitfalls": [
+      "每层都替换错误（不用 %w）：底层原因丢失，无法 errors.Is。",
+      "把上下文写进日志而非错误：调用方拿不到定位信息。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在 loadConfig 中补上键名到上下文，并打印完整链。",
+        "hint": "fmt.Errorf(\"loadConfig %s: %w\", key, err)。",
+        "answer": "链变为 start: loadConfig db.dsn: not found，errors.Is 仍命中哨兵。"
+      }
+    ],
+    "explain": "惯例：错误产生处立即 return，调用链每一层用 %w 补充上下文（哪个操作、哪个键），到边界处统一打印一次。这样既不丢因，又能给出可定位的路径。示例三层函数逐层包装，最终错误文本显示完整路径，且 errors.Is 仍命中底层哨兵。示例还逐层打印解包链，直观展示上下文如何逐层累加。",
+    "code": "// T056 错误处理模式：立即返回与上下文补充。\n//\n// 惯例：错误产生处立即 return，调用链每一层用 %w 补充上下文（哪个操作、哪个键），\n// 到边界处统一打印一次。这样既不丢因，又能给出可定位的路径。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nvar ErrNotFound = errors.New(\"not found\")\n\n// 最底层：只返回原始错误。\nfunc readConfig(m map[string]string, key string) (string, error) {\n\tv, ok := m[key]\n\tif !ok {\n\t\treturn \"\", ErrNotFound\n\t}\n\treturn v, nil\n}\n\n// 中层：补充“读取哪个配置”的上下文。\nfunc loadConfig(m map[string]string) (string, error) {\n\tv, err := readConfig(m, \"db.dsn\")\n\tif err != nil {\n\t\treturn \"\", fmt.Errorf(\"loadConfig: %w\", err)\n\t}\n\treturn v, nil\n}\n\n// 上层：再补充“启动阶段”上下文。\nfunc start(m map[string]string) error {\n\tif _, err := loadConfig(m); err != nil {\n\t\treturn fmt.Errorf(\"start: %w\", err)\n\t}\n\treturn nil\n}\n\nfunc main() {\n\t// 空配置：错误链包含每一层上下文。\n\terr := start(map[string]string{})\n\tfmt.Println(\"error chain:\", err)\n\tfmt.Println(\"still Is ErrNotFound:\", errors.Is(err, ErrNotFound))\n\n\t// 逐层打印，展示上下文补充效果。\n\tfor e := err; e != nil; e = errors.Unwrap(e) {\n\t\tfmt.Println(\"  -\", e)\n\t}\n\n\t// 有配置时成功。\n\tif err := start(map[string]string{\"db.dsn\": \"postgres://x\"}); err != nil {\n\t\tfmt.Println(\"unexpected:\", err)\n\t} else {\n\t\tfmt.Println(\"started ok\")\n\t}\n}\n",
+    "output": "error chain: start: loadConfig: not found\nstill Is ErrNotFound: true\n  - start: loadConfig: not found\n  - loadConfig: not found\n  - not found\nstarted ok"
+  },
+  "example": {
+    "id": "go-example-056",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "错误处理模式：立即返回与上下文补充（示例）",
+    "summary": "对应主题 T056 的可运行示例。",
+    "concepts": [
+      "错误上下文",
+      "%w",
+      "调用链",
+      "分层"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T056 错误处理模式：立即返回与上下文补充。\n//\n// 惯例：错误产生处立即 return，调用链每一层用 %w 补充上下文（哪个操作、哪个键），\n// 到边界处统一打印一次。这样既不丢因，又能给出可定位的路径。\npackage main\n\nimport (\n\t\"errors\"\n\t\"fmt\"\n)\n\nvar ErrNotFound = errors.New(\"not found\")\n\n// 最底层：只返回原始错误。\nfunc readConfig(m map[string]string, key string) (string, error) {\n\tv, ok := m[key]\n\tif !ok {\n\t\treturn \"\", ErrNotFound\n\t}\n\treturn v, nil\n}\n\n// 中层：补充“读取哪个配置”的上下文。\nfunc loadConfig(m map[string]string) (string, error) {\n\tv, err := readConfig(m, \"db.dsn\")\n\tif err != nil {\n\t\treturn \"\", fmt.Errorf(\"loadConfig: %w\", err)\n\t}\n\treturn v, nil\n}\n\n// 上层：再补充“启动阶段”上下文。\nfunc start(m map[string]string) error {\n\tif _, err := loadConfig(m); err != nil {\n\t\treturn fmt.Errorf(\"start: %w\", err)\n\t}\n\treturn nil\n}\n\nfunc main() {\n\t// 空配置：错误链包含每一层上下文。\n\terr := start(map[string]string{})\n\tfmt.Println(\"error chain:\", err)\n\tfmt.Println(\"still Is ErrNotFound:\", errors.Is(err, ErrNotFound))\n\n\t// 逐层打印，展示上下文补充效果。\n\tfor e := err; e != nil; e = errors.Unwrap(e) {\n\t\tfmt.Println(\"  -\", e)\n\t}\n\n\t// 有配置时成功。\n\tif err := start(map[string]string{\"db.dsn\": \"postgres://x\"}); err != nil {\n\t\tfmt.Println(\"unexpected:\", err)\n\t} else {\n\t\tfmt.Println(\"started ok\")\n\t}\n}\n",
+    "expectedOutput": "error chain: start: loadConfig: not found\nstill Is ErrNotFound: true\n  - start: loadConfig: not found\n  - loadConfig: not found\n  - not found\nstarted ok",
+    "templateType": "go"
+  }
+}

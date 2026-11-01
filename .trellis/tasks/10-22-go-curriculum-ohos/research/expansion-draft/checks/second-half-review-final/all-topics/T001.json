@@ -1,0 +1,70 @@
+{
+  "id": "T001",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "hello, go\ntoolchain ready\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-001",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 语言与工具链概览",
+    "summary": "认识 Go 的设计取向，分清 go、gofmt、go vet、go test 各自负责什么。",
+    "concepts": [
+      "工具链",
+      "go run",
+      "gofmt",
+      "go vet"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能说明 Go 的编译模型，并区分 go run、gofmt、go vet、go test 的职责与典型用法。",
+    "prerequisites": [
+      "无"
+    ],
+    "pitfalls": [
+      "把 go run 当成解释执行：go run 实际是「临时编译到缓存目录再执行」，因此编译错误会在运行前报出，且它不产出可分发二进制。",
+      "误以为工具链命令可以互相替代：gofmt 只改格式不改语义，go vet 做静态可疑检查但不是类型检查替代品，go test 才是运行测试的入口。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在本机运行样例并观察输出；再执行 gofmt -l . 观察是否有未格式化文件，最后用 go vet ./... 看是否有告警。",
+        "hint": "go run 会先编译再执行；gofmt -l 只列出需要格式化的文件，不修改。",
+        "answer": "样例输出 hello, go 与 toolchain ready 两行；gofmt -l 无输出说明已格式化；go vet 无输出说明无可疑代码。"
+      }
+    ],
+    "explain": "Go 是静态编译型语言：源码先被编译器整体编译成机器码再运行，因此类型错误、未使用变量等问题在编译阶段就被拒绝，这与脚本语言「边解释边执行」不同。工具链围绕这一模型组织：go build 产出可执行文件；go run 把「编译 + 立刻执行」合成一步，产物落在临时缓存、不作为交付物；gofmt 以统一规则重排源码格式；go vet 用编译器之外的启发式规则找出可疑代码（如格式化动词与参数不匹配）；go test 负责编译并运行测试函数。理解每个命令的边界，才能知道「编译失败」应当用哪个命令复现。\n\n本样例是「一个 main 包的完整程序」的最小形态：只导入标准库 fmt 并打印两行固定文本，无需任何第三方依赖。程序本身极简，是为了让工具链成为焦点——把它交给 go run 能运行，交给 go build 能产出可分发二进制，交给 gofmt 不产生改动，交给 go vet 不产生告警。\n\n运行方式：在样例目录执行 go run .。若改用 go build -o demo . 会得到同名可执行文件，行为一致，这正是「编译模型」的可验证体现。",
+    "code": "// T001 配套样例：最小可运行程序，打印固定文本。\n// 运行：go run .（在 samples/T001 目录下）\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"hello, go\")\n\tfmt.Println(\"toolchain ready\")\n}\n",
+    "output": "hello, go\ntoolchain ready"
+  },
+  "example": {
+    "id": "go-example-001",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "最小可运行程序与固定输出",
+    "summary": "用 fmt.Println 打印两行固定文本，验证工具链可以编译并运行一个 main 包。",
+    "concepts": [
+      "工具链",
+      "go run",
+      "gofmt",
+      "go vet"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T001 配套样例：最小可运行程序，打印固定文本。\n// 运行：go run .（在 samples/T001 目录下）\npackage main\n\nimport \"fmt\"\n\nfunc main() {\n\tfmt.Println(\"hello, go\")\n\tfmt.Println(\"toolchain ready\")\n}\n",
+    "expectedOutput": "hello, go\ntoolchain ready",
+    "templateType": "go"
+  }
+}

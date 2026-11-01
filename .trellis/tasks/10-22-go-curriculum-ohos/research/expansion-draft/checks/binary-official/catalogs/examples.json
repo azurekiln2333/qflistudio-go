@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "entries": [
+    {
+      "id": "go-example-261",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "带 CRC 的二进制帧",
+      "summary": "能组装版本、长度、载荷与校验码，拒绝坏版本和篡改帧。",
+      "concepts": [
+        "encoding/binary",
+        "hash/crc32",
+        "二进制协议与位图"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n\t\"hash/crc32\"\n)\n\nfunc encode(payload []byte) []byte {\n\tif len(payload) > 1024 {\n\t\tpanic(\"payload budget\")\n\t}\n\tframe := make([]byte, 3+len(payload)+4)\n\tframe[0] = 1\n\tbinary.BigEndian.PutUint16(frame[1:3], uint16(len(payload)))\n\tcopy(frame[3:], payload)\n\tbinary.BigEndian.PutUint32(frame[len(frame)-4:], crc32.ChecksumIEEE(frame[:len(frame)-4]))\n\treturn frame\n}\nfunc decode(frame []byte) (string, error) {\n\tif len(frame) < 7 || frame[0] != 1 {\n\t\treturn \"\", fmt.Errorf(\"version/header\")\n\t}\n\tsize := int(binary.BigEndian.Uint16(frame[1:3]))\n\tif size > 1024 || len(frame) != 3+size+4 {\n\t\treturn \"\", fmt.Errorf(\"size\")\n\t}\n\twant := binary.BigEndian.Uint32(frame[len(frame)-4:])\n\tif crc32.ChecksumIEEE(frame[:len(frame)-4]) != want {\n\t\treturn \"\", fmt.Errorf(\"checksum\")\n\t}\n\treturn string(frame[3 : 3+size]), nil\n}\nfunc main() {\n\twire := encode([]byte(\"hello\"))\n\ttext, err := decode(wire)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"payload=%s\\n\", text)\n\tbad := append([]byte(nil), wire...)\n\tbad[0] = 2\n\t_, err = decode(bad)\n\tfmt.Printf(\"version-rejected=%t\\n\", err != nil)\n\twire[3] ^= 1\n\t_, err = decode(wire)\n\tfmt.Printf(\"tampered=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "payload=hello\nversion-rejected=true\ntampered=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-262",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "传感器位字段",
+      "summary": "能从 uint16 帧提取标志、量程和数值，并验证重新打包一致。",
+      "concepts": [
+        "encoding/binary",
+        "二进制协议与位图"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n)\n\nfunc pack(enabled bool, scale, value uint16) (uint16, error) {\n\tif scale > 7 || value > 4095 {\n\t\treturn 0, fmt.Errorf(\"field overflow\")\n\t}\n\tword := scale<<12 | value\n\tif enabled {\n\t\tword |= 1 << 15\n\t}\n\treturn word, nil\n}\nfunc main() {\n\tword, err := pack(true, 3, 1234)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tvar bytes [2]byte\n\tbinary.BigEndian.PutUint16(bytes[:], word)\n\trestored := binary.BigEndian.Uint16(bytes[:])\n\tenabled := restored&(1<<15) != 0\n\tscale := (restored >> 12) & 7\n\tvalue := restored & 0x0fff\n\tagain, err := pack(enabled, scale, value)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"enabled=%t range=%d value=%d\\nwire=%x\\nroundtrip=%t\\n\", enabled, scale, value, bytes, again == word)\n\t_, err = pack(false, 8, 0)\n\tfmt.Printf(\"overflow=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "enabled=true range=3 value=1234\nwire=b4d2\nroundtrip=true\noverflow=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-263",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "差分 Varint 压缩",
+      "summary": "能对递增事件 ID 存储差分，逐项解码还原并处理截断。",
+      "concepts": [
+        "encoding/binary",
+        "二进制协议与位图"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n)\n\nfunc encode(ids []uint64) []byte {\n\tout := []byte{}\n\tprevious := uint64(0)\n\tfor _, id := range ids {\n\t\tif id < previous {\n\t\t\tpanic(\"IDs not ordered\")\n\t\t}\n\t\tvar buffer [10]byte\n\t\tn := binary.PutUvarint(buffer[:], id-previous)\n\t\tout = append(out, buffer[:n]...)\n\t\tprevious = id\n\t}\n\treturn out\n}\nfunc decode(wire []byte) ([]uint64, error) {\n\tids := []uint64{}\n\tprevious := uint64(0)\n\tfor len(wire) > 0 {\n\t\tdelta, n := binary.Uvarint(wire)\n\t\tif n <= 0 {\n\t\t\treturn nil, fmt.Errorf(\"truncated or overflow varint\")\n\t\t}\n\t\tif delta > ^uint64(0)-previous {\n\t\t\treturn nil, fmt.Errorf(\"ID overflow\")\n\t\t}\n\t\tprevious += delta\n\t\tids = append(ids, previous)\n\t\twire = wire[n:]\n\t}\n\treturn ids, nil\n}\nfunc main() {\n\twire := encode([]uint64{100, 101, 130, 500})\n\tids, err := decode(wire)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"ids=%v\\nbytes=%d\\n\", ids, len(wire))\n\t_, err = decode(wire[:len(wire)-1])\n\tfmt.Printf(\"truncated=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "ids=[100 101 130 500]\nbytes=5\ntruncated=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-264",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "Netstring 消息解析",
+      "summary": "能解析 length:data, 格式的连续消息，验证长度与结尾逗号。",
+      "concepts": [
+        "strconv",
+        "strings",
+        "二进制协议与位图"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"strconv\"\n\t\"strings\"\n)\n\nfunc parse(wire string) ([]string, error) {\n\tframes := []string{}\n\tfor wire != \"\" {\n\t\tcolon := strings.IndexByte(wire, ':')\n\t\tif colon <= 0 {\n\t\t\treturn nil, fmt.Errorf(\"missing length\")\n\t\t}\n\t\tprefix := wire[:colon]\n\t\tif len(prefix) > 1 && prefix[0] == '0' {\n\t\t\treturn nil, fmt.Errorf(\"leading zero\")\n\t\t}\n\t\tfor _, c := range prefix {\n\t\t\tif c < '0' || c > '9' {\n\t\t\t\treturn nil, fmt.Errorf(\"bad length\")\n\t\t\t}\n\t\t}\n\t\tn, err := strconv.Atoi(prefix)\n\t\tif err != nil || n > 64 {\n\t\t\treturn nil, fmt.Errorf(\"length budget\")\n\t\t}\n\t\tstart := colon + 1\n\t\tif n >= len(wire)-start || wire[start+n] != ',' {\n\t\t\treturn nil, fmt.Errorf(\"truncated or missing comma\")\n\t\t}\n\t\tframes = append(frames, wire[start:start+n])\n\t\twire = wire[start+n+1:]\n\t}\n\treturn frames, nil\n}\nfunc main() {\n\tframes, err := parse(\"3:cat,0:,6:中文,\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"frames=%q\\n\", frames)\n\tfor _, bad := range []string{\"4:cat,\", \"3:cat;\", \"03:cat,\"} {\n\t\t_, err := parse(bad)\n\t\tfmt.Printf(\"bad=%t\\n\", err != nil)\n\t}\n}\n",
+      "expectedOutput": "frames=[\"cat\" \"\" \"中文\"]\nbad=true\nbad=true\nbad=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-265",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "DNS 标签编码",
+      "summary": "能将域名编码为标签长度序列，仅做离线格式处理并拒绝超长标签。",
+      "concepts": [
+        "bytes",
+        "strings",
+        "二进制协议与位图"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"fmt\"\n\t\"strings\"\n)\n\nfunc encode(name string) ([]byte, error) {\n\tvar out bytes.Buffer\n\tfor _, label := range strings.Split(name, \".\") {\n\t\tif len(label) < 1 || len(label) > 63 {\n\t\t\treturn nil, fmt.Errorf(\"label length\")\n\t\t}\n\t\tfor _, c := range label {\n\t\t\tif c > 127 {\n\t\t\t\treturn nil, fmt.Errorf(\"ASCII labels only\")\n\t\t\t}\n\t\t}\n\t\tout.WriteByte(byte(len(label)))\n\t\tout.WriteString(label)\n\t}\n\tout.WriteByte(0)\n\tif out.Len() > 255 {\n\t\treturn nil, fmt.Errorf(\"name too long\")\n\t}\n\treturn out.Bytes(), nil\n}\nfunc decode(wire []byte) (string, error) {\n\tlabels := []string{}\n\tfor len(wire) > 0 {\n\t\tn := int(wire[0])\n\t\twire = wire[1:]\n\t\tif n == 0 {\n\t\t\tif len(wire) != 0 {\n\t\t\t\treturn \"\", fmt.Errorf(\"trailing data\")\n\t\t\t}\n\t\t\treturn strings.Join(labels, \".\"), nil\n\t\t}\n\t\tif n > 63 || len(wire) < n {\n\t\t\treturn \"\", fmt.Errorf(\"bad label\")\n\t\t}\n\t\tlabels = append(labels, string(wire[:n]))\n\t\twire = wire[n:]\n\t}\n\treturn \"\", fmt.Errorf(\"missing root label\")\n}\nfunc main() {\n\twire, err := encode(\"www.example.test\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tname, err := decode(wire)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"name=%s\\nbytes=%d\\n\", name, len(wire))\n\t_, err = encode(strings.Repeat(\"a\", 64) + \".test\")\n\tfmt.Printf(\"long-label=%t\\n\", err != nil)\n\t_, err = decode(wire[:len(wire)-1])\n\tfmt.Printf(\"missing-root=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "name=www.example.test\nbytes=18\nlong-label=true\nmissing-root=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-266",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "分片帧解包器",
+      "summary": "能把随机切分的长度帧喂给解包器，缓存半帧并输出多帧。",
+      "concepts": [
+        "encoding/binary",
+        "bytes",
+        "二进制协议与位图"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"bytes\"\n\t\"encoding/binary\"\n\t\"fmt\"\n)\n\ntype Unpacker struct {\n\tPending []byte\n\tFailed  bool\n}\n\nfunc (u *Unpacker) Feed(chunk []byte) ([]string, error) {\n\tif u.Failed {\n\t\treturn nil, fmt.Errorf(\"failed state\")\n\t}\n\tu.Pending = append(u.Pending, chunk...)\n\tframes := []string{}\n\tfor len(u.Pending) >= 2 {\n\t\tn := int(binary.BigEndian.Uint16(u.Pending[:2]))\n\t\tif n > 32 {\n\t\t\tu.Failed = true\n\t\t\treturn nil, fmt.Errorf(\"frame budget\")\n\t\t}\n\t\tif len(u.Pending) < 2+n {\n\t\t\tbreak\n\t\t}\n\t\tframes = append(frames, string(u.Pending[2:2+n]))\n\t\tu.Pending = u.Pending[2+n:]\n\t}\n\treturn frames, nil\n}\nfunc main() {\n\tvar wire bytes.Buffer\n\tfor _, text := range []string{\"cat\", \"go\"} {\n\t\tvar header [2]byte\n\t\tbinary.BigEndian.PutUint16(header[:], uint16(len(text)))\n\t\twire.Write(header[:])\n\t\twire.WriteString(text)\n\t}\n\tall := wire.Bytes()\n\tu := &Unpacker{}\n\tresult := []string{}\n\tfor _, part := range [][]byte{all[:1], all[1:4], all[4:6], all[6:]} {\n\t\tframes, err := u.Feed(part)\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tresult = append(result, frames...)\n\t}\n\tfmt.Printf(\"frames=%v\\npending=%d\\n\", result, len(u.Pending))\n\t_, err := u.Feed([]byte{0, 33})\n\tfmt.Printf(\"oversize=%t\\n\", err != nil)\n}\n",
+      "expectedOutput": "frames=[cat go]\npending=0\noversize=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-267",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "位图空闲槽分配",
+      "summary": "能用 uint64 位图申请、释放资源槽，检测用尽并重用空槽。",
+      "concepts": [
+        "math/bits",
+        "二进制协议与位图"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/bits\"\n)\n\ntype Slots struct {\n\tUsed     uint64\n\tCapacity uint\n}\n\nfunc (s *Slots) Allocate() (int, error) {\n\tif s.Capacity == 0 || s.Capacity > 64 {\n\t\treturn -1, fmt.Errorf(\"capacity\")\n\t}\n\tmask := ^uint64(0)\n\tif s.Capacity < 64 {\n\t\tmask = (uint64(1) << s.Capacity) - 1\n\t}\n\tfree := ^s.Used & mask\n\tif free == 0 {\n\t\treturn -1, fmt.Errorf(\"full\")\n\t}\n\tindex := bits.TrailingZeros64(free)\n\ts.Used |= uint64(1) << uint(index)\n\treturn index, nil\n}\nfunc (s *Slots) Release(index uint) error {\n\tif index >= s.Capacity || s.Used&(uint64(1)<<index) == 0 {\n\t\treturn fmt.Errorf(\"not allocated\")\n\t}\n\ts.Used &^= uint64(1) << index\n\treturn nil\n}\nfunc main() {\n\ts := &Slots{Capacity: 3}\n\tvalues := []int{}\n\tfor i := 0; i < 3; i++ {\n\t\tslot, err := s.Allocate()\n\t\tif err != nil {\n\t\t\tpanic(err)\n\t\t}\n\t\tvalues = append(values, slot)\n\t}\n\t_, err := s.Allocate()\n\tfmt.Printf(\"slots=%v\\nfull=%t\\n\", values, err != nil)\n\tif err = s.Release(1); err != nil {\n\t\tpanic(err)\n\t}\n\tslot, err := s.Allocate()\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"reused=%d\\n\", slot)\n}\n",
+      "expectedOutput": "slots=[0 1 2]\nfull=true\nreused=1",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-268",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "位集合交并差",
+      "summary": "能以位集合表达权限，计算交并差并列出最终授权项。",
+      "concepts": [
+        "math/bits",
+        "二进制协议与位图"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/bits\"\n)\n\nfunc names(set uint64) []string {\n\tall := []string{\"read\", \"write\", \"export\", \"admin\"}\n\tout := []string{}\n\tfor i, name := range all {\n\t\tif set&(uint64(1)<<uint(i)) != 0 {\n\t\t\tout = append(out, name)\n\t\t}\n\t}\n\treturn out\n}\nfunc main() {\n\tuser := uint64(1<<0 | 1<<1 | 1<<2)\n\tpolicy := uint64(1<<0 | 1<<2 | 1<<3)\n\tintersection := user & policy\n\tunion := user | policy\n\tremoved := user &^ policy\n\tfmt.Printf(\"allowed=%v\\nunion-count=%d\\nremoved=%v\\n\", names(intersection), bits.OnesCount64(union), names(removed))\n\tgrant := intersection &^ (uint64(1) << 2)\n\tfmt.Printf(\"after-revoke=%v\\n\", names(grant))\n}\n",
+      "expectedOutput": "allowed=[read export]\nunion-count=4\nremoved=[write]\nafter-revoke=[read]",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-269",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "IEEE754 字节往返",
+      "summary": "能以固定字节序编码浮点数，验证普通值和负零的位模式。",
+      "concepts": [
+        "math",
+        "encoding/binary",
+        "二进制协议与位图"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n\t\"math\"\n)\n\nfunc roundtrip(value float64) (float64, []byte) {\n\twire := make([]byte, 8)\n\tbinary.BigEndian.PutUint64(wire, math.Float64bits(value))\n\treturn math.Float64frombits(binary.BigEndian.Uint64(wire)), wire\n}\nfunc main() {\n\tfor _, value := range []float64{1.5, math.Copysign(0, -1)} {\n\t\trestored, wire := roundtrip(value)\n\t\tfmt.Printf(\"wire=%x same-bits=%t negative=%t\\n\", wire, math.Float64bits(value) == math.Float64bits(restored), math.Signbit(restored))\n\t}\n}\n",
+      "expectedOutput": "wire=3ff8000000000000 same-bits=true negative=false\nwire=8000000000000000 same-bits=true negative=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    },
+    {
+      "id": "go-example-270",
+      "language": "go",
+      "type": "go",
+      "locale": "zh-CN",
+      "level": "intermediate",
+      "title": "有符号 ZigZag 编码",
+      "summary": "能将正负小整数映射无符号 varint，验证边界值往返。",
+      "concepts": [
+        "encoding/binary",
+        "二进制协议与位图"
+      ],
+      "source": "https://go.dev/doc/",
+      "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+      "updatedAt": "2026-10-23",
+      "code": "package main\n\nimport (\n\t\"encoding/binary\"\n\t\"fmt\"\n)\n\nfunc zigzag(value int64) uint64  { return uint64(value<<1) ^ uint64(value>>63) }\nfunc restore(value uint64) int64 { return int64(value>>1) ^ -int64(value&1) }\nfunc main() {\n\tfor _, value := range []int64{0, -1, 1, -2, 2, -9223372036854775808, 9223372036854775807} {\n\t\tencoded := zigzag(value)\n\t\tvar buffer [10]byte\n\t\tn := binary.PutUvarint(buffer[:], encoded)\n\t\tread, size := binary.Uvarint(buffer[:n])\n\t\tfmt.Printf(\"%d zigzag=%d bytes=%d same=%t\\n\", value, encoded, n, size == n && restore(read) == value)\n\t}\n}\n",
+      "expectedOutput": "0 zigzag=0 bytes=1 same=true\n-1 zigzag=1 bytes=1 same=true\n1 zigzag=2 bytes=1 same=true\n-2 zigzag=3 bytes=1 same=true\n2 zigzag=4 bytes=1 same=true\n-9223372036854775808 zigzag=18446744073709551615 bytes=10 same=true\n9223372036854775807 zigzag=18446744073709551614 bytes=10 same=true",
+      "templateType": "go",
+      "inputFixtures": {}
+    }
+  ]
+}

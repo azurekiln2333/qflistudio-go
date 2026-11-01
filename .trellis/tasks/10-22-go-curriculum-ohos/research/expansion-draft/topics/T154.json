@@ -1,0 +1,69 @@
+{
+  "id": "T154",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "path=[A B D F] hops=3\nunreachable=true same=[A]\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-154",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "最短跳数路径",
+    "summary": "在无权站点图中寻找最少跳数路径。处理起点即终点和不可达站点。",
+    "concepts": [
+      "广度优先搜索",
+      "container/list",
+      "父节点回溯"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "在无权站点图中寻找最少跳数路径。处理起点即终点和不可达站点。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "出队时才标记访问，同一节点会重复入队。",
+      "BFS 保证的是最少边数，不保证带权路线的最小总费用。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为结果同时返回跳数，并对不可达结果返回明确错误。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "路径成功时跳数为 len(path)-1。空路径返回不可达错误。起点等于终点的单节点路径返回零。"
+      }
+    ],
+    "explain": "BFS 按距离逐层扩展，首次访问一个站点时记录父节点。因此到终点的回溯链具有最少边数。入队时设置访问标记。这样多个邻居不会重复把同一站点加入队列。邻接表使用固定顺序，最短路径并列时结果也确定。无权图的最少边数与带权图最短距离不同。不能把此方法直接用于距离各异的道路。",
+    "code": "package main\n\nimport (\n\t\"container/list\"\n\t\"fmt\"\n)\n\nfunc route(graph map[string][]string, start, target string) []string {\n\tqueue := list.New()\n\tqueue.PushBack(start)\n\tparent := map[string]string{start: \"\"}\n\tfor queue.Len() > 0 {\n\t\telement := queue.Front()\n\t\tat := element.Value.(string)\n\t\tqueue.Remove(element)\n\t\tif at == target {\n\t\t\tpath := []string{}\n\t\t\tfor node := target; node != \"\"; node = parent[node] {\n\t\t\t\tpath = append(path, node)\n\t\t\t}\n\t\t\tfor left, right := 0, len(path)-1; left < right; left, right = left+1, right-1 {\n\t\t\t\tpath[left], path[right] = path[right], path[left]\n\t\t\t}\n\t\t\treturn path\n\t\t}\n\t\tfor _, next := range graph[at] {\n\t\t\tif _, seen := parent[next]; !seen {\n\t\t\t\tparent[next] = at\n\t\t\t\tqueue.PushBack(next)\n\t\t\t}\n\t\t}\n\t}\n\treturn nil\n}\nfunc main() {\n\tgraph := map[string][]string{\"A\": {\"B\", \"C\"}, \"B\": {\"D\"}, \"C\": {\"D\", \"E\"}, \"D\": {\"F\"}, \"E\": {\"F\"}, \"F\": {}}\n\tpath := route(graph, \"A\", \"F\")\n\tfmt.Printf(\"path=%v hops=%d\\n\", path, len(path)-1)\n\tfmt.Printf(\"unreachable=%t same=%v\\n\", route(graph, \"A\", \"Z\") == nil, route(graph, \"A\", \"A\"))\n}\n",
+    "output": "path=[A B D F] hops=3\nunreachable=true same=[A]"
+  },
+  "example": {
+    "id": "go-example-154",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "最短跳数路径",
+    "summary": "在无权站点图中寻找最少跳数路径。处理起点即终点和不可达站点。",
+    "concepts": [
+      "广度优先搜索",
+      "container/list",
+      "父节点回溯"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"container/list\"\n\t\"fmt\"\n)\n\nfunc route(graph map[string][]string, start, target string) []string {\n\tqueue := list.New()\n\tqueue.PushBack(start)\n\tparent := map[string]string{start: \"\"}\n\tfor queue.Len() > 0 {\n\t\telement := queue.Front()\n\t\tat := element.Value.(string)\n\t\tqueue.Remove(element)\n\t\tif at == target {\n\t\t\tpath := []string{}\n\t\t\tfor node := target; node != \"\"; node = parent[node] {\n\t\t\t\tpath = append(path, node)\n\t\t\t}\n\t\t\tfor left, right := 0, len(path)-1; left < right; left, right = left+1, right-1 {\n\t\t\t\tpath[left], path[right] = path[right], path[left]\n\t\t\t}\n\t\t\treturn path\n\t\t}\n\t\tfor _, next := range graph[at] {\n\t\t\tif _, seen := parent[next]; !seen {\n\t\t\t\tparent[next] = at\n\t\t\t\tqueue.PushBack(next)\n\t\t\t}\n\t\t}\n\t}\n\treturn nil\n}\nfunc main() {\n\tgraph := map[string][]string{\"A\": {\"B\", \"C\"}, \"B\": {\"D\"}, \"C\": {\"D\", \"E\"}, \"D\": {\"F\"}, \"E\": {\"F\"}, \"F\": {}}\n\tpath := route(graph, \"A\", \"F\")\n\tfmt.Printf(\"path=%v hops=%d\\n\", path, len(path)-1)\n\tfmt.Printf(\"unreachable=%t same=%v\\n\", route(graph, \"A\", \"Z\") == nil, route(graph, \"A\", \"A\"))\n}\n",
+    "expectedOutput": "path=[A B D F] hops=3\nunreachable=true same=[A]",
+    "templateType": "go"
+  }
+}

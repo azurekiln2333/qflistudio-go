@@ -1,0 +1,67 @@
+{
+  "id": "T236",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "invalid=0\nfinal=20:v20\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-236",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "只读快照发布",
+    "summary": "能发布不可变配置快照，多个读者始终看到一个完整版本。",
+    "concepts": [
+      "sync/atomic",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "能发布不可变配置快照，多个读者始终看到一个完整版本。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "同一个 atomic.Value 的 Store 必须保持具体类型一致，不能一会存 Config 一会存指针。",
+      "发布后修改其中的 map 或切片仍会造成共享数据竞争，应先深复制。"
+    ],
+    "exercises": [
+      {
+        "prompt": "在 Config 加入端口切片，并保证发布后不被外部修改。",
+        "hint": "先保持现有输入的结果，再为新边界增加独立输入。",
+        "answer": "构造快照时复制切片；读取接口也不要将可修改内部切片直接暴露给调用方。"
+      }
+    ],
+    "explain": "发布端构造完整 Config 值后一次 Store，读取者一次 Load 得到同一版本的字段组合。四个读者反复检查 Version 和 Label 的关联，最终版本固定为二十。示例使用只含值字段的结构，不共享可变 map 或切片。atomic.Value 保证发布原子性，却不会替你把内部引用指向的数据变成不可变。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"sync/atomic\"\n)\n\ntype Config struct {\n\tVersion int\n\tLabel   string\n}\n\nfunc main() {\n\tvar current atomic.Value\n\tcurrent.Store(Config{1, \"v1\"})\n\tready := make(chan struct{})\n\tvar readers sync.WaitGroup\n\tvar invalid int32\n\tfor i := 0; i < 4; i++ {\n\t\treaders.Add(1)\n\t\tgo func() {\n\t\t\tdefer readers.Done()\n\t\t\t<-ready\n\t\t\tfor n := 0; n < 100; n++ {\n\t\t\t\tsnapshot := current.Load().(Config)\n\t\t\t\tif snapshot.Label != fmt.Sprintf(\"v%d\", snapshot.Version) {\n\t\t\t\t\tatomic.AddInt32(&invalid, 1)\n\t\t\t\t}\n\t\t\t}\n\t\t}()\n\t}\n\tclose(ready)\n\tfor version := 2; version <= 20; version++ {\n\t\tcurrent.Store(Config{version, fmt.Sprintf(\"v%d\", version)})\n\t}\n\treaders.Wait()\n\tfinal := current.Load().(Config)\n\tfmt.Printf(\"invalid=%d\\nfinal=%d:%s\\n\", invalid, final.Version, final.Label)\n}\n",
+    "output": "invalid=0\nfinal=20:v20"
+  },
+  "example": {
+    "id": "go-example-236",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "只读快照发布",
+    "summary": "能发布不可变配置快照，多个读者始终看到一个完整版本。",
+    "concepts": [
+      "sync/atomic",
+      "并发与所有权"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"sync\"\n\t\"sync/atomic\"\n)\n\ntype Config struct {\n\tVersion int\n\tLabel   string\n}\n\nfunc main() {\n\tvar current atomic.Value\n\tcurrent.Store(Config{1, \"v1\"})\n\tready := make(chan struct{})\n\tvar readers sync.WaitGroup\n\tvar invalid int32\n\tfor i := 0; i < 4; i++ {\n\t\treaders.Add(1)\n\t\tgo func() {\n\t\t\tdefer readers.Done()\n\t\t\t<-ready\n\t\t\tfor n := 0; n < 100; n++ {\n\t\t\t\tsnapshot := current.Load().(Config)\n\t\t\t\tif snapshot.Label != fmt.Sprintf(\"v%d\", snapshot.Version) {\n\t\t\t\t\tatomic.AddInt32(&invalid, 1)\n\t\t\t\t}\n\t\t\t}\n\t\t}()\n\t}\n\tclose(ready)\n\tfor version := 2; version <= 20; version++ {\n\t\tcurrent.Store(Config{version, fmt.Sprintf(\"v%d\", version)})\n\t}\n\treaders.Wait()\n\tfinal := current.Load().(Config)\n\tfmt.Printf(\"invalid=%d\\nfinal=%d:%s\\n\", invalid, final.Version, final.Label)\n}\n",
+    "expectedOutput": "invalid=0\nfinal=20:v20",
+    "templateType": "go"
+  }
+}

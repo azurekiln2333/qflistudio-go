@@ -1,0 +1,70 @@
+{
+  "id": "T094",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run main.go",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "matches: 3\n  key=user     value=alice\n  key=role     value=admin\n  key=active   value=true\nsingle full match: host=node1\nsingle group1: host\nsingle group2: node1\nno match is nil: true"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-094",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "正则一：regexp 匹配与子匹配",
+    "summary": "用 regexp.MustCompile 预编译并对固定文本提取捕获组。",
+    "concepts": [
+      "regexp",
+      "MustCompile",
+      "FindAllStringSubmatch",
+      "捕获组"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "objective": "能用 FindStringSubmatch/FindAllStringSubmatch 提取捕获组，并用 MustCompile 预编译。",
+    "prerequisites": [
+      "T035 字符串处理：strings 包常用函数"
+    ],
+    "pitfalls": [
+      "把 MustCompile 放进热路径：每次调用都会重新编译，性能差；应预编译为包级变量。",
+      "把 FindStringSubmatch 的 nil 当作空切片：无匹配时返回 nil，直接索引会 panic。"
+    ],
+    "exercises": [
+      {
+        "prompt": "写一个正则从 'a=1;b=2' 提取所有键值对并打印。",
+        "hint": "用 (\\w+)=(\\w+) 配合 FindAllStringSubmatch。",
+        "answer": "re.FindAllStringSubmatch(\"a=1;b=2\", -1) 返回二维切片，逐个打印 m[1],m[2]。"
+      }
+    ],
+    "explain": "regexp 包提供 RE2 风格正则（保证线性时间，无回溯爆炸）。FindStringSubmatch 返回包含整体匹配与各捕获组的切片：m[0] 是整体，m[1..] 是括号组。无匹配时返回 nil，因此判断存在性最稳妥的方式是比较 nil 或检查长度。MustCompile 在正则非法时 panic，适合加载时预编译为包级变量，避免重复编译。示例对固定字符串提取 key=value 组，输出确定。",
+    "code": "// T094 正则一：regexp 匹配与子匹配。\n//\n// regexp.MustCompile 在正则非法时 panic，适合包级常量；FindStringSubmatch\n// 返回整体匹配与各捕获组。本示例从固定字符串中提取结构化字段，输出确定。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"regexp\"\n)\n\nfunc main() {\n\t// 匹配形如 \"key=value\" 的日志片段，捕获 key 与 value。\n\tre := regexp.MustCompile(`(\\w+)=(\\w+)`)\n\n\tline := \"user=alice role=admin active=true\"\n\t// 找出所有匹配。\n\tall := re.FindAllStringSubmatch(line, -1)\n\tfmt.Println(\"matches:\", len(all))\n\tfor _, m := range all {\n\t\t// m[0] 是整体，m[1]/m[2] 是捕获组。\n\t\tfmt.Printf(\"  key=%-8s value=%s\\n\", m[1], m[2])\n\t}\n\n\t// 单个匹配。\n\tone := re.FindStringSubmatch(\"host=node1\")\n\tfmt.Println(\"single full match:\", one[0])\n\tfmt.Println(\"single group1:\", one[1])\n\tfmt.Println(\"single group2:\", one[2])\n\n\t// 无匹配时返回 nil；这里做存在性判断。\n\tfmt.Println(\"no match is nil:\", re.FindStringSubmatch(\"nokv\") == nil)\n}\n",
+    "output": "matches: 3\n  key=user     value=alice\n  key=role     value=admin\n  key=active   value=true\nsingle full match: host=node1\nsingle group1: host\nsingle group2: node1\nno match is nil: true"
+  },
+  "example": {
+    "id": "go-example-094",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "正则一：regexp 匹配与子匹配（示例）",
+    "summary": "对应主题 T094 的可运行示例。",
+    "concepts": [
+      "regexp",
+      "MustCompile",
+      "FindAllStringSubmatch",
+      "捕获组"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-12",
+    "code": "// T094 正则一：regexp 匹配与子匹配。\n//\n// regexp.MustCompile 在正则非法时 panic，适合包级常量；FindStringSubmatch\n// 返回整体匹配与各捕获组。本示例从固定字符串中提取结构化字段，输出确定。\npackage main\n\nimport (\n\t\"fmt\"\n\t\"regexp\"\n)\n\nfunc main() {\n\t// 匹配形如 \"key=value\" 的日志片段，捕获 key 与 value。\n\tre := regexp.MustCompile(`(\\w+)=(\\w+)`)\n\n\tline := \"user=alice role=admin active=true\"\n\t// 找出所有匹配。\n\tall := re.FindAllStringSubmatch(line, -1)\n\tfmt.Println(\"matches:\", len(all))\n\tfor _, m := range all {\n\t\t// m[0] 是整体，m[1]/m[2] 是捕获组。\n\t\tfmt.Printf(\"  key=%-8s value=%s\\n\", m[1], m[2])\n\t}\n\n\t// 单个匹配。\n\tone := re.FindStringSubmatch(\"host=node1\")\n\tfmt.Println(\"single full match:\", one[0])\n\tfmt.Println(\"single group1:\", one[1])\n\tfmt.Println(\"single group2:\", one[2])\n\n\t// 无匹配时返回 nil；这里做存在性判断。\n\tfmt.Println(\"no match is nil:\", re.FindStringSubmatch(\"nokv\") == nil)\n}\n",
+    "expectedOutput": "matches: 3\n  key=user     value=alice\n  key=role     value=admin\n  key=active   value=true\nsingle full match: host=node1\nsingle group1: host\nsingle group2: node1\nno match is nil: true",
+    "templateType": "go"
+  }
+}

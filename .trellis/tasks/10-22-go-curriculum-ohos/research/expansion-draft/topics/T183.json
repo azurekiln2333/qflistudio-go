@@ -1,0 +1,71 @@
+{
+  "id": "T183",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "glob=[docs/a.md]\nrecursive=[docs/a.md docs/nested/c.md]\nbad-pattern=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-183",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Glob 与确定性列表",
+    "summary": "按模式查找文档。比较单层通配和递归遍历。处理非法匹配模式。",
+    "concepts": [
+      "fs.Glob",
+      "fs.WalkDir",
+      "目录深度",
+      "模式错误"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "按模式查找文档。比较单层通配和递归遍历。处理非法匹配模式。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "Glob 的星号不跨目录分隔符，不等价于递归查找。",
+      "没有匹配与模式语法错误是两种结果，应分别处理。"
+    ],
+    "exercises": [
+      {
+        "prompt": "让递归查询忽略隐藏目录，但保留普通目录内的隐藏文件。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "在 WalkDir 回调中仅对 IsDir 且名称以点开头的节点返回 SkipDir。先排除根点。文件节点继续应用后缀规则。"
+      }
+    ],
+    "explain": "docs/*.md 只匹配 docs 下这一层。星号不会跨越斜线。所以嵌套目录中的 c.md 不会进入 Glob 结果。递归列表则使用 WalkDir 检查文件后缀。并排序输出全部匹配项。两种工具解决不同查询。不应该把 glob 星号误当作递归搜索。非法方括号模式返回错误。不能与没有匹配项混为一谈。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"io/fs\"\n\t\"sort\"\n\t\"strings\"\n\t\"testing/fstest\"\n)\n\nfunc main() {\n\ttree := fstest.MapFS{\"docs/a.md\": &fstest.MapFile{}, \"docs/b.txt\": &fstest.MapFile{}, \"docs/nested/c.md\": &fstest.MapFile{}, \"readme.md\": &fstest.MapFile{}}\n\tdirect, err := fs.Glob(tree, \"docs/*.md\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\trecursive := []string{}\n\terr = fs.WalkDir(tree, \"docs\", func(name string, entry fs.DirEntry, err error) error {\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tif !entry.IsDir() && strings.HasSuffix(name, \".md\") {\n\t\t\trecursive = append(recursive, name)\n\t\t}\n\t\treturn nil\n\t})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tsort.Strings(recursive)\n\tfmt.Printf(\"glob=%v\\nrecursive=%v\\n\", direct, recursive)\n\t_, err = fs.Glob(tree, \"[\")\n\tfmt.Printf(\"bad-pattern=%t\\n\", err != nil)\n}\n",
+    "output": "glob=[docs/a.md]\nrecursive=[docs/a.md docs/nested/c.md]\nbad-pattern=true"
+  },
+  "example": {
+    "id": "go-example-183",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Glob 与确定性列表",
+    "summary": "按模式查找文档。比较单层通配和递归遍历。处理非法匹配模式。",
+    "concepts": [
+      "fs.Glob",
+      "fs.WalkDir",
+      "目录深度",
+      "模式错误"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"io/fs\"\n\t\"sort\"\n\t\"strings\"\n\t\"testing/fstest\"\n)\n\nfunc main() {\n\ttree := fstest.MapFS{\"docs/a.md\": &fstest.MapFile{}, \"docs/b.txt\": &fstest.MapFile{}, \"docs/nested/c.md\": &fstest.MapFile{}, \"readme.md\": &fstest.MapFile{}}\n\tdirect, err := fs.Glob(tree, \"docs/*.md\")\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\trecursive := []string{}\n\terr = fs.WalkDir(tree, \"docs\", func(name string, entry fs.DirEntry, err error) error {\n\t\tif err != nil {\n\t\t\treturn err\n\t\t}\n\t\tif !entry.IsDir() && strings.HasSuffix(name, \".md\") {\n\t\t\trecursive = append(recursive, name)\n\t\t}\n\t\treturn nil\n\t})\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tsort.Strings(recursive)\n\tfmt.Printf(\"glob=%v\\nrecursive=%v\\n\", direct, recursive)\n\t_, err = fs.Glob(tree, \"[\")\n\tfmt.Printf(\"bad-pattern=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "glob=[docs/a.md]\nrecursive=[docs/a.md docs/nested/c.md]\nbad-pattern=true",
+    "templateType": "go"
+  }
+}

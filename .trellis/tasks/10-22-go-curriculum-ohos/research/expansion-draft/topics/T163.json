@@ -1,0 +1,69 @@
+{
+  "id": "T163",
+  "runtime": "desktop",
+  "importKind": "single-file",
+  "runCommand": "go run .",
+  "verification": {
+    "kind": "stdout-exact",
+    "expected": "C70,35=112186277816662845432\nfits-int64=false\nC0,0=1\ninvalid=true\n"
+  },
+  "sampleFiles": [
+    "main.go"
+  ],
+  "tutorial": {
+    "id": "go-tutorial-163",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "大整数排列组合",
+    "summary": "计算超出 int64 的组合数，以逐步乘除递推保持精确整数结果。",
+    "concepts": [
+      "math/big.Int",
+      "组合数递推",
+      "精确除法"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "objective": "计算超出 int64 的组合数，以逐步乘除递推保持精确整数结果。",
+    "prerequisites": [
+      "T035",
+      "T049"
+    ],
+    "pitfalls": [
+      "用 float64 计算后转整数无法恢复丢失的低位。",
+      "大整数操作会改变接收者，循环中要注意中间值别名。"
+    ],
+    "exercises": [
+      {
+        "prompt": "为 n 增加一万的上限。分配和循环开始前返回预算错误。",
+        "hint": "先保持现有输入的结果。再为新边界增加独立输入。",
+        "answer": "先检查 n 的非负性与最大值。再检查 0<=k<=n。最后应用对称性。不要等大整数增长后才拒绝。"
+      }
+    ],
+    "explain": "C(n,k) 可通过每一步乘 n-k+i 再除 i 递推。结果始终为整数。利用 k 与 n-k 对称减少循环。big.Int 避免固定宽度溢出。也避免先转浮点造成精度损失。程序计算 C(70,35)。验证它无法放入 int64。C(0,0) 为一。k 大于 n 则明确返回错误。任意精度不等于无限资源。外部输入仍需限制 n。",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/big\"\n)\n\nfunc choose(n, k int) (*big.Int, error) {\n\tif n < 0 || k < 0 || k > n {\n\t\treturn nil, fmt.Errorf(\"invalid combination\")\n\t}\n\tif k > n-k {\n\t\tk = n - k\n\t}\n\tresult := big.NewInt(1)\n\tfor i := 1; i <= k; i++ {\n\t\tresult.Mul(result, big.NewInt(int64(n-k+i)))\n\t\tresult.Quo(result, big.NewInt(int64(i)))\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tvalue, err := choose(70, 35)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"C70,35=%s\\n\", value.String())\n\tfmt.Printf(\"fits-int64=%t\\n\", value.IsInt64())\n\tboundary, err := choose(0, 0)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"C0,0=%s\\n\", boundary.String())\n\t_, err = choose(3, 4)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+    "output": "C70,35=112186277816662845432\nfits-int64=false\nC0,0=1\ninvalid=true"
+  },
+  "example": {
+    "id": "go-example-163",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "大整数排列组合",
+    "summary": "计算超出 int64 的组合数，以逐步乘除递推保持精确整数结果。",
+    "concepts": [
+      "math/big.Int",
+      "组合数递推",
+      "精确除法"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-10-23",
+    "code": "package main\n\nimport (\n\t\"fmt\"\n\t\"math/big\"\n)\n\nfunc choose(n, k int) (*big.Int, error) {\n\tif n < 0 || k < 0 || k > n {\n\t\treturn nil, fmt.Errorf(\"invalid combination\")\n\t}\n\tif k > n-k {\n\t\tk = n - k\n\t}\n\tresult := big.NewInt(1)\n\tfor i := 1; i <= k; i++ {\n\t\tresult.Mul(result, big.NewInt(int64(n-k+i)))\n\t\tresult.Quo(result, big.NewInt(int64(i)))\n\t}\n\treturn result, nil\n}\nfunc main() {\n\tvalue, err := choose(70, 35)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"C70,35=%s\\n\", value.String())\n\tfmt.Printf(\"fits-int64=%t\\n\", value.IsInt64())\n\tboundary, err := choose(0, 0)\n\tif err != nil {\n\t\tpanic(err)\n\t}\n\tfmt.Printf(\"C0,0=%s\\n\", boundary.String())\n\t_, err = choose(3, 4)\n\tfmt.Printf(\"invalid=%t\\n\", err != nil)\n}\n",
+    "expectedOutput": "C70,35=112186277816662845432\nfits-int64=false\nC0,0=1\ninvalid=true",
+    "templateType": "go"
+  }
+}
