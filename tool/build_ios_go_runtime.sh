@@ -29,7 +29,8 @@ if [[ -z "$architectures" ]]; then
   exit 1
 fi
 
-export GOOS=ios CGO_ENABLED=1 GOTOOLCHAIN=local GOWORK=off
+export GOOS=ios CGO_ENABLED=1 GOTOOLCHAIN=local GOWORK=off GOENV=off GOPROXY=off GOSUMDB=off
+export GO_TELEMETRY_CHILD=2
 # Keep generated dependencies and caches inside Xcode's derived output.
 export GOCACHE="$output_dir/cache" GOPATH="$output_dir/gopath"
 mkdir -p "$output_dir"
