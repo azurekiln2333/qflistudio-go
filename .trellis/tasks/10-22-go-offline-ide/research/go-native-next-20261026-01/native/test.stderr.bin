@@ -1,0 +1,7 @@
+# qfli_go/native/go_runtime.test
+D:\MyNewProjects\qfli_go\native\build\go-sdk-1.27.1\go\pkg\tool\windows_amd64\link.exe: running D:\MyNewProjects\qfli_go\native\go_runtime\windows-cc.cmd failed: exit status 1
+D:\MyNewProjects\qfli_go\native\go_runtime\windows-cc.cmd -m64 -s -mconsole -Wl,--tsaware -Wl,--nxcompat -Wl,--major-os-version=10 -Wl,--minor-os-version=0 -Wl,--major-subsystem-version=10 -Wl,--minor-subsystem-version=0 -Wl,--dynamicbase -Wl,--high-entropy-va -o $WORK\b001\go_runtime.test.exe D:\AppData\Local\Temp\go-link-3886713126\export_file.def D:\AppData\Local\Temp\go-link-3886713126\go.o D:\AppData\Local\Temp\go-link-3886713126\000000.o D:\AppData\Local\Temp\go-link-3886713126\000001.o D:\AppData\Local\Temp\go-link-3886713126\000002.o D:\AppData\Local\Temp\go-link-3886713126\000003.o D:\AppData\Local\Temp\go-link-3886713126\000004.o D:\AppData\Local\Temp\go-link-3886713126\000005.o D:\AppData\Local\Temp\go-link-3886713126\000006.o D:\AppData\Local\Temp\go-link-3886713126\000007.o D:\AppData\Local\Temp\go-link-3886713126\000008.o D:\AppData\Local\Temp\go-link-3886713126\000009.o -O2 -g -O2 -g -Wl,--start-group -lmingwex -lmingw32 -Wl,--end-group -lkernel32
+lld: error: unable to find library -lgcc_eh
+lld: error: unable to find library -lgcc_eh
+clang: error: linker command failed with exit code 1 (use -v to see invocation)
+
