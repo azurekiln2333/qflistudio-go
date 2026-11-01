@@ -33,7 +33,11 @@ Skipped, and why:
 
 - 26 *.log files and 3 *.pyc files under the task research
   directories. Logs and bytecode are build and run output.
+
+Committed after a second look (commit 20658f7):
+
 - 16 *.bin files under c580-go-20261026-controls and
-  go-native-next-20261026-01. They are captured stdout and stderr from
-  a test run, not source. They remain staged, not committed.
+  go-native-next-20261026-01. They were skipped at first on the extension
+  alone. They are plain-text stdout and stderr evidence, the largest is
+  1.4 KB, and none holds a secret.
 
