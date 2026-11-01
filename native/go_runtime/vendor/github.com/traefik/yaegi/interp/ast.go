@@ -609,9 +609,6 @@ func (interp *Interpreter) ast(f ast.Node) (string, *node, error) {
 				k.ident = "_"
 				v := addChild(&root, astNode{b, nod}, pos, identExpr, aNop)
 				v.ident = "_"
-			case forStmt7:
-				k := addChild(&root, astNode{b, nod}, pos, identExpr, aNop)
-				k.ident = "_"
 			}
 
 		case *ast.BranchStmt:

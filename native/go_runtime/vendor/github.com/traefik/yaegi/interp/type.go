@@ -1005,7 +1005,7 @@ func nodeType2(interp *Interpreter, sc *scope, n *node, seen []*node) (t *itype,
 			if m, _ := lt.lookupMethod(name); m != nil {
 				t, err = nodeType2(interp, sc, m.child[2], seen)
 			} else if bm, _, _, ok := lt.lookupBinMethod(name); ok {
-				t = valueTOf(bm.Type, isBinMethod(), withRecv(lt), withScope(sc))
+				t = valueTOf(nativeSelectorType(lt.TypeOf(), bm, n.child[0].isType(sc)), withScope(sc))
 			} else if ti := lt.lookupField(name); len(ti) > 0 {
 				t = lt.fieldSeq(ti)
 			} else if bs, _, ok := lt.lookupBinField(name); ok {
@@ -1548,7 +1548,19 @@ func (t *itype) equals(o *itype) bool {
 
 // matchDefault returns true if the receiver default type is the same as the given one.
 func (t *itype) matchDefault(o *itype) bool {
-	return t.untyped && t.id() == "untyped "+o.id()
+	if !t.untyped {
+		return false
+	}
+	switch t.cat {
+	case float64T:
+		return o.id() == "float64"
+	case complex128T:
+		return o.id() == "complex128"
+	case int32T:
+		return o.id() == "int32"
+	default:
+		return t.id() == "untyped "+o.id()
+	}
 }
 
 // MethodSet defines the set of methods signatures as strings, indexed per method name.
@@ -1799,6 +1811,48 @@ func (t *itype) methodCallType() reflect.Type {
 		ot = append(ot, t.rtype.Out(i))
 	}
 	return reflect.FuncOf(it, ot, t.rtype.IsVariadic())
+}
+
+// nativeSelectorType describes the value produced by a native method selector.
+// Concrete reflected methods include their receiver in Method.Type, whereas
+// bound Values and reflected interface methods do not. Keep the callable type
+// consistent before assignment inference, argument checking and frame allocation.
+func nativeSelectorType(receiver reflect.Type, method reflect.Method, expression bool) reflect.Type {
+	typ := method.Type
+	if !expression && !method.Func.IsValid() {
+		return typ
+	}
+	var in []reflect.Type
+	start := 0
+	if method.Func.IsValid() {
+		start = 1
+	}
+	if expression {
+		in = append(in, receiver)
+	}
+	for index := start; index < typ.NumIn(); index++ {
+		in = append(in, typ.In(index))
+	}
+	out := make([]reflect.Type, typ.NumOut())
+	for index := range out {
+		out[index] = typ.Out(index)
+	}
+	return reflect.FuncOf(in, out, typ.IsVariadic())
+}
+
+// A method expression cannot implicitly take the address of its by-value
+// receiver. An embedded pointer along the projection still makes its target
+// addressable, even when the expression's outer receiver is passed by value.
+func nativeProjectionAddressable(receiver reflect.Type, index []int) bool {
+	addressable := false
+	for _, field := range index {
+		if receiver.Kind() == reflect.Ptr {
+			addressable = true
+			receiver = receiver.Elem()
+		}
+		receiver = receiver.Field(field).Type
+	}
+	return addressable || receiver.Kind() == reflect.Ptr
 }
 
 func (t *itype) resolveAlias() *itype {

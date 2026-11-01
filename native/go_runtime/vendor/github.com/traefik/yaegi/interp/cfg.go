@@ -249,19 +249,6 @@ func (interp *Interpreter) cfg(root *node, sc *scope, importPath, pkgName string
 					lv.gen = loopVarVal
 				}
 			}
-			if n.anc != nil && n.anc.kind == forStmt7 {
-				lv := n.child[0]
-				init := n.anc.child[0]
-				if init.kind == defineStmt && len(init.child) >= 2 && init.child[0].kind == identExpr {
-					fi := init.child[0]
-					lv.ident = fi.ident
-					lv.typ = fi.typ
-					vindex := sc.add(lv.typ)
-					sc.sym[lv.ident] = &symbol{index: vindex, kind: varSym, typ: lv.typ}
-					lv.findex = vindex
-					lv.gen = loopVarFor
-				}
-			}
 
 			// Pre-define symbols for labels defined in this block, so we are sure that
 			// they are already defined when met.
@@ -815,7 +802,7 @@ func (interp *Interpreter) cfg(root *node, sc *scope, importPath, pkgName string
 					src.findex = dest.findex // Set recv address to LHS.
 					dest.typ = src.typ
 				case src.action == aCompositeLit:
-					if dest.typ.cat == valueT && dest.typ.rtype.Kind() == reflect.Interface {
+					if isInterfaceBin(dest.typ) {
 						// Skip optimisation for assigned interface.
 						break
 					}
@@ -1151,7 +1138,7 @@ func (interp *Interpreter) cfg(root *node, sc *scope, importPath, pkgName string
 				err = n.cfgErrorf("invalid continue label %s", n.child[0].ident)
 				break
 			}
-			n.tnext = n.sym.node.child[1].lastChild().start
+			n.tnext = n.sym.node.child[1].lastChild()
 
 		case gotoStmt:
 			if n.sym.node == nil {
@@ -1499,7 +1486,10 @@ func (interp *Interpreter) cfg(root *node, sc *scope, importPath, pkgName string
 			init, body := n.child[0], n.child[1]
 			n.start = init.start
 			init.tnext = body.start
-			body.tnext = n.start
+			body.tnext = body.start
+			if init.kind == defineStmt || init.kind == defineXStmt {
+				body.gen = loopVarFor
+			}
 			sc = sc.pop()
 
 		case forStmt2: // for cond {}
@@ -1541,6 +1531,9 @@ func (interp *Interpreter) cfg(root *node, sc *scope, importPath, pkgName string
 			}
 			cond.tnext = body.start
 			setFNext(cond, n)
+			if init.kind == defineStmt || init.kind == defineXStmt {
+				body.gen = loopVarFor
+			}
 			sc = sc.pop()
 
 		case forStmt4: // for ; ; post {}
@@ -1576,6 +1569,9 @@ func (interp *Interpreter) cfg(root *node, sc *scope, importPath, pkgName string
 			init.tnext = body.start
 			body.tnext = post.start
 			post.tnext = body.start
+			if init.kind == defineStmt || init.kind == defineXStmt {
+				body.gen = loopVarFor
+			}
 			sc = sc.pop()
 
 		case forStmt7: // for init; cond; post {}
@@ -1584,7 +1580,6 @@ func (interp *Interpreter) cfg(root *node, sc *scope, importPath, pkgName string
 				err = cond.cfgErrorf("non-bool used as for condition")
 			}
 			n.start = init.start
-			body.start = body.child[0] // loopvar
 			if cond.rval.IsValid() {
 				// Condition is known at compile time, bypass test.
 				if cond.rval.Bool() {
@@ -1600,6 +1595,9 @@ func (interp *Interpreter) cfg(root *node, sc *scope, importPath, pkgName string
 			cond.tnext = body.start
 			setFNext(cond, n)
 			body.tnext = post.start
+			if init.kind == defineStmt || init.kind == defineXStmt {
+				body.gen = loopVarFor
+			}
 			sc = sc.pop()
 
 		case forRangeStmt:
@@ -3023,18 +3021,26 @@ func compositeGenerator(n *node, typ *itype, rtyp reflect.Type) (gen bltnGenerat
 // to find the corresponding method, and populates n accordingly.
 func matchSelectorMethod(sc *scope, n *node) (err error) {
 	name := n.child[1].ident
+	if n.child[0].isType(sc) && (n.typ.cat == valueT || n.typ.cat == errorT || n.typ.cat == ptrT && n.typ.val.cat == valueT) {
+		if method, ok := n.typ.TypeOf().MethodByName(name); ok {
+			n.rval = n.interp.nativeMethodExpression(n.typ.TypeOf(), method, nil, false)
+			n.typ = valueTOf(n.rval.Type())
+			n.recv = nil
+			n.findex = notInFrame
+			n.gen = nop
+			n.action = aGetMethod
+			return nil
+		}
+		return n.cfgErrorf("undefined method: %s", name)
+	}
 	if n.typ.cat == valueT || n.typ.cat == errorT {
 		switch method, ok := n.typ.rtype.MethodByName(name); {
 		case ok:
-			hasRecvType := n.typ.TypeOf().Kind() != reflect.Interface
+			n.typ = valueTOf(nativeSelectorType(n.typ.TypeOf(), method, false))
 			n.val = method.Index
 			n.gen = getIndexBinMethod
 			n.action = aGetMethod
-			n.recv = &receiver{node: n.child[0]}
-			n.typ = valueTOf(method.Type, isBinMethod())
-			if hasRecvType {
-				n.typ.recv = n.typ
-			}
+			n.recv = nil
 		case n.typ.TypeOf().Kind() == reflect.Ptr:
 			if field, ok := n.typ.rtype.Elem().FieldByName(name); ok {
 				n.typ = valueTOf(field.Type)
@@ -3057,8 +3063,8 @@ func matchSelectorMethod(sc *scope, n *node) (err error) {
 			if m2, ok2 := pt.MethodByName(name); ok2 {
 				n.val = m2.Index
 				n.gen = getIndexBinPtrMethod
-				n.typ = valueTOf(m2.Type, isBinMethod(), withRecv(valueTOf(pt)))
-				n.recv = &receiver{node: n.child[0]}
+				n.typ = valueTOf(nativeSelectorType(pt, m2, false))
+				n.recv = nil
 				n.action = aGetMethod
 				break
 			}
@@ -3071,15 +3077,15 @@ func matchSelectorMethod(sc *scope, n *node) (err error) {
 		// Handle pointer on object defined in runtime
 		if method, ok := n.typ.val.rtype.MethodByName(name); ok {
 			n.val = method.Index
-			n.typ = valueTOf(method.Type, isBinMethod(), withRecv(n.typ))
-			n.recv = &receiver{node: n.child[0]}
+			n.typ = valueTOf(nativeSelectorType(n.typ.val.rtype, method, false))
+			n.recv = nil
 			n.gen = getIndexBinElemMethod
 			n.action = aGetMethod
 		} else if method, ok := reflect.PtrTo(n.typ.val.rtype).MethodByName(name); ok {
 			n.val = method.Index
 			n.gen = getIndexBinMethod
-			n.typ = valueTOf(method.Type, withRecv(valueTOf(reflect.PtrTo(n.typ.val.rtype), isBinMethod())))
-			n.recv = &receiver{node: n.child[0]}
+			n.typ = valueTOf(nativeSelectorType(reflect.PtrTo(n.typ.val.rtype), method, false))
+			n.recv = nil
 			n.action = aGetMethod
 		} else if field, ok := n.typ.val.rtype.FieldByName(name); ok {
 			n.typ = valueTOf(field.Type)
@@ -3101,6 +3107,14 @@ func matchSelectorMethod(sc *scope, n *node) (err error) {
 			n.typ = &itype{}
 			*n.typ = *m.typ
 			n.typ.arg = append([]*itype{n.child[0].typ}, m.typ.arg...)
+			n.typ.rtype = nil // The receiver changes the cached function signature.
+			// Preserve the expression's explicit receiver parameter when the
+			// method is stored in a function value. Reusing m directly loses
+			// this parameter and creates a bound-method signature instead.
+			method := *m
+			method.typ = n.typ
+			method.val = m
+			n.val = &method
 		} else {
 			// Handle method with receiver.
 			n.gen = getMethod
@@ -3113,6 +3127,18 @@ func matchSelectorMethod(sc *scope, n *node) (err error) {
 
 	if m, lind, isPtr, ok := n.typ.lookupBinMethod(name); ok {
 		n.action = aGetMethod
+		if n.child[0].isType(sc) {
+			receiver := n.typ.TypeOf()
+			if isPtr && !nativeProjectionAddressable(receiver, lind) {
+				return n.cfgErrorf("invalid method expression: %s requires a pointer receiver", name)
+			}
+			n.rval = n.interp.nativeMethodExpression(receiver, m, lind, isPtr)
+			n.typ = valueTOf(n.rval.Type())
+			n.recv = nil
+			n.findex = notInFrame
+			n.gen = nop
+			return nil
+		}
 		switch {
 		case isPtr && n.typ.fieldSeq(lind).cat != ptrT:
 			n.gen = getIndexSeqPtrMethod
@@ -3121,9 +3147,9 @@ func matchSelectorMethod(sc *scope, n *node) (err error) {
 		default:
 			n.gen = getIndexSeqMethod
 		}
-		n.recv = &receiver{node: n.child[0], index: lind}
+		n.recv = nil
 		n.val = append([]int{m.Index}, lind...)
-		n.typ = valueTOf(m.Type, isBinMethod(), withRecv(n.child[0].typ))
+		n.typ = valueTOf(nativeSelectorType(n.child[0].typ.TypeOf(), m, false))
 		return nil
 	}
 

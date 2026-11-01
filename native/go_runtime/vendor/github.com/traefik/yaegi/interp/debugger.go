@@ -5,6 +5,9 @@ import (
 	"errors"
 	"fmt"
 	"go/token"
+	"io/fs"
+	"path"
+	"path/filepath"
 	"reflect"
 	"sort"
 	"sync"
@@ -31,25 +34,36 @@ type Debugger struct {
 	context context.Context
 	cancel  context.CancelFunc
 
-	gWait *sync.WaitGroup
-	gLock *sync.Mutex
-	gID   int
-	gLive map[int]*debugRoutine
+	gWait               *sync.WaitGroup
+	gLock               *sync.Mutex
+	gID                 int
+	gLive               map[int]*debugRoutine
+	main                *debugRoutine
+	workers             int  // owned goroutines, including compiled calls without source frames
+	nativeValuesEscaped bool // mutable aliases may outlive compiled dispatch
 
-	result reflect.Value
-	err    error
+	result     reflect.Value
+	err        error
+	done       chan struct{}
+	terminated bool
 }
 
 // go routine debug state.
 type debugRoutine struct {
-	id int
+	id    int
+	kind  string
+	mutex sync.Mutex
 
 	mode    DebugEventReason
 	running bool
 	resume  chan struct{}
 
-	fDepth int
-	fStep  int
+	fDepth      int
+	fStep       int
+	stoppedFile string
+	stoppedLine int
+	stepFile    string
+	stepLine    int
 }
 
 // node debug state.
@@ -61,11 +75,13 @@ type nodeDebugData struct {
 
 // frame debug state.
 type frameDebugData struct {
-	g     *debugRoutine
-	node  *node
-	name  string
-	kind  frameKind
-	scope *scope
+	g              *debugRoutine
+	node           *node
+	name           string
+	kind           frameKind
+	scope          *scope
+	caller         *frame // actual synchronous caller, independent of lexical capture
+	nativeBoundary bool
 }
 
 // frame kind.
@@ -117,7 +133,8 @@ type DebugVariable struct {
 // DebugGoRoutine provides access to information about a Go routine while
 // debugging a program.
 type DebugGoRoutine struct {
-	id int
+	id   int
+	kind string
 }
 
 // Breakpoint is the result of attempting to set a breakpoint.
@@ -176,6 +193,13 @@ const (
 // Step is called with DebugEntry, an entry event will be generated before the
 // first statement is executed. Otherwise, the debugger will behave as usual.
 func (interp *Interpreter) Debug(ctx context.Context, prog *Program, events func(*DebugEvent), opts *DebugOptions) *Debugger {
+	execution := interp.newExecution()
+	return interp.debug(ctx, prog, []*node{prog.root}, events, opts, func(ctx context.Context) (reflect.Value, error) {
+		return execution.evaluate(ctx, func() (reflect.Value, error) { return interp.Execute(prog) })
+	}, execution.close)
+}
+
+func (interp *Interpreter) newDebugger(ctx context.Context, events func(*DebugEvent), opts *DebugOptions) *Debugger {
 	dbg := new(Debugger)
 	dbg.interp = interp
 	dbg.events = events
@@ -183,6 +207,7 @@ func (interp *Interpreter) Debug(ctx context.Context, prog *Program, events func
 	dbg.gWait = new(sync.WaitGroup)
 	dbg.gLock = new(sync.Mutex)
 	dbg.gLive = make(map[int]*debugRoutine, 1)
+	dbg.done = make(chan struct{})
 
 	if opts == nil {
 		opts = new(DebugOptions)
@@ -191,59 +216,111 @@ func (interp *Interpreter) Debug(ctx context.Context, prog *Program, events func
 		dbg.gID = 1
 	}
 
-	mainG := dbg.enterGoRoutine()
-	mainG.mode = DebugEntry
-
+	dbg.main = dbg.enterGoRoutine()
 	interp.debugger = dbg
-	interp.frame.debug = &frameDebugData{kind: frameRoot, g: mainG}
+	interp.frame.debug = &frameDebugData{kind: frameRoot, g: dbg.main}
+	return dbg
+}
 
-	prog.root.Walk(func(n *node) bool {
-		n.setProgram(prog)
-		return true
-	}, nil)
+func (interp *Interpreter) debug(ctx context.Context, prog *Program, roots []*node, events func(*DebugEvent), opts *DebugOptions, execute func(context.Context) (reflect.Value, error), finish func() error) *Debugger {
+	dbg := interp.newDebugger(ctx, events, opts)
+	dbg.start(prog, roots, execute, finish)
+	return dbg
+}
+
+func (dbg *Debugger) start(prog *Program, roots []*node, execute func(context.Context) (reflect.Value, error), finish func() error) {
+	interp := dbg.interp
+	mainG := dbg.main
+	mainG.mutex.Lock()
+	mainG.mode = DebugEntry
+	// Source dependency initialization may already have used this routine in
+	// run mode. The entry barrier is stopped regardless of that earlier work.
+	mainG.running = false
+	mainG.mutex.Unlock()
+
+	for _, root := range roots {
+		root.Walk(func(n *node) bool { n.setProgram(prog); return true }, nil)
+	}
 
 	go func() {
-		defer func() { interp.debugger = nil }()
-		defer events(&DebugEvent{reason: DebugTerminate})
-		defer dbg.cancel()
-
-		<-mainG.resume
-		dbg.events(&DebugEvent{dbg, DebugEnterGoRoutine, interp.frame})
-		dbg.result, dbg.err = interp.ExecuteWithContext(ctx, prog)
-		dbg.exitGoRoutine(mainG)
-		dbg.events(&DebugEvent{dbg, DebugExitGoRoutine, interp.frame})
-		dbg.gWait.Wait()
+		defer close(dbg.done)
+		defer func() {
+			if r := recover(); r != nil {
+				dbg.err = recoveredPanic(r)
+			}
+			dbg.cancel()
+			if err := finish(); dbg.err == nil {
+				dbg.err = err
+			}
+			dbg.exitGoRoutine(mainG)
+			dbg.events(&DebugEvent{dbg, DebugExitGoRoutine, interp.frame})
+			dbg.gWait.Wait()
+			dbg.events(&DebugEvent{debugger: dbg, reason: DebugTerminate})
+		}()
+		select {
+		case <-mainG.resume:
+			dbg.events(&DebugEvent{dbg, DebugEnterGoRoutine, interp.frame})
+			dbg.result, dbg.err = execute(dbg.context)
+		case <-dbg.context.Done():
+			dbg.err = dbg.context.Err()
+		}
 	}()
-
-	return dbg
 }
 
 // Wait blocks until all Go routines launched by the program have terminated.
 // Wait returns the results of `(*Interpreter).Execute`.
 func (dbg *Debugger) Wait() (reflect.Value, error) {
-	<-dbg.context.Done()
+	<-dbg.done
 	return dbg.result, dbg.err
 }
 
 // mark entry into a go routine.
 func (dbg *Debugger) enterGoRoutine() *debugRoutine {
+	return dbg.enterRoutine("goroutine")
+}
+
+// enterRoutine registers either an interpreted goroutine or a logical opaque
+// native callback owner. The kind is immutable before the owner becomes live.
+func (dbg *Debugger) enterRoutine(kind string) *debugRoutine {
 	g := new(debugRoutine)
-	g.resume = make(chan struct{})
+	g.kind = kind
+	g.resume = make(chan struct{}, 1)
 
 	dbg.gWait.Add(1)
 
 	dbg.gLock.Lock()
 	g.id = dbg.gID
 	dbg.gID++
+	if dbg.terminated {
+		g.mode = DebugTerminate
+	}
 	dbg.gLive[g.id] = g
 	dbg.gLock.Unlock()
 
 	return g
 }
 
+// trackWorker closes the scheduling-to-frame-registration gap, and also counts
+// compiled go calls which never enter an interpreted call frame. The epoch owns
+// their lifetime; this count only controls safe stopped-value snapshots.
+func (dbg *Debugger) trackWorker() func() {
+	dbg.gLock.Lock()
+	dbg.workers++
+	dbg.gLock.Unlock()
+	return func() {
+		dbg.gLock.Lock()
+		dbg.workers--
+		dbg.gLock.Unlock()
+	}
+}
+
 // mark exit from a go routine.
 func (dbg *Debugger) exitGoRoutine(g *debugRoutine) {
 	dbg.gLock.Lock()
+	if dbg.gLive[g.id] != g {
+		dbg.gLock.Unlock()
+		return
+	}
 	delete(dbg.gLive, g.id)
 	dbg.gLock.Unlock()
 
@@ -261,7 +338,9 @@ func (dbg *Debugger) getGoRoutine(id int) (*debugRoutine, bool) {
 // mark entry into a function call.
 func (dbg *Debugger) enterCall(nFunc, nCall *node, f *frame) {
 	if f.debug != nil {
+		f.debug.g.mutex.Lock()
 		f.debug.g.fDepth++
+		f.debug.g.mutex.Unlock()
 		return
 	}
 
@@ -283,14 +362,18 @@ func (dbg *Debugger) enterCall(nFunc, nCall *node, f *frame) {
 		dbg.events(&DebugEvent{dbg, DebugEnterGoRoutine, f})
 	}
 
+	f.debug.g.mutex.Lock()
 	f.debug.g.fDepth++
+	f.debug.g.mutex.Unlock()
 }
 
 // mark exit from a function call.
 func (dbg *Debugger) exitCall(nFunc, nCall *node, f *frame) {
 	_ = nFunc // ignore unused, so exitCall can have the same signature as enterCall
 
+	f.debug.g.mutex.Lock()
 	f.debug.g.fDepth--
+	f.debug.g.mutex.Unlock()
 
 	if nCall != nil && nCall.anc.kind == goStmt {
 		dbg.exitGoRoutine(f.debug.g)
@@ -307,11 +390,16 @@ func (dbg *Debugger) exec(n *node, f *frame) (stop bool) {
 	}
 
 	g := f.debug.g
-	defer func() { g.running = true }()
+	g.mutex.Lock()
+	var position token.Position
+	if n != nil {
+		position = dbg.interp.fset.Position(n.pos)
+	}
 
 	e := &DebugEvent{dbg, g.mode, f}
 	switch {
 	case g.mode == DebugTerminate:
+		g.mutex.Unlock()
 		dbg.cancel()
 		return true
 
@@ -319,21 +407,32 @@ func (dbg *Debugger) exec(n *node, f *frame) (stop bool) {
 		e.reason = DebugBreak
 
 	case g.mode == debugRun:
+		g.running = true
+		g.mutex.Unlock()
 		return false
 
 	case g.mode == DebugStepOut:
 		if g.fDepth >= g.fStep {
+			g.mutex.Unlock()
 			return false
 		}
 
 	case g.mode == DebugStepOver:
 		if g.fDepth > g.fStep {
+			g.mutex.Unlock()
 			return false
 		}
 	}
-	dbg.events(e)
-
+	if (g.mode == DebugStepInto || g.mode == DebugStepOver) && e.reason != DebugBreak && position.Filename == g.stepFile && position.Line == g.stepLine {
+		g.mutex.Unlock()
+		return false
+	}
 	g.running = false
+	g.stoppedFile, g.stoppedLine = position.Filename, position.Line
+	g.mutex.Unlock()
+	// Mark stopped before publishing the event. A command may now queue a
+	// buffered resume while the callback snapshots the still-stopped frame.
+	dbg.events(e)
 	select {
 	case <-g.resume:
 		return false
@@ -350,9 +449,20 @@ func (dbg *Debugger) Continue(id int) error {
 	if !ok {
 		return ErrNotLive
 	}
-
+	g.mutex.Lock()
+	defer g.mutex.Unlock()
+	if g.mode == DebugTerminate {
+		return ErrNotLive
+	}
+	if g.running {
+		return ErrRunning
+	}
 	g.mode = debugRun
-	g.resume <- struct{}{}
+	g.running = true
+	select {
+	case g.resume <- struct{}{}:
+	default:
+	}
 	return nil
 }
 
@@ -369,6 +479,7 @@ func (g *debugRoutine) setMode(reason DebugEventReason) {
 	switch reason {
 	case DebugStepInto, DebugStepOver, DebugStepOut:
 		g.mode, g.fStep = reason, g.fDepth
+		g.stepFile, g.stepLine = g.stoppedFile, g.stoppedLine
 	default:
 		g.mode = DebugPause
 	}
@@ -382,13 +493,21 @@ func (dbg *Debugger) Step(id int, reason DebugEventReason) error {
 	if !ok {
 		return ErrNotLive
 	}
-
+	g.mutex.Lock()
+	defer g.mutex.Unlock()
+	if g.mode == DebugTerminate {
+		return ErrNotLive
+	}
 	if g.running {
 		return ErrRunning
 	}
 
 	g.setMode(reason)
-	g.resume <- struct{}{}
+	g.running = true
+	select {
+	case g.resume <- struct{}{}:
+	default:
+	}
 	return nil
 }
 
@@ -401,7 +520,8 @@ func (dbg *Debugger) Interrupt(id int, reason DebugEventReason) bool {
 	if !ok {
 		return false
 	}
-
+	g.mutex.Lock()
+	defer g.mutex.Unlock()
 	g.setMode(reason)
 	return true
 }
@@ -409,14 +529,23 @@ func (dbg *Debugger) Interrupt(id int, reason DebugEventReason) bool {
 // Terminate attempts to terminate the program.
 func (dbg *Debugger) Terminate() {
 	dbg.gLock.Lock()
-	g := dbg.gLive
-	dbg.gLive = nil
+	dbg.terminated = true
+	g := make([]*debugRoutine, 0, len(dbg.gLive))
+	for _, routine := range dbg.gLive {
+		g = append(g, routine)
+	}
 	dbg.gLock.Unlock()
 
 	for _, g := range g {
+		g.mutex.Lock()
 		g.mode = DebugTerminate
-		close(g.resume)
+		select {
+		case g.resume <- struct{}{}:
+		default:
+		}
+		g.mutex.Unlock()
 	}
+	dbg.cancel()
 }
 
 // BreakpointTarget is the target of a request to set breakpoints.
@@ -537,8 +666,8 @@ func (dbg *Debugger) SetBreakpoints(target BreakpointTarget, requests ...Breakpo
 func (dbg *Debugger) GoRoutines() []*DebugGoRoutine {
 	dbg.gLock.Lock()
 	r := make([]*DebugGoRoutine, 0, len(dbg.gLive))
-	for id := range dbg.gLive {
-		r = append(r, &DebugGoRoutine{id})
+	for id, g := range dbg.gLive {
+		r = append(r, &DebugGoRoutine{id: id, kind: g.kind})
 	}
 	dbg.gLock.Unlock()
 	sort.Slice(r, func(i, j int) bool { return r[i].id < r[j].id })
@@ -548,15 +677,75 @@ func (dbg *Debugger) GoRoutines() []*DebugGoRoutine {
 // ID returns the ID of the Go routine.
 func (r *DebugGoRoutine) ID() int { return r.id }
 
-// Name returns "Goroutine {ID}".
-func (r *DebugGoRoutine) Name() string { return fmt.Sprintf("Goroutine %d", r.id) }
+// Kind identifies an interpreted goroutine or a logical native callback owner.
+func (r *DebugGoRoutine) Kind() string { return r.kind }
+
+// Name returns the execution owner's display name.
+func (r *DebugGoRoutine) Name() string {
+	if r.kind == "nativeCallback" {
+		return fmt.Sprintf("Native callback %d", r.id)
+	}
+	return fmt.Sprintf("Goroutine %d", r.id)
+}
 
 // GoRoutine returns the ID of the Go routine that generated the event.
 func (evt *DebugEvent) GoRoutine() int {
-	if evt.frame.debug == nil {
+	if evt.frame == nil || evt.frame.debug == nil || evt.frame.debug.g == nil {
 		return 0
 	}
 	return evt.frame.debug.g.id
+}
+
+// GoRoutineKind remains available even after this event's owner has exited.
+func (evt *DebugEvent) GoRoutineKind() string {
+	if evt.frame == nil || evt.frame.debug == nil || evt.frame.debug.g == nil {
+		return "goroutine"
+	}
+	return evt.frame.debug.g.kind
+}
+
+// OpaqueNativeBoundary reports that the caller beyond this execution owner is
+// unknown. Captured lexical frames must not be displayed or inspected as callers.
+func (evt *DebugEvent) OpaqueNativeBoundary() bool {
+	return evt.GoRoutineKind() == "nativeCallback"
+}
+
+// WithStoppedValues runs a bounded scalar-only snapshot while this event is the
+// sole stopped owner and no owned worker can execute. Registration and resume
+// are excluded until snapshot returns. The callback must not reenter debugger
+// APIs, execute user code, dereference native pointers or inspect aggregates.
+// Mutable aliases exposed to compiled code make values unavailable for the
+// remainder of the session; native completion cannot prove release of an alias.
+func (evt *DebugEvent) WithStoppedValues(snapshot func()) bool {
+	if evt.frame == nil || evt.frame.debug == nil || evt.OpaqueNativeBoundary() {
+		return false
+	}
+	dbg, g := evt.debugger, evt.frame.debug.g
+	if dbg == nil || g == nil {
+		return false
+	}
+	dbg.gLock.Lock()
+	defer dbg.gLock.Unlock()
+	if len(dbg.gLive) != 1 || dbg.gLive[g.id] != g || dbg.workers != 0 || dbg.nativeValuesEscaped {
+		return false
+	}
+	g.mutex.Lock()
+	defer g.mutex.Unlock()
+	if g.running || g.mode == DebugTerminate {
+		return false
+	}
+	snapshot()
+	return true
+}
+
+// NativeValuesEscaped reports the sticky reason scalar snapshots are disabled.
+func (evt *DebugEvent) NativeValuesEscaped() bool {
+	if evt.debugger == nil {
+		return false
+	}
+	evt.debugger.gLock.Lock()
+	defer evt.debugger.gLock.Unlock()
+	return evt.debugger.nativeValuesEscaped
 }
 
 // Reason returns the reason for the event.
@@ -567,6 +756,9 @@ func (evt *DebugEvent) Reason() DebugEventReason {
 // Walk the stack trace frames. The root frame is included if and only if it is
 // the only frame. Closure frames are rolled up into the following call frame.
 func (evt *DebugEvent) walkFrames(fn func([]*frame) bool) {
+	if evt.frame == nil {
+		return
+	}
 	if evt.frame == evt.frame.root {
 		fn([]*frame{evt.frame})
 		return
@@ -578,9 +770,14 @@ func (evt *DebugEvent) walkFrames(fn func([]*frame) bool) {
 	}
 
 	var frames []*frame
-	for f := evt.frame; f != nil && f != f.root && (f.debug == nil || f.debug.g == g); f = f.anc {
-		if f.debug == nil || f.debug.kind != frameCall {
-			frames = append(frames, f)
+	for f := evt.frame; f != nil && f != f.root && (f.debug == nil || f.debug.g == g); {
+		current := f
+		f = current.anc
+		if current.debug != nil && current.debug.caller != nil {
+			f = current.debug.caller
+		}
+		if current.debug == nil || current.debug.kind != frameCall {
+			frames = append(frames, current)
 			continue
 		}
 
@@ -591,7 +788,10 @@ func (evt *DebugEvent) walkFrames(fn func([]*frame) bool) {
 		}
 
 		frames = frames[:0]
-		frames = append(frames, f)
+		frames = append(frames, current)
+		if current.debug.nativeBoundary {
+			break
+		}
 	}
 
 	if len(frames) > 0 {
@@ -601,6 +801,9 @@ func (evt *DebugEvent) walkFrames(fn func([]*frame) bool) {
 
 // FrameDepth returns the number of call frames in the stack trace.
 func (evt *DebugEvent) FrameDepth() int {
+	if evt.frame == nil {
+		return 0
+	}
 	if evt.frame == evt.frame.root {
 		return 1
 	}
@@ -625,6 +828,16 @@ func (evt *DebugEvent) Frames(start, end int) []*DebugFrame {
 		return len(frames) < count
 	})
 	return frames
+}
+
+// OpaqueNativeBoundary identifies the final source frame at an opaque entry.
+func (f *DebugFrame) OpaqueNativeBoundary() bool {
+	for _, current := range f.frames {
+		if current.debug != nil && current.debug.nativeBoundary {
+			return true
+		}
+	}
+	return false
 }
 
 // Name returns the name of the stack frame. For function calls to named
@@ -663,7 +876,7 @@ func (f *DebugFrame) Position() token.Position {
 // frame. May return nil.
 func (f *DebugFrame) Program() *Program {
 	d := f.frames[0].debug
-	if d == nil || d.node == nil {
+	if d == nil || d.node == nil || d.node.debug == nil {
 		return nil
 	}
 
@@ -723,4 +936,141 @@ func scanScope(sc *scope, index map[int]string) {
 		}
 		scanScope(ch, index)
 	}
+}
+
+// DebugPath prepares a main package without executing its globals, init or main.
+// Unlike CompilePath(directory), it preserves every file's scope and defers the
+// entry package's execution until a debugger command. Imported source packages
+// retain Yaegi's existing import-time initialization semantics.
+func (interp *Interpreter) DebugPath(ctx context.Context, importPath string, events func(*DebugEvent), opts *DebugOptions) (*Debugger, error) {
+	type packageProgram struct {
+		program *Program
+		roots   []*node
+		scope   *scope
+	}
+	var compiled *packageProgram
+	execution := interp.newExecution()
+	// Attach before imports in run mode so dependency-created callbacks keep
+	// valid debug ancestry, without pausing before the entry package is ready.
+	dbg := interp.newDebugger(ctx, events, opts)
+	_, err := execution.evaluate(dbg.context, func() (reflect.Value, error) {
+		dir, rPath, err := interp.pkgDir(filepath.ToSlash(interp.context.GOPATH), mainID, importPath)
+		if err != nil {
+			return reflect.Value{}, err
+		}
+		files, err := fs.ReadDir(interp.opt.filesystem, dir)
+		if err != nil {
+			return reflect.Value{}, err
+		}
+		var roots []*node
+		var initializers []*node
+		var pkgName string
+		revisit := make(map[string][]*node)
+		for _, file := range files {
+			if skipFile(&interp.context, file.Name(), NoTest) {
+				continue
+			}
+			name := path.Join(dir, file.Name())
+			source, err := fs.ReadFile(interp.opt.filesystem, name)
+			if err != nil {
+				return reflect.Value{}, err
+			}
+			parsed, err := interp.parse(string(source), name, false)
+			if err != nil {
+				return reflect.Value{}, err
+			}
+			if parsed == nil {
+				continue
+			}
+			pname, root, err := interp.ast(parsed)
+			if err != nil {
+				return reflect.Value{}, err
+			}
+			if root == nil {
+				continue
+			}
+			if pkgName == "" {
+				pkgName = pname
+			} else if pkgName != pname {
+				return reflect.Value{}, fmt.Errorf("found packages %s and %s in %s", pkgName, pname, dir)
+			}
+			roots = append(roots, root)
+			subRPath := effectivePkg(rPath, importPath)
+			list, err := interp.gta(root, subRPath, importPath, pkgName)
+			if err != nil {
+				return reflect.Value{}, err
+			}
+			revisit[subRPath] = append(revisit[subRPath], list...)
+		}
+		for _, nodes := range revisit {
+			if err := interp.gtaRetry(nodes, importPath, pkgName); err != nil {
+				return reflect.Value{}, err
+			}
+		}
+		for _, root := range roots {
+			nodes, err := interp.cfg(root, nil, importPath, pkgName)
+			if err != nil {
+				return reflect.Value{}, err
+			}
+			initializers = append(initializers, nodes...)
+		}
+		gs := interp.scopes[importPath]
+		if gs == nil || len(roots) == 0 {
+			return reflect.Value{}, fmt.Errorf("no Go files in %s", dir)
+		}
+		main := gs.sym[mainID]
+		if pkgName != mainID || main == nil {
+			return reflect.Value{}, fmt.Errorf("no main function in %s", dir)
+		}
+		interp.srcPkg[importPath] = gs.sym
+		interp.pkgNames[importPath] = pkgName
+		initializers = append(initializers, main.node)
+		compiled = &packageProgram{&Program{pkgName: pkgName, root: roots[0], init: initializers}, roots, gs}
+		return reflect.Value{}, nil
+	})
+	if err != nil {
+		dbg.Terminate()
+		execution.close()
+		dbg.exitGoRoutine(dbg.main)
+		dbg.gWait.Wait()
+		close(dbg.done)
+		return nil, err
+	}
+	dbg.start(compiled.program, compiled.roots, func(ctx context.Context) (reflect.Value, error) {
+		return execution.evaluate(ctx, func() (reflect.Value, error) {
+			for _, root := range compiled.roots {
+				if err := genRun(root); err != nil {
+					return reflect.Value{}, err
+				}
+			}
+			interp.frame.setrunid(interp.runid())
+			interp.frame.mutex.Lock()
+			interp.resizeFrame()
+			interp.frame.mutex.Unlock()
+			for _, root := range compiled.roots {
+				interp.run(root, nil)
+			}
+			global, err := genGlobalVars(compiled.roots, compiled.scope)
+			if err != nil {
+				return reflect.Value{}, err
+			}
+			interp.run(global, nil)
+			for _, initializer := range compiled.program.init {
+				interp.run(initializer, interp.frame)
+			}
+			return reflect.Value{}, nil
+		})
+	}, execution.close)
+	return dbg, nil
+}
+
+// debugExecuteContext owns a standalone debug evaluation epoch.
+func (interp *Interpreter) debugExecuteContext(ctx context.Context, execute func() (reflect.Value, error)) (value reflect.Value, err error) {
+	execution := interp.newExecution()
+	defer func() {
+		if failure := execution.close(); err == nil {
+			err = failure
+		}
+	}()
+	return execution.evaluate(ctx, execute)
 }

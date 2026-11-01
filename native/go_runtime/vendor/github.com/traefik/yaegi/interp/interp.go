@@ -108,7 +108,8 @@ type frame struct {
 	// Located at start of struct to ensure proper alignment.
 	id uint64
 
-	debug *frameDebugData
+	debug  *frameDebugData
+	source *sourceCallFrame // immutable interpreted function/caller provenance
 
 	root *frame          // global space
 	anc  *frame          // ancestor frame (caller space)
@@ -148,6 +149,7 @@ func (f *frame) clone() *frame {
 		id:        f.runid(),
 		done:      f.done,
 		debug:     f.debug,
+		source:    f.source,
 	}
 	nf.data = make([]reflect.Value, len(f.data))
 	copy(nf.data, f.data)
@@ -204,20 +206,23 @@ type Interpreter struct {
 	rdir       map[string]bool                  // for src import cycle detection
 	mapTypes   map[reflect.Value][]reflect.Type // special interfaces mapping for wrappers
 
-	mutex    sync.RWMutex
-	frame    *frame            // program data storage during execution
-	universe *scope            // interpreter global level scope
-	scopes   map[string]*scope // package level scopes, indexed by import path
-	srcPkg   imports           // source packages used in interpreter, indexed by path
-	pkgNames map[string]string // package names, indexed by import path
-	done     chan struct{}     // for cancellation of channel operations
-	panics   chan Panic        // unrecovered panics from interpreted goroutines
-	roots    []*node
-	generic  map[string]*node
+	mutex           sync.RWMutex
+	frame           *frame            // program data storage during execution
+	universe        *scope            // interpreter global level scope
+	scopes          map[string]*scope // package level scopes, indexed by import path
+	srcPkg          imports           // source packages used in interpreter, indexed by path
+	pkgNames        map[string]string // package names, indexed by import path
+	done            chan struct{}     // for cancellation of channel operations
+	panics          chan Panic        // unrecovered panics from interpreted goroutines
+	activeExecution *executionEpoch   // workers and callbacks owned by one evaluation epoch
+	roots           []*node
+	generic         map[string]*node
 
 	hooks *hooks // symbol hooks
 
 	debugger *Debugger
+
+	sourceFunctions sourceFunctionRegistry
 }
 
 const (
@@ -518,43 +523,7 @@ func (interp *Interpreter) EvalPath(path string) (res reflect.Value, err error) 
 // result computed by the interpreter, and a non nil error in case of failure.
 // The main function of the main package is executed if present.
 func (interp *Interpreter) EvalPathWithContext(ctx context.Context, path string) (res reflect.Value, err error) {
-	panics := make(chan Panic, 1)
-	interp.mutex.Lock()
-	interp.done = make(chan struct{})
-	interp.panics = panics
-	interp.cancelChan = !interp.opt.fastChan
-	interp.mutex.Unlock()
-	defer interp.stop()
-
-	type evaluation struct {
-		value reflect.Value
-		err   error
-	}
-	done := make(chan evaluation, 1)
-	go func() {
-		var result evaluation
-		defer func() {
-			if r := recover(); r != nil {
-				result.err = recoveredPanic(r)
-			}
-			done <- result
-		}()
-		result.value, result.err = interp.EvalPath(path)
-	}()
-
-	select {
-	case <-ctx.Done():
-		return reflect.Value{}, ctx.Err()
-	case err := <-panics:
-		return reflect.Value{}, err
-	case result := <-done:
-		select {
-		case err := <-panics:
-			return reflect.Value{}, err
-		default:
-			return result.value, result.err
-		}
-	}
+	return interp.executeWithContext(ctx, func() (reflect.Value, error) { return interp.EvalPath(path) })
 }
 
 func recoveredPanic(value interface{}) Panic {
@@ -563,14 +532,32 @@ func recoveredPanic(value interface{}) Panic {
 	return Panic{Value: value, Callers: pc[:n], Stack: debug.Stack()}
 }
 
-// startGoroutine reports worker panics to a context-aware path evaluation.
+// startGoroutine reports worker panics and reserves ownership before scheduling.
 func (interp *Interpreter) startGoroutine(run func()) {
 	interp.mutex.RLock()
 	panics := interp.panics
+	execution := interp.activeExecution
 	interp.mutex.RUnlock()
+	if execution != nil && !execution.enter() {
+		return
+	}
+	var releaseDebugWorker func()
+	if dbg := interp.debugger; dbg != nil {
+		releaseDebugWorker = dbg.trackWorker()
+	}
 	go func() {
+		if execution != nil {
+			defer execution.workers.Done()
+		}
+		if releaseDebugWorker != nil {
+			defer releaseDebugWorker()
+		}
 		defer func() {
 			if r := recover(); r != nil {
+				if execution != nil {
+					execution.reportPanic(recoveredPanic(r))
+					return
+				}
 				if panics == nil {
 					panic(r)
 				}

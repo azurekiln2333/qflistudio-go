@@ -21,9 +21,10 @@ import (
 )
 
 type runResult struct {
-	Stdout   string `json:"stdout"`
-	Stderr   string `json:"stderr"`
-	ExitCode int    `json:"exitCode"`
+	Stdout        string         `json:"stdout"`
+	Stderr        string         `json:"stderr"`
+	ExitCode      int            `json:"exitCode"`
+	TestExecution *testExecution `json:"testExecution,omitempty"`
 }
 
 const virtualProject = "src/qfli-project"
@@ -199,6 +200,9 @@ func runGoWithContext(ctx context.Context, projectPath, entryFile string) (resul
 		// A malformed selected source is a real diagnostic, not a missing entry.
 		return runResult{Stderr: err.Error(), ExitCode: 1}
 	}
+	if strings.HasSuffix(filepath.Base(entry), "_test.go") {
+		return runGoTestsWithContext(ctx, project, entry)
+	}
 	if !entryFacts.isRunnableEntry() {
 		return runResult{
 			Stderr:   fmt.Sprintf("no main function in %s; cannot use it as the Go entry.", filepath.Base(entry)),
@@ -244,6 +248,10 @@ func runGoWithContext(ctx context.Context, projectPath, entryFile string) (resul
 		Args:   []string{entry},
 	})
 	if err := interpreter.Use(stdlib.Symbols); err != nil {
+		fmt.Fprintln(&stderr, err)
+		return runResult{ExitCode: 1}
+	}
+	if err := useProjectEnvironment(interpreter, project, entryDirectory); err != nil {
 		fmt.Fprintln(&stderr, err)
 		return runResult{ExitCode: 1}
 	}

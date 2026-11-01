@@ -291,7 +291,10 @@ func inferTypesFromCall(sc *scope, fun *node, args []*node) ([]*itype, error) {
 		if err != nil {
 			return nil, err
 		}
-		lt, err := inferTypes(typ, args[i].typ)
+		// Type inference uses default concrete types for untyped constants,
+		// including float64 and rune (whose literal names differ from types).
+		input := args[i].typ.defaultType(args[i].rval, sc)
+		lt, err := inferTypes(typ, input)
 		if err != nil {
 			return nil, err
 		}

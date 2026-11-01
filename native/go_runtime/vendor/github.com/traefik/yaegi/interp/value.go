@@ -351,6 +351,34 @@ func valueInterfaceValue(v reflect.Value) reflect.Value {
 	return v
 }
 
+// nativeImplementsSource compares full method signatures without a concrete
+// receiver parameter. Runtime types cannot implement valueInterface itself,
+// which is only the storage representation of a source interface.
+func nativeImplementsSource(runtimeType reflect.Type, target *itype) bool {
+	for name, signature := range target.methods() {
+		method, ok := runtimeType.MethodByName(name)
+		if !ok {
+			return false
+		}
+		typ := method.Type
+		if runtimeType.Kind() != reflect.Interface {
+			in := make([]reflect.Type, typ.NumIn()-1)
+			out := make([]reflect.Type, typ.NumOut())
+			for i := range in {
+				in[i] = typ.In(i + 1)
+			}
+			for i := range out {
+				out[i] = typ.Out(i)
+			}
+			typ = reflect.FuncOf(in, out, typ.IsVariadic())
+		}
+		if typ.String() != signature {
+			return false
+		}
+	}
+	return true
+}
+
 func genValueInterfaceValue(n *node) func(*frame) reflect.Value {
 	value := genValue(n)
 
