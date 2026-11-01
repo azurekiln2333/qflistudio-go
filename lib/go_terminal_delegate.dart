@@ -24,11 +24,9 @@ import 'go_runner.dart';
 /// * Desktop (`official-go-sdk`): every `go` line, including a bare `go`, runs
 ///   through [GoToolchain.runTerminalCommand] in the sandbox cwd, so help text,
 ///   errors, exit codes and cancellation are the real toolchain's.
-/// * Mobile (`embedded-go-runtime`): only an actual program run (`go run` with a
-///   local file or directory) is supported by the embedded interpreter. The
-///   interpreter has no `go build`/`test`/`fmt`/`vet`/`mod`, no module
-///   downloads and no generic `go` prompt, so those lines are refused with an
-///   honest message and a nonzero status rather than an empty success.
+/// * Mobile (`embedded-go-runtime`): local `go run` and the embedded package
+///   test/benchmark/fuzz-seed engine. Unsupported SDK flags and commands fail
+///   explicitly; package downloads and mutation fuzzing are unavailable.
 /// * Unsupported targets: every `go` line reports that no Go runtime is present.
 ///
 /// Returns false for a non-`go` command and for any line the sandbox must own
@@ -91,12 +89,13 @@ class GoTerminalDelegate {
             title: 'go',
             stdout: const Stream<String>.empty(),
             stderr: Stream<String>.value(
-              '移动端内置 Go 运行时只支持 go run 运行程序，没有通用的 go 命令。',
+              '移动端支持 go run 运行程序和 go test 执行本地测试，没有通用的 go 命令。',
             ),
             exitCode: Future<int>.value(kProgramNotRunExitCode),
           );
           return true;
         }
+        if (tokens[1] == 'test') return _runEmbeddedGoTest(backend, tokens);
         return _runEmbeddedGoRun(backend, tokens);
       case GoRuntimeBackend.unavailable:
         await backend.runStreams(
@@ -224,6 +223,90 @@ class GoTerminalDelegate {
       );
       return true;
     }
+    await backend.runStreams(
+      title: result.title,
+      stdout: result.stdout,
+      stderr: result.stderr,
+      exitCode: result.exitCode,
+      cancel: result.cancel,
+    );
+    return true;
+  }
+
+  /// The embedded engine executes the selected package's tests, benchmarks and
+  /// explicit fuzz seeds once. Accept only flags whose meaning it implements.
+  Future<bool> _runEmbeddedGoTest(
+    SandboxShellBackend backend,
+    List<String> arguments,
+  ) async {
+    Future<bool> reject(String message) async {
+      await backend.runStreams(
+        title: 'go test',
+        stdout: const Stream<String>.empty(),
+        stderr: Stream<String>.value(message),
+        exitCode: Future.value(kProgramNotRunExitCode),
+      );
+      return true;
+    }
+
+    String? operand;
+    for (var index = 2; index < arguments.length; index++) {
+      final argument = arguments[index];
+      if (argument == '-v' ||
+          argument == '-v=true' ||
+          argument == '-benchmem' ||
+          argument == '-benchmem=true' ||
+          argument == '-count=1' ||
+          argument == '-run=.' ||
+          argument == '-bench=.') {
+        continue;
+      }
+      if ((argument == '-count' ||
+              argument == '-run' ||
+              argument == '-bench') &&
+          index + 1 < arguments.length &&
+          arguments[index + 1] == (argument == '-count' ? '1' : '.')) {
+        index++;
+        continue;
+      }
+      if (argument.startsWith('-') ||
+          argument.contains('...') ||
+          operand != null) {
+        return reject(
+          '移动端 go test 仅支持单个本地包或 _test.go，以及 -v、-count=1、-run=.、-bench=.、-benchmem；'
+          '不支持递归、筛选、race、coverage 或变异 fuzz。',
+        );
+      }
+      operand = argument;
+    }
+    final String target;
+    try {
+      target = backend.resolveSandboxPath(operand ?? '.');
+    } on SandboxEscapeException {
+      return reject('go test: 不能越出沙盒目录: $operand');
+    }
+    String? entryFile;
+    if (Directory(target).existsSync()) {
+      final files =
+          Directory(target)
+              .listSync(followLinks: false)
+              .whereType<File>()
+              .where((file) => file.path.endsWith('_test.go'))
+              .map((file) => file.path)
+              .toList()
+            ..sort();
+      entryFile = files.firstOrNull;
+    } else if (target.endsWith('_test.go') && File(target).existsSync()) {
+      entryFile = target;
+    }
+    if (entryFile == null) {
+      return reject('go test: 目标目录没有测试文件，请选择本地测试包或 _test.go。');
+    }
+    final result = await runner.run(
+      projectPath: backend.sandboxRoot,
+      entryFile: entryFile,
+    );
+    if (result == null) return reject('go test: 当前测试文件无法交给 Go 运行时。');
     await backend.runStreams(
       title: result.title,
       stdout: result.stdout,

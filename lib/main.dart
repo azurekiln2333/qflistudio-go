@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:qfli_studio_core/app.dart';
+import 'package:qfli_studio_core/pages/tools_grid.dart';
 import 'package:qfli_studio_core/services/project_templates.dart';
 import 'package:qfli_studio_core/services/studio_profile.dart';
 import 'package:qfli_studio_core/splash_screen.dart';
@@ -14,8 +15,14 @@ import 'package:qfli_studio_core/store/project_store.dart';
 import 'package:qfli_studio_core/store/settings_store.dart';
 
 import 'go_platform.dart';
+import 'go_code_analyzer.dart';
+import 'go_content_repository.dart';
+import 'go_debugger_page.dart';
+import 'go_ide_tools.dart';
 import 'go_runner.dart';
+import 'go_studio_debugger.dart';
 import 'go_terminal_delegate.dart';
+import 'go_tools_page.dart';
 
 /// 本 App 的产品名。窗口标题、任务切换器和应用内顶栏都读它。
 const String _appTitle = StudioProductCatalog.goShift;
@@ -29,6 +36,22 @@ final StudioProfile goProfile = StudioProfile(
   templates: [ProjectTemplate.empty, ProjectTemplate.go],
   isOffline: true,
   runner: GoProgramRunner(),
+  codeAnalyzer: GoCodeAnalyzer(),
+  debugger: GoStudioDebugger(),
+  contentRepositoryFactory: () => GoContentRepository(),
+  toolsTabBuilder: (store, onOpenTerminal) => GoToolsTab(
+    store: store,
+    onOpenTerminal: onOpenTerminal,
+    tools: createGoIdeTools(),
+    extraTools: [
+      ToolDefinition(
+        title: 'Go 调试',
+        description: '设置断点、单步执行并查看调用栈与变量',
+        icon: Icons.bug_report_outlined,
+        builder: (_) => GoDebuggerPage(store: store),
+      ),
+    ],
+  ),
   productKey: StudioProductCatalog.goShiftKey,
   showHomeTabs: false,
   runtimeKind: goRuntimeBackendFor(
