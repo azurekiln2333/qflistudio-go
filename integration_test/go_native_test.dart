@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
 
@@ -11,8 +12,11 @@ import 'package:qfli_go/main.dart' show goProfile;
 import 'package:qfli_studio_core/services/studio_profile.dart';
 import 'package:qfli_studio_core/terminal/shell/sandbox_shell_backend.dart';
 
+import 'go_native_ide_acceptance.dart';
+import 'go_product_ui_acceptance.dart';
+
 void main() {
-  IntegrationTestWidgetsFlutterBinding.ensureInitialized();
+  final binding = IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
   StudioProfile? originalProfile;
   setUp(() {
@@ -27,7 +31,33 @@ void main() {
       goRuntimeBackendFor(Platform.operatingSystem) !=
       GoRuntimeBackend.embeddedInterpreter;
 
-  testWidgets('bundled Go interpreter runs a multi-file program', (_) async {
+  Future<void> Function() waitForNativeBodies = () async {};
+  void nativeTestWidgets(
+    String description,
+    Future<void> Function(WidgetTester tester) body, {
+    required bool skip,
+  }) {
+    final previous = waitForNativeBodies;
+    Completer<void>? ownershipReleased;
+    waitForNativeBodies = () async {
+      await previous();
+      final released = ownershipReleased;
+      if (released != null) await released.future;
+    };
+    testWidgets(description, (tester) async {
+      final released = Completer<void>();
+      ownershipReleased = released;
+      await previous();
+      try {
+        await body(tester);
+      } finally {
+        // Framework observation expiry cannot release this body's native work.
+        released.complete();
+      }
+    }, skip: skip);
+  }
+
+  nativeTestWidgets('bundled Go interpreter runs a multi-file program', (_) async {
     final project = await Directory.systemTemp.createTemp('qfli_go_native_');
     try {
       final source = Directory(p.join(project.path, 'src'));
@@ -88,7 +118,7 @@ func main() { fmt.Println("main2", message()) }
     }
   }, skip: unsupported);
 
-  testWidgets('bundled Go interpreter reports program and worker panics', (
+  nativeTestWidgets('bundled Go interpreter reports program and worker panics', (
     _,
   ) async {
     final project = await Directory.systemTemp.createTemp('qfli_go_panic_');
@@ -118,7 +148,7 @@ func main() { fmt.Println("main2", message()) }
     }
   }, skip: unsupported);
 
-  testWidgets('bundled Go interpreter cancels an infinite program', (_) async {
+  nativeTestWidgets('bundled Go interpreter cancels an infinite program', (_) async {
     final project = await Directory.systemTemp.createTemp('qfli_go_cancel_');
     try {
       final entry = File(p.join(project.path, 'main.go'));
@@ -129,9 +159,21 @@ func main() { fmt.Println("main2", message()) }
       ))!;
       final output = result.stdout.join('\n');
       final errors = result.stderr.join('\n');
+      final actualExit = result.exitCode;
       await Future<void>.delayed(const Duration(milliseconds: 300));
-      await result.cancel!();
-      expect(await result.exitCode.timeout(const Duration(seconds: 5)), 1);
+      int? exitCode;
+      try {
+        await result.cancel!();
+      } finally {
+        exitCode = await _awaitNativeTerminal(
+          actualExit,
+          observation: const Duration(seconds: 5),
+          binding: binding,
+          caseId: 'native-infinite-program-cancel',
+          fixturePath: project.path,
+        );
+      }
+      expect(exitCode, 1);
       expect(await errors, contains('canceled'));
       await output;
     } finally {
@@ -139,7 +181,7 @@ func main() { fmt.Println("main2", message()) }
     }
   }, skip: unsupported);
 
-  testWidgets(
+  nativeTestWidgets(
     'terminal delegate runs go run through the sandbox on device',
     (_) async {
       // Drives the real product path: the shared SandboxShellBackend with the
@@ -202,7 +244,7 @@ func main() { fmt.Println("main2", message()) }
     skip: unsupported,
   );
 
-  testWidgets('terminal delegate interrupts a running go run program', (
+  nativeTestWidgets('terminal delegate interrupts a running go run program', (
     _,
   ) async {
     final project = await Directory.systemTemp.createTemp('qfli_go_termint_');
@@ -228,8 +270,17 @@ func main() { fmt.Println("main2", message()) }
       );
       final lines = <String>[];
       final sub = backend.output.listen((chunk) => lines.add(chunk.text));
+      Future<void>? execution;
+      var executionFinished = false;
       try {
-        final execution = backend.execute('go run main.go');
+        execution = backend.execute('go run main.go');
+        // Attach an error observer now while the marker wait runs. Awaiting the
+        // original future below still preserves its error and actual lifetime.
+        unawaited(execution.then<void>((_) {
+          executionFinished = true;
+        }, onError: (Object error, StackTrace stack) {
+          executionFinished = true;
+        }));
         // Explicit bounded wait: the marker proves main really ran, without
         // depending on buffered stdout.
         var markerSeen = false;
@@ -247,19 +298,91 @@ func main() { fmt.Println("main2", message()) }
           reason: 'the program did not enter main before the timeout',
         );
         await backend.interrupt();
-        await execution.timeout(const Duration(seconds: 20));
+        await _awaitNativeTerminal(
+          execution,
+          observation: const Duration(seconds: 20),
+          binding: binding,
+          caseId: 'terminal-go-run-interrupt',
+          fixturePath: project.path,
+        );
         // The interrupt is reported through the backend; a cancelled command's
         // status is not a program result.
         expect(lines.join('\n'), contains('^C'));
         expect(backend.lastExitCode, isNull);
       } finally {
-        await sub.cancel();
-        await backend.shutdown();
+        try {
+          // shutdown only disposes the shell's output; it does not await its
+          // delegated native execution. A failed marker assertion also needs
+          // an interrupt followed by an actual drain before fixture deletion.
+          if (execution != null && !executionFinished) {
+            await backend.interrupt();
+          }
+        } finally {
+          try {
+            if (execution != null) await execution;
+          } finally {
+            await sub.cancel();
+            await backend.shutdown();
+          }
+        }
       }
     } finally {
       await project.delete(recursive: true);
     }
   }, skip: unsupported);
+
+  final waitForApi = registerGoNativeIdeAcceptance(
+    binding: binding,
+    beforeAudit: waitForNativeBodies,
+  );
+  registerGoProductUiAcceptance(
+    binding: binding,
+    beforeAudit: waitForApi,
+  );
+}
+
+Future<T> _awaitNativeTerminal<T>(
+  Future<T> completion, {
+  required Duration observation,
+  required IntegrationTestWidgetsFlutterBinding binding,
+  required String caseId,
+  required String fixturePath,
+}) async {
+  try {
+    return await completion.timeout(observation);
+  } on TimeoutException {
+    final ownership = <String, Object?>{
+      'caseId': caseId,
+      'fixturePath': fixturePath,
+      'nativeRunId': null,
+      'nativeRunIdUnavailableReason': 'Product run/terminal handles do not expose the native numeric run ID',
+      'dartResultFutureIdentity': identityHashCode(completion),
+      'dartIdentityIsNativeHandle': false,
+      'status': 'HOLD-native-result-pending',
+      'terminalObserved': false,
+      'releaseConfirmed': false,
+    };
+    void publish() {
+      binding.reportData = {
+        ...?binding.reportData,
+        'goNativeExecutionOwnership': Map<String, Object?>.from(ownership),
+      };
+      // ignore: avoid_print
+      print('QFLI_GO_NATIVE_EXECUTION_OWNERSHIP ${jsonEncode(ownership)}');
+    }
+    publish();
+    await completion;
+    ownership.addAll({
+      'status': 'drained-after-timeout',
+      'terminalObserved': true,
+      'releaseConfirmed': true,
+    });
+    publish();
+    throw TimeoutException(
+      '$caseId exceeded its observation deadline; actual completion was drained',
+      observation,
+    );
+  }
 }
 
 class _TerminalRun {
