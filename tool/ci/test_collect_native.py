@@ -1,5 +1,6 @@
 """Reject native artifact formats that would break the intended target."""
 import json
+import os
 from pathlib import Path
 import struct
 import tempfile
@@ -107,6 +108,38 @@ class ElfValidationTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, "predates"):
                 collector.stage(args)
         self.assertFalse(args.output.exists())
+
+    def test_staged_manifest_retains_failed_source_check_result(self):
+        root = Path(self.temp.name)
+        source = {"nativeSourceSha256": "same", "buildInputs": {}}
+        captured = root / "source.json"
+        captured.write_text(json.dumps(source))
+        build = root / "apple"
+        runtime = build / "derived/qfli_go_runtime"
+        runtime.mkdir(parents=True)
+        (runtime / "libqfli_go_runtime.a").write_bytes(b"archive fixture")
+        (runtime / "libqfli_go_runtime.h").write_text("void QfliGoFree(void*);")
+        for relative in ("LICENSE", "native/go_runtime/LICENSE.go-standard-library", "assets/licenses/yaegi.txt"):
+            path = root / relative
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("license fixture")
+        output = root / "artifact"
+        summary = root / "summary.md"
+        args = SimpleNamespace(snapshot=captured, output=output, platform="ios-device", build=build)
+        run_url = "https://github.com/example/project/actions/runs/123"
+        with patch.object(collector, "ROOT", root), patch.object(collector, "snapshot", return_value=source), \
+                patch.object(collector, "inspect_apple", return_value={"architectures": ["arm64"]}), \
+                patch.object(collector, "command", return_value="test-commit"), \
+                patch.dict(os.environ, {"SOURCE_CHECKS_CONCLUSION": "failure", "SOURCE_CHECKS_RUN_URL": run_url,
+                                        "GITHUB_STEP_SUMMARY": str(summary)}), patch("builtins.print"):
+            collector.stage(args)
+        report = json.loads((output / "manifest.json").read_text())
+        self.assertEqual(report["sourceChecksConclusion"], "failure")
+        self.assertEqual(report["sourceChecksRunURL"], run_url)
+        self.assertFalse(report["deviceExecution"])
+        self.assertIn("source checks have not passed", summary.read_text())
+        self.assertIn(run_url, summary.read_text())
+        self.assertIn(collector.digest(output / "manifest.json"), (output / "SHA256SUMS").read_text())
 
 
 if __name__ == "__main__":

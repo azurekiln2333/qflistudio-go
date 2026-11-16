@@ -38,6 +38,7 @@ env:
   GOPROXY: 'off'
   GOSUMDB: 'off'
   GO_TELEMETRY_CHILD: '2'
+  SOURCE_CHECKS_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
 
 jobs:
   source-checks:
@@ -52,25 +53,32 @@ jobs:
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: false
-      - name: Test and vet vendored runtime
+      - name: Test vendored runtime
         working-directory: native/go_runtime
         env:
           CGO_ENABLED: '1'
-        run: |
-          go test -mod=vendor -timeout=20m ./...
-          go vet -mod=vendor ./...
+        run: go test -mod=vendor -timeout=20m ./...
+      - name: Vet vendored runtime
+        if: ${{ !cancelled() }}
+        working-directory: native/go_runtime
+        env:
+          CGO_ENABLED: '1'
+        run: go vet -mod=vendor ./...
       - name: Check artifact validation regressions
+        if: ${{ !cancelled() }}
         run: python3 -m unittest discover -s tool/ci -p 'test_*.py'
 
   android:
     name: Android (3 ABIs)
     runs-on: windows-2022
     needs: source-checks
+    if: ${{ !cancelled() }}
     timeout-minutes: 45
     defaults:
       run:
         shell: pwsh
     env:
+      SOURCE_CHECKS_CONCLUSION: ${{ needs.source-checks.result }}
       ANDROID_NDK_VERSION: '28.2.13676358'
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -108,11 +116,13 @@ jobs:
     name: OpenHarmony (2 ABIs)
     runs-on: windows-2022
     needs: source-checks
+    if: ${{ !cancelled() }}
     timeout-minutes: 90
     defaults:
       run:
         shell: pwsh
     env:
+      SOURCE_CHECKS_CONCLUSION: ${{ needs.source-checks.result }}
       OHOS_SDK_URL: 'https://repo.huaweicloud.com/openharmony/os/5.0.0-Release/ohos-sdk-windows_linux-public.tar.gz'
       OHOS_SDK_SHA256: 'f06a2a8ae38a3cf01c583557f5a4bb1e6e3626df975599aa71f4a59e9af70ecc'
     steps:
@@ -173,6 +183,9 @@ jobs:
     name: ${{ matrix.target }}
     runs-on: macos-15
     needs: source-checks
+    if: ${{ !cancelled() }}
+    env:
+      SOURCE_CHECKS_CONCLUSION: ${{ needs.source-checks.result }}
     timeout-minutes: 45
     strategy:
       fail-fast: false

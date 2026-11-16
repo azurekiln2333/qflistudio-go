@@ -144,6 +144,8 @@ def stage(args: argparse.Namespace) -> None:
     report = {
         "schemaVersion": 1, "platform": args.platform, "commit": command("git", "rev-parse", "HEAD"),
         "runId": os.getenv("GITHUB_RUN_ID"), "runAttempt": os.getenv("GITHUB_RUN_ATTEMPT"),
+        "sourceChecksConclusion": os.getenv("SOURCE_CHECKS_CONCLUSION", "not-run"),
+        "sourceChecksRunURL": os.getenv("SOURCE_CHECKS_RUN_URL"),
         "finishedUtc": datetime.now(timezone.utc).isoformat(), "build": before,
         "deviceExecution": False, "checks": checks, "files": records,
     }
@@ -151,7 +153,13 @@ def stage(args: argparse.Namespace) -> None:
     report_path.write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     checksums = [(r["sha256"], r["path"]) for r in records] + [(digest(report_path), "manifest.json")]
     (args.output / "SHA256SUMS").write_text("".join(f"{sha}  {name}\n" for sha, name in checksums), encoding="utf-8")
-    summary = f"### Native runtime: {args.platform}\n\n| File | Bytes | SHA-256 |\n| --- | ---: | --- |\n"
+    summary = f"### Native runtime: {args.platform}\n\n"
+    summary += f"Source checks: **{report['sourceChecksConclusion']}**.\n\n"
+    if report["sourceChecksConclusion"] != "success":
+        summary += "**Compilation artifacts only: source checks have not passed.**\n\n"
+    if report["sourceChecksRunURL"]:
+        summary += f"[Open source-check run]({report['sourceChecksRunURL']})\n\n"
+    summary += "| File | Bytes | SHA-256 |\n| --- | ---: | --- |\n"
     summary += "".join(f"| `{r['path']}` | {r['bytes']} | `{r['sha256']}` |\n" for r in records)
     summary += "\nDownload the artifact below this run summary. These are libraries, not application installers.\n"
     if summary_file := os.getenv("GITHUB_STEP_SUMMARY"):
