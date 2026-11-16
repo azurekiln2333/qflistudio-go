@@ -58,24 +58,49 @@
 
 ## 验收标准
 
-- [ ] `.github/workflows/native-runtime.yml` 存在。
-- [ ] GitHub Actions 可以解析该文件。
+- [x] `.github/workflows/native-runtime.yml` 存在。
+- [x] GitHub Actions 可以解析该文件。
 - [ ] 手动触发可以构建 Android。
 - [ ] 手动触发可以构建 OHOS。
 - [ ] 手动触发可以构建 macOS。
 - [ ] 手动触发可以构建 iOS。
-- [ ] Android 产物包含三个 ABI。
-- [ ] OHOS 产物包含两个 ABI。
-- [ ] macOS 产物包含通用 dylib。
+- [x] Android 产物包含三个 ABI。
+- [x] OHOS 产物包含两个 ABI。
+- [x] macOS 产物包含通用 dylib。
 - [ ] iOS 产物区分设备版和模拟器版。
-- [ ] OHOS job 检查 SDK SHA-256。
-- [ ] Apple job 不需要开发者证书。
-- [ ] 产物名称包含平台和提交 SHA。
-- [ ] README 说明 Actions 下载入口。
-- [ ] README 说明本地清理目录。
-- [ ] 本地检查通过 YAML 静态检查。
-- [ ] Apple shell 脚本通过语法检查。
+- [x] OHOS job 检查 SDK SHA-256。
+- [x] Apple job 不需要开发者证书。
+- [x] 产物名称包含平台和提交 SHA。
+- [x] README 说明 Actions 下载入口。
+- [x] README 说明本地清理目录。
+- [x] 本地检查通过 YAML 静态检查。
+- [x] Apple shell 脚本通过语法检查。
 - [ ] native test/vet 通过，或记录环境限制。
+
+## 实跑记录
+
+推送已触发 GitHub 构建。
+Android 和 OHOS 构建成功。
+两者的新产物已通过本地摘要检查。
+iOS 真机库构建成功。
+真机 ZIP 的本地下载遇到 TLS 连接中断。
+上一轮 macOS 通用库构建成功。
+新一轮 macOS 和模拟器任务仍在排队。
+具体状态见 `research/remote-validation.json`。
+
+源码测试发现既有调试器故障。
+这是测试失败，不是环境限制。
+`go vet` 和 11 项产物检查通过。
+产物清单保留源码检查的失败状态。
+
+当前运行由推送触发。
+本次未验证手动触发入口。
+工作流尚未合并到默认分支。
+未满足的验收项继续保留。
+
+GPL v3 声明已对齐主项目。
+三个 README 已补齐许可证说明。
+提交 `b324c92` 已推送到 GitHub。
 
 ## 不在范围内
 

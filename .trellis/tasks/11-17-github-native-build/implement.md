@@ -22,3 +22,19 @@ Risk and rollback points:
 - Revert only the workflow and documentation files if the remote run proves a platform path unavailable.
 
 9. Commit this task, push the feature branch to the GitHub remote, inspect actual runs, fix CI failures, and report artifact links.
+
+## Execution evidence
+
+- Workflow and collection implementation: `0cb91fd`.
+- GPL v3 README alignment with the main project: `b324c92`.
+- Preserve source test failure while allowing compilation: `3fabba8`.
+- Explicit macOS/iOS deployment targets and manifest fields: `9f815ba`.
+- All four commits were pushed to GitHub branch `feat/go-offline-ide`.
+- Latest run: `43942972002`. Android, OHOS and iOS device jobs succeeded.
+- Latest macOS and simulator jobs are still queued without a runner. The
+  previous macOS build succeeded, with a deployment warning fixed in `9f815ba`.
+- Actionlint, parser checks, Chinese lint and 11 collector tests passed.
+- Hosted Go vet passed; existing debugger tests failed. Do not archive this
+  task as fully accepted or report source checks as passing.
+- Exact job/artifact evidence lives in `research/remote-validation.json`.
+- Additional disk accounting lives in `research/local-storage.md`.

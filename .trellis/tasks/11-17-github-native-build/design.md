@@ -17,21 +17,21 @@ The workflow builds only bundled native runtime libraries. It does not package o
 3. Install Android NDK with the runner's Android SDK tools.
 4. Download the default official OpenHarmony SDK archive and verify its published SHA-256. Permit a URL/digest override pair. Reject incomplete overrides.
 5. Run `tool/build_ohos_go_toolchain.ps1` to build the pinned OHOS Go host toolchain.
-6. Run `tool/build_go_runtime.ps1` with official Go, OHOS Go, Android NDK and OHOS SDK paths.
-7. Collect Android libraries, OpenHarmony libraries and `native/build/bundled-go-runtime-build.json`.
+6. Run `tool/build_go_runtime.ps1 -Platform android|ohos` with only the selected platform's compiler and SDK paths.
+7. Collect each platform's libraries and `native/build/bundled-go-runtime-build-<platform>.json`; preserve the default local five-library build behavior.
 8. Generate a file list with byte sizes and SHA-256 digests.
 9. Upload platform-specific artifacts with immutable unique names.
 
 ### macOS job
 
 1. Checkout and install Go 1.27.1.
-2. Invoke `tool/build_macos_go_runtime.sh` with Xcode environment variables for arm64 and x86_64.
+2. Set `MACOSX_DEPLOYMENT_TARGET=13.0` before source capture. Invoke `tool/build_macos_go_runtime.sh` with Xcode environment variables for arm64 and x86_64.
 3. Upload the universal dylib and a checksum manifest.
 
 ### iOS job
 
 1. Checkout and install Go 1.27.1.
-2. Invoke `tool/build_ios_go_runtime.sh` once for `iphoneos/arm64`.
+2. Set `IPHONEOS_DEPLOYMENT_TARGET=13.0` before source capture. Invoke `tool/build_ios_go_runtime.sh` once for `iphoneos/arm64`.
 3. Invoke it again for `iphonesimulator/arm64 x86_64`.
 4. Upload separate device and simulator archives, each with the generated header and checksum manifest.
 
@@ -55,7 +55,8 @@ Binary artifacts use zero compression where practical. Missing files fail the up
 ## Verification and limits
 
 - Validate shell scripts with `bash -n` on the macOS job.
-- Run `go test -mod=vendor ./...` and `go vet -mod=vendor ./...` in a native source job before platform builds, or record an environment limitation if the full matrix cannot run.
+- Run `go test -mod=vendor ./...` and `go vet -mod=vendor ./...` in separate steps before platform builds. Existing debugger tests fail on the hosted Linux runner. Keep those failures visible, allow compilation to proceed with `!cancelled()`, and label the artifacts as compilation-only evidence. This is a source failure, not an environment limitation.
+- Record the selected Apple deployment target in the artifact manifest. Existing macOS Xcode settings still declare 10.15; adjusting application compatibility is outside this CI change.
 - Use `file`, `lipo -info`, and SHA-256 checks on Apple outputs.
 - Use existing provenance JSON for Android/OHOS. Apple outputs get a separate manifest because the PowerShell provenance script does not cover them.
 - No Apple signing identity, provisioning profile, device install, or Flutter packaging is required.
