@@ -65,6 +65,21 @@ macOS dylib 使用临时签名。
 iOS 静态库无需开发者证书。
 应用分发仍需完成各平台的签名步骤。
 
+CI 的 macOS 库以 macOS 13.0 为最低版本。
+Go 1.27 要求 macOS 13 或更高版本。
+CI 的 iOS 库以 iOS 13.0 为最低版本。
+真机库和模拟器库使用同一最低版本。
+Go 官方要求 iOS 12 或更高版本。
+清单的 `build` 记录所用的部署版本。
+macOS 字段为 `macosDeploymentTarget`。
+iOS 字段为 `iosDeploymentTarget`。
+
+既有 macOS Xcode 工程仍设置为 10.15。
+既有 iOS Xcode 工程设置为 13.0。
+本次只调整 CI 的构建参数。
+应用支持范围仍需另行统一和验证。
+这批 macOS 库不支持 macOS 13 之前的版本。
+
 ## 使用下载产物
 
 先检查 ZIP 中的提交 SHA。

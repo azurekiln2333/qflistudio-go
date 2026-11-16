@@ -213,6 +213,11 @@ jobs:
           bash -n tool/build_ios_go_runtime.sh
           export QFLI_GO_EXECUTABLE="$(command -v go)"
           export DERIVED_FILE_DIR="$RUNNER_TEMP/native-$TARGET/derived"
+          if [[ "$TARGET" == macos-universal ]]; then
+            export MACOSX_DEPLOYMENT_TARGET=13.0
+          else
+            export IPHONEOS_DEPLOYMENT_TARGET=13.0
+          fi
           python tool/ci/collect_native.py snapshot "$RUNNER_TEMP/native-$TARGET/source.json"
           if [[ "$TARGET" == macos-universal ]]; then
             export SRCROOT="$GITHUB_WORKSPACE/macos"

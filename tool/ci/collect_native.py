@@ -190,6 +190,10 @@ def main() -> None:
             data["ohosSdkArchiveSha256"] = value.lower()
         if sys.platform == "darwin":
             data["xcodeVersion"] = command("xcodebuild", "-version")
+            if value := os.getenv("MACOSX_DEPLOYMENT_TARGET"):
+                data["macosDeploymentTarget"] = value
+            if value := os.getenv("IPHONEOS_DEPLOYMENT_TARGET"):
+                data["iosDeploymentTarget"] = value
         args.output.parent.mkdir(parents=True, exist_ok=True)
         args.output.write_text(json.dumps(data, indent=2) + "\n", encoding="utf-8")
     else:
