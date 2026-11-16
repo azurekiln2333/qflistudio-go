@@ -10,3 +10,5 @@
 
 # Xcode build scripts require Unix line endings.
 tool/build_ios_go_runtime.sh text eol=lf
+tool/build_macos_go_runtime.sh text eol=lf
+tool/ci/*.sh text eol=lf

@@ -1,0 +1,228 @@
+name: Native runtime
+
+on:
+  workflow_dispatch:
+    inputs:
+      ohos_sdk_url:
+        description: 'Optional OHOS Windows SDK archive HTTPS URL override'
+        type: string
+        required: false
+      ohos_sdk_sha256:
+        description: 'SHA-256 required when overriding the OHOS SDK URL'
+        type: string
+        required: false
+  push:
+    paths:
+      - '.github/workflows/native-runtime.yml'
+      - '.gitattributes'
+      - 'native/go_runtime/**'
+      - 'tool/build*go*.ps1'
+      - 'tool/build*go*.sh'
+      - 'tool/ci/**'
+      - 'tool/go_curriculum/audit_native.py'
+      - 'tool/go_curriculum/assemble.py'
+      - 'tool/inspect_go_catalog_hap.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-runtime-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  GO_VERSION: '1.27.1'
+  GOTOOLCHAIN: local
+  GOWORK: 'off'
+  GOENV: 'off'
+  GOPROXY: 'off'
+  GOSUMDB: 'off'
+  GO_TELEMETRY_CHILD: '2'
+
+jobs:
+  source-checks:
+    name: Native source tests
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+      - name: Test and vet vendored runtime
+        working-directory: native/go_runtime
+        env:
+          CGO_ENABLED: '1'
+        run: |
+          go test -mod=vendor -timeout=20m ./...
+          go vet -mod=vendor ./...
+      - name: Check artifact validation regressions
+        run: python3 -m unittest discover -s tool/ci -p 'test_*.py'
+
+  android:
+    name: Android (3 ABIs)
+    runs-on: windows-2022
+    needs: source-checks
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      ANDROID_NDK_VERSION: '28.2.13676358'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - name: Install pinned Android NDK
+        run: |
+          $sdkManager = Join-Path $env:ANDROID_HOME 'cmdline-tools/latest/bin/sdkmanager.bat'
+          & $sdkManager --install "ndk;$env:ANDROID_NDK_VERSION"
+          if ($LASTEXITCODE -ne 0) { throw 'Android NDK installation failed.' }
+          "ANDROID_NDK_HOME=$env:ANDROID_HOME/ndk/$env:ANDROID_NDK_VERSION" >> $env:GITHUB_ENV
+      - name: Build and validate Android libraries
+        run: |
+          python tool/ci/collect_native.py snapshot native/build/ci/android-source.json
+          if ($LASTEXITCODE -ne 0) { throw 'Source capture failed.' }
+          ./tool/build_go_runtime.ps1 -Platform android -AndroidNdk $env:ANDROID_NDK_HOME
+          python tool/ci/collect_native.py stage --platform android --snapshot native/build/ci/android-source.json --output native/build/ci/artifacts/android --readelf "$env:ANDROID_NDK_HOME/toolchains/llvm/prebuilt/windows-x86_64/bin/llvm-readelf.exe"
+          if ($LASTEXITCODE -ne 0) { throw 'Android artifact validation failed.' }
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: native-android-${{ github.sha }}
+          path: native/build/ci/artifacts/android/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+  ohos:
+    name: OpenHarmony (2 ABIs)
+    runs-on: windows-2022
+    needs: source-checks
+    timeout-minutes: 90
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      OHOS_SDK_URL: 'https://repo.huaweicloud.com/openharmony/os/5.0.0-Release/ohos-sdk-windows_linux-public.tar.gz'
+      OHOS_SDK_SHA256: 'f06a2a8ae38a3cf01c583557f5a4bb1e6e3626df975599aa71f4a59e9af70ecc'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - name: Resolve complete OpenHarmony SDK override
+        env:
+          INPUT_SDK_URL: ${{ inputs.ohos_sdk_url }}
+          INPUT_SDK_SHA256: ${{ inputs.ohos_sdk_sha256 }}
+          VARIABLE_SDK_URL: ${{ vars.OHOS_SDK_URL }}
+          VARIABLE_SDK_SHA256: ${{ vars.OHOS_SDK_SHA256 }}
+        run: |
+          if ($env:INPUT_SDK_URL -or $env:INPUT_SDK_SHA256) {
+            if (-not $env:INPUT_SDK_URL -or -not $env:INPUT_SDK_SHA256) { throw 'Supply both manual OHOS SDK inputs.' }
+            $sdkUrl = $env:INPUT_SDK_URL
+            $sdkSha256 = $env:INPUT_SDK_SHA256
+          } elseif ($env:VARIABLE_SDK_URL -or $env:VARIABLE_SDK_SHA256) {
+            if (-not $env:VARIABLE_SDK_URL -or -not $env:VARIABLE_SDK_SHA256) { throw 'Supply both repository OHOS SDK variables.' }
+            $sdkUrl = $env:VARIABLE_SDK_URL
+            $sdkSha256 = $env:VARIABLE_SDK_SHA256
+          } else {
+            $sdkUrl = $env:OHOS_SDK_URL
+            $sdkSha256 = $env:OHOS_SDK_SHA256
+          }
+          if ($sdkUrl -match '[\r\n]' -or $sdkSha256 -match '[\r\n]') { throw 'SDK inputs must be single-line values.' }
+          "OHOS_SDK_URL=$sdkUrl" >> $env:GITHUB_ENV
+          "OHOS_SDK_SHA256=$sdkSha256" >> $env:GITHUB_ENV
+      - name: Install checksum-pinned OpenHarmony native SDK
+        run: ./tool/ci/install_ohos_sdk.ps1 -Url $env:OHOS_SDK_URL -Sha256 $env:OHOS_SDK_SHA256 -Destination "$env:RUNNER_TEMP/ohos-sdk"
+      - name: Build pinned OHOS Go toolchain
+        run: |
+          ./tool/build_ohos_go_toolchain.ps1 -BootstrapGoExecutable (Get-Command go).Source
+          "OHOS_GO=$env:GITHUB_WORKSPACE/native/build/ohos-go-f2cb44316b789bc12d0b5fd562d853f6fec3ab28/bin/go.exe" >> $env:GITHUB_ENV
+      - name: Build and validate OpenHarmony libraries
+        run: |
+          python tool/ci/collect_native.py snapshot native/build/ci/ohos-source.json
+          if ($LASTEXITCODE -ne 0) { throw 'Source capture failed.' }
+          ./tool/build_go_runtime.ps1 -Platform ohos -OhosGoExecutable $env:OHOS_GO -OhosSdk $env:OHOS_SDK_HOME
+          python tool/ci/collect_native.py stage --platform ohos --snapshot native/build/ci/ohos-source.json --output native/build/ci/artifacts/ohos --readelf "$env:OHOS_SDK_HOME/native/llvm/bin/llvm-readelf.exe"
+          if ($LASTEXITCODE -ne 0) { throw 'OHOS artifact validation failed.' }
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: native-ohos-${{ github.sha }}
+          path: native/build/ci/artifacts/ohos/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+  apple:
+    name: ${{ matrix.target }}
+    runs-on: macos-15
+    needs: source-checks
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        target: [macos-universal, ios-device, ios-simulator]
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - name: Build and validate Apple libraries
+        env:
+          TARGET: ${{ matrix.target }}
+        run: |
+          bash -n tool/build_macos_go_runtime.sh
+          bash -n tool/build_ios_go_runtime.sh
+          export QFLI_GO_EXECUTABLE="$(command -v go)"
+          export DERIVED_FILE_DIR="$RUNNER_TEMP/native-$TARGET/derived"
+          python tool/ci/collect_native.py snapshot "$RUNNER_TEMP/native-$TARGET/source.json"
+          if [[ "$TARGET" == macos-universal ]]; then
+            export SRCROOT="$GITHUB_WORKSPACE/macos"
+            export ARCHS="arm64 x86_64"
+            export TARGET_BUILD_DIR="$RUNNER_TEMP/native-$TARGET/bundle"
+            export FRAMEWORKS_FOLDER_PATH=Frameworks
+            export CODE_SIGNING_ALLOWED=YES EXPANDED_CODE_SIGN_IDENTITY=-
+            bash tool/build_macos_go_runtime.sh
+          else
+            export SRCROOT="$GITHUB_WORKSPACE/ios"
+            if [[ "$TARGET" == ios-device ]]; then
+              export PLATFORM_NAME=iphoneos ARCHS=arm64
+            else
+              export PLATFORM_NAME=iphonesimulator ARCHS="arm64 x86_64"
+            fi
+            export SDKROOT="$PLATFORM_NAME"
+            bash tool/build_ios_go_runtime.sh
+          fi
+          python tool/ci/collect_native.py stage --platform "$TARGET" --snapshot "$RUNNER_TEMP/native-$TARGET/source.json" --build "$RUNNER_TEMP/native-$TARGET" --output "native/build/ci/artifacts/$TARGET"
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: native-${{ matrix.target }}-${{ github.sha }}
+          path: native/build/ci/artifacts/${{ matrix.target }}/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0

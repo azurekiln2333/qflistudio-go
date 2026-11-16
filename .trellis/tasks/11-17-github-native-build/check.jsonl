@@ -1,0 +1,3 @@
+{"file":".trellis/spec/backend/native-go-runtime.md","reason":"Review platform-specific build constraints and validation requirements"}
+{"file":".trellis/tasks/11-17-github-native-build/research/github-actions-native-build.md","reason":"Review runner and artifact operational risks"}
+{"file":".trellis/tasks/11-17-github-native-build/research/implementation-decisions.md","reason":"Corrections to SDK provisioning, supported runners, desktop library requirement and remote execution authorization"}

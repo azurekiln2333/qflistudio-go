@@ -117,6 +117,10 @@ python tool/go_curriculum/dedup.py
 
 ## 原生库与安装包
 
+GitHub 工作流可构建 Android、OHOS 和 Apple 原生库。
+在运行详情的 **Artifacts** 下载产物。
+产物内容和清理说明见[远程构建指南](native/go_runtime/CI.md)。
+
 Android 构建需要 Android NDK。
 OpenHarmony 构建需要 OHOS SDK。
 OpenHarmony 使用固定的 OHOS Go 移植版。

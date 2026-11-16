@@ -1,5 +1,12 @@
 # Bundled Go interpreter
 
+GitHub Actions builds Android, OpenHarmony, macOS and iOS libraries.
+See [the CI and download guide](CI.md) for artifacts and local disk cleanup.
+Desktop program execution uses the official Go SDK, while desktop analysis and
+debugging still require this project's own runtime library. Existing desktop
+build steps compile that library; the CI workflow does not publish Windows or
+Linux library artifacts.
+
 The mobile runtime vendors Yaegi at the version pinned in `go.mod`. The vendored
 `interp/interp.go` and `interp/run.go` include local fixes for path evaluation:
 
