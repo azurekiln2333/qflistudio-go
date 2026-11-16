@@ -221,3 +221,43 @@ Accepted Rust physical handoff, preserved installed Go app after signature misma
 ### Next Steps
 
 - Wait for Dart coordinator explicit release before isolated Go ARM64 tests using manual install-r plus Flutter drive use-existing-app; do not uninstall or clear production data.
+
+
+## Session 7: GitHub native builds and GPL alignment
+<!-- trellis-session: v=2 fp=8ca21c36e6b51024 -->
+
+**Date**: 2026-11-17
+**Task**: GitHub native builds and GPL alignment
+**Branch**: `feat/go-offline-ide`
+
+### Summary
+
+Added and pushed native CI, aligned GPL notices, verified hosted Android/OHOS builds and earlier macOS build, observed iOS device success. Existing source tests fail; latest macOS and simulator remain queued.
+
+### Main Changes
+
+- Built Android, OHOS and Apple native artifacts through GitHub Actions with provenance and checksums.
+- Aligned three README license sections with qflistudio GPL v3 text.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `0cb91fd` | ci(native): build mobile and Apple runtimes on GitHub |
+| `b324c92` | docs(license): align GPL v3 notices with qflistudio |
+| `3fabba8` | fix(ci): build artifacts while preserving source test failures |
+| `9f815ba` | fix(ci): align Apple deployment targets with Go toolchain |
+
+### Testing
+
+- [OK] Actionlint, parser checks, Chinese lint and 11 collector tests passed; hosted Go vet passed.
+- [OK] Latest Android and OHOS archives passed local file and SHA-256 checks. iOS device upload succeeded; local download hit TLS EOF.
+
+### Status
+
+[OK] **Completed**
+
+### Next Steps
+
+- Observe remaining queued Apple jobs in run 43942972002 and validate their artifacts.
+- Resolve existing native debugger test failures before accepting source checks; keep current task in progress.
