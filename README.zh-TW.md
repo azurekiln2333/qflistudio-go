@@ -179,3 +179,9 @@ flutter build hap --debug --no-pub
 
 - [Go 標準程式庫聲明](assets/licenses/go.txt)
 - [Yaegi 聲明](assets/licenses/yaegi.txt)
+
+## 授權條款
+
+本倉庫程式碼採用 GNU GPL v3.0 授權條款。
+另行聲明授權條款的內容沿用原授權條款。
+授權條款全文見 [LICENSE](LICENSE)。

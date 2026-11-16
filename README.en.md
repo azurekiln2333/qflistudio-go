@@ -178,3 +178,9 @@ Device evidence must match the actual source and app package.
 
 - [Go standard library notice](assets/licenses/go.txt)
 - [Yaegi notice](assets/licenses/yaegi.txt)
+
+## License
+
+This repository's code is licensed under the GNU General Public License v3.0.
+Content with a separate license declaration retains its original license.
+See [LICENSE](LICENSE) for the full text.
