@@ -1,11 +1,11 @@
 {
-  "observedAtUtc": "2026-11-16T20:11:09.389315+00:00",
+  "observedAtUtc": "2026-11-17T02:05:05.618909+00:00",
   "runId": 43942972002,
   "url": "https://github.com/azurekiln2333/qflistudio-go/actions/runs/43942972002",
   "commit": "9f815ba7d678f403bd49411d7aaa1ac4d224b9e2",
   "branch": "feat/go-offline-ide",
-  "status": "queued",
-  "conclusion": null,
+  "status": "completed",
+  "conclusion": "failure",
   "event": "push",
   "jobs": [
     {
@@ -227,25 +227,127 @@
     {
       "id": 133565696766,
       "name": "ios-simulator",
-      "status": "queued",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "url": "https://github.com/azurekiln2333/qflistudio-go/actions/runs/43942972002/job/133565696766",
       "createdAt": "2026-11-16T19:48:24Z",
-      "runnerAssigned": false,
-      "steps": []
+      "runnerAssigned": true,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build and validate Apple libraries",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
     },
     {
       "id": 133565696767,
       "name": "macos-universal",
-      "status": "queued",
-      "conclusion": null,
+      "status": "completed",
+      "conclusion": "success",
       "url": "https://github.com/azurekiln2333/qflistudio-go/actions/runs/43942972002/job/133565696767",
       "createdAt": "2026-11-16T19:48:24Z",
-      "runnerAssigned": false,
-      "steps": []
+      "runnerAssigned": true,
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+          "conclusion": "success"
+        },
+        {
+          "name": "Build and validate Apple libraries",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
     }
   ],
   "artifacts": [
+    {
+      "id": 14266810911,
+      "name": "native-macos-universal-9f815ba7d678f403bd49411d7aaa1ac4d224b9e2",
+      "bytes": 43631585,
+      "digest": "sha256:d5e1f078029cb73023040e1761def362b3fdd3b7b562ecff5a979aba39525343",
+      "expiresAt": "2026-11-30T20:23:00Z",
+      "url": "https://github.com/azurekiln2333/qflistudio-go/actions/runs/43942972002/artifacts/14266810911",
+      "locallyVerified": false,
+      "localVerification": null
+    },
+    {
+      "id": 14266581819,
+      "name": "native-ios-simulator-9f815ba7d678f403bd49411d7aaa1ac4d224b9e2",
+      "bytes": 104584243,
+      "digest": "sha256:54c264c17ec9ea972e00c194e3cbff20b7f2323483af52ee7d2bdb4fc83fa08a",
+      "expiresAt": "2026-11-30T20:28:10Z",
+      "url": "https://github.com/azurekiln2333/qflistudio-go/actions/runs/43942972002/artifacts/14266581819",
+      "locallyVerified": false,
+      "localVerification": null
+    },
     {
       "id": 14265305823,
       "name": "native-ohos-9f815ba7d678f403bd49411d7aaa1ac4d224b9e2",
@@ -672,7 +774,13 @@
     "Existing native debugger tests fail; source check remains red.",
     "No device execution, application packaging or distribution signing validation.",
     "iOS device ZIP download encountered TLS EOF locally; remote job and artifact upload succeeded.",
-    "Queued jobs have no assigned runner and have not executed build scripts.",
     "The macOS application project still declares 10.15; CI now targets 13.0."
-  ]
+  ],
+  "mainMerge": {
+    "from": "82e17af4233e3aa2c6dd8eac2cb3f808f0f20a4f",
+    "to": "9b7248a0c95aa1410f984773ece227550bb4d5a2",
+    "method": "fast-forward",
+    "remoteVerified": true,
+    "mainPushRunId": 44000251875
+  }
 }

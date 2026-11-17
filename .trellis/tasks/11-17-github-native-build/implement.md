@@ -31,10 +31,19 @@ Risk and rollback points:
 - Explicit macOS/iOS deployment targets and manifest fields: `9f815ba`.
 - All four commits were pushed to GitHub branch `feat/go-offline-ide`.
 - Latest run: `43942972002`. Android, OHOS and iOS device jobs succeeded.
-- Latest macOS and simulator jobs are still queued without a runner. The
-  previous macOS build succeeded, with a deployment warning fixed in `9f815ba`.
+- All five platform jobs in run `43942972002` have now succeeded. Source tests
+  still fail. The previous macOS deployment warning was fixed in `9f815ba`.
 - Actionlint, parser checks, Chinese lint and 11 collector tests passed.
 - Hosted Go vet passed; existing debugger tests failed. Do not archive this
   task as fully accepted or report source checks as passing.
 - Exact job/artifact evidence lives in `research/remote-validation.json`.
 - Additional disk accounting lives in `research/local-storage.md`.
+
+## Main branch merge
+
+The user explicitly requested merging the pushed feature branch into main.
+After fetching both GitHub branches and checking ancestry, main was fast-forwarded
+from `82e17af` to `9b7248a` and pushed with a normal `git push github main`.
+Remote verification confirmed the same SHA on main and feat/go-offline-ide.
+The old `fix/go-release-integrity` branch remains at `82e17af`; it has zero
+commits absent from main and requires no separate merge.
