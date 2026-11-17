@@ -117,6 +117,18 @@ python tool/go_curriculum/dedup.py
 
 ## Native libraries and packages
 
+The `Native runtime` GitHub workflow builds the Android, OHOS, and Apple native libraries.
+It does not build app packages.
+Download its artifacts from the **Artifacts** list of a workflow run.
+See the [remote build guide](native/go_runtime/CI.md) (Simplified Chinese) for artifact contents and cleanup notes.
+
+The `App packages` workflow builds app packages for Android, iOS, OHOS, Linux, Windows, and macOS.
+Download the `app-<platform>-<arch>` artifacts from the **Artifacts** list of a workflow run.
+None of these packages carries a release signature.
+The Android APKs use the debug key, and the iOS IPA and OHOS HAP are unsigned.
+The macOS app is ad hoc signed and not notarized, and the Windows executable is unsigned.
+See the [app package CI guide](docs/app-packages-ci.md) (Simplified Chinese) for triggers, artifact layout, and signing status.
+
 Android builds require the Android NDK.
 OpenHarmony builds require the OHOS SDK and the pinned OHOS Go port.
 See the [native runtime notes](native/go_runtime/README.md) for the port version and source details.

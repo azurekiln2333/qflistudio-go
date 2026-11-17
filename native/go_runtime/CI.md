@@ -4,6 +4,7 @@
 工作流构建 Android、OHOS、macOS 和 iOS 原生库。
 产物用于应用链接或打包。
 产物不包含 APK、HAP、IPA 或桌面安装包。
+这些安装包来自 [`App packages` 工作流](../../docs/app-packages-ci.md)。
 
 ## 运行与下载
 

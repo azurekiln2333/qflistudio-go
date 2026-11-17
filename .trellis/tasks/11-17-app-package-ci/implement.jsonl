@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/native-go-runtime.md", "reason": "Native runtime packaging gates: library names, C ABI exports, 16 KB alignment, vendor-mode build inputs"}
+{"file": ".trellis/spec/guides/cross-layer-thinking-guide.md", "reason": "CI helper, workflow and docs must agree on artifact names and manifest fields"}

@@ -117,9 +117,17 @@ python tool/go_curriculum/dedup.py
 
 ## 原生库与安装包
 
-GitHub 工作流可构建 Android、OHOS 和 Apple 原生库。
+`Native runtime` 工作流可构建 Android、OHOS 和 Apple 原生库。
+该工作流不构建安装包。
 在运行详情的 **Artifacts** 下载产物。
 产物内容和清理说明见[远程构建指南](native/go_runtime/CI.md)。
+
+`App packages` 工作流构建六个平台的安装包。
+六个平台是 Android、iOS、OHOS、Linux、Windows 和 macOS。
+在运行详情的 **Artifacts** 下载 `app-<平台>-<架构>` 产物。
+这些安装包都没有发布签名。
+iOS 和 OHOS 安装包在设备安装前必须签名。
+触发方式和签名状态见[安装包构建指南](docs/app-packages-ci.md)。
 
 Android 构建需要 Android NDK。
 OpenHarmony 构建需要 OHOS SDK。

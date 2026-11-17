@@ -117,6 +117,18 @@ python tool/go_curriculum/dedup.py
 
 ## 原生程式庫與安裝套件
 
+`Native runtime` 工作流程可建置 Android、OHOS 與 Apple 原生程式庫。
+該工作流程不建置安裝套件。
+在執行詳情的 **Artifacts** 下載產物。
+產物內容與清理說明見[遠端建置指南](native/go_runtime/CI.md)（簡體中文）。
+
+`App packages` 工作流程建置六個平台的安裝套件。
+六個平台是 Android、iOS、OHOS、Linux、Windows 與 macOS。
+在執行詳情的 **Artifacts** 下載 `app-<平台>-<架構>` 產物。
+這些安裝套件都沒有發行簽章。
+iOS 與 OHOS 安裝套件在裝置安裝前必須簽章。
+觸發方式與簽章狀態見[安裝套件建置指南](docs/app-packages-ci.md)（簡體中文）。
+
 Android 建置需要 Android NDK。
 OpenHarmony 建置需要 OHOS SDK。
 OpenHarmony 使用固定的 OHOS Go 移植版。

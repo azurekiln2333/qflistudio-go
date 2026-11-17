@@ -1,0 +1,2 @@
+{"file": ".trellis/spec/backend/native-go-runtime.md", "reason": "Review packaged runtime checks against the native runtime contract"}
+{"file": ".trellis/spec/guides/code-reuse-thinking-guide.md", "reason": "Review reuse of existing tool/ci helpers and SYMBOLS inventory"}
