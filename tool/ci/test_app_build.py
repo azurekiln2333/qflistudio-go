@@ -314,6 +314,23 @@ class ApplicationPackageTests(unittest.TestCase):
             self.assertEqual(git(sdk, "rev-parse", "refs/tags/" + ci.FLUTTER_TAG + "^{commit}"), expected)
             self.assertEqual(ci.git_head(sdk), expected)
 
+    def test_network_commands_retry_with_one_log_per_attempt(self):
+        log = Path("reports/flutter-config.log")
+        failure = RuntimeError("Command failed (1); see flutter-config-1.log")
+        with patch.object(ci.time, "sleep") as sleep:
+            with patch.object(ci, "run", side_effect=[failure, "ready"]) as run:
+                self.assertEqual(ci.run_with_retries(["flutter", "config"], log, delay=20, env={}), "ready")
+            self.assertEqual([call.args[1].name for call in run.call_args_list],
+                             ["flutter-config-1.log", "flutter-config-2.log"])
+            self.assertEqual(run.call_args.kwargs, {"env": {}})
+            sleep.assert_called_once_with(20)
+            # A persistent failure still fails the job after the last attempt.
+            with patch.object(ci, "run", side_effect=[failure] * 3) as run:
+                with self.assertRaisesRegex(RuntimeError, "Command failed"):
+                    ci.run_with_retries(["flutter", "config"], log)
+            self.assertEqual(run.call_count, 3)
+            self.assertEqual(sleep.call_count, 3)
+
     def test_sdk_version_rejects_unknown_despite_correct_revision(self):
         version = {"frameworkRevision": ci.FLUTTER_COMMIT,
                    "frameworkVersion": "0.0.0-unknown", "dartSdkVersion": "3.11.5"}
@@ -757,8 +774,10 @@ class ApplicationPackageTests(unittest.TestCase):
                 self.assertNotIn("FLUTTER_XCODE_CODE_SIGN_IDENTITY", env)
         with tempfile.TemporaryDirectory() as directory:
             command, _ = self.run_build(Path(directory), "android", "universal")
+            # Release Gradle omits dev-only plugins. The build must regenerate the
+            # plugin registrant, which --no-pub prevents.
             self.assertEqual(command[2:], ["apk", "--release", "--target", "lib/main.dart",
-                                           "--no-pub", "--split-per-abi"])
+                                           "--split-per-abi"])
 
     def test_macos_package_requires_deep_signature_verification(self):
         for signed in (False, True):

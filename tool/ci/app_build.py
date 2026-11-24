@@ -123,6 +123,17 @@ def run(command, log: Path, *, cwd=ROOT, env=None, timeout=3600) -> str:
     return output.split("\n\n", 1)[1]
 
 
+def run_with_retries(command, log: Path, *, attempts=3, delay=5, **options) -> str:
+    """Repeat a network-bound command. Every attempt keeps its own complete log."""
+    for attempt in range(1, attempts + 1):
+        try:
+            return run(command, log.with_name(f"{log.stem}-{attempt}{log.suffix}"), **options)
+        except (RuntimeError, subprocess.TimeoutExpired):
+            if attempt == attempts:
+                raise
+            time.sleep(delay)
+
+
 def git_head(directory) -> str:
     return subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=directory,
                                    text=True).strip()
@@ -219,17 +230,10 @@ def setup_native(args, manifest: dict) -> None:
 
 def checkout_flutter_release(sdk: Path, reports: Path) -> None:
     tag_ref = "refs/tags/" + FLUTTER_TAG
-    for attempt in range(3):
-        try:
-            # Flutter derives its public SDK version from the retained release tag.
-            # Fetching only into FETCH_HEAD preserves the commit but loses that version.
-            run(["git", "fetch", "--depth", "1", "origin", f"{tag_ref}:{tag_ref}"],
-                reports / f"sdk-fetch-{attempt + 1}.log", cwd=sdk, timeout=900)
-            break
-        except (RuntimeError, subprocess.TimeoutExpired):
-            if attempt == 2:
-                raise
-            time.sleep(5)
+    # Flutter derives its public SDK version from the retained release tag.
+    # Fetching only into FETCH_HEAD preserves the commit but loses that version.
+    run_with_retries(["git", "fetch", "--depth", "1", "origin", f"{tag_ref}:{tag_ref}"],
+                     reports / "sdk-fetch.log", cwd=sdk, timeout=900)
     tagged_commit = run(["git", "rev-parse", tag_ref + "^{commit}"],
                         reports / "sdk-tag-commit.log", cwd=sdk).strip()
     if tagged_commit != FLUTTER_COMMIT:
@@ -272,7 +276,10 @@ def setup_flutter(args, manifest: dict) -> None:
     # Pub get regenerates every enabled platform. Do not require an OHOS SDK in
     # a non-OHOS job merely because this application contains an ohos directory.
     ohos_flag = "--enable-ohos" if args.platform == "ohos" else "--no-enable-ohos"
-    run([flutter(args), "config", "--no-analytics", ohos_flag], reports / "flutter-config.log", env=sdk_env)
+    # The first Flutter command downloads the Dart SDK. Its curl call does not
+    # repeat a failed name lookup, so one DNS failure on the runner would end the job.
+    run_with_retries([flutter(args), "config", "--no-analytics", ohos_flag],
+                     reports / "flutter-config.log", delay=20, env=sdk_env)
     version = run([flutter(args), "--version", "--machine"], reports / "flutter-version.log", env=sdk_env)
     version_data = json.loads(version)
     validate_flutter_version(version_data)
@@ -282,7 +289,8 @@ def setup_flutter(args, manifest: dict) -> None:
     if flag:
         run([flutter(args), "config", flag], reports / "flutter-platform-config.log", env=sdk_env)
     run([flutter(args), "config", "--list"], reports / "flutter-effective-config.log", env=sdk_env)
-    run([flutter(args), "precache", "--" + args.platform], reports / "flutter-precache.log", env=sdk_env)
+    run_with_retries([flutter(args), "precache", "--" + args.platform],
+                     reports / "flutter-precache.log", delay=20, env=sdk_env)
     resolved_locks = []
     for source in (sdk / "pubspec.lock", sdk / "packages/flutter_tools/pubspec.lock"):
         if source.exists():
@@ -803,7 +811,10 @@ def build(args, manifest: dict) -> None:
     if (ROOT / "pubspec.lock").exists():
         shutil.copy2(ROOT / "pubspec.lock", reports / "app-pubspec.lock")
     common = ["--release", "--target", "lib/main.dart", "--no-pub"]
-    command = {"android": ["apk", *common, "--split-per-abi"],
+    # `flutter pub get` registers dev-only plugins (integration_test). With --no-pub
+    # the build keeps that registrant, but release Gradle omits those plugins, so
+    # javac fails. Without --no-pub the build regenerates the release registrant.
+    command = {"android": ["apk", "--release", "--target", "lib/main.dart", "--split-per-abi"],
                "ios": ["ios", *common, "--no-codesign"],
                "ohos": ["hap", *common, "--no-codesign", "--target-platform", "ohos-arm64"],
                }.get(args.platform, [args.platform, *common])

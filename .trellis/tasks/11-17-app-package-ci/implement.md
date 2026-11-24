@@ -36,4 +36,32 @@ Risks:
 
 ## Execution evidence
 
-(filled in after the remote run)
+Local, before the first push: `python -m unittest discover -s tool/ci -p
+test_app_build.py` ran 44 tests, all passed.
+
+### Run 44053707458 (`App packages`, commit `ca8b5a4`)
+
+| Job | Result |
+| --- | --- |
+| linux / x86_64 | success |
+| ohos / arm64-v8a | success |
+| windows / x86_64 | success |
+| macos / arm64 | success |
+| ios / arm64 | success |
+| macos / x86_64 | failure |
+| android / universal | failure |
+
+- macos / x86_64 failed in `setup-flutter`. The Dart SDK download reported
+  `curl: (6) Could not resolve host: flutter-ohos.obs.cn-south-1.myhuaweicloud.com`.
+  Every job downloads the Dart SDK from this host, and the ios job passed on
+  the same runner image. The failure is therefore a DNS failure on one runner,
+  not an unreachable mirror. Fix: retry the first Flutter command and precache.
+- android / universal failed in `build`. `javac` reported `package
+  dev.flutter.plugins.integration_test does not exist` in
+  `GeneratedPluginRegistrant.java`. The file is not tracked; `flutter pub get`
+  generates it with dev-only plugins. Fix: build the APK without `--no-pub`.
+- The same log warns that `integration_test` requires NDK 28.2.13676358 while
+  the project sets 27.0.12077973. The warning is not fatal. The project file
+  stays unchanged.
+
+The results of the fix commit are not recorded here yet.

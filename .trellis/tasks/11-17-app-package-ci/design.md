@@ -79,7 +79,8 @@ push therefore also starts the native workflow. Its source-check job discovers
    `HOS_SDK_HOME`, `DEVECO_SDK_HOME`, `DEVECO_NODE_HOME`.
 4. `setup-flutter` — fetch the pinned tag, verify commit and engine identity,
    write the flutter_tools dependency overrides, enable only the job platform,
-   precache.
+   precache. The tag fetch, the first Flutter command (it downloads the Dart
+   SDK) and precache each run up to three times, one log per attempt.
 5. `build` — verify core and Flutter commits, sanitize the OHOS profile (OHOS
    only), `flutter pub get`, verify the core path binding, run
    `flutter build`, inspect, then stage packages.
@@ -98,9 +99,12 @@ push therefore also starts the native workflow. Its source-check job discovers
   (`CODE_SIGN_IDENTITY=-`, manual style), `MACOSX_DEPLOYMENT_TARGET=13.0`.
 - iOS: `flutter build ios --release --no-codesign`; the helper zips
   `Payload/Runner.app` into an unsigned IPA with `zip -qry`.
-- Android: `flutter build apk --release --split-per-abi`. Gradle signs release
-  with the debug key (existing project setting). The job uses the tracked
-  `jniLibs` runtime.
+- Android: `flutter build apk --release --split-per-abi`, without `--no-pub`.
+  `flutter pub get` writes a plugin registrant that includes the dev-only
+  `integration_test` plugin. Release Gradle omits dev-only plugins, so a
+  `--no-pub` build fails in `javac`. Without `--no-pub` the build regenerates
+  the registrant in release mode. Gradle signs release with the debug key
+  (existing project setting). The job uses the tracked `jniLibs` runtime.
 - OHOS: `flutter build hap --release --no-codesign --target-platform
   ohos-arm64`. The helper empties `signingConfigs` and removes `signingConfig`
   and `compileSdkVersion` in the disposable checkout only. It refuses to run
