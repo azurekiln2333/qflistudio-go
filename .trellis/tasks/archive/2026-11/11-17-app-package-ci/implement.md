@@ -64,4 +64,47 @@ test_app_build.py` ran 44 tests, all passed.
   the project sets 27.0.12077973. The warning is not fatal. The project file
   stays unchanged.
 
-The results of the fix commit are not recorded here yet.
+### Run 45484027345 (`App packages`, commit `f279134`)
+
+All seven jobs passed. The workflow finished with `conclusion: success`.
+
+| Job | Result | Job id |
+| --- | --- | --- |
+| App / linux / x86_64 | success | 138764482355 |
+| App / ohos / arm64-v8a | success | 138764482681 |
+| App / android / universal | success | 138764482749 |
+| App / ios / arm64 | success | 138764482821 |
+| App / windows / x86_64 | success | 138764482857 |
+| App / macos / arm64 | success | 138764482914 |
+| App / macos / x86_64 | success | 138764482957 |
+
+Both failures of run 44053707458 are gone:
+
+- `macos / x86_64`: the Dart SDK download now retries. `run_with_retries`
+  repeats the Flutter config and precache commands (`tool/ci/app_build.py:126`).
+- `android / universal`: the APK build drops `--no-pub`, so Flutter regenerates
+  the release plugin registrant (`tool/ci/app_build.py:814`).
+
+Seven artifacts were uploaded. Sizes in bytes:
+
+| Artifact | Size |
+| --- | --- |
+| `app-android-universal` | 145571224 |
+| `app-ohos-arm64-v8a` | 62790840 |
+| `app-linux-x86_64` | 43001776 |
+| `app-windows-x86_64` | 36461904 |
+| `app-macos-x86_64` | 23075224 |
+| `app-macos-arm64` | 21111652 |
+| `app-ios-arm64` | 19885100 |
+
+Status of the acceptance criteria:
+
+- Not met: the helper unit test ran locally only. This round forbids local test
+  runs, so that item stays as a recorded local result, not a fresh one.
+- Met through run 45484027345: the YAML parses, seven jobs run, every artifact
+  carries its platform name, and the successful artifacts include `packages/`,
+  `manifest.json` and `SHA256SUMS`.
+- Not verified: package installation and interface tests on real devices.
+
+Evidence: `gh run view 45484027345 -R azurekiln2333/qflistudio-go --json jobs`
+and `gh api repos/azurekiln2333/qflistudio-go/actions/runs/45484027345/artifacts`.

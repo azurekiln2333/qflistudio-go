@@ -60,14 +60,15 @@
 
 - [x] `.github/workflows/native-runtime.yml` 存在。
 - [x] GitHub Actions 可以解析该文件。
-- [ ] 手动触发可以构建 Android。
-- [ ] 手动触发可以构建 OHOS。
-- [ ] 手动触发可以构建 macOS。
-- [ ] 手动触发可以构建 iOS。
+- [x] 推送可以构建 Android。
+- [x] 推送可以构建 OHOS。
+- [x] 推送可以构建 macOS。
+- [x] 推送可以构建 iOS。
+- [ ] 手动触发入口已实测。
 - [x] Android 产物包含三个 ABI。
 - [x] OHOS 产物包含两个 ABI。
 - [x] macOS 产物包含通用 dylib。
-- [ ] iOS 产物区分设备版和模拟器版。
+- [x] iOS 产物区分设备版和模拟器版。
 - [x] OHOS job 检查 SDK SHA-256。
 - [x] Apple job 不需要开发者证书。
 - [x] 产物名称包含平台和提交 SHA。
@@ -103,6 +104,32 @@ GitHub `main` 已快进到 `9b7248a`。
 GPL v3 声明已对齐主项目。
 三个 README 已补齐许可证说明。
 提交 `b324c92` 已推送到 GitHub。
+
+### 运行 45484027361（提交 `f279134`）
+
+五个构建任务全部成功。
+工作流整体结论为失败，唯一失败任务为 `Native source tests`。
+失败步骤为 `Test vendored runtime`，job 编号 138764481895。
+同一任务内 `Vet vendored runtime` 与产物校验步骤均成功。
+
+| 任务 | 结论 | job 编号 |
+| --- | --- | --- |
+| Android (3 ABIs) | success | 138765011512 |
+| OpenHarmony (2 ABIs) | success | 138765011696 |
+| macos-universal | success | 138765011672 |
+| ios-device | success | 138765011762 |
+| ios-simulator | success | 138765011748 |
+| Native source tests | failure | 138764481895 |
+
+五份产物已上传，名称带提交 SHA：
+`native-android` 66137049 字节、`native-ohos` 44740951 字节、
+`native-macos-universal` 43631585 字节、`native-ios-device` 53386190 字节、
+`native-ios-simulator` 104584243 字节。
+
+iOS 交付物同时含 `native-ios-device` 与 `native-ios-simulator`，因此该验收项成立。
+验收表原先写「手动触发」，本次仍由推送触发，故改记为推送验证。
+源码测试失败是既有调试器缺陷，仍有环境之外的真实问题。
+未满足项继续保留，任务保持进行中。
 
 ## 不在范围内
 

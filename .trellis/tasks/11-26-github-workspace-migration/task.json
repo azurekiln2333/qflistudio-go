@@ -1,0 +1,58 @@
+{
+  "id": "github-workspace-migration",
+  "name": "github-workspace-migration",
+  "title": "GitHub migration and cloud-only workspace handoff",
+  "description": "Preserve Go source and Trellis history on GitHub main, verify six-platform cloud CI, migrate to the E drive workspace, and prepare safe storage cleanup and Herdr handoff.",
+  "status": "planning",
+  "dev_type": null,
+  "scope": null,
+  "package": null,
+  "priority": "P2",
+  "creator": "lichengyu",
+  "assignee": "lichengyu",
+  "createdAt": "2026-11-26",
+  "completedAt": null,
+  "branch": null,
+  "base_branch": "main",
+  "worktree_path": null,
+  "commit": null,
+  "pr_url": null,
+  "subtasks": [],
+  "children": [
+    "11-26-go-github-preservation",
+    "11-26-go-cloud-ci-readiness",
+    "11-26-go-workspace-cutover"
+  ],
+  "parent": null,
+  "relatedFiles": [],
+  "notes": "",
+  "meta": {
+    "implementation_approval": {
+      "date": "2026-11-27",
+      "source": "User approval relayed through Claude w5V:p6",
+      "record": ".trellis/tasks/11-26-github-workspace-migration/prd.md"
+    },
+    "execution_ownership": {
+      "implementation": "Pi",
+      "git_execution": "w5V:p2 is the sole Git executor. It stages, commits, merges and pushes only on explicit sequenced instructions from coordinator w5V:p1. Other workers do not mutate the index or refs.",
+      "coordinator": "w5V:p1: assignment, review and task activation only",
+      "worker_reports_to": "w5V:p1",
+      "model": "gpt-6.1-sol",
+      "model_recovery": "Prefer gpt-6.1-sol; on model limits use bounded retries, then compaction/new sessions, then deepseek-v4.1-flash only as the final fallback after those recovery options fail",
+      "role_scope": "w5V role IDs apply only to the pre-handoff source migration. After verified Herdr handoff, target Codex assigns its own workers and Git executor; source pane IDs do not govern target work"
+    },
+    "planning_review": {
+      "status": "pass",
+      "reviewer": "w5V:p2",
+      "date": "2026-11-27",
+      "evidence": "Coordinator w5V:p1 relayed final review PASS after metadata corrections"
+    },
+    "activation": {
+      "status": "child_activated",
+      "authority": "w5V:p1",
+      "date": "2026-11-27",
+      "active_child": "11-26-go-github-preservation",
+      "evidence": "Coordinator task.py start succeeded for preservation; parent remains an integration/planning record"
+    }
+  }
+}

@@ -7,6 +7,20 @@ sandbox_mode = "workspace-write"
 developer_instructions = """
 You are the Trellis researcher agent.
 
+## Project execution policy
+
+Read AGENTS.md and .trellis/spec/backend/cloud-only-execution.md first. Research
+uses file/source review and allowed metadata only. No local build/test/lint/
+analyze/type-check, dependency setup, SDK download, code generation or artifact
+verification/download. Use python -B for permitted task metadata. Do not inspect
+other agent sessions or products. During the pre-handoff source migration only,
+report to w5V:p1 through Herdr. After verified Herdr handoff, target Codex assigns
+its own workers and Git executor; source pane IDs do not govern target work.
+Prefer gpt-6.1-sol; on model limits use bounded retries, then compaction/new
+sessions, then deepseek-v4.1-flash only as the final fallback.
+Scope instructions in the current assignment override
+generic file-output requirements below.
+
 ## Core principle
 
 Conversations get compacted; files don't. Every research topic MUST be

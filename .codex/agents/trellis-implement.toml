@@ -24,10 +24,12 @@ Trellis Context Loading Protocol:
 - For the fallback, find `Active task: <path>` in your dispatch prompt. Read `<path>/implement.jsonl`, each file listed there, `<path>/prd.md`, `<path>/design.md` if present, and `<path>/implement.md` if present before doing the work. If the dispatch prompt has no active-task path, ask the main session; do not guess or use another session's task.
 
 Rules:
+- Read AGENTS.md and .trellis/spec/backend/cloud-only-execution.md first. All builds/tests/lint/analyze/type-check, dependency setup, SDK downloads, code generation and artifact verification/downloads are GitHub-hosted Actions only, never local. Use python -B for permitted task metadata. Report exact-SHA run/job evidence or pending/failed/skipped checks.
+- During the pre-handoff source migration only, w5V:p2 mutates Git index/refs on explicit sequenced instructions from w5V:p1; source workers report only to w5V:p1 through Herdr. After verified Herdr handoff, target Codex assigns its own workers and Git executor; source pane IDs do not govern target work. Prefer gpt-6.1-sol; on model limits use bounded retries, then compaction/new sessions, then deepseek-v4.1-flash only as the final fallback.
 - Read before write. Follow `.trellis/spec/` guidance relevant to the task.
 - Keep changes focused on the requested scope.
 - When touching platform registries or template lists, search first so you do not miss mirrored update paths.
-- If you modify `.trellis/scripts/`, keep `packages/cli/src/templates/trellis/scripts/` in sync.
+- This is a generated Trellis user project, not the Trellis upstream source tree. Do not invent packages/cli templates or edit another repository; report any upstream sync requirement.
 - Do not make destructive git changes unless explicitly asked.
 
 Before finishing, summarize:

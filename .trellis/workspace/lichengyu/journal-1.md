@@ -261,3 +261,56 @@ Added and pushed native CI, aligned GPL notices, verified hosted Android/OHOS bu
 
 - Observe remaining queued Apple jobs in run 43942972002 and validate their artifacts.
 - Resolve existing native debugger test failures before accepting source checks; keep current task in progress.
+
+
+## Session 8: Application package CI for six platforms
+<!-- trellis-session: v=2 fp=c4d18e57b902a1f6 -->
+
+**Date**: 2026-11-25
+**Task**: Application package CI for six platforms
+**Branch**: `ci/app-packages`
+
+### Summary
+
+Added the application package workflow, fixed both failures of the first run, and
+confirmed all seven jobs pass. Native runtime builds five platform libraries; its
+source tests still fail on the known debugger defect.
+
+### Main Changes
+
+- Added `.github/workflows/app-packages.yml` with one job per platform and one
+  artifact per job, plus `tool/ci/app_build.py` and its 44 unit tests.
+- Documented triggers, download locations and signing limits in
+  `docs/app-packages-ci.md` and the three README files.
+- Retried the network-bound Flutter commands and dropped `--no-pub` so the
+  Android build regenerates its release plugin registrant.
+- Tracked the Trellis project knowledge under `.trellis/` again: the specs, the
+  workflow, the task records and the workspace journals now enter git.
+
+### Git Commits
+
+| Hash | Message |
+|------|---------|
+| `ca8b5a4` | ci: add application package workflow for six platforms |
+| `f279134` | fix(ci): retry Flutter downloads and regenerate the Android registrant |
+
+### Testing
+
+- [OK] Run 45484027345: seven application package jobs passed and uploaded seven
+  artifacts covering Android, OHOS, iOS, Linux, Windows and both macOS targets.
+- [OK] Run 45484027361: Android, OHOS, macOS universal, iOS device and iOS
+  simulator libraries all built and uploaded.
+- [FAIL] Run 45484027361 `Native source tests`: `Test vendored runtime` fails.
+  This is the known debugger defect, not an environment limit. `go vet` and the
+  artifact validation checks pass in the same job.
+
+### Status
+
+[OK] **Completed** for the package build; the debugger defect stays open in
+`11-17-github-native-build` and `10-22-go-offline-ide`.
+
+### Next Steps
+
+- Fix the debugger source tests before claiming embedded debugging works.
+- Install a package on a real device; no device run has happened yet.
+
