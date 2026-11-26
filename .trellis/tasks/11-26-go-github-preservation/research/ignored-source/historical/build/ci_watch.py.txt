@@ -1,0 +1,108 @@
+"""Report GitHub Actions results for one commit (read-only, standard library only).
+
+Usage:
+    python build/ci_watch.py            one snapshot
+    python build/ci_watch.py --wait     poll until every run for the commit ends
+
+The report is printed and also written to build/ci-watch-report.txt.
+Set GITHUB_TOKEN to raise the rate limit (unauthenticated: 60 requests/hour).
+"""
+import argparse
+import json
+import os
+import subprocess
+import sys
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+from pathlib import Path
+
+REPO = "azurekiln2333/qflistudio-go"
+BRANCH = "ci/app-packages"
+API = f"https://api.github.com/repos/{REPO}"
+REPORT = Path(__file__).resolve().parent / "ci-watch-report.txt"
+
+
+def get(path):
+    request = urllib.request.Request(path if path.startswith("https://") else API + path)
+    request.add_header("Accept", "application/vnd.github+json")
+    request.add_header("User-Agent", "qfli-go-ci-watch")
+    token = os.environ.get("GITHUB_TOKEN")
+    if token:
+        request.add_header("Authorization", f"Bearer {token}")
+    try:
+        with urllib.request.urlopen(request, timeout=60) as response:
+            return json.load(response)
+    except urllib.error.HTTPError as error:
+        body = error.read().decode("utf-8", "replace")[:400]
+        raise SystemExit(f"HTTP {error.code} for {request.full_url}\n{body}\n"
+                         "404 on a private repository or 403 rate limit: set GITHUB_TOKEN.")
+
+
+def head_sha(explicit):
+    if explicit:
+        return explicit
+    return subprocess.run(["git", "rev-parse", "HEAD"], check=True, capture_output=True,
+                          text=True).stdout.strip()
+
+
+def runs_for(sha):
+    query = urllib.parse.urlencode({"branch": BRANCH, "head_sha": sha, "per_page": 20})
+    return get(f"/actions/runs?{query}").get("workflow_runs", [])
+
+
+def describe(run, lines):
+    lines.append(f"== {run['name']}  run {run['id']}  status={run['status']} "
+                 f"conclusion={run['conclusion']}  attempt={run['run_attempt']}")
+    lines.append(f"   {run['html_url']}")
+    jobs = get(f"/actions/runs/{run['id']}/jobs?per_page=100&filter=latest").get("jobs", [])
+    for job in sorted(jobs, key=lambda item: item["name"]):
+        lines.append(f"   - {job['name']}: status={job['status']} conclusion={job['conclusion']}")
+        if job["conclusion"] not in ("failure", "cancelled", "timed_out"):
+            continue
+        for step in job.get("steps") or []:
+            if step["conclusion"] in ("failure", "cancelled", "timed_out"):
+                lines.append(f"       step {step['number']} [{step['conclusion']}] {step['name']}")
+        annotations = get(f"/check-runs/{job['id']}/annotations?per_page=30")
+        for note in annotations:
+            message = " ".join((note.get("message") or "").split())
+            lines.append(f"       {note.get('annotation_level')}: {message[:1500]}")
+        lines.append(f"       {job['html_url']}")
+    if run["status"] == "completed":
+        artifacts = get(f"/actions/runs/{run['id']}/artifacts?per_page=100").get("artifacts", [])
+        for artifact in sorted(artifacts, key=lambda item: item["name"]):
+            lines.append(f"   artifact {artifact['name']}: {artifact['size_in_bytes']} bytes"
+                         f"{' (expired)' if artifact['expired'] else ''}")
+
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--wait", action="store_true")
+    parser.add_argument("--sha")
+    parser.add_argument("--interval", type=int, default=150)
+    parser.add_argument("--timeout-minutes", type=int, default=100)
+    args = parser.parse_args()
+    sha = head_sha(args.sha)
+    deadline = time.monotonic() + args.timeout_minutes * 60
+    while True:
+        runs = runs_for(sha)
+        pending = [run for run in runs if run["status"] != "completed"]
+        print(time.strftime("%H:%M:%S"),
+              ", ".join(f"{run['name']}={run['conclusion'] or run['status']}" for run in runs)
+              or "no runs yet", flush=True)
+        if not args.wait or (runs and not pending) or time.monotonic() > deadline:
+            break
+        time.sleep(args.interval)
+    lines = [f"commit {sha}  branch {BRANCH}  checked {time.strftime('%Y-%m-%d %H:%M:%S')}"]
+    if not runs:
+        lines.append("No workflow runs exist for this commit.")
+    for run in sorted(runs, key=lambda item: item["name"]):
+        describe(run, lines)
+    report = "\n".join(lines) + "\n"
+    REPORT.write_text(report, encoding="utf-8")
+    sys.stdout.write(report)
+
+
+if __name__ == "__main__":
+    main()

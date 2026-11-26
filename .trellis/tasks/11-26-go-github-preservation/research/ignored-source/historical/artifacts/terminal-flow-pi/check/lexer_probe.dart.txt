@@ -1,0 +1,5 @@
+import 'package:qfli_go/go_entry_selector.dart';
+void main() {
+  print('desktop lexical main=${GoEntrySelector.inspect('package main unexpected\nfunc main() {}\n').isRunnableEntry}');
+}
+

@@ -1,0 +1,4502 @@
+[
+  {
+    "id": "go-tutorial-001",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 001: 数据建模与不变量",
+    "summary": "从可运行的 Go 场景出发，拆解数据建模与不变量，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "数据建模与不变量",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-001-lesson",
+        "title": "实现：数据建模与不变量",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "数据建模与不变量",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{1, 3, 5}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=22",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-002",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 002: 输入校验与错误边界",
+    "summary": "从可运行的 Go 场景出发，拆解输入校验与错误边界，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "输入校验与错误边界",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-002-lesson",
+        "title": "实现：输入校验与错误边界",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "输入校验与错误边界",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{2, 4, 6}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=28",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-003",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 003: 文件格式与编码",
+    "summary": "从可运行的 Go 场景出发，拆解文件格式与编码，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "文件格式与编码",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-003-lesson",
+        "title": "实现：文件格式与编码",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "文件格式与编码",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{3, 5, 7}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=34",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-004",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 004: 日志与可观测性",
+    "summary": "从可运行的 Go 场景出发，拆解日志与可观测性，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "日志与可观测性",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-004-lesson",
+        "title": "实现：日志与可观测性",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "日志与可观测性",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{4, 6, 8}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=40",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-005",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 005: 缓存与失效策略",
+    "summary": "从可运行的 Go 场景出发，拆解缓存与失效策略，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "缓存与失效策略",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-005-lesson",
+        "title": "实现：缓存与失效策略",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "缓存与失效策略",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{5, 7, 9}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=46",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-006",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 006: 队列与批处理",
+    "summary": "从可运行的 Go 场景出发，拆解队列与批处理，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "队列与批处理",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-006-lesson",
+        "title": "实现：队列与批处理",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "队列与批处理",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{6, 8, 10}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=52",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-007",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 007: 分页与排序",
+    "summary": "从可运行的 Go 场景出发，拆解分页与排序，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "分页与排序",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-007-lesson",
+        "title": "实现：分页与排序",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "分页与排序",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{7, 9, 11}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=58",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-008",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 008: 配置与环境隔离",
+    "summary": "从可运行的 Go 场景出发，拆解配置与环境隔离，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "配置与环境隔离",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-008-lesson",
+        "title": "实现：配置与环境隔离",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "配置与环境隔离",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{8, 10, 12}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=64",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-009",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 009: 并发与资源生命周期",
+    "summary": "从可运行的 Go 场景出发，拆解并发与资源生命周期，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "并发与资源生命周期",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-009-lesson",
+        "title": "实现：并发与资源生命周期",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "并发与资源生命周期",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{9, 11, 13}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=70",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-010",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 010: 测试夹具与回归",
+    "summary": "从可运行的 Go 场景出发，拆解测试夹具与回归，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "测试夹具与回归",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-010-lesson",
+        "title": "实现：测试夹具与回归",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "测试夹具与回归",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{10, 12, 14}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=76",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-011",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 011: 性能测量与优化",
+    "summary": "从可运行的 Go 场景出发，拆解性能测量与优化，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "性能测量与优化",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-011-lesson",
+        "title": "实现：性能测量与优化",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "性能测量与优化",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{11, 13, 15}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=82",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-012",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 012: 安全边界与最小权限",
+    "summary": "从可运行的 Go 场景出发，拆解安全边界与最小权限，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "安全边界与最小权限",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-012-lesson",
+        "title": "实现：安全边界与最小权限",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "安全边界与最小权限",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{12, 14, 16}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=88",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-013",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 013: 网络协议与重试",
+    "summary": "从可运行的 Go 场景出发，拆解网络协议与重试，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "网络协议与重试",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-013-lesson",
+        "title": "实现：网络协议与重试",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "网络协议与重试",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{13, 15, 17}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=94",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-014",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 014: 持久化与迁移",
+    "summary": "从可运行的 Go 场景出发，拆解持久化与迁移，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "持久化与迁移",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-014-lesson",
+        "title": "实现：持久化与迁移",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "持久化与迁移",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{14, 16, 18}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=100",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-015",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 015: 命令行工具设计",
+    "summary": "从可运行的 Go 场景出发，拆解命令行工具设计，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "命令行工具设计",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-015-lesson",
+        "title": "实现：命令行工具设计",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "命令行工具设计",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{15, 17, 19}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=106",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-016",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 016: 模块边界与依赖方向",
+    "summary": "从可运行的 Go 场景出发，拆解模块边界与依赖方向，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "模块边界与依赖方向",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-016-lesson",
+        "title": "实现：模块边界与依赖方向",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "模块边界与依赖方向",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{16, 18, 20}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=112",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-017",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 017: 状态机与事件流",
+    "summary": "从可运行的 Go 场景出发，拆解状态机与事件流，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "状态机与事件流",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-017-lesson",
+        "title": "实现：状态机与事件流",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "状态机与事件流",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{17, 19, 21}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=118",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-018",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 018: 时间、时区与截止时间",
+    "summary": "从可运行的 Go 场景出发，拆解时间、时区与截止时间，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "时间、时区与截止时间",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-018-lesson",
+        "title": "实现：时间、时区与截止时间",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "时间、时区与截止时间",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{18, 20, 22}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=124",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-019",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 019: 文本处理与国际化",
+    "summary": "从可运行的 Go 场景出发，拆解文本处理与国际化，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "文本处理与国际化",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-019-lesson",
+        "title": "实现：文本处理与国际化",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "文本处理与国际化",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{19, 21, 23}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=130",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-020",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 020: 故障恢复与幂等性",
+    "summary": "从可运行的 Go 场景出发，拆解故障恢复与幂等性，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "故障恢复与幂等性",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-020-lesson",
+        "title": "实现：故障恢复与幂等性",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "故障恢复与幂等性",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{20, 22, 24}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=136",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-021",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 021: 资源打包与发布",
+    "summary": "从可运行的 Go 场景出发，拆解资源打包与发布，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "资源打包与发布",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-021-lesson",
+        "title": "实现：资源打包与发布",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "资源打包与发布",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{21, 23, 25}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=142",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-022",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 022: 增量计算与差分",
+    "summary": "从可运行的 Go 场景出发，拆解增量计算与差分，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "增量计算与差分",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-022-lesson",
+        "title": "实现：增量计算与差分",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "增量计算与差分",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{22, 24, 26}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=148",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-023",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 023: API 契约与版本兼容",
+    "summary": "从可运行的 Go 场景出发，拆解API 契约与版本兼容，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "API 契约与版本兼容",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-023-lesson",
+        "title": "实现：API 契约与版本兼容",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "API 契约与版本兼容",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{23, 25, 27}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=154",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-024",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 024: 真实项目重构练习",
+    "summary": "从可运行的 Go 场景出发，拆解真实项目重构练习，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "真实项目重构练习",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-024-lesson",
+        "title": "实现：真实项目重构练习",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "真实项目重构练习",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{24, 26, 28}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=160",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-025",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 025: 数据建模与不变量",
+    "summary": "从可运行的 Go 场景出发，拆解数据建模与不变量，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "数据建模与不变量",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-025-lesson",
+        "title": "实现：数据建模与不变量",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "数据建模与不变量",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{25, 27, 29}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=166",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-026",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 026: 输入校验与错误边界",
+    "summary": "从可运行的 Go 场景出发，拆解输入校验与错误边界，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "输入校验与错误边界",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-026-lesson",
+        "title": "实现：输入校验与错误边界",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "输入校验与错误边界",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{26, 28, 30}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=172",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-027",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 027: 文件格式与编码",
+    "summary": "从可运行的 Go 场景出发，拆解文件格式与编码，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "文件格式与编码",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-027-lesson",
+        "title": "实现：文件格式与编码",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "文件格式与编码",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{27, 29, 31}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=178",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-028",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 028: 日志与可观测性",
+    "summary": "从可运行的 Go 场景出发，拆解日志与可观测性，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "日志与可观测性",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-028-lesson",
+        "title": "实现：日志与可观测性",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "日志与可观测性",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{28, 30, 32}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=184",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-029",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 029: 缓存与失效策略",
+    "summary": "从可运行的 Go 场景出发，拆解缓存与失效策略，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "缓存与失效策略",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-029-lesson",
+        "title": "实现：缓存与失效策略",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "缓存与失效策略",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{29, 31, 33}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=190",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-030",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 030: 队列与批处理",
+    "summary": "从可运行的 Go 场景出发，拆解队列与批处理，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "队列与批处理",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-030-lesson",
+        "title": "实现：队列与批处理",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "队列与批处理",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{30, 32, 34}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=196",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-031",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 031: 分页与排序",
+    "summary": "从可运行的 Go 场景出发，拆解分页与排序，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "分页与排序",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-031-lesson",
+        "title": "实现：分页与排序",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "分页与排序",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{31, 33, 35}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=202",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-032",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 032: 配置与环境隔离",
+    "summary": "从可运行的 Go 场景出发，拆解配置与环境隔离，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "配置与环境隔离",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-032-lesson",
+        "title": "实现：配置与环境隔离",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "配置与环境隔离",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{32, 34, 36}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=208",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-033",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 033: 并发与资源生命周期",
+    "summary": "从可运行的 Go 场景出发，拆解并发与资源生命周期，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "并发与资源生命周期",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-033-lesson",
+        "title": "实现：并发与资源生命周期",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "并发与资源生命周期",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{33, 35, 37}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=214",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-034",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 034: 测试夹具与回归",
+    "summary": "从可运行的 Go 场景出发，拆解测试夹具与回归，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "测试夹具与回归",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-034-lesson",
+        "title": "实现：测试夹具与回归",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "测试夹具与回归",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{34, 36, 38}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=220",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-035",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 035: 性能测量与优化",
+    "summary": "从可运行的 Go 场景出发，拆解性能测量与优化，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "性能测量与优化",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-035-lesson",
+        "title": "实现：性能测量与优化",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "性能测量与优化",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{35, 37, 39}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=226",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-036",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 036: 安全边界与最小权限",
+    "summary": "从可运行的 Go 场景出发，拆解安全边界与最小权限，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "安全边界与最小权限",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-036-lesson",
+        "title": "实现：安全边界与最小权限",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "安全边界与最小权限",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{36, 38, 40}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=232",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-037",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 037: 网络协议与重试",
+    "summary": "从可运行的 Go 场景出发，拆解网络协议与重试，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "网络协议与重试",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-037-lesson",
+        "title": "实现：网络协议与重试",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "网络协议与重试",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{37, 39, 41}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=238",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-038",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 038: 持久化与迁移",
+    "summary": "从可运行的 Go 场景出发，拆解持久化与迁移，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "持久化与迁移",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-038-lesson",
+        "title": "实现：持久化与迁移",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "持久化与迁移",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{38, 40, 42}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=244",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-039",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 039: 命令行工具设计",
+    "summary": "从可运行的 Go 场景出发，拆解命令行工具设计，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "命令行工具设计",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-039-lesson",
+        "title": "实现：命令行工具设计",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "命令行工具设计",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{39, 41, 43}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=250",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-040",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 040: 模块边界与依赖方向",
+    "summary": "从可运行的 Go 场景出发，拆解模块边界与依赖方向，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "模块边界与依赖方向",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-040-lesson",
+        "title": "实现：模块边界与依赖方向",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "模块边界与依赖方向",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{40, 42, 44}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=256",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-041",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 041: 状态机与事件流",
+    "summary": "从可运行的 Go 场景出发，拆解状态机与事件流，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "状态机与事件流",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-041-lesson",
+        "title": "实现：状态机与事件流",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "状态机与事件流",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{41, 43, 45}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=262",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-042",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 042: 时间、时区与截止时间",
+    "summary": "从可运行的 Go 场景出发，拆解时间、时区与截止时间，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "时间、时区与截止时间",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-042-lesson",
+        "title": "实现：时间、时区与截止时间",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "时间、时区与截止时间",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{42, 44, 46}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=268",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-043",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 043: 文本处理与国际化",
+    "summary": "从可运行的 Go 场景出发，拆解文本处理与国际化，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "文本处理与国际化",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-043-lesson",
+        "title": "实现：文本处理与国际化",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "文本处理与国际化",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{43, 45, 47}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=274",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-044",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 044: 故障恢复与幂等性",
+    "summary": "从可运行的 Go 场景出发，拆解故障恢复与幂等性，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "故障恢复与幂等性",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-044-lesson",
+        "title": "实现：故障恢复与幂等性",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "故障恢复与幂等性",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{44, 46, 48}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=280",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-045",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 045: 资源打包与发布",
+    "summary": "从可运行的 Go 场景出发，拆解资源打包与发布，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "资源打包与发布",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-045-lesson",
+        "title": "实现：资源打包与发布",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "资源打包与发布",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{45, 47, 49}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=286",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-046",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 046: 增量计算与差分",
+    "summary": "从可运行的 Go 场景出发，拆解增量计算与差分，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "增量计算与差分",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-046-lesson",
+        "title": "实现：增量计算与差分",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "增量计算与差分",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{46, 48, 50}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=292",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-047",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 047: API 契约与版本兼容",
+    "summary": "从可运行的 Go 场景出发，拆解API 契约与版本兼容，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "API 契约与版本兼容",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-047-lesson",
+        "title": "实现：API 契约与版本兼容",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "API 契约与版本兼容",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{47, 49, 51}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=298",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-048",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 048: 真实项目重构练习",
+    "summary": "从可运行的 Go 场景出发，拆解真实项目重构练习，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "真实项目重构练习",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-048-lesson",
+        "title": "实现：真实项目重构练习",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "真实项目重构练习",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{48, 50, 52}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=304",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-049",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 049: 数据建模与不变量",
+    "summary": "从可运行的 Go 场景出发，拆解数据建模与不变量，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "数据建模与不变量",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-049-lesson",
+        "title": "实现：数据建模与不变量",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "数据建模与不变量",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{49, 51, 53}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=310",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-050",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 050: 输入校验与错误边界",
+    "summary": "从可运行的 Go 场景出发，拆解输入校验与错误边界，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "输入校验与错误边界",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-050-lesson",
+        "title": "实现：输入校验与错误边界",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "输入校验与错误边界",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{50, 52, 54}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=316",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-051",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 051: 文件格式与编码",
+    "summary": "从可运行的 Go 场景出发，拆解文件格式与编码，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "文件格式与编码",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-051-lesson",
+        "title": "实现：文件格式与编码",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "文件格式与编码",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{51, 53, 55}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=322",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-052",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 052: 日志与可观测性",
+    "summary": "从可运行的 Go 场景出发，拆解日志与可观测性，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "日志与可观测性",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-052-lesson",
+        "title": "实现：日志与可观测性",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "日志与可观测性",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{52, 54, 56}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=328",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-053",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 053: 缓存与失效策略",
+    "summary": "从可运行的 Go 场景出发，拆解缓存与失效策略，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "缓存与失效策略",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-053-lesson",
+        "title": "实现：缓存与失效策略",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "缓存与失效策略",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{53, 55, 57}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=334",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-054",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 054: 队列与批处理",
+    "summary": "从可运行的 Go 场景出发，拆解队列与批处理，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "队列与批处理",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-054-lesson",
+        "title": "实现：队列与批处理",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "队列与批处理",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{54, 56, 58}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=340",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-055",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 055: 分页与排序",
+    "summary": "从可运行的 Go 场景出发，拆解分页与排序，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "分页与排序",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-055-lesson",
+        "title": "实现：分页与排序",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "分页与排序",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{55, 57, 59}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=346",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-056",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 056: 配置与环境隔离",
+    "summary": "从可运行的 Go 场景出发，拆解配置与环境隔离，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "配置与环境隔离",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-056-lesson",
+        "title": "实现：配置与环境隔离",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "配置与环境隔离",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{56, 58, 60}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=352",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-057",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 057: 并发与资源生命周期",
+    "summary": "从可运行的 Go 场景出发，拆解并发与资源生命周期，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "并发与资源生命周期",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-057-lesson",
+        "title": "实现：并发与资源生命周期",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "并发与资源生命周期",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{57, 59, 61}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=358",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-058",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 058: 测试夹具与回归",
+    "summary": "从可运行的 Go 场景出发，拆解测试夹具与回归，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "测试夹具与回归",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-058-lesson",
+        "title": "实现：测试夹具与回归",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "测试夹具与回归",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{58, 60, 62}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=364",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-059",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 059: 性能测量与优化",
+    "summary": "从可运行的 Go 场景出发，拆解性能测量与优化，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "性能测量与优化",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-059-lesson",
+        "title": "实现：性能测量与优化",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "性能测量与优化",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{59, 61, 63}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=370",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-060",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 060: 安全边界与最小权限",
+    "summary": "从可运行的 Go 场景出发，拆解安全边界与最小权限，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "安全边界与最小权限",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-060-lesson",
+        "title": "实现：安全边界与最小权限",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "安全边界与最小权限",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{60, 62, 64}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=376",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-061",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 061: 网络协议与重试",
+    "summary": "从可运行的 Go 场景出发，拆解网络协议与重试，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "网络协议与重试",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-061-lesson",
+        "title": "实现：网络协议与重试",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "网络协议与重试",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{61, 63, 65}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=382",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-062",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 062: 持久化与迁移",
+    "summary": "从可运行的 Go 场景出发，拆解持久化与迁移，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "持久化与迁移",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-062-lesson",
+        "title": "实现：持久化与迁移",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "持久化与迁移",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{62, 64, 66}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=388",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-063",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 063: 命令行工具设计",
+    "summary": "从可运行的 Go 场景出发，拆解命令行工具设计，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "命令行工具设计",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-063-lesson",
+        "title": "实现：命令行工具设计",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "命令行工具设计",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{63, 65, 67}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=394",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-064",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 064: 模块边界与依赖方向",
+    "summary": "从可运行的 Go 场景出发，拆解模块边界与依赖方向，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "模块边界与依赖方向",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-064-lesson",
+        "title": "实现：模块边界与依赖方向",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "模块边界与依赖方向",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{64, 66, 68}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=400",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-065",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 065: 状态机与事件流",
+    "summary": "从可运行的 Go 场景出发，拆解状态机与事件流，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "状态机与事件流",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-065-lesson",
+        "title": "实现：状态机与事件流",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "状态机与事件流",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{65, 67, 69}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=406",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-066",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 066: 时间、时区与截止时间",
+    "summary": "从可运行的 Go 场景出发，拆解时间、时区与截止时间，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "时间、时区与截止时间",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-066-lesson",
+        "title": "实现：时间、时区与截止时间",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "时间、时区与截止时间",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{66, 68, 70}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=412",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-067",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 067: 文本处理与国际化",
+    "summary": "从可运行的 Go 场景出发，拆解文本处理与国际化，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "文本处理与国际化",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-067-lesson",
+        "title": "实现：文本处理与国际化",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "文本处理与国际化",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{67, 69, 71}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=418",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-068",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 068: 故障恢复与幂等性",
+    "summary": "从可运行的 Go 场景出发，拆解故障恢复与幂等性，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "故障恢复与幂等性",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-068-lesson",
+        "title": "实现：故障恢复与幂等性",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "故障恢复与幂等性",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{68, 70, 72}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=424",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-069",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 069: 资源打包与发布",
+    "summary": "从可运行的 Go 场景出发，拆解资源打包与发布，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "资源打包与发布",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-069-lesson",
+        "title": "实现：资源打包与发布",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "资源打包与发布",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{69, 71, 73}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=430",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-070",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 070: 增量计算与差分",
+    "summary": "从可运行的 Go 场景出发，拆解增量计算与差分，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "增量计算与差分",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-070-lesson",
+        "title": "实现：增量计算与差分",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "增量计算与差分",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{70, 72, 74}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=436",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-071",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 071: API 契约与版本兼容",
+    "summary": "从可运行的 Go 场景出发，拆解API 契约与版本兼容，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "API 契约与版本兼容",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-071-lesson",
+        "title": "实现：API 契约与版本兼容",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "API 契约与版本兼容",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{71, 73, 75}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=442",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-072",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 072: 真实项目重构练习",
+    "summary": "从可运行的 Go 场景出发，拆解真实项目重构练习，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "真实项目重构练习",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-072-lesson",
+        "title": "实现：真实项目重构练习",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "真实项目重构练习",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{72, 74, 76}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=448",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-073",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 073: 数据建模与不变量",
+    "summary": "从可运行的 Go 场景出发，拆解数据建模与不变量，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "数据建模与不变量",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-073-lesson",
+        "title": "实现：数据建模与不变量",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "数据建模与不变量",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{73, 75, 77}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=454",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-074",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 074: 输入校验与错误边界",
+    "summary": "从可运行的 Go 场景出发，拆解输入校验与错误边界，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "输入校验与错误边界",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-074-lesson",
+        "title": "实现：输入校验与错误边界",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "输入校验与错误边界",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{74, 76, 78}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=460",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-075",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 075: 文件格式与编码",
+    "summary": "从可运行的 Go 场景出发，拆解文件格式与编码，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "文件格式与编码",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-075-lesson",
+        "title": "实现：文件格式与编码",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "文件格式与编码",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{75, 77, 79}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=466",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-076",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 076: 日志与可观测性",
+    "summary": "从可运行的 Go 场景出发，拆解日志与可观测性，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "日志与可观测性",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-076-lesson",
+        "title": "实现：日志与可观测性",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "日志与可观测性",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{76, 78, 80}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=472",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-077",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 077: 缓存与失效策略",
+    "summary": "从可运行的 Go 场景出发，拆解缓存与失效策略，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "缓存与失效策略",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-077-lesson",
+        "title": "实现：缓存与失效策略",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "缓存与失效策略",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{77, 79, 81}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=478",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-078",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 078: 队列与批处理",
+    "summary": "从可运行的 Go 场景出发，拆解队列与批处理，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "队列与批处理",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-078-lesson",
+        "title": "实现：队列与批处理",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "队列与批处理",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{78, 80, 82}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=484",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-079",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 079: 分页与排序",
+    "summary": "从可运行的 Go 场景出发，拆解分页与排序，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "分页与排序",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-079-lesson",
+        "title": "实现：分页与排序",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "分页与排序",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{79, 81, 83}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=490",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-080",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 080: 配置与环境隔离",
+    "summary": "从可运行的 Go 场景出发，拆解配置与环境隔离，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "配置与环境隔离",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-080-lesson",
+        "title": "实现：配置与环境隔离",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "配置与环境隔离",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{80, 82, 84}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=496",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-081",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 081: 并发与资源生命周期",
+    "summary": "从可运行的 Go 场景出发，拆解并发与资源生命周期，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "并发与资源生命周期",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-081-lesson",
+        "title": "实现：并发与资源生命周期",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "并发与资源生命周期",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{81, 83, 85}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=502",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-082",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 082: 测试夹具与回归",
+    "summary": "从可运行的 Go 场景出发，拆解测试夹具与回归，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "测试夹具与回归",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-082-lesson",
+        "title": "实现：测试夹具与回归",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "测试夹具与回归",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{82, 84, 86}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=508",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-083",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 083: 性能测量与优化",
+    "summary": "从可运行的 Go 场景出发，拆解性能测量与优化，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "性能测量与优化",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-083-lesson",
+        "title": "实现：性能测量与优化",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "性能测量与优化",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{83, 85, 87}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=514",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-084",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 084: 安全边界与最小权限",
+    "summary": "从可运行的 Go 场景出发，拆解安全边界与最小权限，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "安全边界与最小权限",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-084-lesson",
+        "title": "实现：安全边界与最小权限",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "安全边界与最小权限",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{84, 86, 88}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=520",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-085",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 085: 网络协议与重试",
+    "summary": "从可运行的 Go 场景出发，拆解网络协议与重试，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "网络协议与重试",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-085-lesson",
+        "title": "实现：网络协议与重试",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "网络协议与重试",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{85, 87, 89}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=526",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-086",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 086: 持久化与迁移",
+    "summary": "从可运行的 Go 场景出发，拆解持久化与迁移，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "持久化与迁移",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-086-lesson",
+        "title": "实现：持久化与迁移",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "持久化与迁移",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{86, 88, 90}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=532",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-087",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 087: 命令行工具设计",
+    "summary": "从可运行的 Go 场景出发，拆解命令行工具设计，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "命令行工具设计",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-087-lesson",
+        "title": "实现：命令行工具设计",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "命令行工具设计",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{87, 89, 91}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=538",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-088",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 088: 模块边界与依赖方向",
+    "summary": "从可运行的 Go 场景出发，拆解模块边界与依赖方向，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "模块边界与依赖方向",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-088-lesson",
+        "title": "实现：模块边界与依赖方向",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "模块边界与依赖方向",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{88, 90, 92}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=544",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-089",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 089: 状态机与事件流",
+    "summary": "从可运行的 Go 场景出发，拆解状态机与事件流，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "状态机与事件流",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-089-lesson",
+        "title": "实现：状态机与事件流",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "状态机与事件流",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{89, 91, 93}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=550",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-090",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 090: 时间、时区与截止时间",
+    "summary": "从可运行的 Go 场景出发，拆解时间、时区与截止时间，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "时间、时区与截止时间",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-090-lesson",
+        "title": "实现：时间、时区与截止时间",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "时间、时区与截止时间",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{90, 92, 94}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=556",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-091",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 091: 文本处理与国际化",
+    "summary": "从可运行的 Go 场景出发，拆解文本处理与国际化，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "文本处理与国际化",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-091-lesson",
+        "title": "实现：文本处理与国际化",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "文本处理与国际化",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{91, 93, 95}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=562",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-092",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 092: 故障恢复与幂等性",
+    "summary": "从可运行的 Go 场景出发，拆解故障恢复与幂等性，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "故障恢复与幂等性",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-092-lesson",
+        "title": "实现：故障恢复与幂等性",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "故障恢复与幂等性",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{92, 94, 96}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=568",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-093",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 093: 资源打包与发布",
+    "summary": "从可运行的 Go 场景出发，拆解资源打包与发布，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "资源打包与发布",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-093-lesson",
+        "title": "实现：资源打包与发布",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "资源打包与发布",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{93, 95, 97}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=574",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-094",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 094: 增量计算与差分",
+    "summary": "从可运行的 Go 场景出发，拆解增量计算与差分，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "增量计算与差分",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-094-lesson",
+        "title": "实现：增量计算与差分",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "增量计算与差分",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{94, 96, 98}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=580",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-095",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 095: API 契约与版本兼容",
+    "summary": "从可运行的 Go 场景出发，拆解API 契约与版本兼容，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "API 契约与版本兼容",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-095-lesson",
+        "title": "实现：API 契约与版本兼容",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "API 契约与版本兼容",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{95, 97, 99}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=586",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-096",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 096: 真实项目重构练习",
+    "summary": "从可运行的 Go 场景出发，拆解真实项目重构练习，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "真实项目重构练习",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-096-lesson",
+        "title": "实现：真实项目重构练习",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "真实项目重构练习",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{96, 98, 100}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=592",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-097",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 097: 数据建模与不变量",
+    "summary": "从可运行的 Go 场景出发，拆解数据建模与不变量，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "数据建模与不变量",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-097-lesson",
+        "title": "实现：数据建模与不变量",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "数据建模与不变量",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{97, 99, 101}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=598",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-098",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 098: 输入校验与错误边界",
+    "summary": "从可运行的 Go 场景出发，拆解输入校验与错误边界，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "输入校验与错误边界",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-098-lesson",
+        "title": "实现：输入校验与错误边界",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "输入校验与错误边界",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{98, 100, 102}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=604",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-099",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 099: 文件格式与编码",
+    "summary": "从可运行的 Go 场景出发，拆解文件格式与编码，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "文件格式与编码",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-099-lesson",
+        "title": "实现：文件格式与编码",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "文件格式与编码",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{99, 101, 103}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=610",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "go-tutorial-100",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 100: 日志与可观测性",
+    "summary": "从可运行的 Go 场景出发，拆解日志与可观测性，覆盖输入、失败路径、边界条件和验证方式。",
+    "concepts": [
+      "日志与可观测性",
+      "可测试实现",
+      "边界条件",
+      "发布检查"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "lessons": [
+      {
+        "id": "go-tutorial-100-lesson",
+        "title": "实现：日志与可观测性",
+        "summary": "先定义契约，再实现主路径，最后用失败输入验证行为不会漂移。",
+        "concepts": [
+          "日志与可观测性",
+          "契约",
+          "诊断"
+        ],
+        "explain": "把问题分成输入、状态变化和输出三层。保留显式错误分支，不用静默默认值掩盖数据损坏；用固定夹具重复执行，确保桌面和设备运行时有相同的可观察结果。",
+        "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{100, 102, 104}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }",
+        "output": "weighted=616",
+        "exercises": [
+          {
+            "prompt": "为主路径增加一个边界输入，并说明它应该返回什么诊断。",
+            "hint": "先列输入约束，再决定错误在解析阶段还是执行阶段产生。",
+            "answer": "保留显式失败分支，输出稳定错误类别，并让退出状态反映失败。"
+          },
+          {
+            "prompt": "如何证明这段实现可以重复执行而不会污染下一次运行？",
+            "hint": "观察临时文件、缓存、数据库事务和全局状态。",
+            "answer": "为资源建立创建与释放配对，清理临时状态，并重复运行同一夹具。"
+          }
+        ]
+      }
+    ]
+  }
+]

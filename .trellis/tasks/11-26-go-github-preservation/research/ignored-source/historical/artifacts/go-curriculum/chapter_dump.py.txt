@@ -1,0 +1,40 @@
+import json, glob, textwrap
+
+rows = []
+for p in sorted(glob.glob('tool/go_curriculum/topics/T*.json')):
+    t = json.load(open(p, encoding='utf-8'))
+    rows.append(t)
+
+chapters = {
+    'S1 T001-T010': range(1, 11),
+    'S2 T011-T022': range(11, 23),
+    'S3 T023-T036': range(23, 37),
+    'S4 T037-T048': range(37, 49),
+    'S5 T049-T058': range(49, 59),
+    'S6 T059-T070': range(59, 71),
+    'S7 T071-T084': range(71, 85),
+    'S8 T085-T098': range(85, 99),
+    'S9 T099-T104': range(99, 105),
+    'S10 T105-T111': range(105, 112),
+    'S11 T112-T117': range(112, 118),
+    'S12 T118-T120': range(118, 121),
+}
+by_id = {t['id']: t for t in rows}
+for name, rng in chapters.items():
+    print('================================================================')
+    print('CHAPTER', name)
+    for n in rng:
+        tid = 'T%03d' % n
+        t = by_id[tid]
+        tut = t['tutorial']
+        ex = t['example']
+        print('-' * 60)
+        print(f"{tid} [{tut['level']}] {tut['title']}  (runtime={t['runtime']}, import={t['importKind']}, verify={t['verification']['kind']})")
+        print(f"  objective: {tut['objective']}")
+        print(f"  concepts : {', '.join(tut['concepts'])}")
+        print(f"  prereq   : {', '.join(str(x) for x in tut['prerequisites'])}")
+        print(f"  output   : {tut['output']!r}")
+        print(f"  exTitle  : {ex['title']}")
+        print(f"  exOut    : {ex['expectedOutput']!r}")
+        first = tut['explain'].split('\n')[0]
+        print(f"  explain1 : {textwrap.shorten(first, 160)}")

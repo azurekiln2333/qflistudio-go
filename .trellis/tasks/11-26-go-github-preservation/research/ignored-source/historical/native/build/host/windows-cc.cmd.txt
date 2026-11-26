@@ -1,0 +1,2 @@
+@"D:\ProgramFiles\Huawei\DevEco Studio\sdk\default\openharmony\native\llvm\bin\clang.exe" --target=x86_64-w64-windows-gnu --sysroot="D:/ProgramFiles/Dev-Cpp/MinGW64/x86_64-w64-mingw32" -L"D:/ProgramFiles/Dev-Cpp/MinGW64/lib/gcc/x86_64-w64-mingw32/4.9.2" -fuse-ld=lld -Qunused-arguments %*
+

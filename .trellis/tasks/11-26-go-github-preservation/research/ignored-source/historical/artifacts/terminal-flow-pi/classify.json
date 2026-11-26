@@ -1,0 +1,522 @@
+[
+  {
+    "id": "T001",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "hello, go\ntoolchain ready\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T002",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "hello, go\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T003",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "count=0 name=\"\" ok=false total=42 msg=零值演示\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T004",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "int8=127 uint8=255 float64=3.5 bool=true string=\"go\"\ntyped 是 int\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T005",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "0 1 2\npi as float64 = 3.14\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T006",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "3 3\nbig=1099511627776 small=0\ntrunc(3.9)=3\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T007",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "bytes: 14\nrunes: 9\nat 0: h\nat 1: é\nat 3: l\nat 4: l\nat 5: o\nat 6: ,\nat 7:  \nat 8: 世\nat 11: 界\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T008",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "v={3 4} +v={X:3 Y:4}\nd=42 q=\"go\" t=main.point\nf=3.14 e=1.234500e+03\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T009",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "lines=2 words=3\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T010",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "add 10 sub 2 mul 24 div 1 mod 2\nand 4 or 6 xor 2 shl 12 shr 3\nexpr true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T011",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "95 -> A\n72 -> B\n50 -> C\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T012",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "-1=negative\n0=zero\n5=small\n99=large\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T013",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "int:1\nstring:go\nbool:true\nunknown\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T014",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "sum 12\nn 3\ncount 2\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T015",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "slice 0=10\nslice 1=20\nslice 2=30\nmap total 3\nstr 0=a\nstr 1=b\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T016",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "found at 1,1\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T017",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "processed 3 items\ncleanup after: negative input\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T018",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "a [1 2 3]\nb [99 2 3]\nlen 3\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T019",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "start len=0 cap=2\nafter 1: len=1 cap=2\nafter 2: len=2 cap=2\nafter 3: len=3 cap=4\nafter 4: len=4 cap=4\nafter 5: len=5 cap=8\nvalues [1 2 3 4 5]\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T020",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "base [1 99 3 4 5]\nview [99 3]\nappended [99 3 100]\nbase after append [1 99 3 100 5]\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T021",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "copied 5 [1 2 3 4 5]\nafter delete [1 2 4 5] s mutated to [1 2 4 5 5]\nunique [1 2 3]\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T022",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "go present: 3\njava absent\nkeys: 1\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T023",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "q,r 3 2\nsplit 40 50\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T024",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "6\n15\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T025",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "[2 4 6]\n[11 12 13]\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T026",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "1 2 3\n1\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T027",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "0 1 1 2 3 5 8\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T028",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "body\nresult: 42\nsecond deferred\nfirst deferred\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T029",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "after byValue 1\nafter byPtr 100\naddress of x is non-nil: true\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T030",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "after element change [2 2 3]\nafter reassign [2 2 3]\nnew value 7\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T031",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "{Ada 0}\n30\nModified\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T032",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "[{Al 25} {Cy 25} {Bob 30}]\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T033",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "insert position for 6: 3\nfirst >= 7 at index 3\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T034",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "unique [c go rust]\nlen 1 -> 1 words\nlen 2 -> 3 words\nlen 4 -> 2 words\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T035",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "parts=[Go Rust Go] count=3\njoined Go|Rust|Go\ncontains Go: true\nreplace: Golang|Rust|Go\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T036",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "item0;item1;item2; len 18\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T037",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "Ada 36\nBob 0\npointer set 37\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T038",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "7\nbase#7\nchild\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T039",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "count 2\nafter copy inc: 2 3\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  },
+  {
+    "id": "T040",
+    "runtime": "desktop",
+    "importKind": "single-file",
+    "runCommand": "go run .",
+    "verification": {
+      "kind": "stdout-exact",
+      "expected": "method value 12\nmethod expression 12\npointer call 12\n"
+    },
+    "sampleFiles": [
+      "main.go"
+    ]
+  }
+]

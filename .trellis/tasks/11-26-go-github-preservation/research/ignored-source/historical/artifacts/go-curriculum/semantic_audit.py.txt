@@ -1,0 +1,62 @@
+import json, glob, re, collections
+
+rows = []
+for p in sorted(glob.glob('tool/go_curriculum/topics/T*.json')):
+    t = json.load(open(p, encoding='utf-8'))
+    rows.append((t, t['tutorial'], t['example']))
+
+print("topics:", len(rows))
+missing = []
+for t, tut, ex in rows:
+    for k in ('objective', 'explain', 'output'):
+        if not str(tut.get(k, '')).strip():
+            missing.append((t['id'], 'tut.' + k))
+    if len(tut.get('prerequisites', [])) < 1:
+        missing.append((t['id'], 'prereq'))
+    if len(tut.get('pitfalls', [])) < 2:
+        missing.append((t['id'], 'pitfalls'))
+    if len(tut.get('exercises', [])) < 1:
+        missing.append((t['id'], 'exercises'))
+    for e in tut.get('exercises', []):
+        if not all(str(e.get(k, '')).strip() for k in ('prompt', 'hint', 'answer')):
+            missing.append((t['id'], 'exercise-fields'))
+print("missing-field violations:", missing, len(missing))
+
+ex_bodies = [tut['explain'].strip() for _, tut, _ in rows]
+dups = [k for k, v in collections.Counter(ex_bodies).items() if v > 1]
+print("duplicate explain bodies:", len(dups))
+
+prompts = [e['prompt'].strip() for _, tut, _ in rows for e in tut['exercises']]
+pd = [k for k, v in collections.Counter(prompts).items() if v > 1]
+print("duplicate exercise prompts:", len(pd), pd[:3])
+
+titles = [tut['title'].strip() for _, tut, _ in rows]
+print("unique titles:", len(set(titles)), "/", len(titles))
+print("concepts empty:", sum(1 for _, tut, _ in rows if not tut.get('concepts')))
+
+hand = [t for t, tut, ex in rows if t['importKind'] != 'single-file']
+noflag = [t['id'] for t in hand
+          if not re.search(r'不能|手搭|手动|工程例子|无法一键|按.*文件', json.dumps(t, ensure_ascii=False))]
+print("hand-build topics:", len(hand), "missing declaration:", noflag)
+
+print("mobile runtime:", [t['id'] for t, tut, ex in rows if t['runtime'] == 'mobile'])
+print("tutorial licenses:", set(tut['license'] for _, tut, _ in rows))
+print("distinct sources:", len(set(tut['source'] for _, tut, _ in rows)))
+lens = sorted(len(tut['explain']) for _, tut, _ in rows)
+print("explain len min/med/max:", lens[0], lens[len(lens) // 2], lens[-1])
+print("levels:", collections.Counter(t['tutorial']['level'] for t, _, _ in rows))
+
+# example code must be exactly one valid Go file: contains package main or package decl, balanced braces
+badcode = []
+for t, tut, ex in rows:
+    code = ex['code']
+    if code.count('package ') < 1:
+        badcode.append((t['id'], 'no-package'))
+    if code.count('func main') > 1:
+        badcode.append((t['id'], 'multi-main'))
+print("example code shape issues:", badcode)
+
+# example != tutorial for some topics (should be distinct variants for all)
+same = [t['id'] for t, tut, ex in rows if ex['code'].strip() == tut['code'].strip()]
+print("example code identical to tutorial:", len(same))
+print("sample identical ids (first 5):", same[:5])

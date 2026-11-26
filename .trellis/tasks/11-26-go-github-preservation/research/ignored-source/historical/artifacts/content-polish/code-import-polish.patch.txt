@@ -1,0 +1,74 @@
+diff --git a/base/lib/i18n/studio_localizations.dart b/work/lib/i18n/studio_localizations.dart
+index ae54c35..61c235a 100644
+--- a/base/lib/i18n/studio_localizations.dart
++++ b/work/lib/i18n/studio_localizations.dart
+@@ -71,7 +71,9 @@ class StudioLocalizations {
+   String get invalidFileName => _text('invalidFileName');
+   String get fileAlreadyExists => _text('fileAlreadyExists');
+   String get projectUnavailable => _text('projectUnavailable');
+-  String get codeStorageUnavailable => _text('codeStorageUnavailable');
++  String get codeStorageUnavailable => _text('codeStorageUnavailable');
++  String codeImportFailed(String reason) =>
++      _text('codeImportFailed').replaceAll('{reason}', reason);
+   String get restoreDefault => _text('restoreDefault');
+   String get saveExample => _text('saveExample');
+   String get projectImported => _text('projectImported');
+@@ -195,7 +197,8 @@ class StudioLocalizations {
+     'copyExample': '复制示例代码',
+     'exampleCopied': '示例代码已复制',
+     'importExampleProject': '导入新建项目',
+-    'importCodeEditor': '导入编辑器',
++    'importCodeEditor': '导入编辑器',
++    'codeImportFailed': '代码导入失败：{reason}',
+     'importCodeProject': '导入项目',
+     'importAndOpen': '导入并打开',
+     'targetProject': '目标项目',
+@@ -306,7 +309,8 @@ class StudioLocalizations {
+     'copyExample': '複製範例程式碼',
+     'exampleCopied': '範例程式碼已複製',
+     'importExampleProject': '匯入並建立專案',
+-    'importCodeEditor': '匯入編輯器',
++    'importCodeEditor': '匯入編輯器',
++    'codeImportFailed': '程式碼匯入失敗：{reason}',
+     'importCodeProject': '匯入專案',
+     'importAndOpen': '匯入並開啟',
+     'targetProject': '目標專案',
+@@ -417,7 +421,8 @@ class StudioLocalizations {
+     'copyExample': 'Copy example code',
+     'exampleCopied': 'Example code copied',
+     'importExampleProject': 'Import into new project',
+-    'importCodeEditor': 'Import into editor',
++    'importCodeEditor': 'Import into editor',
++    'codeImportFailed': 'Code import failed: {reason}',
+     'importCodeProject': 'Import into project',
+     'importAndOpen': 'Import and open',
+     'targetProject': 'Destination project',
+diff --git a/base/lib/widgets/code_snippet.dart b/work/lib/widgets/code_snippet.dart
+index 9f3b6d9..b4232d7 100644
+--- a/base/lib/widgets/code_snippet.dart
++++ b/work/lib/widgets/code_snippet.dart
+@@ -155,9 +155,10 @@ class _CodeSnippetState extends State<CodeSnippet> {
+           auth: widget.auth!,
+         ),
+       );
+-      if (result == null || !mounted) return;
+-      widget.store!.touch(result.project);
+-      TaskActivityService.report(widget.auth!, 'open_project');
++      if (result == null || !mounted) return;
++      widget.store!.touch(result.project);
++      TaskActivityService.report(widget.auth!, 'open_project');
++      widget.store!.setBrowsedProject(result.project);
+       await Navigator.of(context).push<void>(
+         MaterialPageRoute(
+           builder: (_) => EditorPage(
+@@ -410,8 +411,8 @@ class _CodeImportDialogState extends State<_CodeImportDialog> {
+             l10n.projectUnavailable,
+           CodeImportException(reason: CodeImportFailure.storageUnavailable) =>
+             l10n.codeStorageUnavailable,
+-          FileSystemException() => '${l10n.importFailed}: ${error.message}',
+-          _ => '${l10n.importFailed}: $error',
++          FileSystemException() => l10n.codeImportFailed(error.message),
++          _ => l10n.codeImportFailed('$error'),
+         };
+       });
+     } finally {

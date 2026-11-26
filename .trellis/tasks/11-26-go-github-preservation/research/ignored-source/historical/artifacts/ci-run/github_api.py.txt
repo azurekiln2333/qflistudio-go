@@ -1,0 +1,92 @@
+"""Task-local GitHub API client. Credentials stay in memory and are never logged."""
+import argparse
+import json
+import os
+from pathlib import Path
+import subprocess
+import ssl
+import urllib.error
+import urllib.parse
+import urllib.request
+
+parser = argparse.ArgumentParser()
+parser.add_argument('endpoint')
+parser.add_argument('--method', default='GET')
+parser.add_argument('--body')
+parser.add_argument('--output')
+parser.add_argument('--curl-download', action='store_true')
+parser.add_argument('--tls12', action='store_true')
+parser.add_argument('--curl-ip')
+args = parser.parse_args()
+credential = subprocess.run(
+    ['git', 'credential', 'fill'],
+    input='protocol=https\nhost=github.com\npath=azurekiln2333/qflistudio-go.git\n\n',
+    text=True, capture_output=True, check=True, timeout=20,
+    env={**os.environ, 'GIT_TERMINAL_PROMPT': '0', 'GCM_INTERACTIVE': 'never'},
+)
+fields = dict(line.split('=', 1) for line in credential.stdout.splitlines() if '=' in line)
+headers = {'Accept': 'application/vnd.github+json', 'Authorization': 'Bearer ' + fields['password']}
+if args.body:
+    body = Path(args.body).read_bytes()
+    headers['Content-Type'] = 'application/json'
+else:
+    body = None
+url = 'https://api.github.com/repos/azurekiln2333/qflistudio-go/' + args.endpoint.lstrip('/')
+https_handlers = []
+if args.tls12:
+    download_context = ssl.create_default_context()
+    download_context.minimum_version = ssl.TLSVersion.TLSv1_2
+    download_context.maximum_version = ssl.TLSVersion.TLSv1_2
+    https_handlers.append(urllib.request.HTTPSHandler(context=download_context))
+
+class SafeRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, hdrs, newurl):
+        result = super().redirect_request(req, fp, code, msg, hdrs, newurl)
+        if result is not None:
+            result.remove_header('Authorization')
+        return result
+
+try:
+    if args.curl_download:
+        class NoRedirect(urllib.request.HTTPRedirectHandler):
+            def redirect_request(self, req, fp, code, msg, hdrs, newurl):
+                return None
+        try:
+            urllib.request.build_opener(NoRedirect(), *https_handlers).open(urllib.request.Request(url, headers=headers), timeout=30)
+            raise RuntimeError('Expected a download redirect')
+        except urllib.error.HTTPError as redirect:
+            if redirect.code != 302:
+                raise
+            location = redirect.headers['Location']
+        if not location.startswith('https://'):
+            raise RuntimeError('Expected an HTTPS download')
+        path = Path(args.output)
+        partial = path.with_name(path.name + '.partial')
+        config_url = location.replace('\\', '\\\\').replace('"', '\\"')
+        curl_route = ['--resolve', f'{urllib.parse.urlsplit(location).hostname}:443:{args.curl_ip}'] if args.curl_ip else []
+        subprocess.run(['curl.exe', *curl_route, *(['--tlsv1.2', '--tls-max', '1.2'] if args.tls12 else []), '--fail', '--silent', '--show-error', '--location',
+                        '--retry', '2', '--retry-all-errors', '--connect-timeout', '20',
+                        '--max-time', '180', '--output', str(partial), '--config', '-'],
+                       input=f'url = "{config_url}"\n', text=True, check=True, timeout=600)
+        partial.replace(path)
+        print(f'Saved {path} ({path.stat().st_size} bytes)')
+        raise SystemExit(0)
+    opener = urllib.request.build_opener(SafeRedirect(), *https_handlers)
+    req = urllib.request.Request(url, data=body, headers=headers, method=args.method)
+    with opener.open(req, timeout=120) as response:
+        if args.output:
+            path = Path(args.output)
+            path.parent.mkdir(parents=True, exist_ok=True)
+            partial = path.with_name(path.name + '.partial')
+            with partial.open('wb') as out:
+                while chunk := response.read(1024 * 1024):
+                    out.write(chunk)
+            partial.replace(path)
+            print(f'Saved {path} ({path.stat().st_size} bytes)')
+        else:
+            data = response.read()
+            print(json.dumps(json.loads(data), indent=2) if data else f'HTTP {response.status}')
+except urllib.error.HTTPError as error:
+    print('GitHub API status:', error.code)
+    print(error.read().decode('utf-8', errors='replace'))
+    raise SystemExit(1)

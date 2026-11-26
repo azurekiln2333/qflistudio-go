@@ -1,0 +1,41 @@
+import os
+import json
+import socket
+import ssl
+import subprocess
+import urllib.error
+import urllib.parse
+import urllib.request
+
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, hdrs, newurl):
+        return None
+
+credentials = subprocess.run(['git', 'credential', 'fill'],
+    input='protocol=https\nhost=github.com\npath=azurekiln2333/qflistudio-go.git\n\n',
+    text=True, capture_output=True, check=True, timeout=20,
+    env={**os.environ, 'GIT_TERMINAL_PROMPT': '0', 'GCM_INTERACTIVE': 'never'})
+fields = dict(line.split('=', 1) for line in credentials.stdout.splitlines() if '=' in line)
+request = urllib.request.Request('https://api.github.com/repos/azurekiln2333/qflistudio-go/actions/artifacts/14263601915/zip',
+    headers={'Authorization': 'Bearer ' + fields['password'], 'Accept': 'application/vnd.github+json'})
+try:
+    urllib.request.build_opener(NoRedirect()).open(request, timeout=20)
+except urllib.error.HTTPError as response:
+    if response.code != 302:
+        print('API status', response.code)
+        raise SystemExit(1)
+    host = urllib.parse.urlsplit(response.headers['Location']).hostname
+print('Download hostname:', host)
+addresses = sorted(set(item[4][0] for item in socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)))
+print('Resolved addresses:', addresses)
+for version, address in [(version, address) for address in addresses for version in ('default', 'TLS1.2')]:
+    context = ssl.create_default_context()
+    if version == 'TLS1.2':
+        context.minimum_version = ssl.TLSVersion.TLSv1_2
+        context.maximum_version = ssl.TLSVersion.TLSv1_2
+    try:
+        with socket.create_connection((address, 443), timeout=5) as connection:
+            with context.wrap_socket(connection, server_hostname=host) as secure:
+                print(address, version, 'OK', secure.version())
+    except (OSError, ssl.SSLError) as error:
+        print(address, version, type(error).__name__, str(error))

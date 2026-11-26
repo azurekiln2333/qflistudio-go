@@ -1,0 +1,26 @@
+import json
+
+def dump(lo, hi, path):
+    out = []
+    for n in range(lo, hi + 1):
+        tid = "T%03d" % n
+        d = json.load(open("tool/go_curriculum/topics/%s.json" % tid, encoding="utf-8"))
+        t = d["tutorial"]
+        out.append("=" * 72)
+        out.append("%s %s | level=%s | kind=%s | run=%s | vkind=%s" % (
+            tid, t["title"], t["level"], d["importKind"], d["runCommand"],
+            d["verification"]["kind"]))
+        out.append("OBJ: " + t["objective"])
+        out.append("PRE: " + "; ".join(t["prerequisites"]))
+        for i, p in enumerate(t["pitfalls"]):
+            out.append("PIT%d: %s" % (i, p))
+        for i, e in enumerate(t["exercises"]):
+            out.append("EX%d Q: %s" % (i, e["prompt"]))
+            out.append("EX%d A: %s" % (i, e["answer"]))
+        out.append("EXPLAIN: " + t["explain"])
+    open(path, "w", encoding="utf-8").write("\n".join(out))
+    print("wrote", path, len(out), "lines")
+
+if __name__ == "__main__":
+    import sys
+    dump(int(sys.argv[1]), int(sys.argv[2]), sys.argv[3])

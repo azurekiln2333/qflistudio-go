@@ -1,0 +1,141 @@
+param(
+  [string]$Agent   = 'w5F:p1',
+  [int]$IntervalSec = 15,
+  [int]$MinBackoff = 30,
+  [int]$MaxBackoff = 300,
+  [string]$Log = 'D:\MyNewProjects\qfli_go\.artifacts\codex-watch\watch.log',
+  [string]$CmdLogFile = 'D:\MyNewProjects\qfli_go\.artifacts\codex-watch\work.log',
+  [switch]$DryRun
+)
+
+$ErrorActionPreference = 'Continue'
+$OutputEncoding = [System.Text.Encoding]::UTF8
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+
+function Write-Log([string]$Msg) {
+  $line = "[{0}] {1}" -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $Msg
+  Add-Content -LiteralPath $Log -Value $line -Encoding UTF8
+}
+
+Write-Log "watchdog start agent=$Agent interval=${IntervalSec}s"
+
+# Signature of an abnormal (non-normal) stop: the agent is idle/done but the
+# tail of its terminal shows an error instead of a finished turn.
+$errorRe = '429|too many requests|exceeded retry limit|rate.?limit|usage limit|stream (error|disconnected)|connection (error|reset)|ECONNRESET|ETIMEDOUT|overloaded|服务(器)?(错误|不可用)|请求过于频繁|限流'
+
+# New work vs. a repeated stall.
+$workRe = '^\s*(•|✻|✽|✳|·|✢|✶)'
+
+$lastSize    = -1
+$seq         = -1
+$curHash     = ''
+$stallCount  = 0
+$nextSendAt  = Get-Date
+$backoff     = $MinBackoff
+$consecutiveFail = 0
+
+while ($true) {
+  $getRaw = & herdr agent get $Agent 2>&1 | Out-String
+  if ($LASTEXITCODE -ne 0 -or $getRaw -notmatch '"agent_status"') {
+    Write-Log "agent get failed: $($getRaw.Trim())"
+    $consecutiveFail++
+    if ($consecutiveFail -ge 10) { Write-Log 'agent unreachable 10x, watchdog exit'; break }
+    Start-Sleep -Seconds $IntervalSec
+    continue
+  }
+  $consecutiveFail = 0
+
+  $status = ([regex]::Match($getRaw, '"agent_status"\s*:\s*"([^"]+)"')).Groups[1].Value
+  $curSeq = [int]([regex]::Match($getRaw, '"state_change_seq"\s*:\s*(\d+)')).Groups[1].Value
+
+  $tail = & herdr agent read $Agent --source recent-unwrapped --lines 40 2>&1 | Out-String
+  $text = $tail -replace '\x1b\[[0-9;?]*[a-zA-Z]', ''
+  $lines = @($text -split "`r?`n" | Where-Object { $_.Trim() -ne '' })
+  if ($lines.Count -gt 0) {
+    $body = ($lines | Select-Object -First ([Math]::Max(1, $lines.Count - 2))) -join "`n"
+  } else { $body = '' }
+  $hash = [BitConverter]::ToString(
+            [System.Security.Cryptography.SHA1]::Create().ComputeHash(
+              [System.Text.Encoding]::UTF8.GetBytes($body))).Substring(0, 12)
+
+  if ($curSeq -ne $seq) {
+    Write-Log "state change: status=$status seq=$curSeq"
+    $seq = $curSeq
+  }
+
+  # 1. Did new work arrive since the last stall?
+  if ($hash -ne $curHash) {
+    $newLine = $false
+    foreach ($l in $lines) { if ($l -match $workRe) { $newLine = $true; break } }
+    $curHash = $hash
+    if ($status -eq 'working') {
+      if ($stallCount -gt 0) { Write-Log 'work resumed' }
+      $stallCount = 0
+      $backoff = $MinBackoff
+      $nextSendAt = Get-Date
+    } elseif ($newLine) {
+      $stallCount = 0
+      $backoff = $MinBackoff
+      $nextSendAt = Get-Date
+    }
+  }
+
+  if ($status -eq 'working') {
+    Start-Sleep -Seconds $IntervalSec
+    continue
+  }
+
+  if ($status -eq 'blocked') {
+    Write-Log "BLOCKED: agent waits for user input, watchdog does not answer"
+    Start-Sleep -Seconds $IntervalSec
+    continue
+  }
+
+  # 2. Idle / done / unknown. Look at the tail to tell a normal stop from a stall.
+  $recent   = @($lines | Select-Object -Last 12)
+  $tailText = ($recent | Select-Object -Last 6) -join ' '
+  # A line that marks a正常收尾 of a turn.
+  $normalRe = 'Worked for|Tokens used|Asked to|auto-compact|Ran out of|Ctrl\+C'
+  $lastErrIdx  = -1
+  $lastNormIdx = -1
+  for ($i = 0; $i -lt $recent.Count; $i++) {
+    if ($recent[$i] -match $errorRe)  { $lastErrIdx  = $i }
+    if ($recent[$i] -match $normalRe) { $lastNormIdx = $i }
+  }
+  # 异常停：末尾出现错误，且错误行晚于正常收尾行
+  $isError = ($lastErrIdx -ge 0) -and ($lastNormIdx -lt 0 -or $lastErrIdx -gt $lastNormIdx)
+  $isWork  = $tailText -match $workRe
+
+  if ($isError) {
+    $stallCount++
+    if ((Get-Date) -ge $nextSendAt) {
+      Write-Log "stall #$stallCount detected ($tailText), send 继续"
+      if ($DryRun) {
+        Write-Log '[dry-run] skip send'
+        $sendTrim = '[dry-run]'
+      } else {
+        $send = & herdr agent prompt $Agent '继续' 2>&1 | Out-String
+        $sendTrim = $send.Trim()
+      }
+      Write-Log "send result: $sendTrim"
+      if ($sendTrim -match 'error|failed|blocked|stalled|timeout') {
+        $backoff = [Math]::Min($MaxBackoff, [int]($backoff * 2))
+      }
+      $nextSendAt = (Get-Date).AddSeconds($backoff)
+      Add-Content -LiteralPath $CmdLogFile -Value ("[{0}] stall #{1} -> 继续 (backoff {2}s) | {3}" -f (Get-Date -Format 'HH:mm:ss'), $stallCount, $backoff, $tailText) -Encoding UTF8
+    } else {
+      $wait = [int]((($nextSendAt - (Get-Date)).TotalSeconds))
+      Write-Log "stall #$stallCount, wait ${wait}s before next 继续"
+    }
+  } else {
+    if (-not $isWork) {
+      Start-Sleep -Seconds $IntervalSec
+      continue
+    }
+    Write-Log "normal stop detected (status=$status), watchdog exit | $tailText"
+    Add-Content -LiteralPath $CmdLogFile -Value ("[{0}] normal stop, watchdog exit | {1}" -f (Get-Date -Format 'HH:mm:ss'), $tailText) -Encoding UTF8
+    break
+  }
+
+  Start-Sleep -Seconds $IntervalSec
+}

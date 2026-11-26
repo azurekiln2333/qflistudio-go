@@ -1,0 +1,13 @@
+package main
+import ("fmt"; "go/ast"; "go/parser"; "go/token")
+func main() {
+    file, err := parser.ParseFile(token.NewFileSet(), "other.go", "package main unexpected\nfunc main() {}\n", parser.SkipObjectResolution)
+    hasMain := false
+    if file != nil {
+        for _, decl := range file.Decls {
+            if fn, ok := decl.(*ast.FuncDecl); ok && fn.Recv == nil && fn.Name.Name == "main" { hasMain = true }
+        }
+    }
+    fmt.Printf("native partial AST hasMain=%v error=%v\n", hasMain, err)
+}
+

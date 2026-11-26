@@ -1,0 +1,14 @@
+{
+  "artifact": "build\\ohos\\hap\\entry-default-signed.hap",
+  "size_mib": 56.3,
+  "sha256": "dcab86a2d18e8b66ff4af302ace76a4b372528c5a856894ee507fa74da0c48fe",
+  "native_libraries": [
+    "libs/arm64-v8a/libapp.so",
+    "libs/arm64-v8a/libflutter.so",
+    "libs/arm64-v8a/libqfli_go_runtime.so"
+  ],
+  "native_startup": true,
+  "bundle": "com.azurekiln.qfli.go",
+  "versionCode": 1000000,
+  "built": "2026-10-17T17:42:48.281619"
+}

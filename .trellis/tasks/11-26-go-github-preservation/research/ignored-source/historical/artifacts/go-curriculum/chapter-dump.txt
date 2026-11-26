@@ -1,0 +1,1104 @@
+================================================================
+CHAPTER S1 T001-T010
+------------------------------------------------------------
+T001 [beginner] Go 语言与工具链概览  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能说明 Go 的编译模型，并区分 go run、gofmt、go vet、go test 的职责与典型用法。
+  concepts : 工具链, go run, gofmt, go vet
+  prereq   : 无
+  output   : 'hello, go\ntoolchain ready'
+  exTitle  : 最小可运行程序与固定输出
+  exOut    : 'hello, go\ntoolchain ready'
+  explain1 : Go 是静态编译型语言：源码先被编译器整体编译成机器码再运行，因此类型错误、未使用变量等问题在编译阶段就被拒绝，这与脚本语言「边解释边执行」不同。工具链围绕这一模型组织：go build 产出可执行文件；go run 把「编译 + 立刻执行」合成一步，产物落在临时缓存、不作为交付物；gofmt [...]
+------------------------------------------------------------
+T002 [beginner] 第一个程序：package main 与 main 函数  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能写出一个最小可运行的 Go 程序，并解释 package main 与 func main 各自的角色。
+  concepts : package main, main 函数, go run
+  prereq   : T001 工具链概览
+  output   : 'hello, go'
+  exTitle  : 最小 main 包
+  exOut    : 'hello, go'
+  explain1 : Go 程序由包组成，可执行程序的入口包固定叫 main，入口函数固定叫 func main()，二者都是约定而非配置。编译时工具链会寻找 package main 里的 func main 作为起点。fmt.Println 是标准库 fmt 包导出的函数——Go 只有首字母大写的标识符才会导出到包外。
+------------------------------------------------------------
+T003 [beginner] 变量声明：var、短变量与零值  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 var 和 := 声明变量，并说明未显式初始化时各类型的零值。
+  concepts : var, 短变量声明, 零值
+  prereq   : T002 package main 与 main
+  output   : 'count=0 name="" ok=false total=42 msg=零值演示'
+  exTitle  : 零值一览
+  exOut    : 'count=0 name="" ok=false total=42 msg=零值演示'
+  explain1 : Go 的变量总有确定的值。var 声明的变量若不带初始化表达式，会被赋予该类型的零值：数值为 0，字符串为空串，布尔为 false，指针/切片/映射/通道/接口为 nil。:= 是短变量声明，只在函数体内可用，它同时声明并推断类型，是局部变量的常用写法。
+------------------------------------------------------------
+T004 [beginner] 基础类型与类型推断  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能说明 int8/uint8/float64/bool/string 的表示范围，并用 %T 验证推断类型。
+  concepts : 基础类型, 类型推断, %T
+  prereq   : T003 变量与零值
+  output   : 'int8=127 uint8=255 float64=3.5 bool=true string="go"\ntyped 是 int'
+  exTitle  : 类型与 %T
+  exOut    : 'int8=127 uint8=255 float64=3.5 bool=true string="go"\ntyped 是 int'
+  explain1 : Go 的基础类型是定长且显式的：int8/uint8 占 1 字节，float64 是 8 字节双精度，bool 是布尔，string 是不可变字节序列（UTF-8 编码）。int 与 uint 的宽度依赖平台，需要精确控制宽度时应使用定长类型，否则跨平台行为可能不一致。
+------------------------------------------------------------
+T005 [beginner] 常量、iota 与无类型常量  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 iota 定义一组递增枚举常量，并说明无类型常量在赋值时才确定类型。
+  concepts : const, iota, 无类型常量
+  prereq   : T004 基础类型
+  output   : '0 1 2\npi as float64 = 3.14'
+  exTitle  : iota 枚举
+  exOut    : '0 1 2\npi as float64 = 3.14'
+  explain1 : const 定义编译期常量，不能取地址、不能重新赋值。iota 在 const 块中从 0 开始、每行递增 1，用来写枚举。把枚举基于一个具名类型（如 type Weekday int）可以让类型更清晰。
+------------------------------------------------------------
+T006 [beginner] 类型转换与数值精度  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能在数值类型间做显式转换，并解释截断与浮点取整的行为。
+  concepts : 类型转换, 截断, 精度
+  prereq   : T004 基础类型
+  output   : '3 3\nbig=1099511627776 small=0\ntrunc(3.9)=3'
+  exTitle  : 显式转换与截断
+  exOut    : '3 3\nbig=1099511627776 small=0\ntrunc(3.9)=3'
+  explain1 : Go 的数值类型之间没有隐式转换：把 int 赋给 float64 或反向都不允许，必须显式写出目标类型。这消除了大量因隐式提升导致的精度意外。转换语义分两类：整数窄化（如 int64 到 int32）按位截断，只保留能放进目标宽度的低位；浮点到整数丢弃小数部分（向零取整）。
+------------------------------------------------------------
+T007 [beginner] 字符串、rune 与字节  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能说明 len(s) 与 RuneCountInString 的差异，并用 range 正确遍历含中文的字符串。
+  concepts : string, byte, rune, UTF-8
+  prereq   : T004 基础类型
+  output   : 'bytes: 14\nrunes: 9\nat 0: h\nat 1: é\nat 3: l\nat 4: l\nat 5: o\nat 6: ,\nat 7:  \nat 8: 世\nat 11: 界'
+  exTitle  : 字节与字符计数
+  exOut    : 'bytes: 14\nrunes: 9'
+  explain1 : Go 的 string 是不可变的字节序列，按 UTF-8 编码存储。len(s) 返回字节数；若文本含多字节字符，字符数会小于字节数，需要用 utf8.RuneCountInString 或 range 遍历来按「字符」（rune，即 Unicode 码点）处理。
+------------------------------------------------------------
+T008 [beginner] 格式化输出与 fmt 谓词  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能选用合适的 fmt 谓词打印结构体、字符串、数值与类型。
+  concepts : fmt, 格式化谓词
+  prereq   : T004 基础类型
+  output   : 'v={3 4} +v={X:3 Y:4}\nd=42 q="go" t=main.point\nf=3.14 e=1.234500e+03'
+  exTitle  : 谓词对比
+  exOut    : 'v={3 4} +v={X:3 Y:4}\nd=42 q="go" t=main.point\nf=3.14 e=1.234500e+03'
+  explain1 : fmt 用谓词描述如何格式化参数：%v 是通用默认，%+v 为结构体附加字段名，%T 打印类型，%q 给字符串加引号并转义，%d/%f/%e 控制整数与浮点的表示。理解谓词能让你在调试和输出时一次表达清楚意图，而不是手工拼接字符串。
+------------------------------------------------------------
+T009 [beginner] 输入读取：bufio.Scanner 扫描多行  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 bufio.Scanner 逐行读取并以空白分词，同时检查 scanner.Err()。
+  concepts : bufio, Scanner, 输入读取
+  prereq   : T007 字符串与 rune
+  output   : 'lines=2 words=3'
+  exTitle  : 逐行扫描统计
+  exOut    : 'lines=2 words=3'
+  explain1 : 读取输入常用 bufio.Scanner：它把来源抽象成逐 token 读取，默认按行（ScanLines）。每次 Scan() 前进一个 token 并返回是否还有数据，Text() 返回该 token。扫描结束后必须检查 Err()，否则会把错误当成「正常结束」。
+------------------------------------------------------------
+T010 [beginner] 运算符、优先级与位运算  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能正确使用算术与位运算符，并说明整数除法截断与逻辑短路。
+  concepts : 运算符, 位运算, 优先级
+  prereq   : T003 变量与零值
+  output   : 'add 10 sub 2 mul 24 div 1 mod 2\nand 4 or 6 xor 2 shl 12 shr 3\nexpr true'
+  exTitle  : 算术与位运算
+  exOut    : 'add 10 sub 2 mul 24 div 1 mod 2\nand 4 or 6 xor 2 shl 12 shr 3\nexpr true'
+  explain1 : Go 的算术运算符与多数语言一致，但整数除法直接截断小数、取余用 %。位运算 &、|、^、<<、>> 作用于整数的二进制表示。优先级上，乘除模高于加减，比较低于算术，&& 低于 ||，且 && 与 || 短路——右侧只在必要时求值。
+================================================================
+CHAPTER S2 T011-T022
+------------------------------------------------------------
+T011 [beginner] if / else 与作用域块  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 if 初始化语句声明只在分支内可见的变量，并组织多分支条件。
+  concepts : if, else, 作用域
+  prereq   : T010 运算符
+  output   : '95 -> A\n72 -> B\n50 -> C'
+  exTitle  : 分数分级
+  exOut    : '95 -> A\n72 -> B\n50 -> C'
+  explain1 : Go 的 if 支持一条初始化语句：if v := expr; cond {} 会先求值 expr、把结果绑定到 v，再判断 cond。v 的作用域严格限制在 if/else 链内部，避免污染外层命名空间，这在需要立即检查返回值时非常常用。
+------------------------------------------------------------
+T012 [beginner] switch：表达式与无表达式形式  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能写出无表达式 switch 并让每个 case 表达一个布尔条件。
+  concepts : switch, 无表达式 switch
+  prereq   : T011 if/else
+  output   : '-1=negative\n0=zero\n5=small\n99=large'
+  exTitle  : 区间分类
+  exOut    : '-1=negative\n0=zero\n5=small\n99=large'
+  explain1 : switch 有两种形态：带表达式（switch x {}）按 x 的值匹配；无表达式（switch {}）等价于 switch true，按第一个为真的 case 匹配，适合写区间判断，比长 if-else 链更清晰。
+------------------------------------------------------------
+T013 [beginner] switch 与类型 switch  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 switch x := v.(type) 对任意值做类型分发并绑定具体类型变量。
+  concepts : 类型 switch, any, 类型断言
+  prereq   : T012 switch
+  output   : 'int:1\nstring:go\nbool:true\nunknown'
+  exTitle  : 任意值分发
+  exOut    : 'int:1\nstring:go\nbool:true\nunknown'
+  explain1 : 类型 switch 是接口值的专用语法：switch x := v.(type) 会依次尝试每个 case 的类型，匹配成功时把 v 以该具体类型绑定到 x。它把「先断言再使用」的两步合成一步，既安全又简洁，常用于处理 any（interface{}）集合。
+------------------------------------------------------------
+T014 [beginner] for：三段式、条件式与无限循环  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能按需要选择三段式、条件式或无限 for，并正确使用 break 与 continue。
+  concepts : for, break, continue
+  prereq   : T011 if/else
+  output   : 'sum 12\nn 3\ncount 2'
+  exTitle  : 三种 for 写法
+  exOut    : 'sum 12\nn 3\ncount 2'
+  explain1 : Go 只有 for 一个循环关键字，但有三种形态：三段式 for i := 1; i <= 5; i++ {}、条件式 for cond {}（替代 while）、无限 for {}（配合 break 退出）。break 结束整个循环，continue 跳过本次剩余部分进入下一次迭代。
+------------------------------------------------------------
+T015 [beginner] for range 遍历集合  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 range 正确遍历切片、映射和字符串，并说明映射遍历顺序不确定。
+  concepts : range, 切片, 映射, 字符串
+  prereq   : T007 字符串与 rune, T014 for
+  output   : 'slice 0=10\nslice 1=20\nslice 2=30\nmap total 3\nstr 0=a\nstr 1=b'
+  exTitle  : range 遍历一览
+  exOut    : 'slice 0=10\nslice 1=20\nslice 2=30\nmap total 3\nstr 0=a\nstr 1=b'
+  explain1 : range 是遍历集合的通用语法，返回内容随被遍历对象而变：切片/数组返回 (index, value)，映射返回 (key, value)，字符串返回 (byteIndex, rune)。对 map 而言，遍历顺序在语言层面是随机化的，因此样例只对值做累加而不是逐条打印依赖顺序的结果。
+------------------------------------------------------------
+T016 [beginner] label 与嵌套循环控制  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能给循环加标签并用 break label 跳出指定外层循环。
+  concepts : label, break, 嵌套循环
+  prereq   : T014 for
+  output   : 'found at 1,1'
+  exTitle  : 二维查找提前退出
+  exOut    : 'found at 1,1'
+  explain1 : 当循环嵌套时，裸 break 只能跳出最内层循环。若要在找到目标后立刻结束所有外层循环，就给外层 for 起一个标签（如 search:），然后 break search。标签跳转让「找到即停」的意图明确，避免用额外标志变量控制。
+------------------------------------------------------------
+T017 [beginner] goto 的合理使用与误区  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能说明 goto 只应在受控的清理/跳出场景使用，并避免跨越变量声明的乱跳。
+  concepts : goto, label, 清理路径
+  prereq   : T016 label
+  output   : 'processed 3 items\ncleanup after: negative input'
+  exTitle  : 单出口清理
+  exOut    : 'processed 3 items\ncleanup after: negative input'
+  explain1 : goto 在 Go 里并未被移除，但用途被限制在少数场景：最典型的是把多个错误分支汇聚到同一个清理/收尾标签，形成单出口结构。它不能跳过变量声明进入作用域，也不能跳进其他函数。
+------------------------------------------------------------
+T018 [beginner] 数组：定长与值语义  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能说明数组与切片的区别，并演示赋值数组产生独立副本。
+  concepts : 数组, 值语义, 定长
+  prereq   : T003 变量与零值
+  output   : 'a [1 2 3]\nb [99 2 3]\nlen 3'
+  exTitle  : 数组拷贝
+  exOut    : 'a [1 2 3]\nb [99 2 3]\nlen 3'
+  explain1 : 数组是定长且值语义的：长度写在类型里（[3]int），赋值或传参时整个数组被拷贝。因此 b := a 之后修改 b 不会影响 a，样例正演示了这一点。
+------------------------------------------------------------
+T019 [beginner] 切片一：创建、长度与容量  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能解释切片的长度与容量差异，并预测 append 触发扩容的时机。
+  concepts : 切片, len, cap, append
+  prereq   : T018 数组
+  output   : 'start len=0 cap=2\nafter 1: len=1 cap=2\nafter 2: len=2 cap=2\nafter 3: len=3 cap=4\nafter 4: len=4 cap=4\nafter 5: len=5 cap=8\nvalues [1 2 3 4 5]'
+  exTitle  : append 与容量增长
+  exOut    : 'start len=0 cap=2\nafter 1: len=1 cap=2\nafter 2: len=2 cap=2\nafter 3: len=3 cap=4\nafter 4: len=4 cap=4\nafter 5: len=5 cap=8\nvalues [1 2 3 4 5]'
+  explain1 : 切片是对底层数组的视图，由指针、长度、容量三部分组成。make([]int, 0, 2) 创建一个长度 0、容量 2 的切片；append 在长度未超容量时直接写入底层数组，超出时会分配更大的数组并拷贝。样例打印每一步的 len 与 cap，可以清楚看到容量在不等于长度时仍有余量、以及扩容发生在超出容量的那一刻。
+------------------------------------------------------------
+T020 [beginner] 切片二：截取、append 与共享底层数组  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能预测截取与 append 对共享底层数组的影响，并说明何时需要复制。
+  concepts : 切片, 截取, 共享底层数组, append
+  prereq   : T019 切片与容量
+  output   : 'base [1 99 3 4 5]\nview [99 3]\nappended [99 3 100]\nbase after append [1 99 3 100 5]'
+  exTitle  : 截取与 append 的共享陷阱
+  exOut    : 'base [1 99 3 4 5]\nview [99 3]\nappended [99 3 100]\nbase after append [1 99 3 100 5]'
+  explain1 : 切片截取 base[low:high] 产生的新切片与原切片共享同一底层数组，只改变起点与长度。因此通过 view 修改元素会反映到 base，样例里 view[0]=99 让 base[1] 也变成 99。
+------------------------------------------------------------
+T021 [beginner] 切片三：copy、删除与去重  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 copy 复制切片、用 append+切片拼接删除元素，并写出无别名的去重。
+  concepts : copy, 删除元素, 去重
+  prereq   : T020 截取与共享数组
+  output   : 'copied 5 [1 2 3 4 5]\nafter delete [1 2 4 5] s mutated to [1 2 4 5 5]\nunique [1 2 3]'
+  exTitle  : 切片三：copy、删除与去重
+  exOut    : 'copied 5 [1 2 3 4 5]\nafter delete [1 2 4 5] s mutated to [1 2 4 5 5]\nunique [1 2 3]'
+  explain1 : 切片的增删改在标准库里没有直接方法，需用组合操作实现。copy(dst, src) 复制 min(len(dst),len(src)) 个元素并返回复制数量；删除索引 i 的惯用法是 append(s[:i], s[i+1:]...)，它把后续元素前移覆盖 i。注意这是就地覆盖：源切片 s [...]
+------------------------------------------------------------
+T022 [beginner] 映射：增删查与存在性判断  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用计数写法更新 map、用 v, ok 判断键存在，并用 delete 移除键。
+  concepts : map, 逗号-ok, delete
+  prereq   : T021 切片操作
+  output   : 'go present: 3\njava absent\nkeys: 1'
+  exTitle  : 映射：增删查与存在性判断
+  exOut    : 'go present: 3\njava absent\nkeys: 1'
+  explain1 : map 是无序的键值集合。读取 m[k] 在键不存在时返回该值类型的零值，因此要区分「存在且为零」与「不存在」必须用两值形式 v, ok := m[k]，ok 为布尔存在标志。写入用 m[k]=v，删除用 delete(m,k)。
+================================================================
+CHAPTER S3 T023-T036
+------------------------------------------------------------
+T023 [beginner] 函数签名、多返回值与命名返回  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能定义返回多个值的函数，并用命名返回值配合裸 return。
+  concepts : 多返回值, 命名返回值, 裸 return
+  prereq   : T002 main 函数
+  output   : 'q,r 3 2\nsplit 40 50'
+  exTitle  : 多返回值与命名返回
+  exOut    : 'q,r 3 2\nsplit 40 50'
+  explain1 : Go 的函数可返回多个值，最常用于「结果 + 错误」模式。命名返回值在签名里给返回值起名，函数体内可直接赋值，末尾用裸 return 返回它们；具名返回还能配合 defer 修改返回值（见 T028）。
+------------------------------------------------------------
+T024 [beginner] 变参函数与切片展开  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能定义 ...T 参数函数并说明传入的其实是切片，能用 s... 展开调用。
+  concepts : 变参, ..., 切片展开
+  prereq   : T023 多返回值
+  output   : '6\n15'
+  exTitle  : 变参求和
+  exOut    : '6\n0'
+  explain1 : 变参函数用 ...T 声明，调用时可传任意个 T，函数内部把它视为 []T。若已有一个切片，可用 s... 把它展开成实参序列。
+------------------------------------------------------------
+T025 [beginner] 函数是一等值：高阶函数  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能定义接受函数参数的函数，并传入具名函数或函数字面量。
+  concepts : 高阶函数, 函数类型, 闭包实参
+  prereq   : T023 多返回值
+  output   : '[2 4 6]\n[11 12 13]'
+  exTitle  : 函数是一等值：高阶函数
+  exOut    : '[2 4 6]\n[11 12 13]'
+  explain1 : 在 Go 里函数是一等值：可以作为参数、返回值、存进变量或数据结构。接受函数参数的函数称为高阶函数，它把「做什么」与「怎么遍历」分离。样例的 mapInts 接受一个 []int 和一个 func(int) int，既可传入具名函数 double，也可传入内联的函数字面量。
+------------------------------------------------------------
+T026 [beginner] 闭包与捕获变量  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能写出返回闭包的函数，并说明每次调用产生独立的捕获环境。
+  concepts : 闭包, 捕获, 函数返回值
+  prereq   : T025 高阶函数
+  output   : '1 2 3\n1'
+  exTitle  : 闭包与捕获变量
+  exOut    : '1 2 3\n1'
+  explain1 : 闭包是携带了环境变量的函数值。counter 每次被调用都会新建一个局部变量 i 并返回一个捕获它的函数；这个 i 在返回后仍存活于闭包环境中，因此 next() 能持续累加。再次调用 counter() 会创建另一个独立的 i，所以两个计数器互不干扰。
+------------------------------------------------------------
+T027 [beginner] 递归与记忆化  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能写出递归函数，并用 map 缓存消除重复子问题。
+  concepts : 递归, 记忆化, map 缓存
+  prereq   : T022 映射, T025 高阶函数
+  output   : '0 1 1 2 3 5 8'
+  exTitle  : 记忆化斐波那契
+  exOut    : 'fib(10)=55'
+  explain1 : 递归把问题拆成同类子问题，斐波那契是经典例子：fib(n)=fib(n-1)+fib(n-2)，基准情形 n<2 直接返回 n。朴素递归会重复计算同一子问题，复杂度指数级。
+------------------------------------------------------------
+T028 [beginner] defer 基础与执行顺序  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能说明 defer 的后进先出执行顺序，并演示 defer 修改命名返回值。
+  concepts : defer, LIFO, 命名返回值
+  prereq   : T023 命名返回值
+  output   : 'body\nresult: 42\nsecond deferred\nfirst deferred'
+  exTitle  : defer 基础与执行顺序
+  exOut    : 'body\nresult: 42\nsecond deferred\nfirst deferred'
+  explain1 : defer 把一次调用压入当前函数的延迟栈，函数返回前逆序（后进先出，LIFO）执行。它常用于释放资源，让「打开」与「关闭」在代码上相邻。样例在 main 里注册两条 defer，输出顺序是先执行 body，再按 second、first 的顺序执行延迟调用。
+------------------------------------------------------------
+T029 [beginner] 指针一：地址、解引用与值/指针参数  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能取变量地址、通过指针修改目标值，并说明值参数不会影响实参。
+  concepts : 指针, &, *, 值/指针参数
+  prereq   : T003 变量与零值
+  output   : 'after byValue 1\nafter byPtr 100\naddress of x is non-nil: true'
+  exTitle  : 指针一：地址、解引用与值/指针参数
+  exOut    : 'after byValue 1\nafter byPtr 100\naddress of x is non-nil: true'
+  explain1 : 指针保存变量的内存地址。&x 取地址得到 *T 类型；*p 解引用读取或写入 p 指向的内存。函数参数默认按值传递：byValue 修改的是副本，调用方 x 不变；byPtr 收到的是地址，*n=100 直接写入调用方的 x。
+------------------------------------------------------------
+T030 [beginner] 指针二：指针与切片/映射的关系  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能说明为什么修改切片元素对调用方可见、而重新赋值切片头不可见，并能用 new 分配。
+  concepts : 指针, 切片头, new
+  prereq   : T029 指针, T020 共享数组
+  output   : 'after element change [2 2 3]\nafter reassign [2 2 3]\nnew value 7'
+  exTitle  : 指针二：指针与切片/映射的关系
+  exOut    : 'after element change [2 2 3]\nafter reassign [2 2 3]\nnew value 7'
+  explain1 : 切片是一个包含指针、长度、容量的「切片头」值。把切片传入函数时，切片头被复制，但复制出的指针仍指向同一底层数组，因此函数内修改 s[i] 对调用方可见。相反，函数内 s = append(s, x) 若触发扩容会返回新的切片头，只更新了函数内的局部变量，调用方看不到——这就解释了样例里 [...]
+------------------------------------------------------------
+T031 [beginner] new、取址与指针安全边界  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 new(T) 与 &T{} 创建指针，并通过指针直接访问字段。
+  concepts : new, 取址字面量, 指针字段访问
+  prereq   : T030 指针与切片
+  output   : '{Ada 0}\n30\nModified'
+  exTitle  : new、取址与指针安全边界
+  exOut    : '{Ada 0}\n30\nModified'
+  explain1 : 获得结构体指针有两种常见写法：new(T) 分配零值并返回 *T；&T{...} 用取址字面量一步创建并初始化。对指针访问字段时 Go 自动解引用，p.Name 等价于 (*p).Name。
+------------------------------------------------------------
+T032 [intermediate] 排序：sort.Slice 与自定义比较  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能写比较函数让 sort.Slice 按主次字段稳定排序切片。
+  concepts : sort.Slice, 比较函数, 多字段排序
+  prereq   : T025 高阶函数
+  output   : '[{Al 25} {Cy 25} {Bob 30}]'
+  exTitle  : 排序：sort.Slice 与自定义比较
+  exOut    : '[{Al 25} {Cy 25} {Bob 30}]'
+  explain1 : sort.Slice 接受一个切片和一个 less(i,j) 函数，按 less 定义的顺序就地排序。less 每对元素可能被多次询问，必须满足严格弱序：当两元素「相等」时必须返回 false，否则排序行为未定义。样例先按 Age 升序、Age 相等再按 Name 升序，实现多字段排序。
+------------------------------------------------------------
+T033 [intermediate] 查找与二分：sort.Search  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 sort.Search 和 sort.SearchInts 在有序切片中定位。
+  concepts : sort.Search, 二分查找, 插入点
+  prereq   : T032 排序
+  output   : 'insert position for 6: 3\nfirst >= 7 at index 3'
+  exTitle  : 查找与二分：sort.Search
+  exOut    : 'insert position for 6: 3\nfirst >= 7 at index 3'
+  explain1 : sort.Search 对「有序」的搜索空间做二分，返回最小的使谓词 f(i) 为真的下标，若无则为 n。它是通用二分原语：查找插入点用 f(i)=a[i]>=x，查首个大于用 f(i)=a[i]>x。对整数/字符串切片，sort.SearchInts、sort.SearchStrings 更直接。
+------------------------------------------------------------
+T034 [intermediate] 映射的进阶模式：集合、分组与逆映射  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 map[T]bool 表示集合、map[K][]V 分组，并对不确定顺序的键排序后输出。
+  concepts : 集合, 分组, 有序输出
+  prereq   : T022 映射
+  output   : 'unique [c go rust]\nlen 1 -> 1 words\nlen 2 -> 3 words\nlen 4 -> 2 words'
+  exTitle  : 映射的进阶模式：集合、分组与逆映射
+  exOut    : 'unique [c go rust]\nlen 1 -> 1 words\nlen 2 -> 3 words\nlen 4 -> 2 words'
+  explain1 : map 适合表达集合与分组：用 map[string]bool 记录出现过的元素即可去重（value 不关心）；用 map[int][]string 把元素按某键收集成组。由于 map 遍历顺序不确定，要得到可复现输出必须先收集键、排序，再按序访问。
+------------------------------------------------------------
+T035 [beginner] 字符串处理：strings 包常用函数  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 strings 包对文本做去空白、按分隔符切分、拼接、查找与替换。
+  concepts : strings, FieldsFunc, Replace
+  prereq   : T007 字符串与 rune
+  output   : 'parts=[Go Rust Go] count=3\njoined Go|Rust|Go\ncontains Go: true\nreplace: Golang|Rust|Go'
+  exTitle  : 字符串处理：strings 包常用函数
+  exOut    : 'parts=[Go Rust Go] count=3\njoined Go|Rust|Go\ncontains Go: true\nreplace: Golang|Rust|Go'
+  explain1 : strings 包提供大量不修改原串、返回新串的函数。TrimSpace 去掉首尾空白；FieldsFunc 用一个 rune 谓词把字符串切成片段（可自定义任意分隔符）；Join 用指定分隔符拼接；Contains 判断子串；Replace 按次数替换，n<0 表示全部。
+------------------------------------------------------------
+T036 [intermediate] 字符串构造：strings.Builder 与字节缓冲  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 strings.Builder 累积大量片段，并说明它相比 + 拼接的性能优势。
+  concepts : strings.Builder, 高效拼接, Fprintf
+  prereq   : T035 strings 函数
+  output   : 'item0;item1;item2; len 18'
+  exTitle  : 字符串构造：strings.Builder 与字节缓冲
+  exOut    : 'item0;item1;item2; len 18'
+  explain1 : 字符串不可变，用 + 在循环里累积会不断分配新串，复杂度可能退化到 O(n²)。strings.Builder 维护一个可增长的字节缓冲，WriteString/WriteByte/Fprintf 直接追加，最后由 String() 一次性产出，整体接近线性。
+================================================================
+CHAPTER S4 T037-T048
+------------------------------------------------------------
+T037 [beginner] 结构体定义、字面量与字段访问  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用两种字面量创建结构体，并用指针直接读写字段。
+  concepts : 结构体, 字面量, 字段访问
+  prereq   : T004 基础类型
+  output   : 'Ada 36\nBob 0\npointer set 37'
+  exTitle  : 结构体定义、字面量与字段访问
+  exOut    : 'Ada 36\nBob 0\npointer set 37'
+  explain1 : 结构体把多个字段聚合为一个类型。初始化有两种字面量：位置字面量按字段声明顺序逐个赋值（易受字段变动影响），键值字面量按字段名赋值、未写的字段取零值。样例各演示一种。
+------------------------------------------------------------
+T038 [intermediate] 匿名字段与结构体嵌入  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能嵌入一个结构体并调用被提升的字段与方法，说明同名遮蔽规则。
+  concepts : 嵌入, 提升字段/方法, 遮蔽
+  prereq   : T037 结构体
+  output   : '7\nbase#7\nchild'
+  exTitle  : 匿名字段与结构体嵌入
+  exOut    : '7\nbase#7\nchild'
+  explain1 : 嵌入（匿名）字段让被嵌入类型的方法与字段被「提升」到外层类型，可直接用 d.describe() 与 d.ID 访问，无需写 d.base.describe()。这是一种组合复用，不是继承：derived 并不会自动满足 base 实现的接口，二者类型独立。
+------------------------------------------------------------
+T039 [intermediate] 方法：值接收者与指针接收者  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能根据是否修改状态选择接收者类型，并说明值接收者调用作用于副本。
+  concepts : 方法, 值接收者, 指针接收者
+  prereq   : T038 嵌入
+  output   : 'count 2\nafter copy inc: 2 3'
+  exTitle  : 方法：值接收者与指针接收者
+  exOut    : 'count 2\nafter copy inc: 2 3'
+  explain1 : 方法可以定义在值或指针接收者上。值接收者在调用时复制接收者，因此无法修改原对象；指针接收者共享同一对象，可修改状态。选择规则很直接：需要修改接收者或避免大对象复制时用指针接收者，否则值接收者更安全。
+------------------------------------------------------------
+T040 [intermediate] 方法与函数表达式的互转  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能区分方法值 r.area（绑定接收者）与方法表达式 rect.area（接收者作首参）。
+  concepts : 方法值, 方法表达式, 接收者绑定
+  prereq   : T039 值/指针接收者
+  output   : 'method value 12\nmethod expression 12\npointer call 12'
+  exTitle  : 方法与函数表达式的互转
+  exOut    : 'method value 12\nmethod expression 12\npointer call 12'
+  explain1 : 方法有两种取值形式：方法值（r.area）在求值时把接收者绑定到函数值，调用时无需再传接收者；方法表达式（rect.area）把接收者变成显式的第一个参数，调用时传入。二者的接收者绑定时机不同：方法值绑定的是取值那一刻的接收者副本。
+------------------------------------------------------------
+T041 [intermediate] 接口基础与鸭子类型  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能定义接口并让类型通过实现方法集合隐式满足接口，理解结构化类型。
+  concepts : 接口, 鸭子类型, 隐式实现, 多态
+  prereq   : T039 方法：值接收者与指针接收者
+  output   : 'shape 0: area=3.14 perimeter=6.28\nshape 1: area=6.00 perimeter=10.00\nnil interface is nil: true'
+  exTitle  : 接口基础与鸭子类型（示例）
+  exOut    : 'shape 0: area=3.14 perimeter=6.28\nshape 1: area=6.00 perimeter=10.00\nnil interface is nil: true'
+  explain1 : Go 的接口是“方法集合”：任何类型只要实现了接口要求的全部方法，就自动满足该接口——无需显式 implements。这叫结构化类型/鸭子类型。示例定义 Shape，让 Circle 与 Rectangle 各自实现，再放进 []Shape [...]
+------------------------------------------------------------
+T042 [intermediate] 接口的动态类型与类型断言  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用逗号-ok 做安全类型断言，并说明单返回值断言失败的 panic 代价。
+  concepts : 类型断言, 动态类型, 逗号-ok, panic
+  prereq   : T041 接口基础与鸭子类型
+  output   : 'assert Name ok: true value: gopher\nassert Number while type is Name: false\nsingle-value assert panicked: true\nafter reassign assert Number ok: true value: 7\nany->string ok: text'
+  exTitle  : 接口的动态类型与类型断言（示例）
+  exOut    : 'assert Name ok: true value: gopher\nassert Number while type is Name: false\nsingle-value assert panicked: true\nafter reassign assert Number ok: true value: 7\nany->string ok: text'
+  explain1 : 接口值内部保存“动态类型 + 动态值”。类型断言 x.(T) 取出具体类型：逗号-ok 形式在失败时返回零值与 false，安全降级；单返回值形式失败时 panic。示例先对动态类型 Name 断言成功，再断言为 Number 失败（返回 false），并用 recover 演示单返回值断言的 panic [...]
+------------------------------------------------------------
+T043 [intermediate] 空接口、any 与类型 switch  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用类型 switch 对任意值分类，并说明 any 等价 interface{}。
+  concepts : any, 类型 switch, 异构集合, 分发
+  prereq   : T042 接口的动态类型与类型断言
+  output   : 'nil\nint=1\nfloat64=2.5\nstring="go" len=2\nbool=true\n[]int len=3\nother(struct { X int })\nint count: 1 string count: 1 other: 5'
+  exTitle  : 空接口、any 与类型 switch（示例）
+  exOut    : 'nil\nint=1\nfloat64=2.5\nstring="go" len=2\nbool=true\n[]int len=3\nother(struct { X int })\nint count: 1 string count: 1 other: 5'
+  explain1 : any（即 interface{}）能装任何值。类型 switch 在同一个 switch 里按动态类型分发，是处理异构集合与实现通用函数的常用手段。示例把 nil、int、float64、string、bool、[]int 以及匿名结构体放入 []any，逐个分类打印，并额外按类型计数。类型 switch [...]
+------------------------------------------------------------
+T044 [intermediate] 接口组合与最小接口原则  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用接口嵌入组合接口，并说明“接口越小越易复用”的原则。
+  concepts : 接口组合, 最小接口, 嵌入接口, 解耦
+  prereq   : T041 接口基础与鸭子类型
+  output   : 'read: start-more\nclosed: true\nminimal interface reuse: a one-method type satisfies Reader'
+  exTitle  : 接口组合与最小接口原则（示例）
+  exOut    : 'read: start-more\nclosed: true\nminimal interface reuse: a one-method type satisfies Reader'
+  explain1 : Go 鼓励“小而专”的接口：Reader、Writer、Closer 各管一件事，再按需组合。接口可以嵌入接口形成组合接口，如 ReadWriteCloser = Reader+Writer+Closer。示例用组合接口统一读写设备，并把组合接口赋给最小的 Reader [...]
+------------------------------------------------------------
+T045 [intermediate] 标准接口：Stringer 与 error  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能实现 Stringer 与 error 接口，说明它们如何影响 fmt 输出。
+  concepts : Stringer, error, fmt, 自定义输出
+  prereq   : T041 接口基础与鸭子类型
+  output   : 'color: RED\ncolor with %v: GREEN, %d: 1\nunknown: Color(99)\nerror: validation failed on age: must be positive\nsame error: true'
+  exTitle  : 标准接口：Stringer 与 error（示例）
+  exOut    : 'color: RED\ncolor with %v: GREEN, %d: 1\nunknown: Color(99)\nerror: validation failed on age: must be positive\nsame error: true'
+  explain1 : fmt.Stringer 的 String() 决定 fmt 打印该值时的文本；error 接口的 Error() 同理决定错误文本。实现 Stringer 后，%v/%s 打印的是自定义文本（示例的枚举名字），%d 仍打印底层数值。实现 error 后，%v 打印 Error() [...]
+------------------------------------------------------------
+T046 [intermediate] 排序与比较：sort.Interface 实现  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能实现 Len/Less/Swap 三方法，并用 sort.Sort/sort.Reverse 排序。
+  concepts : sort.Interface, Len/Less/Swap, 多字段排序, Reverse
+  prereq   : T032 排序：sort.Slice 与自定义比较
+  output   : 'dave   20\nalice  25\nbob    30\ncarol  30\nreversed first: carol'
+  exTitle  : 排序与比较：sort.Interface 实现（示例）
+  exOut    : 'dave   20\nalice  25\nbob    30\ncarol  30\nreversed first: carol'
+  explain1 : sort.Interface 要求三个方法：Len、Less、Swap。实现它就能用 sort.Sort 排序任意集合。Less 决定顺序，必须构成严格弱序；Swap 决定交换方式。示例按“年龄升序、同龄按名字”排序，再用 sort.Reverse 得到逆序。相比 sort.Slice，实现 [...]
+------------------------------------------------------------
+T047 [advanced] 组合优于继承：策略与装饰模式  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用组合与接口实现策略切换和装饰增强，说明为何组合优于继承。
+  concepts : 组合, 策略模式, 装饰模式, 接口
+  prereq   : T041 接口基础与鸭子类型, T039 方法：值接收者与指针接收者
+  output   : 'normal total: 100\ndiscount total: 80\ndecorated run: run build\nlog lines:\n  before run build\n  after run build'
+  exTitle  : 组合优于继承：策略与装饰模式（示例）
+  exOut    : 'normal total: 100\ndiscount total: 80\ndecorated run: run build\nlog lines:\n  before run build\n  after run build'
+  explain1 : Go 没有继承，用“接口 + 组合”实现行为的可替换与增强。策略模式把可变算法抽成接口（Pricing），Order 组合一个策略，运行期切换即改变行为。装饰模式用组合在原有行为上叠加：LogJob 持有内部 Job，在调用前后插入日志，而不修改 [...]
+------------------------------------------------------------
+T048 [advanced] 接口的 nil 陷阱与类型比较  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能识别 typed-nil 陷阱，并用类型断言安全检出内部 nil 指针。
+  concepts : typed-nil, 接口比较, 陷阱, 类型断言
+  prereq   : T042 接口的动态类型与类型断言, T029 指针一：地址、解引用与值/指针参数
+  output   : 'nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher'
+  exTitle  : 接口的 nil 陷阱与类型比较（示例）
+  exOut    : 'nil interface == nil: true\ntyped-nil interface == nil: false\ncalling method on typed-nil panicked: true\ndetected typed-nil via assertion\nreal value: hi gopher'
+  explain1 : 一个常见陷阱：接口值为 nil 与“接口里装了一个 nil 的具体指针”不是一回事。当把一个 nil 的 *Person 赋给接口，接口本身非 nil（动态类型是 *Person），但动态值是 nil，因此 g == nil 为 false，调用方法会在 nil 接收者上解引用字段而 [...]
+================================================================
+CHAPTER S5 T049-T058
+------------------------------------------------------------
+T049 [beginner] error 接口与错误即值  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能编写返回 (T, error) 的函数并显式检查错误、妥善降级。
+  concepts : error, 返回值, 显式检查, 错误即值
+  prereq   : T023 函数签名、多返回值与命名返回
+  output   : '10/2 = 5 err: <nil>\nerror: divide by zero\nresult unusable, defaulting to 0\nvalue after error: 0\nstored error text: divide by zero'
+  exTitle  : error 接口与错误即值（示例）
+  exOut    : '10/2 = 5 err: <nil>\nerror: divide by zero\nresult unusable, defaulting to 0\nvalue after error: 0\nstored error text: divide by zero'
+  explain1 : Go 把错误当作普通值返回：函数返回 (T, error)，调用方必须显式检查。error 是一个接口：任何有 Error() string 的类型都能当错误。示例的 divide 在除零时返回错误，调用方检查 err [...]
+------------------------------------------------------------
+T050 [intermediate] errors.New、fmt.Errorf 与哨兵错误  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能定义哨兵错误、用 %w 包装，并用 errors.Is 沿链判断身份。
+  concepts : 哨兵错误, errors.New, fmt.Errorf, %w, errors.Is
+  prereq   : T049 error 接口与错误即值
+  output   : 'found a: 1 err: <nil>\nerrors.Is ErrNotFound: true\nwrapped text: lookup "missing": not found\nwrapped Is ErrNotFound: true\nstring compare is fragile: true'
+  exTitle  : errors.New、fmt.Errorf 与哨兵错误（示例）
+  exOut    : 'found a: 1 err: <nil>\nerrors.Is ErrNotFound: true\nwrapped text: lookup "missing": not found\nwrapped Is ErrNotFound: true\nstring compare is fragile: true'
+  explain1 : 哨兵错误（sentinel error）是包级导出的错误变量，调用方用 errors.Is 判断错误身份，而不比较错误字符串——字符串比较脆弱，包装后即失效。示例定义 ErrNotFound，返回它并用 fmt.Errorf 的 %w 包装；errors.Is 能穿过包装命中哨兵。对照用 %v [...]
+------------------------------------------------------------
+T051 [intermediate] 错误包装与 %w 的解包链  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 %w 构建可解包链，用 errors.Unwrap 逐层取出并说明 %v 不构成链。
+  concepts : %w, errors.Unwrap, 解包链, 上下文
+  prereq   : T050 errors.New、fmt.Errorf 与哨兵错误
+  output   : 'full: level1: level2: base failure\nunwrap chain:\n  level1: level2: base failure\n  level2: base failure\n  base failure\nIs(errBase): true\nwith %v Is(errBase): false'
+  exTitle  : 错误包装与 %w 的解包链（示例）
+  exOut    : 'full: level1: level2: base failure\nunwrap chain:\n  level1: level2: base failure\n  level2: base failure\n  base failure\nIs(errBase): true\nwith %v Is(errBase): false'
+  explain1 : %w 在 fmt.Errorf 中表示“包装”错误，形成可解包的链：errors.Unwrap 逐层取出内层错误，errors.Is/As 则遍历整条链。示例三层包装后，打印完整文本与逐层链，并用 errors.Is 命中基础错误。对照用 %v 只拼接文本、不构成可解包链，因此 errors.Is [...]
+------------------------------------------------------------
+T052 [intermediate] errors.Is 与 errors.As 的适用差异  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 errors.As 从链上取出具体错误类型读取字段，并区分其与 Is 的场景。
+  concepts : errors.Is, errors.As, 值匹配, 类型匹配
+  prereq   : T051 错误包装与 %w 的解包链
+  output   : 'Is ErrPermission: true\nAs PathError -> path: secret.cfg op: open\nAs on wrapped: true read'
+  exTitle  : errors.Is 与 errors.As 的适用差异（示例）
+  exOut    : 'Is ErrPermission: true\nAs PathError -> path: secret.cfg op: open\nAs on wrapped: true read'
+  explain1 : errors.Is 用于“值/身份”匹配（哨兵错误），遍历解包链比较；errors.As 用于“类型”匹配，把链上某个具体类型的错误取出到目标变量，以便读取其字段。示例先用 Is 命中哨兵 ErrPermission，再用 As 取出 *PathError 读取 Path/Op；As [...]
+------------------------------------------------------------
+T053 [intermediate] 自定义错误类型与行为方法  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能定义带结构化字段的错误类型并实现 Unwrap，用 As 读取字段。
+  concepts : 自定义错误, Unwrap, 字段, errors.Is
+  prereq   : T052 errors.Is 与 errors.As 的适用差异
+  output   : 'text: query "SELECT 1" failed: timeout\nIs ErrTimeout: true\nSQL field: SELECT 1\nCause field: timeout\nUnwrap == ErrTimeout: true'
+  exTitle  : 自定义错误类型与行为方法（示例）
+  exOut    : 'text: query "SELECT 1" failed: timeout\nIs ErrTimeout: true\nSQL field: SELECT 1\nCause field: timeout\nUnwrap == ErrTimeout: true'
+  explain1 : 自定义错误类型可携带结构化信息（字段）并实现额外方法，比字符串错误更有用。示例的 QueryError 保存 SQL 与 Cause，并实现 Unwrap 暴露底层错误。这样它既能给出可读文本，又能被 errors.Is 命中底层哨兵（ErrTimeout），还能被 errors.As 取出并读取 [...]
+------------------------------------------------------------
+T054 [intermediate] panic 与 recover：边界与代价  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能在 defer 中用 recover 兜底，说明库函数应返回 error 而非 panic。
+  concepts : panic, recover, defer, 边界
+  prereq   : T028 defer 基础与执行顺序, T049 error 接口与错误即值
+  output   : '10/2: 5 err: <nil>\n1/0 -> 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic'
+  exTitle  : panic 与 recover：边界与代价（示例）
+  exOut    : '10/2: 5 err: <nil>\n1/0 -> 0 err: recovered: runtime error: integer divide by zero\ncaught panic: n must be positive\nprogram continues after recovered panic'
+  explain1 : panic 表示不可继续的程序错误；recover 只能在 defer 中调用，用于兜底。惯例：库函数用 error 表达可预期失败，不使用 panic；recover 一般只用在进程或请求边界（如 HTTP handler、job runner），避免单个请求的 panic 拖垮整个服务。示例用 [...]
+------------------------------------------------------------
+T055 [intermediate] defer 在资源清理与错误聚合中的应用  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 defer + 命名返回值聚合清理错误，并说明 defer 的 LIFO 顺序。
+  concepts : defer, LIFO, 命名返回值, errors.Join
+  prereq   : T028 defer 基础与执行顺序, T051 错误包装与 %w 的解包链
+  output   : 'both closed cleanly\nclose error: close a: disk io\npreserved cause: true\nbody done\ndeferred 3\ndeferred 2\ndeferred 1'
+  exTitle  : defer 在资源清理与错误聚合中的应用（示例）
+  exOut    : 'both closed cleanly\nclose error: close a: disk io\npreserved cause: true\nbody done\ndeferred 3\ndeferred 2\ndeferred 1'
+  explain1 : defer 在函数返回时执行（LIFO），常用于释放资源。通过命名返回值，defer 可以合并多个清理步骤的错误——避免“只返回最后一个错误”丢因。示例打开两个资源，用 defer 关闭并用 errors.Join 聚合关闭错误；正常时无错，某资源关闭失败时错误被保留且可被 errors.Is [...]
+------------------------------------------------------------
+T056 [intermediate] 错误处理模式：立即返回与上下文补充  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能在各层补充上下文并保留底层错误，理解“立即返回 + 上下文补充”模式。
+  concepts : 错误上下文, %w, 调用链, 分层
+  prereq   : T051 错误包装与 %w 的解包链
+  output   : 'error chain: start: loadConfig: not found\nstill Is ErrNotFound: true\n  - start: loadConfig: not found\n  - loadConfig: not found\n  - not found\nstarted ok'
+  exTitle  : 错误处理模式：立即返回与上下文补充（示例）
+  exOut    : 'error chain: start: loadConfig: not found\nstill Is ErrNotFound: true\n  - start: loadConfig: not found\n  - loadConfig: not found\n  - not found\nstarted ok'
+  explain1 : 惯例：错误产生处立即 return，调用链每一层用 %w 补充上下文（哪个操作、哪个键），到边界处统一打印一次。这样既不丢因，又能给出可定位的路径。示例三层函数逐层包装，最终错误文本显示完整路径，且 errors.Is 仍命中底层哨兵。示例还逐层打印解包链，直观展示上下文如何逐层累加。
+------------------------------------------------------------
+T057 [intermediate] 错误与日志打印边界  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能区分“返回错误”与“记录日志”的职责，把记录集中在边界层。
+  concepts : 日志边界, 只记一次, 错误传播, 噪音
+  prereq   : T056 错误处理模式：立即返回与上下文补充
+  output   : 'log entries: 1\n  logged: request failed: service: disk failure\nanti-pattern entries (duplicated): 2'
+  exTitle  : 错误与日志打印边界（示例）
+  exOut    : 'log entries: 1\n  logged: request failed: service: disk failure\nanti-pattern entries (duplicated): 2'
+  explain1 : 反模式：每一层都 log 一次，同一个错误被打印多遍，噪音大且难追踪。惯例：中间层只 return（可包装），到“边界”（main、HTTP handler、job runner）才记录一次日志或向用户展示。示例用内存 logger [...]
+------------------------------------------------------------
+T058 [advanced] 错误集合并发安全的收集  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能在并发场景下用锁保护错误切片，并用 errors.Join 聚合，验证 Is/As 可穿透。
+  concepts : 并发错误, errors.Join, Mutex, 确定性
+  prereq   : T077 sync.Mutex 与临界区保护, T051 错误包装与 %w 的解包链
+  output   : 'collected errors: 2\n  task 2 failed\n  task 4 failed\nall-ok err is nil: true\nsingle Unwrap(join) is nil: true'
+  exTitle  : 错误集合并发安全的收集（示例）
+  exOut    : 'collected errors: 2\n  task 2 failed\n  task 4 failed\nall-ok err is nil: true\nsingle Unwrap(join) is nil: true'
+  explain1 : 并行处理多个子任务时，需要并发安全地收集错误。示例用 Mutex 保护错误切片，等待全部完成后用 errors.Join 聚合，并通过 Unwrap() []error 展开子错误；由于并发完成顺序不定，示例对错误文本排序后再打印，保证输出确定。errors.Join 的返回值在 errors.Is/As [...]
+================================================================
+CHAPTER S6 T059-T070
+------------------------------------------------------------
+T059 [intermediate] 包、导出规则与初始化顺序  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能说明导出（大写）与非导出（小写）规则，以及 init 与包级变量的执行顺序。
+  concepts : 包, 导出规则, init, 初始化顺序
+  prereq   : T037 结构体定义、字面量与字段访问
+  output   : 'init: package config loaded, a = 1\na = 1 b = 2\nexported: visible outside package\nunexported: visible only inside package\ninit runs before main; across packages it follows import order'
+  exTitle  : 包、导出规则与初始化顺序（示例）
+  exOut    : 'init: package config loaded, a = 1\na = 1 b = 2\nexported: visible outside package\nunexported: visible only inside package\ninit runs before main; across packages it follows import order'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。包把代码分组；导出（大写）标识符可被其他包访问，小写仅包内可见。init [...]
+------------------------------------------------------------
+T060 [intermediate] Go Modules：go.mod 与依赖版本  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能初始化模块并理解 require/replace，在离线环境下用本地 replace 解析依赖。
+  concepts : go.mod, 模块版本, replace, 离线
+  prereq   : T059 包、导出规则与初始化顺序
+  output   : 'selected local module version: v0.1.2\ngo.mod:\n  module qfli.example/t060\n  go 1.21\n  require qfli.example/lib v0.1.2\n  replace qfli.example/lib => ./lib\nrun: go run .  (no network; resolved via local replace)'
+  exTitle  : Go Modules：go.mod 与依赖版本（示例）
+  exOut    : 'selected local module version: v0.1.2\ngo.mod:\n  module qfli.example/t060\n  go 1.21\n  require qfli.example/lib v0.1.2\n  replace qfli.example/lib => ./lib\nrun: go run .  (no network; resolved via local replace)'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。go.mod 声明模块路径与 Go 版本，并记录依赖及版本；go.sum [...]
+------------------------------------------------------------
+T061 [intermediate] 内部包 internal 与可见性  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能说明导出（大写）与非导出（小写）标识符的可见范围，并能用 internal/ 目录把包限制在模块内。
+  concepts : internal, 可见性, 导出规则
+  prereq   : T059 包、导出规则与初始化顺序
+  output   : "exported constant: visible outside package\nunexported constant: visible only inside package\ninternal rule: a package under an internal/ directory may only\nbe imported by code in the directory tree rooted at internal's parent."
+  exTitle  : 内部包 internal 与可见性（示例）
+  exOut    : "exported constant: visible outside package\nunexported constant: visible only inside package\ninternal rule: a package under an internal/ directory may only\nbe imported by code in the directory tree rooted at internal's parent."
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。Go 的可见性由标识符首字母决定：大写导出、小写不导出，这比很多语言的 public/private [...]
+------------------------------------------------------------
+T062 [advanced] 泛型一：类型参数与约束  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能声明带类型参数的函数并为其指定约束，说明泛型在编译期如何实例化。
+  concepts : 泛型, 类型参数, 约束, cmp.Ordered
+  prereq   : T023 函数签名、多返回值与命名返回, T041 接口基础与鸭子类型
+  output   : 'Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string]("pear", "apple") = apple\nMax[float64](2.5, 1.5) = 2.5'
+  exTitle  : 泛型一：类型参数与约束（示例）
+  exOut    : 'Min[int](3, 7) = 3\nMax[int](3, 7) = 7\nMin[string]("pear", "apple") = apple\nMax[float64](2.5, 1.5) = 2.5'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。没有泛型时，同一算法要为每种类型复制一份，或在 interface{} 上做断言而丢失类型安全。类型参数 [T [...]
+------------------------------------------------------------
+T063 [advanced] 泛型二：自定义约束与联合类型  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能定义形如 `~int | ~float64` 的联合约束，并用它让泛型函数接受命名类型。
+  concepts : 自定义约束, 联合类型, ~ 底层类型, 泛型
+  prereq   : T062 泛型一：类型参数与约束, T006 类型转换与数值精度
+  output   : 'Sum([]int{1,2,3}) = 6\nSum([]int64{10,20,30}) = 60\nSum([]float64{1.5,2.5}) = 4\nSum([]Celsius{...}) = 61'
+  exTitle  : 泛型二：自定义约束与联合类型（示例）
+  exOut    : 'Sum([]int{1,2,3}) = 6\nSum([]int64{10,20,30}) = 60\nSum([]float64{1.5,2.5}) = 4\nSum([]Celsius{...}) = 61'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。自定义约束本质是一个只含类型集合的 interface。`~int` 里的波浪号表示“底层类型为 int [...]
+------------------------------------------------------------
+T064 [advanced] 泛型三：泛型类型（容器）  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能定义带类型参数的类型并为它编写方法，理解泛型类型如何实例化。
+  concepts : 泛型类型, 容器, 方法, LIFO
+  prereq   : T062 泛型一：类型参数与约束, T039 方法：值接收者与指针接收者
+  output   : 'popped int: 3\npopped int: 2\npopped int: 1\npop empty stack ok = false\npopped string: generics'
+  exTitle  : 泛型三：泛型类型（容器）（示例）
+  exOut    : 'popped int: 3\npopped int: 2\npopped int: 1\npop empty stack ok = false\npopped string: generics'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。泛型不仅用于函数，也能定义类型：Stack[T] 中的 T 是元素类型，字段 items 的类型因此写成 [...]
+------------------------------------------------------------
+T065 [advanced] 泛型与接口的选型对比  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能根据“是否需要跨类型复用运算”与“是否需要运行期异构”选择泛型还是接口。
+  concepts : 泛型, 接口, 多态, 选型
+  prereq   : T063 泛型二：自定义约束与联合类型, T041 接口基础与鸭子类型
+  output   : 'generic Sum[int] = 10\ngeneric Sum[float64] = 4\ninterface sum = 7'
+  exTitle  : 泛型与接口的选型对比（示例）
+  exOut    : 'generic Sum[int] = 10\ngeneric Sum[float64] = 4\ninterface sum = 7'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run [...]
+------------------------------------------------------------
+T066 [intermediate] 依赖注入：显式传递优于全局  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能识别隐式依赖（time.Now、全局单例）并用构造函数显式注入接口依赖。
+  concepts : 依赖注入, 接口, 可测试性, 时钟抽象
+  prereq   : T041 接口基础与鸭子类型, T037 结构体定义、字面量与字段访问
+  output   : '下午好，gopher\n上午好，gopher'
+  exTitle  : 依赖注入：显式传递优于全局（示例）
+  exOut    : '下午好，gopher\n上午好，gopher'
+  explain1 : 依赖注入的核心是“把外部依赖从内部 new 出来，改为从外部传进来”。示例把“现在几点”抽象成 Clock 接口，Greeter 通过 NewGreeter(Clock) 接收它。生产环境传 realClock，测试/演示传 [...]
+------------------------------------------------------------
+T067 [intermediate] 包级 API 设计与向后兼容  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 Option func(*T) 模式设计可扩展、向后兼容的构造 API。
+  concepts : 函数选项, 向后兼容, 默认值, API 设计
+  prereq   : T066 依赖注入：显式传递优于全局, T025 函数是一等值：高阶函数
+  output   : 'default: addr=127.0.0.1:8080 readTimeout=5s maxConns=128 access=false\ncustom:  addr=0.0.0.0:9000 readTimeout=30s maxConns=1024 access=true'
+  exTitle  : 包级 API 设计与向后兼容（示例）
+  exOut    : 'default: addr=127.0.0.1:8080 readTimeout=5s maxConns=128 access=false\ncustom:  addr=0.0.0.0:9000 readTimeout=30s maxConns=1024 access=true'
+  explain1 : 包级 API 一旦发布就很难改签名。函数选项模式把“可变配置”做成 func(*Server) 类型，NewServer(opts ...Option) 接收零到多个选项：先建立安全默认值，再依次应用。于是未来新增 WithXxx 只是新增一个函数，不触碰 NewServer [...]
+------------------------------------------------------------
+T068 [advanced] 语义化版本与最小版本选择  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能说明语义化版本 major/minor/patch 的含义，并解释 MVS 为何能保证可复现构建。
+  concepts : 语义化版本, MVS, 依赖解析, 可复现构建
+  prereq   : T060 Go Modules：go.mod 与依赖版本, T032 排序：sort.Slice 与自定义比较
+  output   : 'constraints: v1.2.0, v1.5.3, v1.4.9\nselected (MVS) = v1.5.3\n此时最大版本恰好等于最小可行版本'
+  exTitle  : 语义化版本与最小版本选择（示例）
+  exOut    : 'constraints: v1.2.0, v1.5.3, v1.4.9\nselected (MVS) = v1.5.3\n此时最大版本恰好等于最小可行版本'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。语义化版本用 major.minor.patch 表达兼容性：major 变更表示破坏性改动，minor [...]
+------------------------------------------------------------
+T069 [intermediate] 构建标签与多平台文件后缀  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能用构建约束与文件后缀为不同平台/特性集提供互斥实现。
+  concepts : 构建标签, 文件后缀, 多平台, GOOS
+  prereq   : T060 Go Modules：go.mod 与依赖版本
+  output   : 'selected impl = default\nwith -tags special impl = special'
+  exTitle  : 构建标签与多平台文件后缀（示例）
+  exOut    : 'selected impl = default\nwith -tags special impl = special'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、impl_default.go、impl_special.go、main.go。运行命令：go run [...]
+------------------------------------------------------------
+T070 [advanced] 代码生成与 go:generate 边界  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能说明 go:generate 不参与 go build、需要显式运行，并写出等价的 String() 实现。
+  concepts : go:generate, 代码生成, Stringer, 枚举
+  prereq   : T045 标准接口：Stringer 与 error, T059 包、导出规则与初始化顺序
+  output   : 'Monday  => Monday\nTuesday => Tuesday\nDay(99) => Day(99)\nnote: `go generate ./...` reruns the generator for day_string.go;\n      it is not part of `go build` and is desktop only here.'
+  exTitle  : 代码生成与 go:generate 边界（示例）
+  exOut    : 'Monday  => Monday\nTuesday => Tuesday\nDay(99) => Day(99)\nnote: `go generate ./...` reruns the generator for day_string.go;\n      it is not part of `go build` and is desktop only here.'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：day.go、day_string.go、gen_main.go、go.mod、main.go。运行命令：go run .。//go:generate [...]
+================================================================
+CHAPTER S7 T071-T084
+------------------------------------------------------------
+T071 [intermediate] goroutine 基础与启动  (runtime=desktop, import=single-file, verify=stdout-sorted)
+  objective: 能启动 goroutine、用 sync.WaitGroup 等待其完成，并说明为何要排序输出。
+  concepts : goroutine, WaitGroup, 并发, 确定性
+  prereq   : T025 函数是一等值：高阶函数
+  output   : 'worker-0 done\nworker-1 done\nworker-2 done\nworker-3 done\nworker-4 done'
+  exTitle  : goroutine 基础与启动（示例）
+  exOut    : 'worker-0 done\nworker-1 done\nworker-2 done\nworker-3 done\nworker-4 done'
+  explain1 : go 关键字在函数调用前启动一个轻量级 goroutine，由运行时调度到线程上。它们何时完成不确定，因此不能假定顺序。WaitGroup 是计数信号量：Add 增加待完成数，每次 Done 减一，Wait 阻塞到归零，主 goroutine [...]
+------------------------------------------------------------
+T072 [intermediate] channel 一：无缓冲与同步通信  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能说明无缓冲 channel 的收发会互相阻塞，并据此实现同步交接。
+  concepts : channel, 无缓冲, 同步交接, 生产者消费者
+  prereq   : T071 goroutine 基础与启动
+  output   : 'received: handoff payload\nreceived: 42'
+  exTitle  : channel 一：无缓冲与同步通信（示例）
+  exOut    : 'received: handoff payload\nreceived: 42'
+  explain1 : 无缓冲 channel 是同步点：发送方阻塞直到有接收方接手，接收方也阻塞直到有值到来。因此它天然表达“交接”——值的传递与双方的时间点对齐是同一次操作。示例从 goroutine 发送字符串，主 goroutine 接收，二者严格配对，输出顺序因此确定。这也是 channel [...]
+------------------------------------------------------------
+T073 [intermediate] channel 二：有缓冲与容量语义  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能解释有缓冲 channel 的容量语义，并用 select+default 把阻塞转成确定布尔结果。
+  concepts : 有缓冲 channel, 容量, 非阻塞探测, select
+  prereq   : T072 channel 一：无缓冲与同步通信
+  output   : 'buffered: 2 cap: 2\nthird send succeeded: false\nfirst out: 10\nsend after one receive succeeded: true\nremaining: 20 30'
+  exTitle  : channel 二：有缓冲与容量语义（示例）
+  exOut    : 'buffered: 2 cap: 2\nthird send succeeded: false\nfirst out: 10\nsend after one receive succeeded: true\nremaining: 20 30'
+  explain1 : 有缓冲 channel 维护一个 FIFO 缓冲：只要未满，发送不阻塞；只有缓冲满时发送才阻塞，缓冲空时接收才阻塞。示例用容量 2 的通道展示：前两次发送立即成功，第三次用 select 探测（带 default 则立即返回），得到确定结果 [...]
+------------------------------------------------------------
+T074 [intermediate] channel 三：close 与 range 接收  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 close+range 优雅结束消费者，并用逗号-ok 区分“零值”与“已关闭”。
+  concepts : close, range, 逗号-ok, 收尾
+  prereq   : T073 channel 二：有缓冲与容量语义
+  output   : 'count: 5\nsum: 15\nafter close: value = 0 ok = false'
+  exTitle  : channel 三：close 与 range 接收（示例）
+  exOut    : 'count: 5\nsum: 15\nafter close: value = 0 ok = false'
+  explain1 : close(ch) 表示“不会再有值发送”。对已关闭的 channel，接收会立即返回缓冲区剩余值，取空后返回零值与 ok=false。range 正是利用这一点：它在 channel 关闭且缓冲为空时自动结束循环，因此消费者无需知道具体条数。惯例是发送方负责 close。示例用 range [...]
+------------------------------------------------------------
+T075 [intermediate] select：多路复用与超时  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 select 实现多路等待与超时，并知道多分支就绪时的选择是随机的。
+  concepts : select, 多路复用, 超时, 随机选择
+  prereq   : T074 channel 三：close 与 range 接收, T092 时间一：time.Time、Duration 与格式化
+  output   : 'took ready channel: payload\ntimeout branch taken\nselected exactly one ready channel'
+  exTitle  : select：多路复用与超时（示例）
+  exOut    : 'took ready channel: payload\ntimeout branch taken\nselected exactly one ready channel'
+  explain1 : select 同时等待多个 channel 操作，哪个就绪走哪个；若写了 default，则无人就绪时立即走 default 而不阻塞。示例先用预置值的 channel 让接收分支必然就绪，得到确定结果；再用永不发送的 channel 配合 time.After [...]
+------------------------------------------------------------
+T076 [intermediate] 单向 channel 与接口约束  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用单向 channel 声明函数参数含义，并说明它只能由双向 channel 隐式转换而来。
+  concepts : 单向 channel, 只发, 只收, 接口约束
+  prereq   : T075 select：多路复用与超时
+  output   : 'sum of squares 1..3 = 14\nread: 10\nread: 20\nread: 30'
+  exTitle  : 单向 channel 与接口约束（示例）
+  exOut    : 'sum of squares 1..3 = 14\nread: 10\nread: 20\nread: 30'
+  explain1 : 函数参数可声明为只发 chan<- T 或只收 <-chan T。它用类型系统表达“这个函数只发送/只接收”，让误用变成编译错误，起文档与约束双重作用。方向不能凭空创建，只能由双向 channel 隐式收窄得到，因此是安全的。示例把双向 channel 分别以只发视角交给 producer、以只收视角交给 [...]
+------------------------------------------------------------
+T077 [intermediate] sync.Mutex 与临界区保护  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能定位读-改-写临界区并用 sync.Mutex 保护，说明 -race 的作用。
+  concepts : Mutex, 数据竞争, 临界区, go test -race
+  prereq   : T071 goroutine 基础与启动, T039 方法：值接收者与指针接收者
+  output   : 'ok  \tqfli.example/t077\t0.003s'
+  exTitle  : sync.Mutex 与临界区保护（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：counter_test.go、go.mod。运行命令：go test ./...。多个 goroutine 对同一变量做 += 是读-改-写三步，可能交错导致丢失更新。Mutex [...]
+------------------------------------------------------------
+T078 [intermediate] sync.RWMutex 读写分离  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能根据读写比例选择 RWMutex，并说明 RLock/RUnlock 与 Lock/Unlock 的区别。
+  concepts : RWMutex, 读写分离, 并发映射, go test -race
+  prereq   : T077 sync.Mutex 与临界区保护, T022 映射：增删查与存在性判断
+  output   : 'ok  \tqfli.example/t078\t0.003s'
+  exTitle  : sync.RWMutex 读写分离（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：config_test.go、go.mod。运行命令：go test ./...。RWMutex 区分读锁与写锁：RWMutex.RLock 允许多个读者并发，写者用 Lock [...]
+------------------------------------------------------------
+T079 [intermediate] sync.WaitGroup 与一次性任务 sync.Once  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 sync.Once 实现并发安全的一次性初始化，并说明它为何只执行一次。
+  concepts : WaitGroup, Once, 一次性初始化, 原子计数
+  prereq   : T071 goroutine 基础与启动
+  output   : 'init executed count: 1\nall goroutines finished: true\nsum of squares: 140'
+  exTitle  : sync.WaitGroup 与一次性任务 sync.Once（示例）
+  exOut    : 'init executed count: 1\nall goroutines finished: true\nsum of squares: 140'
+  explain1 : Once.Do(f) 保证 f 在程序生命周期内至多执行一次：第一个到达的 goroutine 执行，其余阻塞等待其完成后直接返回。示例用 8 个 goroutine 同时请求初始化，用原子计数证明 initResource 只执行一次（输出 1），并用 WaitGroup 等待全部结束。相比自己用 [...]
+------------------------------------------------------------
+T080 [advanced] sync.Pool 与临时对象复用  (runtime=desktop, import=test-package, verify=bench-exists)
+  objective: 能用 sync.Pool 缓存可复用对象，并说明其对象可能被 GC 回收、不可存持久状态。
+  concepts : sync.Pool, 对象复用, 分配, benchmark
+  prereq   : T036 字符串构造：strings.Builder 与字节缓冲, T077 sync.Mutex 与临界区保护
+  output   : 'BenchmarkRenderPool-2    \t26144017\t43.59 ns/op\t16 B/op\t1 allocs/op\nBenchmarkRenderNoPool-2  \t23817556\t49.87 ns/op\t80 B/op\t2 allocs/op'
+  exTitle  : sync.Pool 与临时对象复用（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、pool_test.go。运行命令：go test -bench . -run '^$' ./...。sync.Pool 缓存可复用对象，减少高频分配压力。示例用 [...]
+------------------------------------------------------------
+T081 [advanced] 原子操作 sync/atomic  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能用 atomic.Int64 做无锁计数，并解释 CompareAndSwap 的语义。
+  concepts : atomic, 无锁, CAS, 并发计数
+  prereq   : T077 sync.Mutex 与临界区保护
+  output   : 'ok  \tqfli.example/t081\t0.004s'
+  exTitle  : 原子操作 sync/atomic（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：atomic_test.go、go.mod。运行命令：go test ./...。对简单的计数/标志，原子操作无需加锁即可保证读改写不可分割，通常比 Mutex 更轻。示例用 [...]
+------------------------------------------------------------
+T082 [advanced] context 一：取消与传播  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 context 取消 goroutine，并用 Done() channel 检测取消、说明取消会向下传播。
+  concepts : context, 取消, 传播, Done
+  prereq   : T074 channel 三：close 与 range 接收
+  output   : 'worker reached checkpoint, requesting cancel\nworker stopped: context canceled\nmain observed worker exit\nchild canceled by parent: context canceled'
+  exTitle  : context 一：取消与传播（示例）
+  exOut    : 'worker reached checkpoint, requesting cancel\nworker stopped: context canceled\nmain observed worker exit\nchild canceled by parent: context canceled'
+  explain1 : context 用于在调用链上传递取消信号、截止时间与请求范围值。WithCancel 返回派生 ctx 与 cancel；调用 cancel 会关闭 ctx.Done() 返回的 channel，所有监听它的下游任务据此提前退出。示例启动一个循环任务，任务在某个检查点自行 cancel，主流程通过 [...]
+------------------------------------------------------------
+T083 [advanced] context 二：超时与截止时间  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 WithTimeout 控制任务时长，并用 errors.Is(ctx.Err(), context.DeadlineExceeded) 判断超时。
+  concepts : context, 超时, DeadlineExceeded, errors.Is
+  prereq   : T082 context 一：取消与传播, T052 errors.Is 与 errors.As 的适用差异
+  output   : 'slow: deadline exceeded = true\nok: result = 42 err = <nil>\ncanceled: err is context canceled = true'
+  exTitle  : context 二：超时与截止时间（示例）
+  exOut    : 'slow: deadline exceeded = true\nok: result = 42 err = <nil>\ncanceled: err is context canceled = true'
+  explain1 : WithTimeout 在指定时长后自动 cancel，ctx.Err() 返回 context.DeadlineExceeded。示例分三种情形：慢任务在超时后走 Done 分支（断言确实超时）、快任务正常返回、被主动 cancel 的任务返回 [...]
+------------------------------------------------------------
+T084 [advanced] 并发模式：worker pool 与 errgroup 式编排  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能实现固定 worker 池，说明任务/结果 channel 的分工，并用标准库收集错误。
+  concepts : worker pool, 并发编排, 错误收集, 标准库
+  prereq   : T071 goroutine 基础与启动, T077 sync.Mutex 与临界区保护
+  output   : 'pool error: unlucky 13\nsquares (sorted): [1 4 9 16 25 36 49 64 81 100 121 144 196 225 256 289 324 361 400]'
+  exTitle  : 并发模式：worker pool 与 errgroup 式编排（示例）
+  exOut    : 'pool error: unlucky 13\nsquares (sorted): [1 4 9 16 25 36 49 64 81 100 121 144 196 225 256 289 324 361 400]'
+  explain1 : worker pool 用固定数量 goroutine 从任务 channel 取活、把结果写回结果 channel。这样并发度可控，适合 CPU/IO 受限场景。示例用 4 个 worker 处理 20 个任务，任务 13 故意报错；错误通过带缓冲的 error channel [...]
+================================================================
+CHAPTER S8 T085-T098
+------------------------------------------------------------
+T085 [intermediate] io.Reader / io.Writer 抽象  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能基于 io.Reader/Writer 编写与来源无关的代码，并实现自定义 Reader。
+  concepts : io.Reader, io.Writer, io.Copy, 自定义 Reader
+  prereq   : T041 接口基础与鸭子类型, T030 指针二：指针与切片/映射的关系
+  output   : 'copied bytes: 16 err: <nil>\nbuffer content: hello, io.Reader\ncustom reader: ababab'
+  exTitle  : io.Reader / io.Writer 抽象（示例）
+  exOut    : 'copied bytes: 16 err: <nil>\nbuffer content: hello, io.Reader\ncustom reader: ababab'
+  explain1 : io.Reader 只有 Read([]byte) (int, error)，io.Writer 只有 Write([]byte) (int, error)。任何实现了它们的东西都能互相组合：字符串、文件、网络、内存缓冲。示例把 strings.Reader 当来源、bytes.Buffer 当目标，用 [...]
+------------------------------------------------------------
+T086 [intermediate] 文件读写：os.Open/Create 与缓冲  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能正确打开/写入/关闭并读回文件，说明写后 Close 的必要性。
+  concepts : os.Create, os.ReadFile, Close, 临时目录
+  prereq   : T085 io.Reader / io.Writer 抽象
+  output   : 'read back:\nline one\nline two\nsize matches: true'
+  exTitle  : 文件读写：os.Open/Create 与缓冲（示例）
+  exOut    : 'read back:\nline one\nline two\nsize matches: true'
+  explain1 : 文件读写是 IO 的常见场景。示例先用 os.MkdirTemp 建立隔离的临时目录并 defer RemoveAll，避免污染工作目录；再用 os.Create 写入内容，随后 Close——Close 不仅释放句柄，也保证缓冲数据落盘。读回用 os.ReadFile 一次性读入，并用 os.Stat [...]
+------------------------------------------------------------
+T087 [intermediate] bufio：按行/按词扫描与缓冲写  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 bufio.Scanner 处理文本，说明默认行上限与如何调大。
+  concepts : bufio.Scanner, 按行, 按词, 缓冲
+  prereq   : T085 io.Reader / io.Writer 抽象
+  output   : 'line 1: go is fun\nline 2: bufio scans lines\nline 3: and words too\ntotal lines: 3\ntotal words: 9'
+  exTitle  : bufio：按行/按词扫描与缓冲写（示例）
+  exOut    : 'line 1: go is fun\nline 2: bufio scans lines\nline 3: and words too\ntotal lines: 3\ntotal words: 9'
+  explain1 : bufio.Scanner 把 Reader 包装成“按 token”迭器，默认按行切分，也可用 Split(bufio.ScanWords) 按词。它内部带缓冲，减少系统调用。示例对同一段文本先按行、再按词扫描并打印统计，输出确定。注意两个要点：一是默认单行上限约 64KB，超长行需要 [...]
+------------------------------------------------------------
+T088 [intermediate] 目录遍历与文件信息  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 os.ReadDir 遍历目录并判断条目是否为目录、读取大小等元数据。
+  concepts : os.ReadDir, FileInfo, 排序, 目录
+  prereq   : T086 文件读写：os.Open/Create 与缓冲
+  output   : 'alpha.txt  file size=1\nbeta.txt   file size=2\nsub        dir'
+  exTitle  : 目录遍历与文件信息（示例）
+  exOut    : 'alpha.txt  file size=1\nbeta.txt   file size=2\nsub        dir'
+  explain1 : os.ReadDir 返回目录条目切片，并保证按文件名排序，因此遍历输出天然确定——这是构建可复现输出的关键。每个 DirEntry 可通过 Info() 拿到 FileInfo（大小、模式等），IsDir() 判断是否为目录。示例在临时目录建两个文件和一个子目录，然后列出并按“名字 + 类型 + [...]
+------------------------------------------------------------
+T089 [intermediate] JSON 一：Marshal/Unmarshal 基础  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 Marshal/Unmarshal 编解码结构体，并说明导出字段才被编码。
+  concepts : encoding/json, Marshal, Unmarshal, 往返
+  prereq   : T037 结构体定义、字面量与字段访问
+  output   : 'marshal: {"name":"gopher","age":15,"hobbies":["coding","reading"]}\nunmarshal name: gopher\nunmarshal age: 15\nunmarshal hobbies: [coding reading]\nround-trip stable: true'
+  exTitle  : JSON 一：Marshal/Unmarshal 基础（示例）
+  exOut    : 'marshal: {"name":"gopher","age":15,"hobbies":["coding","reading"]}\nunmarshal name: gopher\nunmarshal age: 15\nunmarshal hobbies: [coding reading]\nround-trip stable: true'
+  explain1 : encoding/json 是 Go 与 JSON 互转的标准方式。Marshal 把 Go 值编码为 JSON 字节切片，Unmarshal 把 JSON 解析回指定类型（需传指针）。结构体字段必须导出（首字母大写）才会参与编码，否则被忽略。示例对 Profile 做往返：编码得到 [...]
+------------------------------------------------------------
+T090 [intermediate] JSON 二：struct tag、omitempty 与自定义名称  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 tag 控制字段名、用 omitempty 省略零值、用 "-" 屏蔽敏感字段。
+  concepts : struct tag, omitempty, 忽略字段, 字段改名
+  prereq   : T089 JSON 一：Marshal/Unmarshal 基础
+  output   : 'minimal: {"id":7,"name":"alice","balance":0}\nfilled:  {"id":7,"name":"alice","email":"alice@example.com","nick_name":"ali","balance":100}\npassword hidden: true'
+  exTitle  : JSON 二：struct tag、omitempty 与自定义名称（示例）
+  exOut    : 'minimal: {"id":7,"name":"alice","balance":0}\nfilled:  {"id":7,"name":"alice","email":"alice@example.com","nick_name":"ali","balance":100}\npassword hidden: true'
+  explain1 : struct tag 是反引号里的元数据，encoding/json 读取其中 json:"..." 部分："name" 改键名、"omitempty" 在零值时省略、"-" 表示完全不序列化。示例的 Account 演示三者：Password 带 `json:"-"` [...]
+------------------------------------------------------------
+T091 [intermediate] JSON 三：流式 Decoder/Encoder 与 unknown 字段  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 Decoder 处理多值 JSON 流，并用 DisallowUnknownFields 做严格校验。
+  concepts : json.Decoder, 流式解码, DisallowUnknownFields, NDJSON
+  prereq   : T089 JSON 一：Marshal/Unmarshal 基础
+  output   : 'event 1: type=start code=1\nevent 2: type=tick code=2\nevent 3: type=stop code=3\ndecoded events: 3\nstrict decode rejected unknown field: true'
+  exTitle  : JSON 三：流式 Decoder/Encoder 与 unknown 字段（示例）
+  exOut    : 'event 1: type=start code=1\nevent 2: type=tick code=2\nevent 3: type=stop code=3\ndecoded events: 3\nstrict decode rejected unknown field: true'
+  explain1 : json.Decoder 从 Reader 连续解码，适合 NDJSON（每行一个 JSON）或流式响应；Decoder.More() 判断是否还有值。示例从一段含三个对象的流中逐个解码，其中第二个带未知字段 extra，默认会被忽略，因此成功。随后用 DisallowUnknownFields [...]
+------------------------------------------------------------
+T092 [intermediate] 时间一：time.Time、Duration 与格式化  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 2006-01-02 15:04:05 参考布局格式化与解析时间，并解释 Duration 是纯时长。
+  concepts : time.Time, Duration, 布局, 固定时区
+  prereq   : T008 格式化输出与 fmt 谓词
+  output   : 'formatted: 2026-10-12 14:30:45\ndate only: 2026-10-12\nRFC3339:   2026-10-12T14:30:45Z\nparsed: 2020-01-02T03:04:05Z\nduration: 1h30m0s\nduration minutes: 90\nadd 90m -> 16:00:45\ndiff == 90m: true'
+  exTitle  : 时间一：time.Time、Duration 与格式化（示例）
+  exOut    : 'formatted: 2026-10-12 14:30:45\ndate only: 2026-10-12\nRFC3339:   2026-10-12T14:30:45Z\nparsed: 2020-01-02T03:04:05Z\nduration: 1h30m0s\nduration minutes: 90\nadd 90m -> 16:00:45\ndiff == 90m: true'
+  explain1 : Go 的时间格式化不用 yyyy-MM-dd，而用参考时间 2006-01-02 15:04:05（Mon Jan 2 15:04:05 MST 2006）作为布局：布局字符串里对应位置写什么，输出就是什么格式。time.Duration 表示纯时长（与墙钟无关），可相加相减、转成 Minutes [...]
+------------------------------------------------------------
+T093 [advanced] 时间二：定时器、Ticker 与单调时钟  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 Timer/Ticker 实现定时任务，并说明为何不能把耗时作为断言。
+  concepts : Timer, Ticker, 单调时钟, 确定性断言
+  prereq   : T092 时间一：time.Time、Duration 与格式化, T075 select：多路复用与超时
+  output   : 'timer fired once\nticker fired count: 3\nno tick after stop\nelapsed is non-negative: true'
+  exTitle  : 时间二：定时器、Ticker 与单调时钟（示例）
+  exOut    : 'timer fired once\nticker fired count: 3\nno tick after stop\nelapsed is non-negative: true'
+  explain1 : Timer 触发一次（一次 C 接收），Ticker 周期性触发。二者基于单调时钟，不受系统墙钟调整影响。示例先等 Timer 触发一次，再用 Ticker 计数到 3 后停止，并用 select+default [...]
+------------------------------------------------------------
+T094 [intermediate] 正则一：regexp 匹配与子匹配  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 FindStringSubmatch/FindAllStringSubmatch 提取捕获组，并用 MustCompile 预编译。
+  concepts : regexp, MustCompile, FindAllStringSubmatch, 捕获组
+  prereq   : T035 字符串处理：strings 包常用函数
+  output   : 'matches: 3\n  key=user     value=alice\n  key=role     value=admin\n  key=active   value=true\nsingle full match: host=node1\nsingle group1: host\nsingle group2: node1\nno match is nil: true'
+  exTitle  : 正则一：regexp 匹配与子匹配（示例）
+  exOut    : 'matches: 3\n  key=user     value=alice\n  key=role     value=admin\n  key=active   value=true\nsingle full match: host=node1\nsingle group1: host\nsingle group2: node1\nno match is nil: true'
+  explain1 : regexp 包提供 RE2 风格正则（保证线性时间，无回溯爆炸）。FindStringSubmatch 返回包含整体匹配与各捕获组的切片：m[0] 是整体，m[1..] 是括号组。无匹配时返回 nil，因此判断存在性最稳妥的方式是比较 nil 或检查长度。MustCompile 在正则非法时 [...]
+------------------------------------------------------------
+T095 [intermediate] 正则二：替换、分割与预编译复用  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 ReplaceAllStringFunc 动态替换，并说明预编译正则的复用价值。
+  concepts : regexp, ReplaceAllStringFunc, Split, 预编译
+  prereq   : T094 正则一：regexp 匹配与子匹配
+  output   : 'doubled: a2 b44 c666\nmasked:  a# b# c#\nsplit count: 4\n  [0]=one\n  [1]=two\n  [2]=three\n  [3]=four'
+  exTitle  : 正则二：替换、分割与预编译复用（示例）
+  exOut    : 'doubled: a2 b44 c666\nmasked:  a# b# c#\nsplit count: 4\n  [0]=one\n  [1]=two\n  [2]=three\n  [3]=four'
+  explain1 : ReplaceAllStringFunc 允许用函数动态决定每个匹配的替换值，适合“按内容计算”的替换；ReplaceAllString 则用于固定替换串。Split 按正则切分，-1 [...]
+------------------------------------------------------------
+T096 [intermediate] 文本模板 text/template  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 text/template 定义模板并渲染结构体数据，理解 {{.}}/{{range}}/{{if}}。
+  concepts : text/template, 占位符, range, if
+  prereq   : T037 结构体定义、字面量与字段访问
+  output   : 'Inventory for warehouse-a:\n- bolt x100 (in stock)\n- nut x0 (out of stock)\nTotal lines: 2'
+  exTitle  : 文本模板 text/template（示例）
+  exOut    : 'Inventory for warehouse-a:\n- bolt x100 (in stock)\n- nut x0 (out of stock)\nTotal lines: 2'
+  explain1 : text/template 用 {{.Field}} 引用数据字段，{{range}} 遍历切片，{{if}}/{{else}} 做条件分支。模板在解析时用 Must 包装以便在模板语法错误时快速失败，执行时再检查 Execute 的错误。示例渲染一份“库存清单”：表头用占位符、条目用 [...]
+------------------------------------------------------------
+T097 [beginner] strconv 与数据解析  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 Atoi/Itoa/ParseFloat/ParseBool/ParseInt 做类型与文本互转并处理错误。
+  concepts : strconv, Atoi, ParseFloat, 进制, Quote
+  prereq   : T006 类型转换与数值精度
+  output   : 'Atoi 42: 42 err: <nil>\nAtoi 4x2: 0 err non-nil: true\nItoa 255: 255\nParseFloat: 3.14\nParseBool TRUE: true\nParseInt ff base16: 255\nQuote: "a\\tb"'
+  exTitle  : strconv 与数据解析（示例）
+  exOut    : 'Atoi 42: 42 err: <nil>\nAtoi 4x2: 0 err non-nil: true\nItoa 255: 255\nParseFloat: 3.14\nParseBool TRUE: true\nParseInt ff base16: 255\nQuote: "a\\tb"'
+  explain1 : strconv 是字符串与基础类型互转的标准库。Atoi 等价 ParseInt(s,10,0)，返回 int；Itoa 反向。ParseFloat 解析浮点（示例用 64 位），ParseBool 接受 1/0/t/f/TRUE 等多种形式，ParseInt 可指定进制（示例把 ff 按 16 进制解析为 [...]
+------------------------------------------------------------
+T098 [intermediate] 哈希与校验：crypto/sha256 与 encoding/hex  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能计算 SHA-256 摘要、用 hex 编解码，并用已知向量校验正确性。
+  concepts : sha256, hex, 已知测试向量, 流式哈希
+  prereq   : T007 字符串、rune 与字节
+  output   : 'sha256(abc) = ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\nmatches known vector: true\nsha256("") length bytes: 32\nsha256("") hex: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nstreamed == one-shot: true\ndecoded bytes: 32 err: <nil>'
+  exTitle  : 哈希与校验：crypto/sha256 与 encoding/hex（示例）
+  exOut    : 'sha256(abc) = ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad\nmatches known vector: true\nsha256("") length bytes: 32\nsha256("") hex: e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\nstreamed == one-shot: true\ndecoded bytes: 32 err: <nil>'
+  explain1 : SHA-256 把任意字节映射为固定 32 字节摘要。sha256.Sum256 返回定长数组，切片化后用 hex.EncodeToString 得到十六进制字符串。示例把结果与 SHA-256("abc") 这个广为人知的公开测试向量对照，因此校验确定、可离线复核，而不是自造随机输入。流式哈希用 [...]
+================================================================
+CHAPTER S9 T099-T104
+------------------------------------------------------------
+T099 [intermediate] net/http 客户端：GET 与响应处理  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能用 http.Client 发起请求、读取响应体，并用 httptest 离线测试。
+  concepts : http.Client, GET, httptest, 响应体
+  prereq   : T085 io.Reader / io.Writer 抽象
+  output   : 'ok  \tqfli.example/t099\t0.006s'
+  exTitle  : net/http 客户端：GET 与响应处理（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：client_test.go、go.mod。运行命令：go test ./...。net/http 的客户端核心是 http.Client 与 http.Get/Do。响应体 [...]
+------------------------------------------------------------
+T100 [intermediate] net/http 服务端：Handler 与路由  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能用 ServeMux 注册路由并用 httptest 检查响应，无需真正监听端口。
+  concepts : http.ServeMux, HandlerFunc, httptest, 路由
+  prereq   : T099 net/http 客户端：GET 与响应处理
+  output   : 'ok  \tqfli.example/t100\t0.003s'
+  exTitle  : net/http 服务端：Handler 与路由（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、server_test.go。运行命令：go test ./...。http.ServeMux 把路径前缀映射到 Handler。http.HandlerFunc [...]
+------------------------------------------------------------
+T101 [intermediate] 请求与响应：Method、Header、状态码  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能按 r.Method 分支处理、用 w.Header 设置响应头、返回恰当状态码。
+  concepts : Method, Header, 状态码, 405
+  prereq   : T100 net/http 服务端：Handler 与路由
+  output   : 'ok  \tqfli.example/t101\t0.003s'
+  exTitle  : 请求与响应：Method、Header、状态码（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、method_test.go。运行命令：go test ./...。Handler 可以读取请求的 Method 与 Header 并据此分支。写响应时状态码要在写 [...]
+------------------------------------------------------------
+T102 [intermediate] JSON API 与错误响应约定  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能设计统一 JSON 响应结构并设置 Content-Type，区分成功与错误响应。
+  concepts : JSON API, 统一响应, 错误约定, Content-Type
+  prereq   : T089 JSON 一：Marshal/Unmarshal 基础, T101 请求与响应：Method、Header、状态码
+  output   : 'ok  \tqfli.example/t102\t0.003s'
+  exTitle  : JSON API 与错误响应约定（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：api_test.go、go.mod。运行命令：go test ./...。一个稳定的 JSON API 应统一响应外壳：成功返回 data，失败返回 error，并始终设置 [...]
+------------------------------------------------------------
+T103 [advanced] 中间件：日志、恢复与链式组合  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能编写 Middleware 函数并组合成链，用 recover 中间件防止 panic 中断服务。
+  concepts : 中间件, Handler 装饰, recover, 链式组合
+  prereq   : T100 net/http 服务端：Handler 与路由, T054 panic 与 recover：边界与代价
+  output   : 'ok  \tqfli.example/t103\t0.003s'
+  exTitle  : 中间件：日志、恢复与链式组合（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、mw_test.go。运行命令：go test ./...。中间件是“接收 Handler、返回 [...]
+------------------------------------------------------------
+T104 [advanced] 超时、重试与优雅关闭  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能为 http.Client 设置超时、用 Server.Shutdown 优雅停机，并避免用耗时作断言。
+  concepts : 超时, 优雅关闭, Shutdown, 确定性断言
+  prereq   : T099 net/http 客户端：GET 与响应处理, T083 context 二：超时与截止时间
+  output   : 'ok  \tqfli.example/t104\t0.058s'
+  exTitle  : 超时、重试与优雅关闭（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、timeout_test.go。运行命令：go test ./...。生产环境的 HTTP 需要超时与优雅关闭。示例用 httptest [...]
+================================================================
+CHAPTER S10 T105-T111
+------------------------------------------------------------
+T105 [beginner] 表驱动测试与子测试  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能编写表驱动测试并用 t.Run 组织子测试，理解子测试的独立性。
+  concepts : 表驱动, t.Run, 子测试, 测试
+  prereq   : T023 函数签名、多返回值与命名返回
+  output   : 'ok  \tqfli.example/t105\t0.002s'
+  exTitle  : 表驱动测试与子测试（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：calc_test.go、go.mod。运行命令：go test ./...。表驱动测试把多组输入/期望放进一个切片，循环用 t.Run [...]
+------------------------------------------------------------
+T106 [intermediate] 断言与辅助函数、t.Helper  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能编写断言 helper 并用 t.Helper 保持失败定位在调用者而非 helper 内部。
+  concepts : 断言辅助, t.Helper, 失败定位, 测试
+  prereq   : T105 表驱动测试与子测试
+  output   : 'ok  \tqfli.example/t106\t0.002s'
+  exTitle  : 断言与辅助函数、t.Helper（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：assert_test.go、go.mod。运行命令：go test ./...。测试里常有重复的断言逻辑，抽成 helper 能减少样板。但 helper 内部失败若不调用 [...]
+------------------------------------------------------------
+T107 [intermediate] 测试夹具：t.TempDir、t.Cleanup  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能用 t.TempDir 与 t.Cleanup 编写隔离且自动清理的文件系统测试。
+  concepts : t.TempDir, t.Cleanup, 隔离, 清理
+  prereq   : T086 文件读写：os.Open/Create 与缓冲, T105 表驱动测试与子测试
+  output   : 'ok  \tqfli.example/t107\t0.002s'
+  exTitle  : 测试夹具：t.TempDir、t.Cleanup（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：fixture_test.go、go.mod。运行命令：go test ./...。文件系统测试需要隔离与清理。t.TempDir() [...]
+------------------------------------------------------------
+T108 [advanced] 基准测试与 b.RunParallel  (runtime=desktop, import=test-package, verify=bench-exists)
+  objective: 能编写 BenchmarkXxx 与 b.RunParallel，说明 b.N 的作用与基准结果的读法。
+  concepts : benchmark, b.N, RunParallel, 确定性
+  prereq   : T105 表驱动测试与子测试, T071 goroutine 基础与启动
+  output   : 'BenchmarkSum-2          \t7809880\t170.8 ns/op\t0 B/op\t0 allocs/op\nBenchmarkSumParallel-2  \t35680834\t29.04 ns/op\t0 B/op\t0 allocs/op'
+  exTitle  : 基准测试与 b.RunParallel（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：bench_test.go、go.mod。运行命令：go test -bench . -run '^$' ./...。基准函数 BenchmarkXxx(*testing.B) [...]
+------------------------------------------------------------
+T109 [intermediate] 覆盖率与测试组织  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能组织同包多文件并生成覆盖率报告，理解 coverprofile 的用途。
+  concepts : 覆盖率, 多文件包, coverprofile, 测试组织
+  prereq   : T059 包、导出规则与初始化顺序, T105 表驱动测试与子测试
+  output   : 'ok  \tqfli.example/t109\t0.002s'
+  exTitle  : 覆盖率与测试组织（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：calc.go、calc_test.go、go.mod。运行命令：go test ./...。Go 的测试与被测代码通常同包，允许放在同一目录的多个文件里：calc.go [...]
+------------------------------------------------------------
+T110 [advanced] Fuzz 测试发现边界缺陷  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能编写 fuzz target 并声明不变量，理解常规测试只跑种子、-fuzz 才随机穷举。
+  concepts : fuzz, 种子语料, 不变量, 边界
+  prereq   : T105 表驱动测试与子测试, T097 strconv 与数据解析
+  output   : 'ok  \tqfli.example/t110\t0.002s'
+  exTitle  : Fuzz 测试发现边界缺陷（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：fuzz_test.go、go.mod。运行命令：go test ./...。Fuzz 测试（Go 1.18+）用 f.Fuzz 提供随机输入寻找边界缺陷，并最小化复现用例。示例的 [...]
+------------------------------------------------------------
+T111 [intermediate] 接口打桩与依赖替换测试  (runtime=desktop, import=test-package, verify=test-pass)
+  objective: 能用接口 + 桩实现隔离被测逻辑，并覆盖成功、缺失、后端故障三类路径。
+  concepts : 接口, 打桩, 依赖替换, 隔离测试
+  prereq   : T066 依赖注入：显式传递优于全局, T041 接口基础与鸭子类型
+  output   : 'ok  \tqfli.example/t111\t0.002s'
+  exTitle  : 接口打桩与依赖替换测试（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、stub_test.go。运行命令：go test ./...。当被测逻辑依赖外部系统（数据库、网络）时，把它抽象成接口，生产注入真实实现，测试注入桩。桩用 map [...]
+================================================================
+CHAPTER S11 T112-T117
+------------------------------------------------------------
+T112 [advanced] 内存分配与逃逸分析  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能用 gcflags=-m 判断变量是否逃逸，并据此减少堆分配。
+  concepts : 逃逸分析, 堆/栈, gcflags -m, 性能
+  prereq   : T030 指针二：指针与切片/映射的关系, T041 接口基础与鸭子类型
+  output   : 'value: 1 2\npointer: 3 4\ninterface: {5 6}\nhint: `go build -gcflags=-m .` shows which variables escape to the heap'
+  exTitle  : 内存分配与逃逸分析（示例）
+  exOut    : 'value: 1 2\npointer: 3 4\ninterface: {5 6}\nhint: `go build -gcflags=-m .` shows which variables escape to the heap'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。Go 编译器做逃逸分析，决定变量分配在栈还是堆。若变量地址逃出函数（被返回、存入接口、被长期闭包捕获），就分配到堆。用 go [...]
+------------------------------------------------------------
+T113 [advanced] 剖析：pprof CPU 与内存  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能采集 CPU profile 并用 pprof 定位热点函数。
+  concepts : pprof, CPU profile, 内存 profile, 热点
+  prereq   : T108 基准测试与 b.RunParallel, T112 内存分配与逃逸分析
+  output   : 'hot(1000) = 2997\nprofile with: go test -bench . -cpuprofile=cpu.out .\nthen: go tool pprof cpu.out'
+  exTitle  : 剖析：pprof CPU 与内存（示例）
+  exOut    : 'hot(1000) = 2997\nprofile with: go test -bench . -cpuprofile=cpu.out .\nthen: go tool pprof cpu.out'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go、pprof_test.go。运行命令：go run .。pprof 是 Go 的剖析工具。最简单的方式是在测试里采集：go test -bench . [...]
+------------------------------------------------------------
+T114 [advanced] 性能优化范式：预分配、批处理、零拷贝  (runtime=desktop, import=test-package, verify=bench-exists)
+  objective: 能用 make([]T,0,n) 预分配、用 strings.Builder 拼接来减少分配次数。
+  concepts : 预分配, strings.Builder, 分配, benchmark
+  prereq   : T036 字符串构造：strings.Builder 与字节缓冲, T108 基准测试与 b.RunParallel
+  output   : 'BenchmarkAppendNoPrealloc-2  \t1000000\t1093 ns/op\t4088 B/op\t9 allocs/op\nBenchmarkAppendPrealloc-2    \t11728428\t103.5 ns/op\t0 B/op\t0 allocs/op'
+  exTitle  : 性能优化范式：预分配、批处理、零拷贝（示例）
+  exOut    : ''
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、patterns_test.go。运行命令：go test -bench . -run '^$' ./...。常见优化范式：一是预分配，make([]int, 0, [...]
+------------------------------------------------------------
+T115 [beginner] 静态检查与工程规范：vet 与 gofmt 基线  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 gofmt -l/-d 与 go vet 保持代码风格与正确性。
+  concepts : gofmt, go vet, 规范, 静态检查
+  prereq   : T001 Go 语言与工具链概览
+  output   : 'total: 6\nhello, gopher (3 items)\nrun: `gofmt -l .` and `go vet ./...`'
+  exTitle  : 静态检查与工程规范：vet 与 gofmt 基线（示例）
+  exOut    : 'total: 6\nhello, gopher (3 items)\nrun: `gofmt -l .` and `go vet ./...`'
+  explain1 : gofmt 是 Go 的官方格式化器：-l 列出不合规文件，-d 显示差异，-w 直接改写。go vet 检查可疑构造，如 Printf 动词与参数不匹配、锁值拷贝、无用标签等。二者随工具链提供，是无需第三方依赖的静态检查基线。示例本身格式规范、Printf [...]
+------------------------------------------------------------
+T116 [intermediate] 日志与可观测性基线：log/slog  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 slog 记录结构化字段、设置级别，并理解 Text/JSON handler 的差异。
+  concepts : slog, 结构化日志, 级别, go1.21
+  prereq   : T008 格式化输出与 fmt 谓词
+  output   : 'level=INFO msg="server starting" addr=127.0.0.1:8080 pid=1\nlevel=WARN msg="slow query" component=db ms=120\n{"level":"ERROR","msg":"failed to connect","host":"db1"}\nlevel=INFO msg="shutdown complete"'
+  exTitle  : 日志与可观测性基线：log/slog（示例）
+  exOut    : 'level=INFO msg="server starting" addr=127.0.0.1:8080 pid=1\nlevel=WARN msg="slow query" component=db ms=120\n{"level":"ERROR","msg":"failed to connect","host":"db1"}\nlevel=INFO msg="shutdown complete"'
+  explain1 : log/slog（Go 1.21+）提供结构化日志：字段以 key=value 形式输出，可被机器检索。Text handler 输出人类可读行，JSON handler 输出单行 JSON。可设级别（Info/Warn/Error）过滤低级别日志。为使示例输出确定，用 ReplaceAttr 去掉默认的 [...]
+------------------------------------------------------------
+T117 [intermediate] 配置、标志与环境变量  (runtime=desktop, import=single-file, verify=stdout-exact)
+  objective: 能用 flag 解析命令行参数、按优先级合并环境变量与默认值。
+  concepts : flag, 环境变量, 配置优先级, 默认值
+  prereq   : T067 包级 API 设计与向后兼容
+  output   : 'addr=192.168.1.5 level=warn port=9000\naddr=10.0.0.1 level=warn port=8080\naddr=127.0.0.1 level=info port=8080'
+  exTitle  : 配置、标志与环境变量（示例）
+  exOut    : 'addr=192.168.1.5 level=warn port=9000\naddr=10.0.0.1 level=warn port=8080\naddr=127.0.0.1 level=info port=8080'
+  explain1 : 配置常来自三处：默认值、环境变量、命令行标志。惯例优先级是命令行 > 环境变量 > 默认值。示例把 getenv 作为参数注入（而非直接读环境），从而在测试与演示中得到确定结果：带标志时标志覆盖环境变量，不带标志时环境变量生效，都没有时用默认值。用 flag.NewFlagSet [...]
+================================================================
+CHAPTER S12 T118-T120
+------------------------------------------------------------
+T118 [advanced] 综合项目一：命令行待办清单（CLI + JSON 持久化）  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能整合参数解析、JSON 编解码与文件持久化，实现增/改/查并保证重载一致。
+  concepts : CLI, JSON 持久化, 原子写, 错误处理
+  prereq   : T089 JSON 一：Marshal/Unmarshal 基础, T086 文件读写：os.Open/Create 与缓冲, T056 错误处理模式：立即返回与上下文补充
+  output   : '1 [done] learn go\n2 [todo] write tests'
+  exTitle  : 综合项目一：命令行待办清单（CLI + JSON 持久化）（示例）
+  exOut    : '1 [done] learn go\n2 [todo] write tests'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go、store_test.go。运行命令：go run .。这是第一个综合项目，整合多项技能：用 Item/Store 建模、用 encoding/json [...]
+------------------------------------------------------------
+T119 [advanced] 综合项目二：并发词频统计器（worker pool + IO）  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能整合并发、IO 与结果聚合，保证并发结果与串行完全一致。
+  concepts : worker pool, 并发, 结果聚合, 确定性
+  prereq   : T084 并发模式：worker pool 与 errgroup 式编排, T022 映射：增删查与存在性判断
+  output   : 'parallel matches serial: true\ngo       4\ngopher   2\nruns     1\ntest     1'
+  exTitle  : 综合项目二：并发词频统计器（worker pool + IO）（示例）
+  exOut    : 'parallel matches serial: true\ngo       4\ngopher   2\nruns     1\ntest     1'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：freq_test.go、go.mod、main.go。运行命令：go run .。这是并发综合项目：CountParallel 用固定 worker 从任务 channel [...]
+------------------------------------------------------------
+T120 [advanced] 综合项目三：极简 HTTP 服务（JSON API + 中间件 + 测试）  (runtime=desktop, import=module-project, verify=stdout-exact)
+  objective: 能整合 HTTP 路由、JSON 响应、中间件与超时，并用 httptest 端到端验证。
+  concepts : net/http, JSON API, 中间件, httptest
+  prereq   : T102 JSON API 与错误响应约定, T103 中间件：日志、恢复与链式组合, T104 超时、重试与优雅关闭
+  output   : 'routes: /health, /api/time\nverify with: go test ./...'
+  exTitle  : 综合项目三：极简 HTTP 服务（JSON API + 中间件 + 测试）（示例）
+  exOut    : 'routes: /health, /api/time\nverify with: go test ./...'
+  explain1 : 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：api_test.go、go.mod、main.go。运行命令：go run .。这是 HTTP 综合项目：NewHandler 组装路由与日志中间件；/health 返回 [...]

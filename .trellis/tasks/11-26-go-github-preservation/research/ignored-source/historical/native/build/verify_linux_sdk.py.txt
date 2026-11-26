@@ -1,0 +1,51 @@
+import json
+import os
+from pathlib import Path
+import subprocess
+import tempfile
+import sys
+
+base = Path(__file__).resolve().parent
+root = base.parent.parent
+sdk = Path(sys.argv[1])
+fixture = Path(tempfile.mkdtemp(prefix='linux-sdk-fixture-', dir=base))
+source = fixture / 'src'
+source.mkdir()
+entry = source / 'main.go'
+valid = 'package main\nimport "fmt"\nfunc main() { fmt.Println(message()) }\n'
+entry.write_text(valid)
+(source / 'helper.go').write_text('package main\nfunc message() string { return "ready" }\n')
+(source / 'helper_test.go').write_text('package main\nimport "testing"\nfunc TestMessage(t *testing.T) { if message() != "ready" { t.Fatal("wrong message") } }\n')
+env = dict(os.environ, GOTOOLCHAIN='local', GOWORK='off', CGO_ENABLED='1', GOCACHE=str(base / 'go-cache-linux'), GOPATH=str(base / 'go-gopath-linux'))
+results = []
+
+def run(label, args, cwd=source, module=False, success=True):
+    settings = dict(env, GO111MODULE='on' if module else 'off')
+    result = subprocess.run([str(sdk), *args], cwd=cwd, env=settings, capture_output=True, text=True, timeout=180)
+    results.append(dict(label=label, command=args, exitCode=result.returncode, stdout=result.stdout, stderr=result.stderr))
+    if (result.returncode == 0) != success:
+        raise RuntimeError(f'{label}: {result.stdout}\n{result.stderr}')
+    print(f'{label}: PASS (exit {result.returncode})', flush=True)
+    return result
+
+run('Linux SDK version', ['version'])
+assert run('multi-file run', ['run', '.']).stdout.strip() == 'ready'
+binary = fixture / 'build' / 'program'
+binary.parent.mkdir()
+run('build', ['build', '-o', str(binary), '.'])
+assert binary.exists()
+assert subprocess.check_output([str(binary)], text=True).strip() == 'ready'
+run('tests', ['test', './...'], cwd=fixture)
+run('format', ['fmt', './...'], cwd=fixture)
+run('vet', ['vet', './...'], cwd=fixture)
+entry.write_text('package main\nfunc main() { unknown() }\n')
+assert 'undefined: unknown' in run('invalid source diagnostic', ['run', '.'], success=False).stderr
+entry.write_text(valid)
+(fixture / 'go.mod').write_text('module example.com/qfli/test\n\ngo 1.27.0\n')
+run('module tidy', ['mod', 'tidy'], cwd=fixture, module=True)
+assert run('module run', ['run', '.'], module=True).stdout.strip() == 'ready'
+native = run('native runtime source tests', ['test', '-mod=vendor', '-count=1', '-v', './...'], cwd=root / 'native' / 'go_runtime', module=True)
+print(native.stdout, flush=True)
+run('native runtime vet', ['vet', '-mod=vendor', './...'], cwd=root / 'native' / 'go_runtime', module=True)
+(base / 'linux-sdk-verification.json').write_text(json.dumps(results, indent=2))
+print('All Linux backend and native source checks passed.', flush=True)

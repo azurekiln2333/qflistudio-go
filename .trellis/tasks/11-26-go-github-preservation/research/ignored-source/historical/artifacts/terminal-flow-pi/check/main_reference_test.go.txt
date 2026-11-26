@@ -1,0 +1,38 @@
+package main
+
+import (
+    "bytes"
+    "os"
+    "path/filepath"
+    "testing"
+
+    "github.com/traefik/yaegi/interp"
+    "github.com/traefik/yaegi/stdlib"
+)
+
+func TestCachedPackageMainReference(t *testing.T) {
+    for _, ignored := range []bool{false, true} {
+        project := t.TempDir()
+        source := filepath.Join(project, "src", "qfli-probe")
+        if err := os.MkdirAll(source, 0755); err != nil { t.Fatal(err) }
+        code := "package main\nimport \"fmt\"\nvar qfliRunEntry = 42\nfunc main() { fmt.Println(\"selected\") }\n"
+        if ignored { code = "// +build qfli_never_enabled\n\n" + code }
+        if err := os.WriteFile(filepath.Join(source, "main.go"), []byte(code), 0644); err != nil { t.Fatal(err) }
+        if err := os.WriteFile(filepath.Join(source, "helper.go"), []byte("package main\nfunc helper() {}\n"), 0644); err != nil { t.Fatal(err) }
+        var stdout, stderr bytes.Buffer
+        runner := interp.New(interp.Options{
+            GoPath: ".",
+            SourcecodeFilesystem: os.DirFS(project),
+            Stdout: &stdout,
+            Stderr: &stderr,
+        })
+        if err := runner.Use(stdlib.Symbols); err != nil { t.Fatal(err) }
+        if _, err := runner.EvalPath("qfli-probe"); err != nil { t.Fatal(err) }
+        if _, err := runner.Eval("import qfliRunEntry \"qfli-probe\""); err != nil { t.Fatal(err) }
+        result, err := runner.Eval("qfliRunEntry.main")
+        t.Logf("ignored=%v reference=%v error=%v stdout=%q stderr=%q", ignored, result.IsValid(), err, stdout.String(), stderr.String())
+        if ignored && err == nil { t.Fatal("ignored entry resolved") }
+        if !ignored && (err != nil || stdout.String() != "selected\n") { t.Fatal("selected entry reran or was not resolved") }
+    }
+}
+

@@ -1,0 +1,117 @@
+[
+  {
+    "label": "Linux SDK version",
+    "command": [
+      "version"
+    ],
+    "exitCode": 0,
+    "stdout": "go version go1.27.1 linux/amd64\n",
+    "stderr": ""
+  },
+  {
+    "label": "multi-file run",
+    "command": [
+      "run",
+      "."
+    ],
+    "exitCode": 0,
+    "stdout": "ready\n",
+    "stderr": ""
+  },
+  {
+    "label": "build",
+    "command": [
+      "build",
+      "-o",
+      "/mnt/d/MyNewProjects/qfli_go/native/build/linux-sdk-fixture-r1bec099/build/program",
+      "."
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "label": "tests",
+    "command": [
+      "test",
+      "./..."
+    ],
+    "exitCode": 0,
+    "stdout": "ok  \t_/mnt/d/MyNewProjects/qfli_go/native/build/linux-sdk-fixture-r1bec099/src\t0.003s\n",
+    "stderr": ""
+  },
+  {
+    "label": "format",
+    "command": [
+      "fmt",
+      "./..."
+    ],
+    "exitCode": 0,
+    "stdout": "src/helper.go\nsrc/helper_test.go\nsrc/main.go\n",
+    "stderr": ""
+  },
+  {
+    "label": "vet",
+    "command": [
+      "vet",
+      "./..."
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "label": "invalid source diagnostic",
+    "command": [
+      "run",
+      "."
+    ],
+    "exitCode": 1,
+    "stdout": "",
+    "stderr": "# _/mnt/d/MyNewProjects/qfli_go/native/build/linux-sdk-fixture-r1bec099/src\n./main.go:2:15: undefined: unknown\n"
+  },
+  {
+    "label": "module tidy",
+    "command": [
+      "mod",
+      "tidy"
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  },
+  {
+    "label": "module run",
+    "command": [
+      "run",
+      "."
+    ],
+    "exitCode": 0,
+    "stdout": "ready\n",
+    "stderr": ""
+  },
+  {
+    "label": "native runtime source tests",
+    "command": [
+      "test",
+      "-mod=vendor",
+      "-count=1",
+      "-v",
+      "./..."
+    ],
+    "exitCode": 0,
+    "stdout": "=== RUN   TestRunGoMultiFile\n--- PASS: TestRunGoMultiFile (0.01s)\n=== RUN   TestRunGoRejectsOutsideEntry\n--- PASS: TestRunGoRejectsOutsideEntry (0.00s)\n=== RUN   TestRunGoCanBeCancelled\n--- PASS: TestRunGoCanBeCancelled (0.00s)\n=== RUN   TestRunGoHandlesProgramPanic\n--- PASS: TestRunGoHandlesProgramPanic (0.00s)\n=== RUN   TestRunGoHandlesOsExit\n--- PASS: TestRunGoHandlesOsExit (0.00s)\n=== RUN   TestRunGoHandlesGoroutinePanic\n=== RUN   TestRunGoHandlesGoroutinePanic/interpreted_function\n=== RUN   TestRunGoHandlesGoroutinePanic/stdlib_function\n=== RUN   TestRunGoHandlesGoroutinePanic/os.Exit\n--- PASS: TestRunGoHandlesGoroutinePanic (0.01s)\n    --- PASS: TestRunGoHandlesGoroutinePanic/interpreted_function (0.00s)\n    --- PASS: TestRunGoHandlesGoroutinePanic/stdlib_function (0.00s)\n    --- PASS: TestRunGoHandlesGoroutinePanic/os.Exit (0.00s)\n=== RUN   TestRunGoCancelsRunningProgram\n--- PASS: TestRunGoCancelsRunningProgram (1.00s)\n=== RUN   TestRunGoConcurrentOutput\n--- PASS: TestRunGoConcurrentOutput (0.01s)\nPASS\nok  \tqfli_go/native/go_runtime\t1.040s\n",
+    "stderr": ""
+  },
+  {
+    "label": "native runtime vet",
+    "command": [
+      "vet",
+      "-mod=vendor",
+      "./..."
+    ],
+    "exitCode": 0,
+    "stdout": "",
+    "stderr": ""
+  }
+]

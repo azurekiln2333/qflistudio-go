@@ -1,0 +1,181 @@
+========================================================================
+T085 io.Reader / io.Writer 抽象 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能基于 io.Reader/Writer 编写与来源无关的代码，并实现自定义 Reader。
+PRE: T041 接口基础与鸭子类型; T030 指针二：指针与切片/映射的关系
+PIT0: 自定义 Read 用值接收者：无法推进读取位置，导致死循环或重复读（本示例曾因此 OOM）。
+PIT1: 忽略 Read 的 n 与 err：必须同时处理“读了多少”和“是否结束”。
+EX0 Q: 实现一个 upperReader，把底层 Reader 的字节转成大写输出。
+EX0 A: Read 委托底层后 for i:=0;i<n;i++ { p[i]=toUpper(p[i]) }。
+EXPLAIN: io.Reader 只有 Read([]byte) (int, error)，io.Writer 只有 Write([]byte) (int, error)。任何实现了它们的东西都能互相组合：字符串、文件、网络、内存缓冲。示例把 strings.Reader 当来源、bytes.Buffer 当目标，用 io.Copy 搬运，代码完全无需知道底层类型。随后实现 repeatReader：它把固定字节重复若干次——这里必须用指针接收者，因为要在 Read 中推进 pos；用值接收者会让 pos 永不前进，引发无限读取（本示例开发时就踩过这个坑，真实运行暴露后修正）。这就是“自定义接口实现”与接收者选择的实战意义。
+========================================================================
+T086 文件读写：os.Open/Create 与缓冲 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能正确打开/写入/关闭并读回文件，说明写后 Close 的必要性。
+PRE: T085 io.Reader / io.Writer 抽象
+PIT0: 写后不 Close：数据可能未落盘，且句柄泄漏。
+PIT1: 在仓库工作目录写文件：污染工作区；应用 os.MkdirTemp 并 defer RemoveAll。
+EX0 Q: 把内容按行追加到文件而非覆盖，并读回验证行数。
+EX0 A: os.OpenFile(path, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0o644)。
+EXPLAIN: 文件读写是 IO 的常见场景。示例先用 os.MkdirTemp 建立隔离的临时目录并 defer RemoveAll，避免污染工作目录；再用 os.Create 写入内容，随后 Close——Close 不仅释放句柄，也保证缓冲数据落盘。读回用 os.ReadFile 一次性读入，并用 os.Stat 校验字节数，作为确定性断言。这些习惯（隔离目录、及时关闭、校验结果）是可重复、可测试文件操作的基础。移动端文件系统能力未实测，标 Yaegi*（待实测），默认 desktop。
+========================================================================
+T087 bufio：按行/按词扫描与缓冲写 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 bufio.Scanner 处理文本，说明默认行上限与如何调大。
+PRE: T085 io.Reader / io.Writer 抽象
+PIT0: 超长行（>64KB）未调大 Buffer：Scan 会因 token too long 返回 false，容易误判为 EOF。
+PIT1: 忘记检查 Scanner.Err()：扫描中途的 IO 错误会被漏掉。
+EX0 Q: 统计每行单词数并打印行号。
+EX0 A: for lineScan.Scan() { n := len(strings.Fields(lineScan.Text())); ... }
+EXPLAIN: bufio.Scanner 把 Reader 包装成“按 token”迭器，默认按行切分，也可用 Split(bufio.ScanWords) 按词。它内部带缓冲，减少系统调用。示例对同一段文本先按行、再按词扫描并打印统计，输出确定。注意两个要点：一是默认单行上限约 64KB，超长行需要 scan.Buffer(make([]byte, 0, max), max) 调大；二是循环结束后应检查 scan.Err()，否则扫描中途的 IO 错误会被静默忽略。
+========================================================================
+T088 目录遍历与文件信息 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 os.ReadDir 遍历目录并判断条目是否为目录、读取大小等元数据。
+PRE: T086 文件读写：os.Open/Create 与缓冲
+PIT0: 依赖目录原始顺序：不同文件系统顺序不同，ReadDir 已按名字排序，应利用这一点。
+PIT1: 对符号链接用 Info 判断类型会得到目标信息：需用 Lstat 或 DirEntry.Type 区分。
+EX0 Q: 实现一个只列 .txt 文件的函数，返回按大小排序的文件名。
+EX0 A: 过滤 strings.HasSuffix(name,".txt")，收集 (name,size) 后排序输出。
+EXPLAIN: os.ReadDir 返回目录条目切片，并保证按文件名排序，因此遍历输出天然确定——这是构建可复现输出的关键。每个 DirEntry 可通过 Info() 拿到 FileInfo（大小、模式等），IsDir() 判断是否为目录。示例在临时目录建两个文件和一个子目录，然后列出并按“名字 + 类型 + 大小”打印，输出稳定。移动端目录访问能力未实测，标 Yaegi*（待实测），默认 desktop。
+========================================================================
+T089 JSON 一：Marshal/Unmarshal 基础 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 Marshal/Unmarshal 编解码结构体，并说明导出字段才被编码。
+PRE: T037 结构体定义、字面量与字段访问
+PIT0: 字段未导出（小写）：不会被编码，产出为空对象。
+PIT1: Unmarshal 传入非指针：无法写回，报错或静默无效果。
+EX0 Q: 给 Profile 增加一个 []int 字段并验证往返一致。
+EX0 A: 加 Scores []int `json:"scores"`；重新 Marshal/Unmarshal 比较。
+EXPLAIN: encoding/json 是 Go 与 JSON 互转的标准方式。Marshal 把 Go 值编码为 JSON 字节切片，Unmarshal 把 JSON 解析回指定类型（需传指针）。结构体字段必须导出（首字母大写）才会参与编码，否则被忽略。示例对 Profile 做往返：编码得到 JSON，再解码回结构体，并比较再次编码结果是否稳定，作为确定性断言。这类往返不变性是验证编解码正确性的常用手段。
+========================================================================
+T090 JSON 二：struct tag、omitempty 与自定义名称 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 tag 控制字段名、用 omitempty 省略零值、用 "-" 屏蔽敏感字段。
+PRE: T089 JSON 一：Marshal/Unmarshal 基础
+PIT0: 对结构体/切片用 omitempty：只有在 nil/空时省略，非空零值结构体不会被省略。
+PIT1: 以为 tag 里的名字会影响 Go 字段访问：tag 只影响（反）序列化，字段名不变。
+EX0 Q: 为 Account 增加 UpdatedAt time.Time 字段，用字符串格式输出。
+EX0 A: 改字段为 string 并赋 RFC3339 值，或实现 MarshalJSON 定制输出。
+EXPLAIN: struct tag 是反引号里的元数据，encoding/json 读取其中 json:"..." 部分："name" 改键名、"omitempty" 在零值时省略、"-" 表示完全不序列化。示例的 Account 演示三者：Password 带 `json:"-"` 永不出现（即使非空），Email/Nickname 用 omitempty 仅在非空时出现，并提供 Password 确实被隐藏的断言。理解 tag 的边界很重要：它只影响序列化视角，不改变 Go 层字段名与可见性。
+========================================================================
+T091 JSON 三：流式 Decoder/Encoder 与 unknown 字段 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 Decoder 处理多值 JSON 流，并用 DisallowUnknownFields 做严格校验。
+PRE: T089 JSON 一：Marshal/Unmarshal 基础
+PIT0: 对 JSON 流用 Unmarshal：它只解第一个值，剩余被忽略。
+PIT1: 严格模式在 schema 演进时会误报：新增字段需同步更新结构体。
+EX0 Q: 用 Encoder 把多个 Event 依次写入 bytes.Buffer，再用 Decoder 读回。
+EX0 A: 循环 Encode 到 buffer，再 NewDecoder 循环 Decode 直到 EOF。
+EXPLAIN: json.Decoder 从 Reader 连续解码，适合 NDJSON（每行一个 JSON）或流式响应；Decoder.More() 判断是否还有值。示例从一段含三个对象的流中逐个解码，其中第二个带未知字段 extra，默认会被忽略，因此成功。随后用 DisallowUnknownFields 打开严格模式，同样的未知字段会报错。这组对照说明：默认宽松便于兼容演进，严格模式便于及早发现拼写错误或契约违背。
+========================================================================
+T092 时间一：time.Time、Duration 与格式化 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 2006-01-02 15:04:05 参考布局格式化与解析时间，并解释 Duration 是纯时长。
+PRE: T008 格式化输出与 fmt 谓词
+PIT0: 用 yyyy-MM-dd 之类的格式串：Go 用参考时间布局，写错会原样输出。
+PIT1: 用 time.Now 作为断言输入：结果随时间变化；应使用固定时间点（本示例如此）。
+EX0 Q: 解析 '2026-01-02T03:04:05Z' 并输出其 Unix 秒。
+EX0 A: t,_ := time.Parse(time.RFC3339, s); fmt.Println(t.Unix())。
+EXPLAIN: Go 的时间格式化不用 yyyy-MM-dd，而用参考时间 2006-01-02 15:04:05（Mon Jan 2 15:04:05 MST 2006）作为布局：布局字符串里对应位置写什么，输出就是什么格式。time.Duration 表示纯时长（与墙钟无关），可相加相减、转成 Minutes 等。示例刻意使用固定时区 UTC 与固定时间点，因此输出完全确定、不依赖运行时刻——这符合本课程的确定性约束。解析用 ParseInLocation，布局必须与输入严格一致。未知时区因素被固定，避免跨机器差异。
+========================================================================
+T093 时间二：定时器、Ticker 与单调时钟 | level=advanced | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 Timer/Ticker 实现定时任务，并说明为何不能把耗时作为断言。
+PRE: T092 时间一：time.Time、Duration 与格式化; T075 select：多路复用与超时
+PIT0: 忘记 Stop Timer/Ticker：会泄漏计时器资源。
+PIT1: 把“耗时约等于 X”作为测试通过条件：机器负载不同会不稳定。
+EX0 Q: 用 Ticker 每 tick 累加，到 5 次后 Stop 并返回累计值。
+EX0 A: 计数到 5 break；defer ticker.Stop()。
+EXPLAIN: Timer 触发一次（一次 C 接收），Ticker 周期性触发。二者基于单调时钟，不受系统墙钟调整影响。示例先等 Timer 触发一次，再用 Ticker 计数到 3 后停止，并用 select+default 探测停止后不再触发。对时间类示例，断言只针对“触发了几次/是否触发”，绝不比较真实耗时，否则机器快慢会让结果不稳定。最后用 time.Since 展示耗时非负——这是可与时间相关的最小确定性断言。桌面与移动端差异需实测，本主题默认 desktop。
+========================================================================
+T094 正则一：regexp 匹配与子匹配 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 FindStringSubmatch/FindAllStringSubmatch 提取捕获组，并用 MustCompile 预编译。
+PRE: T035 字符串处理：strings 包常用函数
+PIT0: 把 MustCompile 放进热路径：每次调用都会重新编译，性能差；应预编译为包级变量。
+PIT1: 把 FindStringSubmatch 的 nil 当作空切片：无匹配时返回 nil，直接索引会 panic。
+EX0 Q: 写一个正则从 'a=1;b=2' 提取所有键值对并打印。
+EX0 A: re.FindAllStringSubmatch("a=1;b=2", -1) 返回二维切片，逐个打印 m[1],m[2]。
+EXPLAIN: regexp 包提供 RE2 风格正则（保证线性时间，无回溯爆炸）。FindStringSubmatch 返回包含整体匹配与各捕获组的切片：m[0] 是整体，m[1..] 是括号组。无匹配时返回 nil，因此判断存在性最稳妥的方式是比较 nil 或检查长度。MustCompile 在正则非法时 panic，适合加载时预编译为包级变量，避免重复编译。示例对固定字符串提取 key=value 组，输出确定。
+========================================================================
+T095 正则二：替换、分割与预编译复用 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 ReplaceAllStringFunc 动态替换，并说明预编译正则的复用价值。
+PRE: T094 正则一：regexp 匹配与子匹配
+PIT0: 在替换函数里假设输入格式：replace 回调只拿到匹配串，需自行校验/转换。
+PIT1: 用 Split 空匹配：可能产生空字符串元素，需按需过滤。
+EX0 Q: 把所有单词首字母大写（用 ReplaceAllStringFunc）。
+EX0 A: re.ReplaceAllStringFunc(s, func(w string) string { return strings.ToUpper(w[:1])+w[1:] })。
+EXPLAIN: ReplaceAllStringFunc 允许用函数动态决定每个匹配的替换值，适合“按内容计算”的替换；ReplaceAllString 则用于固定替换串。Split 按正则切分，-1 表示不限制数量（返回全部字段）。示例把包级预编译的正则复用于两次替换与一次切分，体现预编译的意义：编译一次、多处使用，避免热路径重复编译。所有输出基于固定输入，因而确定。
+========================================================================
+T096 文本模板 text/template | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 text/template 定义模板并渲染结构体数据，理解 {{.}}/{{range}}/{{if}}。
+PRE: T037 结构体定义、字面量与字段访问
+PIT0: 模板里访问未导出字段：模板无法读取，执行会报错。
+PIT1: 忘记检查 Execute 的错误：写目标失败（如管道关闭）会被忽略。
+PIT2: 平台限制：本主题在移动端 Yaegi 解释器下 text/template 输出为空，仅桌面官方 Go 可运行（保持 desktop-only）。
+EX0 Q: 为模板增加“总计数量”一行，用 range 内累加实现。
+EX0 A: 在数据结构里加 Total，模板写 Total: {{.Total}}。
+EXPLAIN: text/template 用 {{.Field}} 引用数据字段，{{range}} 遍历切片，{{if}}/{{else}} 做条件分支。模板在解析时用 Must 包装以便在模板语法错误时快速失败，执行时再检查 Execute 的错误。示例渲染一份“库存清单”：表头用占位符、条目用 range、库存状态用 if。输出末尾的换行由模板控制，因此断言包含尾随换行。模板适合生成配置、报告、邮件等结构化文本。移动端模板能力未实测，标 Yaegi*（待实测），默认 desktop。
+========================================================================
+T097 strconv 与数据解析 | level=beginner | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 Atoi/Itoa/ParseFloat/ParseBool/ParseInt 做类型与文本互转并处理错误。
+PRE: T006 类型转换与数值精度
+PIT0: 忽略解析错误：失败时返回零值，容易把 0 当成有效数据。
+PIT1: 用 Atoi 处理超大整数：Atoi 返回 int，可能溢出；大数应用 ParseInt/BigInt。
+EX0 Q: 写一个函数把逗号分隔的数字串解析为 []int，遇非法项返回错误。
+EX0 A: for _, p := range parts { n, err := strconv.Atoi(strings.TrimSpace(p)); if err != nil { return nil, err } ... }
+EXPLAIN: strconv 是字符串与基础类型互转的标准库。Atoi 等价 ParseInt(s,10,0)，返回 int；Itoa 反向。ParseFloat 解析浮点（示例用 64 位），ParseBool 接受 1/0/t/f/TRUE 等多种形式，ParseInt 可指定进制（示例把 ff 按 16 进制解析为 255）。解析失败返回非 nil 错误，必须处理——忽略错误会把零值当成合法结果。Quote 给字符串加引号并转义特殊字符，常用于生成可读的调试输出。
+========================================================================
+T098 哈希与校验：crypto/sha256 与 encoding/hex | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能计算 SHA-256 摘要、用 hex 编解码，并用已知向量校验正确性。
+PRE: T007 字符串、rune 与字节
+PIT0: 把 hex 字符串直接当字节用：它是编码形式，长度是原字节的两倍。
+PIT1: 对摘要做 == 比较时用字符串而非字节切片：应先 hex 或 bytes.Equal。
+EX0 Q: 对一个大文件分块计算 SHA-256（流式），并与其他方式结果一致。
+EX0 A: h:=sha256.New(); io.Copy(h, f); sum:=h.Sum(nil)。
+EXPLAIN: SHA-256 把任意字节映射为固定 32 字节摘要。sha256.Sum256 返回定长数组，切片化后用 hex.EncodeToString 得到十六进制字符串。示例把结果与 SHA-256("abc") 这个广为人知的公开测试向量对照，因此校验确定、可离线复核，而不是自造随机输入。流式哈希用 sha256.New() 分块写入，结果与一次性计算一致——这对大文件很重要。hex.DecodeString 可把 hex 还原为字节，便于后续比较。
+========================================================================
+T099 net/http 客户端：GET 与响应处理 | level=intermediate | kind=test-package | run=go test ./... | vkind=test-pass
+OBJ: 能用 http.Client 发起请求、读取响应体，并用 httptest 离线测试。
+PRE: T085 io.Reader / io.Writer 抽象
+PIT0: 不关闭 resp.Body：连接无法复用、资源泄漏。
+PIT1: 对真实网络做测试：不稳定且依赖外网；应使 httptest 本地服务器。
+EX0 Q: 断言服务器收到的请求方法，并对非 200 状态做错误处理。
+EX0 A: handler 用 t.Errorf 校验方法；客户端 if resp.StatusCode != 200 { ... }。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、client_test.go。运行命令：go test ./...。net/http 的客户端核心是 http.Client 与 http.Get/Do。响应体 resp.Body 是 io.ReadCloser，读完必须 Close 以便连接复用。示例用 net/http/httptest.NewServer 起一个本地服务器，完全离线；测试断言状态码 200 与响应体内容。这是 test-package 工程例子（go.mod + *_test.go），用 go test 运行；移动端 net 能力未实测，标 Yaegi*（待实测），默认 desktop。用 httptest 而非真实服务，满足“离线、确定”的硬约束。
+========================================================================
+T100 net/http 服务端：Handler 与路由 | level=intermediate | kind=test-package | run=go test ./... | vkind=test-pass
+OBJ: 能用 ServeMux 注册路由并用 httptest 检查响应，无需真正监听端口。
+PRE: T099 net/http 客户端：GET 与响应处理
+PIT0: 把 Mux 直接写在 main 里：难以测试；应抽成 NewMux() 返回路由便于复用。
+PIT1: 在 Handler 里 panic 不处理：会中断服务，需恢复中间件兜底（见 T103）。
+EX0 Q: 新增 /echo 路由回显查询参数 name。
+EX0 A: mux.HandleFunc("/echo", func(w,r){ io.WriteString(w, r.URL.Query().Get("name")) })。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、server_test.go。运行命令：go test ./...。http.ServeMux 把路径前缀映射到 Handler。http.HandlerFunc 让普通函数满足 Handler 接口。示例把路由抽成 NewMux() 返回 *ServeMux，测试时用 httptest.NewRequest 构造请求、httptest.NewRecorder 捕获响应，直接调用 mux.ServeHTTP——完全离线、不占端口、结果确定。断言路径 /hello 与 /bye 的状态码与响应体。test-package 工程例子，go test 运行，desktop only（移动端 net 未实测）。
+========================================================================
+T101 请求与响应：Method、Header、状态码 | level=intermediate | kind=test-package | run=go test ./... | vkind=test-pass
+OBJ: 能按 r.Method 分支处理、用 w.Header 设置响应头、返回恰当状态码。
+PRE: T100 net/http 服务端：Handler 与路由
+PIT0: 用了 w.Write 之后再调 WriteHeader：状态码无效，Go 会警告并忽略。
+PIT1: 405 不带 Allow 头：不符合 HTTP 规范，客户端无法得知允许的方法。
+EX0 Q: 新增一个只接受 PUT 的 /update 路由，返回 204 No Content。
+EX0 A: if r.Method != http.MethodPut { w.Header().Set("Allow", "PUT"); w.WriteHeader(405); return }; w.WriteHeader(204)。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、method_test.go。运行命令：go test ./...。Handler 可以读取请求的 Method 与 Header 并据此分支。写响应时状态码要在写 body 前用 WriteHeader 设定（一旦写入 body 就不能再改状态码）。示例的 handler 只接受 POST，否则返回 405 Method Not Allowed 并设置 Allow 头告知允许方法；成功时回显 X-Token 到 X-Echo 并返回 201。测试分别覆盖 POST 成功与 GET 被拒两条路径，断言状态码与响应头，确定性验证。test-package，go test 运行，desktop only。
+========================================================================
+T102 JSON API 与错误响应约定 | level=intermediate | kind=test-package | run=go test ./... | vkind=test-pass
+OBJ: 能设计统一 JSON 响应结构并设置 Content-Type，区分成功与错误响应。
+PRE: T089 JSON 一：Marshal/Unmarshal 基础; T101 请求与响应：Method、Header、状态码
+PIT0: 忘记设置 Content-Type: application/json：客户端可能按文本解析。
+PIT1: 错误响应里也带 data 字段：会混淆调用方，应按约定省略。
+EX0 Q: 为 API 增加分页字段并更新错误约定（如 code 字段）。
+EX0 A: Envelope{OK,Data,Error,Code}；错误路径只填 OK/Error/Code。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、api_test.go。运行命令：go test ./...。一个稳定的 JSON API 应统一响应外壳：成功返回 data，失败返回 error，并始终设置 Content-Type: application/json。示例的 Envelope 用 omitempty 让 data 与 error 互斥出现。测试覆盖两条路径：带 name 参数返回 200 且 data 正确；不带 name 返回 400 且只有 error、无 data。这种“同结构成功/失败”便于客户端统一解析。用 httptest 保证离线与确定。test-package，go test 运行，desktop only。
+========================================================================
+T103 中间件：日志、恢复与链式组合 | level=advanced | kind=test-package | run=go test ./... | vkind=test-pass
+OBJ: 能编写 Middleware 函数并组合成链，用 recover 中间件防止 panic 中断服务。
+PRE: T100 net/http 服务端：Handler 与路由; T054 panic 与 recover：边界与代价
+PIT0: 中间件顺序搞反：先执行的应是最外层；chain(h,a,b) 中 a 最先。
+PIT1: recover 中间件不设状态码：panic 后若不写 header，可能返回 200。
+EX0 Q: 新增一个鉴权中间件，未带 X-Token 时返回 401。
+EX0 A: 若为空则 w.WriteHeader(401) 并 return，否则 next.ServeHTTP。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、mw_test.go。运行命令：go test ./...。中间件是“接收 Handler、返回 Handler”的函数，可在调用前后插入逻辑（日志、恢复、鉴权）。chain 按顺序包裹：chain(h, a, b) 等价于 a(b(h))，因此 a 是最外层、最先执行。示例用日志中间件记录方法+路径、用 recover 中间件捕获 panic 并返回 500，然后断言：正常请求体正确、panic 请求状态码为 500、日志恰好两条且顺序确定。这展示了中间件链的可组合性与可测试性。test-package，go test 运行，desktop only。
+========================================================================
+T104 超时、重试与优雅关闭 | level=advanced | kind=test-package | run=go test ./... | vkind=test-pass
+OBJ: 能为 http.Client 设置超时、用 Server.Shutdown 优雅停机，并避免用耗时作断言。
+PRE: T099 net/http 客户端：GET 与响应处理; T083 context 二：超时与截止时间
+PIT0: 不设超时：慢服务会耗尽连接，客户端可能永久阻塞。
+PIT1: 用“耗时约 X 毫秒”作断言：不稳定；应断言是否发生超时。
+EX0 Q: 为客户端加指数退避重试（仅对可重试错误），并测试重试次数。
+EX0 A: for attempt := 0; attempt < max; attempt++ { ...; if err==nil { break }; time.Sleep(backoff) }。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、timeout_test.go。运行命令：go test ./...。生产环境的 HTTP 需要超时与优雅关闭。示例用 httptest 起一个“慢于客户端超时”的服务器，客户端 Client.Timeout 很短，断言必然返回超时错误——只判断“是否超时”，不比较精确耗时。再用 Server.Shutdown(ctx) 做优雅关闭，等待在途请求结束后释放监听，断言关闭调用无错误。这两个主题（超时、关闭）涉及监听，移动端未实测，标 Go only/desktop；测试用 httptest 保证离线。test-package，go test 运行。

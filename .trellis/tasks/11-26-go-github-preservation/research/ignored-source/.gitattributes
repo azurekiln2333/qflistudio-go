@@ -1,0 +1,10 @@
+# Preserve archived bytes. Do not normalize snapshot line endings.
+historical/** -text
+redacted/** -text
+# Pin raw bytes for the six archive controls and checksum inventory.
+/.gitattributes -text
+/.gitignore -text
+/provenance.json -text
+/dispositions.json -text
+/README.md -text
+/FILES.sha256 -text

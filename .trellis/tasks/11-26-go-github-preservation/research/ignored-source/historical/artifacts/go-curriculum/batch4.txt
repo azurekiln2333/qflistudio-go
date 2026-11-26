@@ -1,0 +1,192 @@
+========================================================================
+T041 接口基础与鸭子类型 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能定义接口并让类型通过实现方法集合隐式满足接口，理解结构化类型。
+PRE: T039 方法：值接收者与指针接收者
+PIT0: 以为需要显式声明实现：Go 是结构化类型，只要方法集合匹配就自动满足。
+PIT1: 对 nil 接口调用方法：会 panic；接口值可为 nil，需判空。
+EX0 Q: 新增 Triangle 类型实现 Shape 的 Area/Perimeter，并加入 shapes 切片。
+EX0 A: 定义 Triangle 并实现两方法，append 进 []Shape 后统一 describe。
+EXPLAIN: Go 的接口是“方法集合”：任何类型只要实现了接口要求的全部方法，就自动满足该接口——无需显式 implements。这叫结构化类型/鸭子类型。示例定义 Shape，让 Circle 与 Rectangle 各自实现，再放进 []Shape 统一调用。这种隐式实现让接口与实现解耦：实现方无需导入接口所在包，测试也易用替身替换。注意接口值可以为 nil，对 nil 接口调用方法会 panic。
+========================================================================
+T042 接口的动态类型与类型断言 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用逗号-ok 做安全类型断言，并说明单返回值断言失败的 panic 代价。
+PRE: T041 接口基础与鸭子类型
+PIT0: 用单返回值断言而不确定类型：失败即 panic；应优先逗号-ok。
+PIT1: 断言到一个接口值不实现的类型：编译期就报错（impossible type assertion）。
+EX0 Q: 给 Stringer 增加一个断言：若动态类型实现了另一个接口，则调用其方法。
+EX0 A: if o, ok := s.(Other); ok { o.Method() }。
+EXPLAIN: 接口值内部保存“动态类型 + 动态值”。类型断言 x.(T) 取出具体类型：逗号-ok 形式在失败时返回零值与 false，安全降级；单返回值形式失败时 panic。示例先对动态类型 Name 断言成功，再断言为 Number 失败（返回 false），并用 recover 演示单返回值断言的 panic 代价，然后改赋为 Number，断言成功。要注意：断言目标类型必须在编译期可能实现该接口，否则直接编译失败。
+========================================================================
+T043 空接口、any 与类型 switch | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用类型 switch 对任意值分类，并说明 any 等价 interface{}。
+PRE: T042 接口的动态类型与类型断言
+PIT0: 类型 switch 的变量在各 case 中类型不同：别在 case 外使用它。
+PIT1: 可比较性：含不可比较字段的类型不能作为 map 键，类型 switch 本身不受影响。
+EX0 Q: 为 classify 增加 []string 与 map[string]int 两个 case。
+EX0 A: 新增两个 case 返回相应描述。
+EXPLAIN: any（即 interface{}）能装任何值。类型 switch 在同一个 switch 里按动态类型分发，是处理异构集合与实现通用函数的常用手段。示例把 nil、int、float64、string、bool、[]int 以及匿名结构体放入 []any，逐个分类打印，并额外按类型计数。类型 switch 的绑定变量在每个 case 中具有该 case 的具体类型，因此可直接访问类型特有操作（如 len）。
+========================================================================
+T044 接口组合与最小接口原则 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用接口嵌入组合接口，并说明“接口越小越易复用”的原则。
+PRE: T041 接口基础与鸭子类型
+PIT0: 定义过大的接口：实现方被迫实现不需要的方法，降低复用。
+PIT1: 把接口定义在实现方而非使用方：偏离 Go 惯例，耦合更紧。
+EX0 Q: 新增一个 Stringer 组合接口（含 Read 与 String），让另一类型实现并传入。
+EX0 A: type ReadStringer interface { Reader; String() string }。
+EXPLAIN: Go 鼓励“小而专”的接口：Reader、Writer、Closer 各管一件事，再按需组合。接口可以嵌入接口形成组合接口，如 ReadWriteCloser = Reader+Writer+Closer。示例用组合接口统一读写设备，并把组合接口赋给最小的 Reader 使用——因为接口越小，能被满足的类型越多，替换与测试越容易。这是 Go 生态（io、net）广泛采用的设计原则。
+========================================================================
+T045 标准接口：Stringer 与 error | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能实现 Stringer 与 error 接口，说明它们如何影响 fmt 输出。
+PRE: T041 接口基础与鸭子类型
+PIT0: String() 里调用会再次触发 String 的方法：可能无限递归。
+PIT1: 错误类型的 Error() 用值接收者还是指针接收者：影响何种值能赋给 error。
+EX0 Q: 为 ValidationError 增加 Field 字段的 Stringer，并让 Error() 复用其输出。
+EX0 A: func (e *ValidationError) Error() string { return "invalid "+e.Field }。
+EXPLAIN: fmt.Stringer 的 String() 决定 fmt 打印该值时的文本；error 接口的 Error() 同理决定错误文本。实现 Stringer 后，%v/%s 打印的是自定义文本（示例的枚举名字），%d 仍打印底层数值。实现 error 后，%v 打印 Error() 的内容。示例同时演示越界枚举的回退输出与自定义错误类型。要点：String() 中避免再次触发同类型的格式化，否则可能递归。
+========================================================================
+T046 排序与比较：sort.Interface 实现 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能实现 Len/Less/Swap 三方法，并用 sort.Sort/sort.Reverse 排序。
+PRE: T032 排序：sort.Slice 与自定义比较
+PIT0: Less 不是严格弱序：会导致排序结果不确定或 panic。
+PIT1: Swap 的实现与 Less 视角不一致：会得到错误顺序。
+EX0 Q: 为 ByAge 增加一个按名字优先、年龄次之的 ByName 类型并排序。
+EX0 A: type ByName []Person；Less 比较 Name 后比较 Age。
+EXPLAIN: sort.Interface 要求三个方法：Len、Less、Swap。实现它就能用 sort.Sort 排序任意集合。Less 决定顺序，必须构成严格弱序；Swap 决定交换方式。示例按“年龄升序、同龄按名字”排序，再用 sort.Reverse 得到逆序。相比 sort.Slice，实现 sort.Interface 让排序规则可复用、有名字，适合多处使用的自定义类型。
+========================================================================
+T047 组合优于继承：策略与装饰模式 | level=advanced | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用组合与接口实现策略切换和装饰增强，说明为何组合优于继承。
+PRE: T041 接口基础与鸭子类型; T039 方法：值接收者与指针接收者
+PIT0: 用类型分支代替多态：新增策略要改 switch，违背开闭原则。
+PIT1: 装饰器无限嵌套：注意装饰链深度与调用开销。
+PIT2: 平台限制：接口赋值在移动端 Yaegi 下会 panic（reflect.Set 错误），仅桌面官方 Go 可运行（保持 desktop-only）。
+PIT3: 平台限制：涉及接口赋值/反射的实现路径在移动端 Yaegi 解释器下会 panic（reflect.Set: value of type interp.valueInterface...），本主题仅桌面官方 Go 可运行。
+EX0 Q: 再加一个 PercentOff(20) 策略，并写一个同时记录耗时与日志的装饰器。
+EX0 A: PercentOff 返回 base*(100-p)/100；装饰器在调用前后追加。
+EXPLAIN: Go 没有继承，用“接口 + 组合”实现行为的可替换与增强。策略模式把可变算法抽成接口（Pricing），Order 组合一个策略，运行期切换即改变行为。装饰模式用组合在原有行为上叠加：LogJob 持有内部 Job，在调用前后插入日志，而不修改 SimpleJob。这种设计比继承更灵活——可在不改动原有类型的前提下新增策略与装饰，符合开闭原则。示例同时展示策略切换与装饰链。
+
+平台限制：涉及接口赋值/反射的实现路径在移动端 Yaegi 解释器下会 panic（reflect.Set: value of type interp.valueInterface...），本主题仅桌面官方 Go 可运行。
+========================================================================
+T048 接口的 nil 陷阱与类型比较 | level=advanced | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能识别 typed-nil 陷阱，并用类型断言安全检出内部 nil 指针。
+PRE: T042 接口的动态类型与类型断言; T029 指针一：地址、解引用与值/指针参数
+PIT0: 判断接口是否为空用 == nil：typed-nil 时结果为 false，易漏判。
+PIT1: 在 nil 接收者上访问字段：会 panic；方法应在 nil 时提前返回。
+EX0 Q: 让 Greet 在接收者为 nil 时返回空串而非 panic，并写测试验证。
+EX0 A: func (p *Person) Greet() string { if p == nil { return "" }; return "hi "+p.Name }。
+EXPLAIN: 一个常见陷阱：接口值为 nil 与“接口里装了一个 nil 的具体指针”不是一回事。当把一个 nil 的 *Person 赋给接口，接口本身非 nil（动态类型是 *Person），但动态值是 nil，因此 g == nil 为 false，调用方法会在 nil 接收者上解引用字段而 panic。正确做法是用类型断言取出指针并判 nil；或让方法在 nil 接收者时安全返回。示例完整演示陷阱与检出方式。
+========================================================================
+T049 error 接口与错误即值 | level=beginner | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能编写返回 (T, error) 的函数并显式检查错误、妥善降级。
+PRE: T023 函数签名、多返回值与命名返回
+PIT0: 忽略返回的 error（用 _ 丢弃）：失败被静默吞掉，埋下隐患。
+PIT1: 把错误当异常：Go 不用 try/catch，错误是正常控制流的一部分。
+EX0 Q: 写一个 sqrt 函数，负数时返回错误，正数时返回平方根。
+EX0 A: if x<0 { return 0, fmt.Errorf("negative") }; return math.Sqrt(x), nil。
+EXPLAIN: Go 把错误当作普通值返回：函数返回 (T, error)，调用方必须显式检查。error 是一个接口：任何有 Error() string 的类型都能当错误。示例的 divide 在除零时返回错误，调用方检查 err 并降级，而不是忽略。这种“错误即值”让控制流显式、可读，也便于测试与传递：错误可以被存进变量、比较、返回给上层。
+========================================================================
+T050 errors.New、fmt.Errorf 与哨兵错误 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能定义哨兵错误、用 %w 包装，并用 errors.Is 沿链判断身份。
+PRE: T049 error 接口与错误即值
+PIT0: 比较错误字符串判断类型：包装或措辞变化即失效。
+PIT1: 用 %v 而非 %w 包装：丢失可被 errors.Is/As 识别的链。
+EX0 Q: 定义 ErrConflict 哨兵并用 %w 包装后，用 errors.Is 判断。
+EX0 A: errors.Is(fmt.Errorf("save: %w", ErrConflict), ErrConflict) == true。
+EXPLAIN: 哨兵错误（sentinel error）是包级导出的错误变量，调用方用 errors.Is 判断错误身份，而不比较错误字符串——字符串比较脆弱，包装后即失效。示例定义 ErrNotFound，返回它并用 fmt.Errorf 的 %w 包装；errors.Is 能穿过包装命中哨兵。对照用 %v 只做文本拼接、不构成可解包链，因此 errors.Is 失败。
+========================================================================
+T051 错误包装与 %w 的解包链 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 %w 构建可解包链，用 errors.Unwrap 逐层取出并说明 %v 不构成链。
+PRE: T050 errors.New、fmt.Errorf 与哨兵错误
+PIT0: 用 %w 包装多个错误：一个 fmt.Errorf 只能有一个 %w。
+PIT1: 在链上丢失上下文：只返回底层错误会丢掉“哪一步失败”。
+EX0 Q: 为每一层补充操作名，并打印完整链与 errors.Is(errBase)。
+EX0 A: for e:=err; e!=nil; e=errors.Unwrap(e) { print(e) }；errors.Is(err, errBase)。
+EXPLAIN: %w 在 fmt.Errorf 中表示“包装”错误，形成可解包的链：errors.Unwrap 逐层取出内层错误，errors.Is/As 则遍历整条链。示例三层包装后，打印完整文本与逐层链，并用 errors.Is 命中基础错误。对照用 %v 只拼接文本、不构成可解包链，因此 errors.Is 失败。包装链让错误既保留最内层原因，又带有每一层的上下文。
+========================================================================
+T052 errors.Is 与 errors.As 的适用差异 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 errors.As 从链上取出具体错误类型读取字段，并区分其与 Is 的场景。
+PRE: T051 错误包装与 %w 的解包链
+PIT0: 用 Is 匹配具体类型：Is 比较值/身份，不是类型，应改用 As。
+PIT1: As 的目标是指针的指针：传 &pe 而非 pe。
+PIT2: 平台限制：errors.As 在移动端 Yaegi 下会 panic（*target 类型错误），仅桌面官方 Go 可运行（保持 desktop-only）。
+PIT3: 平台限制：errors.As 在移动端 Yaegi 解释器下会报 errors: *target must be interface or implement error，本主题仅桌面官方 Go 可运行。
+EX0 Q: 定义带 Code 字段的 HTTPError，用 As 取出 Code 并分支处理。
+EX0 A: if errors.As(err,&e) { switch e.Code { ... } }。
+EXPLAIN: errors.Is 用于“值/身份”匹配（哨兵错误），遍历解包链比较；errors.As 用于“类型”匹配，把链上某个具体类型的错误取出到目标变量，以便读取其字段。示例先用 Is 命中哨兵 ErrPermission，再用 As 取出 *PathError 读取 Path/Op；As 对内层包装同样生效。选型原则：判断“是不是某个已知错误”用 Is，需要“拿到错误的类型和字段”用 As。
+
+平台限制：errors.As 在移动端 Yaegi 解释器下会报 errors: *target must be interface or implement error，本主题仅桌面官方 Go 可运行。
+========================================================================
+T053 自定义错误类型与行为方法 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能定义带结构化字段的错误类型并实现 Unwrap，用 As 读取字段。
+PRE: T052 errors.Is 与 errors.As 的适用差异
+PIT0: 实现 Unwrap 返回 nil 之外的东西却期望 Is 命中：链会断。
+PIT1: 错误类型用值接收者但存了指针字段：注意一致性。
+PIT2: 平台限制：自定义错误 + errors.As/Unwrap 在移动端 Yaegi 下会 panic，仅桌面官方 Go 可运行（保持 desktop-only）。
+PIT3: 平台限制：自定义错误配合 errors.As/Unwrap 在移动端 Yaegi 解释器下不受支持（同 errors.As 报错），本主题仅桌面官方 Go 可运行。
+EX0 Q: 为 QueryError 增加 Duration 字段并在 Error() 中输出。
+EX0 A: Error() 返回 fmt.Sprintf("query %q failed after %s: %v", ...)。
+EXPLAIN: 自定义错误类型可携带结构化信息（字段）并实现额外方法，比字符串错误更有用。示例的 QueryError 保存 SQL 与 Cause，并实现 Unwrap 暴露底层错误。这样它既能给出可读文本，又能被 errors.Is 命中底层哨兵（ErrTimeout），还能被 errors.As 取出并读取 SQL/Cause 字段。Unwrap 让自定义错误无缝融入标准错误链机制。
+
+平台限制：自定义错误配合 errors.As/Unwrap 在移动端 Yaegi 解释器下不受支持（同 errors.As 报错），本主题仅桌面官方 Go 可运行。
+========================================================================
+T054 panic 与 recover：边界与代价 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能在 defer 中用 recover 兜底，说明库函数应返回 error 而非 panic。
+PRE: T028 defer 基础与执行顺序; T049 error 接口与错误即值
+PIT0: 在非 defer 中调用 recover：无效，recover 只在 defer 中生效。
+PIT1: 用 panic 处理可预期错误：应返回 error；panic 只用于不可恢复的编程错误。
+EX0 Q: 写一个函数，把切片越界 panic 转为错误返回。
+EX0 A: defer 中 recover 后设置命名返回值 err；访问 s[i] 触发越界时被捕获。
+EXPLAIN: panic 表示不可继续的程序错误；recover 只能在 defer 中调用，用于兜底。惯例：库函数用 error 表达可预期失败，不使用 panic；recover 一般只用在进程或请求边界（如 HTTP handler、job runner），避免单个请求的 panic 拖垮整个服务。示例用 recover 把除零 panic 转成 error 让程序继续，并用 recover 捕获显式 panic 后继续运行，演示边界兜底的价值与代价。
+========================================================================
+T055 defer 在资源清理与错误聚合中的应用 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 defer + 命名返回值聚合清理错误，并说明 defer 的 LIFO 顺序。
+PRE: T028 defer 基础与执行顺序; T051 错误包装与 %w 的解包链
+PIT0: 多个 defer 只返回最后一个错误：会丢掉前面的失败，应聚合。
+PIT1: defer 中修改非命名返回值：改动不会影响返回结果。
+EX0 Q: 让 process 在清理时同时统计关闭成功的数量并返回。
+EX0 A: func process(...) (count int, err error) { defer func(){ ... count++ }() }。
+EXPLAIN: defer 在函数返回时执行（LIFO），常用于释放资源。通过命名返回值，defer 可以合并多个清理步骤的错误——避免“只返回最后一个错误”丢因。示例打开两个资源，用 defer 关闭并用 errors.Join 聚合关闭错误；正常时无错，某资源关闭失败时错误被保留且可被 errors.Is 命中。最后演示 defer 的 LIFO：后注册先执行。
+========================================================================
+T056 错误处理模式：立即返回与上下文补充 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能在各层补充上下文并保留底层错误，理解“立即返回 + 上下文补充”模式。
+PRE: T051 错误包装与 %w 的解包链
+PIT0: 每层都替换错误（不用 %w）：底层原因丢失，无法 errors.Is。
+PIT1: 把上下文写进日志而非错误：调用方拿不到定位信息。
+EX0 Q: 在 loadConfig 中补上键名到上下文，并打印完整链。
+EX0 A: 链变为 start: loadConfig db.dsn: not found，errors.Is 仍命中哨兵。
+EXPLAIN: 惯例：错误产生处立即 return，调用链每一层用 %w 补充上下文（哪个操作、哪个键），到边界处统一打印一次。这样既不丢因，又能给出可定位的路径。示例三层函数逐层包装，最终错误文本显示完整路径，且 errors.Is 仍命中底层哨兵。示例还逐层打印解包链，直观展示上下文如何逐层累加。
+========================================================================
+T057 错误与日志打印边界 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能区分“返回错误”与“记录日志”的职责，把记录集中在边界层。
+PRE: T056 错误处理模式：立即返回与上下文补充
+PIT0: 每层都 log：同一错误被打印多遍，噪音大且难追踪。
+PIT1: 边界层记录后又把原始错误抛给上层记录：重复记录。
+EX0 Q: 让 handle 在错误时返回用户可见文案，并只记录一次结构化日志。
+EX0 A: log.Errorf(...) 一次；return fmt.Errorf("操作失败")。
+EXPLAIN: 反模式：每一层都 log 一次，同一个错误被打印多遍，噪音大且难追踪。惯例：中间层只 return（可包装），到“边界”（main、HTTP handler、job runner）才记录一次日志或向用户展示。示例用内存 logger 展示正确做法——边界只记录一次；再对照反模式，说明重复记录会产生多条噪音。关键是把“记录”当成边界职责，把“传播”当成中间层职责。
+========================================================================
+T058 错误集合并发安全的收集 | level=advanced | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能在并发场景下用锁保护错误切片，并用 errors.Join 聚合，验证 Is/As 可穿透。
+PRE: T077 sync.Mutex 与临界区保护; T051 错误包装与 %w 的解包链
+PIT0: 多 goroutine 无锁 append 到同一切片：数据竞争。
+PIT1: 期望 Join 的 Unwrap 返回单个错误：Join 实现的是 Unwrap() []error。
+EX0 Q: 把失败任务数作为统计返回，并断言与错误切片长度一致。
+EX0 A: failed := len(mu.Unwrap())；断言 failed == expectedFails。
+EXPLAIN: 并行处理多个子任务时，需要并发安全地收集错误。示例用 Mutex 保护错误切片，等待全部完成后用 errors.Join 聚合，并通过 Unwrap() []error 展开子错误；由于并发完成顺序不定，示例对错误文本排序后再打印，保证输出确定。errors.Join 的返回值在 errors.Is/As 语义上仍可遍历全部子错误。还要注意：单个 errors.Unwrap 对 Join 结果返回 nil，因为它实现的是多值 Unwrap。
+========================================================================
+T059 包、导出规则与初始化顺序 | level=intermediate | kind=module-project | run=go run . | vkind=stdout-exact
+OBJ: 能说明导出（大写）与非导出（小写）规则，以及 init 与包级变量的执行顺序。
+PRE: T037 结构体定义、字面量与字段访问
+PIT0: 依赖 init 的副作用顺序：跨包 init 顺序由依赖关系决定，不要假设。
+PIT1: 在 init 中做重活或发动网络请求：会拖慢启动且难测试。
+EX0 Q: 新增 util 子包，导出 Add 与非导出 helper，从 main 调用 Add。
+EX0 A: util.Add 可调用；util.helper 会编译报错 undefined。
+EXPLAIN: 包把代码分组；导出（大写）标识符可被其他包访问，小写仅包内可见。init 函数与包级变量初始化在包被导入时自动执行，顺序遵循：先按声明顺序初始化包级变量，再执行 init；跨包时先完成被依赖包。示例在同一文件内演示包级变量初始化与 init 早于 main。真实工程是多包结构（config/util 子包），因此标记为 module-project，不能一键导入。
+========================================================================
+T060 Go Modules：go.mod 与依赖版本 | level=intermediate | kind=module-project | run=go run . | vkind=stdout-exact
+OBJ: 能初始化模块并理解 require/replace，在离线环境下用本地 replace 解析依赖。
+PRE: T059 包、导出规则与初始化顺序
+PIT0: 用网络拉取依赖：违反离线约束；应用本地 replace 指向同仓目录。
+PIT1: 忘记 go mod tidy：go.mod 与实际导入不一致。
+EX0 Q: 为本示例补一个 lib 子模块与 replace，改 main 调用 lib.Greeting()。
+EX0 A: lib/go.mod 声明 module qfli.example/lib；main import 并调用，go run . 正常。
+EXPLAIN: go.mod 声明模块路径与 Go 版本，并记录依赖及版本；go.sum 记录校验和。示例在完全离线、无第三方依赖的前提下，用本地 replace 指向同仓目录来演示模块依赖解析，并内联语义化版本比较以展示版本选择。真实工程是“主模块 + lib 子模块”的多模块结构，需手动创建 go.mod 与 lib/ 目录，因此标记为 module-project，不能一键导入。

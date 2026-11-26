@@ -1,0 +1,26 @@
+$ErrorActionPreference='Stop'
+$goRoot='D:/MyNewProjects/qfli_go'
+$goGradle=Join-Path $goRoot 'android/app/build.gradle.kts'
+$goOriginal=[System.IO.File]::ReadAllBytes($goGradle)
+$goBackup=Join-Path $goRoot '.artifacts/release-integrity/android-app-gradle.original'
+[System.IO.File]::WriteAllBytes($goBackup,$goOriginal)
+$goOriginalHash=(Get-FileHash -LiteralPath $goGradle -Algorithm SHA256).Hash
+$goUtf8=New-Object System.Text.UTF8Encoding($false)
+$goText=$goUtf8.GetString($goOriginal)
+$goNeedle='applicationId = "com.azurekiln.qfli.goshift"'
+if ([regex]::Matches($goText,[regex]::Escape($goNeedle)).Count -ne 1) {throw 'Unexpected applicationId source; no edit made'}
+$goBuildExit=1
+try {
+    [System.IO.File]::WriteAllText($goGradle,$goText.Replace($goNeedle,'applicationId = "com.azurekiln.qfli.goshift.integrationtest"'),$goUtf8)
+    & 'D:/ProgramFiles/flutter_ohos/bin/flutter.bat' build apk --debug --pub --target integration_test/go_native_test.dart --target-platform android-arm64 *> (Join-Path $goRoot '.artifacts/release-integrity/android-arm64-isolated-build.log')
+    $goBuildExit=$LASTEXITCODE
+    if ($goBuildExit -eq 0) {
+        Copy-Item -LiteralPath (Join-Path $goRoot 'build/app/outputs/flutter-apk/app-debug.apk') -Destination (Join-Path $goRoot '.artifacts/release-integrity/packages/qfli-go-arm64-isolated-integration.apk')
+    }
+} finally {
+    [System.IO.File]::WriteAllBytes($goGradle,$goOriginal)
+    if ((Get-FileHash -LiteralPath $goGradle -Algorithm SHA256).Hash -ne $goOriginalHash) {throw 'Gradle exact restoration failed'}
+    Write-Output 'Original Gradle applicationId restored byte-for-byte'
+}
+Get-Content (Join-Path $goRoot '.artifacts/release-integrity/android-arm64-isolated-build.log') -Tail 40
+exit $goBuildExit

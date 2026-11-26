@@ -1,0 +1,29 @@
+diff --git a/base/lib/widgets/code_snippet.dart b/work/lib/widgets/code_snippet.dart
+index 276a56d..e08fbe9 100644
+--- a/base/lib/widgets/code_snippet.dart
++++ b/work/lib/widgets/code_snippet.dart
+@@ -154,9 +154,10 @@ class _CodeSnippetState extends State<CodeSnippet> {
+           auth: widget.auth!,
+         ),
+       );
+-      if (result == null || !mounted) return;
+-      widget.store!.touch(result.project);
+-      TaskActivityService.report(widget.auth!, 'open_project');
++      if (result == null || !mounted) return;
++      widget.store!.touch(result.project);
++      TaskActivityService.report(widget.auth!, 'open_project');
++      widget.store!.setBrowsedProject(result.project);
+       await Navigator.of(context).push<void>(
+         MaterialPageRoute(
+           builder: (_) => EditorPage(
+@@ -409,8 +410,8 @@ class _CodeImportDialogState extends State<_CodeImportDialog> {
+             l10n.projectUnavailable,
+           CodeImportException(reason: CodeImportFailure.storageUnavailable) =>
+             l10n.codeStorageUnavailable,
+-          FileSystemException() => '${l10n.importFailed}: ${error.message}',
+-          _ => '${l10n.importFailed}: $error',
++          FileSystemException() => l10n.codeImportFailed(error.message),
++          _ => l10n.codeImportFailed('$error'),
+         };
+       });
+     } finally {

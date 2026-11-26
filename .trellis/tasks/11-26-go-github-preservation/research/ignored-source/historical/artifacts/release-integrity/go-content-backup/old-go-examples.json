@@ -1,0 +1,2502 @@
+[
+  {
+    "id": "go-example-001",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 001: 数据建模与不变量",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示数据建模与不变量，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "数据建模与不变量",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{1, 3, 5}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=22",
+    "inputFixtures": {
+      "case": "fixture-1",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-001-lesson"
+  },
+  {
+    "id": "go-example-002",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 002: 输入校验与错误边界",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示输入校验与错误边界，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "输入校验与错误边界",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{2, 4, 6}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=28",
+    "inputFixtures": {
+      "case": "fixture-2",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-002-lesson"
+  },
+  {
+    "id": "go-example-003",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 003: 文件格式与编码",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示文件格式与编码，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "文件格式与编码",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{3, 5, 7}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=34",
+    "inputFixtures": {
+      "case": "fixture-3",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-003-lesson"
+  },
+  {
+    "id": "go-example-004",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 004: 日志与可观测性",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示日志与可观测性，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "日志与可观测性",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{4, 6, 8}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=40",
+    "inputFixtures": {
+      "case": "fixture-4",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-004-lesson"
+  },
+  {
+    "id": "go-example-005",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 005: 缓存与失效策略",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示缓存与失效策略，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "缓存与失效策略",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{5, 7, 9}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=46",
+    "inputFixtures": {
+      "case": "fixture-5",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-005-lesson"
+  },
+  {
+    "id": "go-example-006",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 006: 队列与批处理",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示队列与批处理，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "队列与批处理",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{6, 8, 10}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=52",
+    "inputFixtures": {
+      "case": "fixture-6",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-006-lesson"
+  },
+  {
+    "id": "go-example-007",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 007: 分页与排序",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示分页与排序，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "分页与排序",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{7, 9, 11}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=58",
+    "inputFixtures": {
+      "case": "fixture-7",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-007-lesson"
+  },
+  {
+    "id": "go-example-008",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 008: 配置与环境隔离",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示配置与环境隔离，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "配置与环境隔离",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{8, 10, 12}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=64",
+    "inputFixtures": {
+      "case": "fixture-8",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-008-lesson"
+  },
+  {
+    "id": "go-example-009",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 009: 并发与资源生命周期",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示并发与资源生命周期，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "并发与资源生命周期",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{9, 11, 13}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=70",
+    "inputFixtures": {
+      "case": "fixture-9",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-009-lesson"
+  },
+  {
+    "id": "go-example-010",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 010: 测试夹具与回归",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示测试夹具与回归，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "测试夹具与回归",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{10, 12, 14}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=76",
+    "inputFixtures": {
+      "case": "fixture-10",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-010-lesson"
+  },
+  {
+    "id": "go-example-011",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 011: 性能测量与优化",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示性能测量与优化，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "性能测量与优化",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{11, 13, 15}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=82",
+    "inputFixtures": {
+      "case": "fixture-11",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-011-lesson"
+  },
+  {
+    "id": "go-example-012",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 012: 安全边界与最小权限",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示安全边界与最小权限，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "安全边界与最小权限",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{12, 14, 16}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=88",
+    "inputFixtures": {
+      "case": "fixture-12",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-012-lesson"
+  },
+  {
+    "id": "go-example-013",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 013: 网络协议与重试",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示网络协议与重试，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "网络协议与重试",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{13, 15, 17}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=94",
+    "inputFixtures": {
+      "case": "fixture-13",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-013-lesson"
+  },
+  {
+    "id": "go-example-014",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 014: 持久化与迁移",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示持久化与迁移，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "持久化与迁移",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{14, 16, 18}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=100",
+    "inputFixtures": {
+      "case": "fixture-14",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-014-lesson"
+  },
+  {
+    "id": "go-example-015",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 015: 命令行工具设计",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示命令行工具设计，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "命令行工具设计",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{15, 17, 19}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=106",
+    "inputFixtures": {
+      "case": "fixture-15",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-015-lesson"
+  },
+  {
+    "id": "go-example-016",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 016: 模块边界与依赖方向",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示模块边界与依赖方向，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "模块边界与依赖方向",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{16, 18, 20}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=112",
+    "inputFixtures": {
+      "case": "fixture-16",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-016-lesson"
+  },
+  {
+    "id": "go-example-017",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 017: 状态机与事件流",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示状态机与事件流，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "状态机与事件流",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{17, 19, 21}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=118",
+    "inputFixtures": {
+      "case": "fixture-17",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-017-lesson"
+  },
+  {
+    "id": "go-example-018",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 018: 时间、时区与截止时间",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示时间、时区与截止时间，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "时间、时区与截止时间",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{18, 20, 22}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=124",
+    "inputFixtures": {
+      "case": "fixture-18",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-018-lesson"
+  },
+  {
+    "id": "go-example-019",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 019: 文本处理与国际化",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示文本处理与国际化，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "文本处理与国际化",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{19, 21, 23}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=130",
+    "inputFixtures": {
+      "case": "fixture-19",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-019-lesson"
+  },
+  {
+    "id": "go-example-020",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 020: 故障恢复与幂等性",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示故障恢复与幂等性，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "故障恢复与幂等性",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{20, 22, 24}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=136",
+    "inputFixtures": {
+      "case": "fixture-20",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-020-lesson"
+  },
+  {
+    "id": "go-example-021",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 021: 资源打包与发布",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示资源打包与发布，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "资源打包与发布",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{21, 23, 25}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=142",
+    "inputFixtures": {
+      "case": "fixture-21",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-021-lesson"
+  },
+  {
+    "id": "go-example-022",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 022: 增量计算与差分",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示增量计算与差分，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "增量计算与差分",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{22, 24, 26}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=148",
+    "inputFixtures": {
+      "case": "fixture-22",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-022-lesson"
+  },
+  {
+    "id": "go-example-023",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 023: API 契约与版本兼容",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示API 契约与版本兼容，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "API 契约与版本兼容",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{23, 25, 27}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=154",
+    "inputFixtures": {
+      "case": "fixture-23",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-023-lesson"
+  },
+  {
+    "id": "go-example-024",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 024: 真实项目重构练习",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示真实项目重构练习，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "真实项目重构练习",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{24, 26, 28}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=160",
+    "inputFixtures": {
+      "case": "fixture-24",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-024-lesson"
+  },
+  {
+    "id": "go-example-025",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "beginner",
+    "title": "Go 示例 025: 数据建模与不变量",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示数据建模与不变量，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "数据建模与不变量",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{25, 27, 29}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=166",
+    "inputFixtures": {
+      "case": "fixture-25",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-025-lesson"
+  },
+  {
+    "id": "go-example-026",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 026: 输入校验与错误边界",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示输入校验与错误边界，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "输入校验与错误边界",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{26, 28, 30}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=172",
+    "inputFixtures": {
+      "case": "fixture-26",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-026-lesson"
+  },
+  {
+    "id": "go-example-027",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 027: 文件格式与编码",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示文件格式与编码，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "文件格式与编码",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{27, 29, 31}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=178",
+    "inputFixtures": {
+      "case": "fixture-27",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-027-lesson"
+  },
+  {
+    "id": "go-example-028",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 028: 日志与可观测性",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示日志与可观测性，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "日志与可观测性",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{28, 30, 32}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=184",
+    "inputFixtures": {
+      "case": "fixture-28",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-028-lesson"
+  },
+  {
+    "id": "go-example-029",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 029: 缓存与失效策略",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示缓存与失效策略，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "缓存与失效策略",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{29, 31, 33}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=190",
+    "inputFixtures": {
+      "case": "fixture-29",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-029-lesson"
+  },
+  {
+    "id": "go-example-030",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 030: 队列与批处理",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示队列与批处理，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "队列与批处理",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{30, 32, 34}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=196",
+    "inputFixtures": {
+      "case": "fixture-30",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-030-lesson"
+  },
+  {
+    "id": "go-example-031",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 031: 分页与排序",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示分页与排序，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "分页与排序",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{31, 33, 35}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=202",
+    "inputFixtures": {
+      "case": "fixture-31",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-031-lesson"
+  },
+  {
+    "id": "go-example-032",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 032: 配置与环境隔离",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示配置与环境隔离，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "配置与环境隔离",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{32, 34, 36}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=208",
+    "inputFixtures": {
+      "case": "fixture-32",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-032-lesson"
+  },
+  {
+    "id": "go-example-033",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 033: 并发与资源生命周期",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示并发与资源生命周期，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "并发与资源生命周期",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{33, 35, 37}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=214",
+    "inputFixtures": {
+      "case": "fixture-33",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-033-lesson"
+  },
+  {
+    "id": "go-example-034",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 034: 测试夹具与回归",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示测试夹具与回归，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "测试夹具与回归",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{34, 36, 38}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=220",
+    "inputFixtures": {
+      "case": "fixture-34",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-034-lesson"
+  },
+  {
+    "id": "go-example-035",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 035: 性能测量与优化",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示性能测量与优化，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "性能测量与优化",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{35, 37, 39}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=226",
+    "inputFixtures": {
+      "case": "fixture-35",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-035-lesson"
+  },
+  {
+    "id": "go-example-036",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 036: 安全边界与最小权限",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示安全边界与最小权限，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "安全边界与最小权限",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{36, 38, 40}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=232",
+    "inputFixtures": {
+      "case": "fixture-36",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-036-lesson"
+  },
+  {
+    "id": "go-example-037",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 037: 网络协议与重试",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示网络协议与重试，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "网络协议与重试",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{37, 39, 41}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=238",
+    "inputFixtures": {
+      "case": "fixture-37",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-037-lesson"
+  },
+  {
+    "id": "go-example-038",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 038: 持久化与迁移",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示持久化与迁移，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "持久化与迁移",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{38, 40, 42}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=244",
+    "inputFixtures": {
+      "case": "fixture-38",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-038-lesson"
+  },
+  {
+    "id": "go-example-039",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 039: 命令行工具设计",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示命令行工具设计，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "命令行工具设计",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{39, 41, 43}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=250",
+    "inputFixtures": {
+      "case": "fixture-39",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-039-lesson"
+  },
+  {
+    "id": "go-example-040",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 040: 模块边界与依赖方向",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示模块边界与依赖方向，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "模块边界与依赖方向",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{40, 42, 44}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=256",
+    "inputFixtures": {
+      "case": "fixture-40",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-040-lesson"
+  },
+  {
+    "id": "go-example-041",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 041: 状态机与事件流",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示状态机与事件流，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "状态机与事件流",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{41, 43, 45}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=262",
+    "inputFixtures": {
+      "case": "fixture-41",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-041-lesson"
+  },
+  {
+    "id": "go-example-042",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 042: 时间、时区与截止时间",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示时间、时区与截止时间，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "时间、时区与截止时间",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{42, 44, 46}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=268",
+    "inputFixtures": {
+      "case": "fixture-42",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-042-lesson"
+  },
+  {
+    "id": "go-example-043",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 043: 文本处理与国际化",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示文本处理与国际化，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "文本处理与国际化",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{43, 45, 47}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=274",
+    "inputFixtures": {
+      "case": "fixture-43",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-043-lesson"
+  },
+  {
+    "id": "go-example-044",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 044: 故障恢复与幂等性",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示故障恢复与幂等性，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "故障恢复与幂等性",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{44, 46, 48}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=280",
+    "inputFixtures": {
+      "case": "fixture-44",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-044-lesson"
+  },
+  {
+    "id": "go-example-045",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 045: 资源打包与发布",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示资源打包与发布，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "资源打包与发布",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{45, 47, 49}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=286",
+    "inputFixtures": {
+      "case": "fixture-45",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-045-lesson"
+  },
+  {
+    "id": "go-example-046",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 046: 增量计算与差分",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示增量计算与差分，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "增量计算与差分",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{46, 48, 50}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=292",
+    "inputFixtures": {
+      "case": "fixture-46",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-046-lesson"
+  },
+  {
+    "id": "go-example-047",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 047: API 契约与版本兼容",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示API 契约与版本兼容，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "API 契约与版本兼容",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{47, 49, 51}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=298",
+    "inputFixtures": {
+      "case": "fixture-47",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-047-lesson"
+  },
+  {
+    "id": "go-example-048",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 048: 真实项目重构练习",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示真实项目重构练习，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "真实项目重构练习",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{48, 50, 52}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=304",
+    "inputFixtures": {
+      "case": "fixture-48",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-048-lesson"
+  },
+  {
+    "id": "go-example-049",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 049: 数据建模与不变量",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示数据建模与不变量，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "数据建模与不变量",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{49, 51, 53}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=310",
+    "inputFixtures": {
+      "case": "fixture-49",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-049-lesson"
+  },
+  {
+    "id": "go-example-050",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 050: 输入校验与错误边界",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示输入校验与错误边界，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "输入校验与错误边界",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{50, 52, 54}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=316",
+    "inputFixtures": {
+      "case": "fixture-50",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-050-lesson"
+  },
+  {
+    "id": "go-example-051",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 051: 文件格式与编码",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示文件格式与编码，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "文件格式与编码",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{51, 53, 55}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=322",
+    "inputFixtures": {
+      "case": "fixture-51",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-051-lesson"
+  },
+  {
+    "id": "go-example-052",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 052: 日志与可观测性",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示日志与可观测性，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "日志与可观测性",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{52, 54, 56}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=328",
+    "inputFixtures": {
+      "case": "fixture-52",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-052-lesson"
+  },
+  {
+    "id": "go-example-053",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 053: 缓存与失效策略",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示缓存与失效策略，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "缓存与失效策略",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{53, 55, 57}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=334",
+    "inputFixtures": {
+      "case": "fixture-53",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-053-lesson"
+  },
+  {
+    "id": "go-example-054",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 054: 队列与批处理",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示队列与批处理，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "队列与批处理",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{54, 56, 58}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=340",
+    "inputFixtures": {
+      "case": "fixture-54",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-054-lesson"
+  },
+  {
+    "id": "go-example-055",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 055: 分页与排序",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示分页与排序，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "分页与排序",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{55, 57, 59}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=346",
+    "inputFixtures": {
+      "case": "fixture-55",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-055-lesson"
+  },
+  {
+    "id": "go-example-056",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 056: 配置与环境隔离",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示配置与环境隔离，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "配置与环境隔离",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{56, 58, 60}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=352",
+    "inputFixtures": {
+      "case": "fixture-56",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-056-lesson"
+  },
+  {
+    "id": "go-example-057",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 057: 并发与资源生命周期",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示并发与资源生命周期，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "并发与资源生命周期",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{57, 59, 61}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=358",
+    "inputFixtures": {
+      "case": "fixture-57",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-057-lesson"
+  },
+  {
+    "id": "go-example-058",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 058: 测试夹具与回归",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示测试夹具与回归，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "测试夹具与回归",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{58, 60, 62}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=364",
+    "inputFixtures": {
+      "case": "fixture-58",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-058-lesson"
+  },
+  {
+    "id": "go-example-059",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 059: 性能测量与优化",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示性能测量与优化，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "性能测量与优化",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{59, 61, 63}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=370",
+    "inputFixtures": {
+      "case": "fixture-59",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-059-lesson"
+  },
+  {
+    "id": "go-example-060",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 060: 安全边界与最小权限",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示安全边界与最小权限，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "安全边界与最小权限",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{60, 62, 64}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=376",
+    "inputFixtures": {
+      "case": "fixture-60",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-060-lesson"
+  },
+  {
+    "id": "go-example-061",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 061: 网络协议与重试",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示网络协议与重试，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "网络协议与重试",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{61, 63, 65}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=382",
+    "inputFixtures": {
+      "case": "fixture-61",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-061-lesson"
+  },
+  {
+    "id": "go-example-062",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 062: 持久化与迁移",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示持久化与迁移，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "持久化与迁移",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{62, 64, 66}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=388",
+    "inputFixtures": {
+      "case": "fixture-62",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-062-lesson"
+  },
+  {
+    "id": "go-example-063",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 063: 命令行工具设计",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示命令行工具设计，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "命令行工具设计",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{63, 65, 67}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=394",
+    "inputFixtures": {
+      "case": "fixture-63",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-063-lesson"
+  },
+  {
+    "id": "go-example-064",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 064: 模块边界与依赖方向",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示模块边界与依赖方向，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "模块边界与依赖方向",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{64, 66, 68}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=400",
+    "inputFixtures": {
+      "case": "fixture-64",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-064-lesson"
+  },
+  {
+    "id": "go-example-065",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 065: 状态机与事件流",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示状态机与事件流，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "状态机与事件流",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{65, 67, 69}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=406",
+    "inputFixtures": {
+      "case": "fixture-65",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-065-lesson"
+  },
+  {
+    "id": "go-example-066",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 066: 时间、时区与截止时间",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示时间、时区与截止时间，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "时间、时区与截止时间",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{66, 68, 70}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=412",
+    "inputFixtures": {
+      "case": "fixture-66",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-066-lesson"
+  },
+  {
+    "id": "go-example-067",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 067: 文本处理与国际化",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示文本处理与国际化，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "文本处理与国际化",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{67, 69, 71}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=418",
+    "inputFixtures": {
+      "case": "fixture-67",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-067-lesson"
+  },
+  {
+    "id": "go-example-068",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 068: 故障恢复与幂等性",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示故障恢复与幂等性，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "故障恢复与幂等性",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{68, 70, 72}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=424",
+    "inputFixtures": {
+      "case": "fixture-68",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-068-lesson"
+  },
+  {
+    "id": "go-example-069",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 069: 资源打包与发布",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示资源打包与发布，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "资源打包与发布",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{69, 71, 73}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=430",
+    "inputFixtures": {
+      "case": "fixture-69",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-069-lesson"
+  },
+  {
+    "id": "go-example-070",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "intermediate",
+    "title": "Go 示例 070: 增量计算与差分",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示增量计算与差分，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "增量计算与差分",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{70, 72, 74}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=436",
+    "inputFixtures": {
+      "case": "fixture-70",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-070-lesson"
+  },
+  {
+    "id": "go-example-071",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 071: API 契约与版本兼容",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示API 契约与版本兼容，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "API 契约与版本兼容",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{71, 73, 75}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=442",
+    "inputFixtures": {
+      "case": "fixture-71",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-071-lesson"
+  },
+  {
+    "id": "go-example-072",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 072: 真实项目重构练习",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示真实项目重构练习，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "真实项目重构练习",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{72, 74, 76}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=448",
+    "inputFixtures": {
+      "case": "fixture-72",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-072-lesson"
+  },
+  {
+    "id": "go-example-073",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 073: 数据建模与不变量",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示数据建模与不变量，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "数据建模与不变量",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{73, 75, 77}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=454",
+    "inputFixtures": {
+      "case": "fixture-73",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-073-lesson"
+  },
+  {
+    "id": "go-example-074",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 074: 输入校验与错误边界",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示输入校验与错误边界，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "输入校验与错误边界",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{74, 76, 78}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=460",
+    "inputFixtures": {
+      "case": "fixture-74",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-074-lesson"
+  },
+  {
+    "id": "go-example-075",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 075: 文件格式与编码",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示文件格式与编码，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "文件格式与编码",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{75, 77, 79}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=466",
+    "inputFixtures": {
+      "case": "fixture-75",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-075-lesson"
+  },
+  {
+    "id": "go-example-076",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 076: 日志与可观测性",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示日志与可观测性，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "日志与可观测性",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{76, 78, 80}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=472",
+    "inputFixtures": {
+      "case": "fixture-76",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-076-lesson"
+  },
+  {
+    "id": "go-example-077",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 077: 缓存与失效策略",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示缓存与失效策略，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "缓存与失效策略",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{77, 79, 81}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=478",
+    "inputFixtures": {
+      "case": "fixture-77",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-077-lesson"
+  },
+  {
+    "id": "go-example-078",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 078: 队列与批处理",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示队列与批处理，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "队列与批处理",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{78, 80, 82}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=484",
+    "inputFixtures": {
+      "case": "fixture-78",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-078-lesson"
+  },
+  {
+    "id": "go-example-079",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 079: 分页与排序",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示分页与排序，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "分页与排序",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{79, 81, 83}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=490",
+    "inputFixtures": {
+      "case": "fixture-79",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-079-lesson"
+  },
+  {
+    "id": "go-example-080",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 080: 配置与环境隔离",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示配置与环境隔离，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "配置与环境隔离",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{80, 82, 84}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=496",
+    "inputFixtures": {
+      "case": "fixture-80",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-080-lesson"
+  },
+  {
+    "id": "go-example-081",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 081: 并发与资源生命周期",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示并发与资源生命周期，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "并发与资源生命周期",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{81, 83, 85}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=502",
+    "inputFixtures": {
+      "case": "fixture-81",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-081-lesson"
+  },
+  {
+    "id": "go-example-082",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 082: 测试夹具与回归",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示测试夹具与回归，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "测试夹具与回归",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{82, 84, 86}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=508",
+    "inputFixtures": {
+      "case": "fixture-82",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-082-lesson"
+  },
+  {
+    "id": "go-example-083",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 083: 性能测量与优化",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示性能测量与优化，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "性能测量与优化",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{83, 85, 87}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=514",
+    "inputFixtures": {
+      "case": "fixture-83",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-083-lesson"
+  },
+  {
+    "id": "go-example-084",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 084: 安全边界与最小权限",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示安全边界与最小权限，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "安全边界与最小权限",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{84, 86, 88}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=520",
+    "inputFixtures": {
+      "case": "fixture-84",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-084-lesson"
+  },
+  {
+    "id": "go-example-085",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 085: 网络协议与重试",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示网络协议与重试，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "网络协议与重试",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{85, 87, 89}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=526",
+    "inputFixtures": {
+      "case": "fixture-85",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-085-lesson"
+  },
+  {
+    "id": "go-example-086",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 086: 持久化与迁移",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示持久化与迁移，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "持久化与迁移",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{86, 88, 90}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=532",
+    "inputFixtures": {
+      "case": "fixture-86",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-086-lesson"
+  },
+  {
+    "id": "go-example-087",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 087: 命令行工具设计",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示命令行工具设计，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "命令行工具设计",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{87, 89, 91}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=538",
+    "inputFixtures": {
+      "case": "fixture-87",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-087-lesson"
+  },
+  {
+    "id": "go-example-088",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 088: 模块边界与依赖方向",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示模块边界与依赖方向，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "模块边界与依赖方向",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{88, 90, 92}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=544",
+    "inputFixtures": {
+      "case": "fixture-88",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-088-lesson"
+  },
+  {
+    "id": "go-example-089",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 089: 状态机与事件流",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示状态机与事件流，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "状态机与事件流",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{89, 91, 93}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=550",
+    "inputFixtures": {
+      "case": "fixture-89",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-089-lesson"
+  },
+  {
+    "id": "go-example-090",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 090: 时间、时区与截止时间",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示时间、时区与截止时间，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "时间、时区与截止时间",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{90, 92, 94}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=556",
+    "inputFixtures": {
+      "case": "fixture-90",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-090-lesson"
+  },
+  {
+    "id": "go-example-091",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 091: 文本处理与国际化",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示文本处理与国际化，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "文本处理与国际化",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{91, 93, 95}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=562",
+    "inputFixtures": {
+      "case": "fixture-91",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-091-lesson"
+  },
+  {
+    "id": "go-example-092",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 092: 故障恢复与幂等性",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示故障恢复与幂等性，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "故障恢复与幂等性",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{92, 94, 96}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=568",
+    "inputFixtures": {
+      "case": "fixture-92",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-092-lesson"
+  },
+  {
+    "id": "go-example-093",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 093: 资源打包与发布",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示资源打包与发布，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "资源打包与发布",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{93, 95, 97}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=574",
+    "inputFixtures": {
+      "case": "fixture-93",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-093-lesson"
+  },
+  {
+    "id": "go-example-094",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 094: 增量计算与差分",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示增量计算与差分，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "增量计算与差分",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{94, 96, 98}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=580",
+    "inputFixtures": {
+      "case": "fixture-94",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-094-lesson"
+  },
+  {
+    "id": "go-example-095",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 095: API 契约与版本兼容",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示API 契约与版本兼容，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "API 契约与版本兼容",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{95, 97, 99}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=586",
+    "inputFixtures": {
+      "case": "fixture-95",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-095-lesson"
+  },
+  {
+    "id": "go-example-096",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 096: 真实项目重构练习",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示真实项目重构练习，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "真实项目重构练习",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{96, 98, 100}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=592",
+    "inputFixtures": {
+      "case": "fixture-96",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-096-lesson"
+  },
+  {
+    "id": "go-example-097",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 097: 数据建模与不变量",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示数据建模与不变量，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "数据建模与不变量",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{97, 99, 101}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=598",
+    "inputFixtures": {
+      "case": "fixture-97",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-097-lesson"
+  },
+  {
+    "id": "go-example-098",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 098: 输入校验与错误边界",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示输入校验与错误边界，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "输入校验与错误边界",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{98, 100, 102}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=604",
+    "inputFixtures": {
+      "case": "fixture-98",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-098-lesson"
+  },
+  {
+    "id": "go-example-099",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 099: 文件格式与编码",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示文件格式与编码，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "文件格式与编码",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{99, 101, 103}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=610",
+    "inputFixtures": {
+      "case": "fixture-99",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-099-lesson"
+  },
+  {
+    "id": "go-example-100",
+    "language": "go",
+    "type": "go",
+    "locale": "zh-CN",
+    "level": "advanced",
+    "title": "Go 示例 100: 日志与可观测性",
+    "summary": "完整示例：用确定性的输入、处理过程和结果演示日志与可观测性，可导入项目或打开临时编辑器。",
+    "concepts": [
+      "日志与可观测性",
+      "完整入口",
+      "可重复运行"
+    ],
+    "source": "https://go.dev/doc/",
+    "license": "Original QFLI curriculum; reference link retained. CC BY 4.0",
+    "updatedAt": "2026-09-22",
+    "code": "package main\nimport \"fmt\"\nfunc main() { values := []int{100, 102, 104}; total := 0; for position, value := range values { total += value * (position + 1) }; fmt.Printf(\"weighted=%d\\n\", total) }\n",
+    "expectedOutput": "weighted=616",
+    "inputFixtures": {
+      "case": "fixture-100",
+      "mode": "deterministic"
+    },
+    "templateType": "go",
+    "sourceLessonId": "go-tutorial-100-lesson"
+  }
+]

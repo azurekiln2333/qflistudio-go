@@ -1,0 +1,77 @@
+"""Verify downloaded CI archives in memory; retain compact evidence only."""
+import hashlib
+import json
+from pathlib import Path
+import sys
+import zipfile
+
+root = Path('.artifacts/ci-run')
+suffix = sys.argv[1] if len(sys.argv) > 1 else '2'
+artifacts = json.loads((root / f'artifacts-{suffix}.json').read_text())['artifacts']
+expected_counts = {'android': 12, 'ohos': 10, 'macos-universal': 8,
+                   'ios-device': 7, 'ios-simulator': 7}
+proofs = []
+for artifact in artifacts:
+    path = root / f"{artifact['name']}.zip"
+    if not path.exists():
+        if suffix == '2' and artifact['name'].startswith('native-android-'):
+            path = root / 'native-android-3fabba8.zip'
+        if not path.exists():
+            print(f"Not downloaded yet: {artifact['name']}")
+            continue
+    archive_hash = hashlib.file_digest(path.open('rb'), 'sha256').hexdigest()
+    assert artifact['digest'] == f'sha256:{archive_hash}'
+    with zipfile.ZipFile(path) as archive:
+        names = [name for name in archive.namelist() if not name.endswith('/')]
+        assert len(names) == len(set(names))
+        manifest = json.loads(archive.read('manifest.json'))
+        platform = manifest['platform']
+        assert len(names) == expected_counts[platform], names
+        assert manifest['commit'] == artifact['workflow_run']['head_sha']
+        assert manifest['runId'] == str(artifact['workflow_run']['id'])
+        assert manifest['runAttempt'] == '1'
+        assert manifest['sourceChecksConclusion'] == 'failure'
+        assert manifest['deviceExecution'] is False
+        listed = set()
+        for line in archive.read('SHA256SUMS').decode().splitlines():
+            digest, name = line.split('  ', 1)
+            assert hashlib.sha256(archive.read(name)).hexdigest() == digest, name
+            listed.add(name)
+        assert listed == set(names) - {'SHA256SUMS'}
+        assert {entry['path'] for entry in manifest['files']} == set(names) - {'manifest.json', 'SHA256SUMS'}
+        for entry in manifest['files']:
+            data = archive.read(entry['path'])
+            assert len(data) == entry['bytes'], entry['path']
+            assert hashlib.sha256(data).hexdigest() == entry['sha256'], entry['path']
+        if platform == 'android':
+            assert {check['abi'] for check in manifest['checks']} == {'arm64-v8a', 'armeabi-v7a', 'x86_64'}
+            assert all(min(check['loadAlignments']) >= 16384 for check in manifest['checks'])
+        if platform == 'ohos':
+            assert {check['abi'] for check in manifest['checks']} == {'arm64-v8a', 'x86_64'}
+        if platform.startswith(('macos', 'ios')):
+            expected_arches = ['arm64'] if platform == 'ios-device' else ['arm64', 'x86_64']
+            assert manifest['checks'][0]['architectures'] == expected_arches
+            if suffix != '2':
+                key = 'macosDeploymentTarget' if platform.startswith('macos') else 'iosDeploymentTarget'
+                assert manifest['build'][key] == '13.0'
+        if platform in {'android', 'ohos'}:
+            provenance = json.loads(archive.read('bundled-go-runtime-build.json').decode('utf-8-sig'))
+            assert provenance['nativeSourceSha256'] == manifest['build']['nativeSourceSha256']
+            for record in provenance['libraries']:
+                name = f"{record['abi']}/libqfli_go_runtime.so"
+                data = archive.read(name)
+                assert len(data) == record['bytes']
+                assert hashlib.sha256(data).hexdigest() == record['sha256']
+        for check in manifest['checks']:
+            assert len(check['requiredExports']) == 9
+        proof = {'id': artifact['id'], 'name': artifact['name'], 'platform': platform,
+                 'bytes': artifact['size_in_bytes'], 'archiveSha256': archive_hash,
+                 'expiresAt': artifact['expires_at'], 'verifiedFiles': len(names),
+                 'manifestAndFileHashesVerified': True, 'files': names,
+                 'sourceChecksConclusion': manifest['sourceChecksConclusion'],
+                 'deviceExecution': manifest['deviceExecution'], 'checks': manifest['checks'],
+                 'deploymentTargets': {key: value for key, value in manifest['build'].items() if key.endswith('DeploymentTarget')},
+                 'downloadUrl': f"https://github.com/azurekiln2333/qflistudio-go/actions/runs/{manifest['runId']}/artifacts/{artifact['id']}"}
+        proofs.append(proof)
+        print(f"Verified {platform}: {len(names)} files, archive digest and all file hashes")
+(root / f'verified-artifacts-{suffix}.json').write_text(json.dumps(proofs, indent=2) + '\n')

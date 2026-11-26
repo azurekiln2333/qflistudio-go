@@ -1,0 +1,145 @@
+========================================================================
+T105 表驱动测试与子测试 | level=beginner | kind=test-package | run=go test ./... | vkind=test-pass
+OBJ: 能编写表驱动测试并用 t.Run 组织子测试，理解子测试的独立性。
+PRE: T023 函数签名、多返回值与命名返回
+PIT0: 循环变量捕获问题：子测试闭包引用循环变量，Go 1.22+ 已按轮次独立，但旧代码需显式拷贝。
+PIT1: 用例名重复：子测试名应唯一，否则会加 #01 后缀，难以定位。
+EX0 Q: 为 multiply 写表驱动测试，覆盖 0、负数、大数。
+EX0 A: cases := []struct{...}{...}; for _, c := range cases { t.Run(c.name, func(t *testing.T){ ... }) }。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、calc_test.go。运行命令：go test ./...。表驱动测试把多组输入/期望放进一个切片，循环用 t.Run 建成子测试。好处：新增用例只加一行数据、子测试可单独运行（go test -run TestAdd/positive）、失败定位到具体子测试。示例为 Add 写了四组用例覆盖正数、含零、负数、正负抵消。这是最基础也最常用的 Go 测试写法。test-package 工程例子（go.mod + *_test.go），用官方 SDK 的 go test 运行；移动端不执行 go test，desktop only。
+========================================================================
+T106 断言与辅助函数、t.Helper | level=intermediate | kind=test-package | run=go test ./... | vkind=test-pass
+OBJ: 能编写断言 helper 并用 t.Helper 保持失败定位在调用者而非 helper 内部。
+PRE: T105 表驱动测试与子测试
+PIT0: helper 里不调 t.Helper()：失败堆栈指向 helper 内部，定位困难。
+PIT1: helper 里用 t.Fatal 之外的返回而忘记终止：可能继续执行导致误报。
+EX0 Q: 写一个 equalSlice helper 比较两个 []int 并调用 t.Helper。
+EX0 A: func equalSlice(t *testing.T, got, want []int){ t.Helper(); if len(got)!=len(want){t.Fatalf(...)}; for i:=range got{...} }。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、assert_test.go。运行命令：go test ./...。测试里常有重复的断言逻辑，抽成 helper 能减少样板。但 helper 内部失败若不调用 t.Helper()，报错行号会指向 helper 自身，而不是真正出错的调用点，调试成本高。t.Helper() 标记“这个函数是测试辅助”，使 t.Fatalf/Errorf 报告调用者的位置。示例提供 equalInt 与 assertTrue 两个 helper，并在 TestParseLen 中复用，验证失败定位正确。test-package，go test 运行，desktop only。
+========================================================================
+T107 测试夹具：t.TempDir、t.Cleanup | level=intermediate | kind=test-package | run=go test ./... | vkind=test-pass
+OBJ: 能用 t.TempDir 与 t.Cleanup 编写隔离且自动清理的文件系统测试。
+PRE: T086 文件读写：os.Open/Create 与缓冲; T105 表驱动测试与子测试
+PIT0: 自己 os.MkdirTemp 而忘记 RemoveAll：测试残留文件堆积。
+PIT1: 在 t.Cleanup 里依赖测试内的局部变量顺序：Cleanup 按注册逆序执行。
+EX0 Q: 写一个测试：在 t.TempDir 建三个文件，用 t.Cleanup 在结束前校验目录已清空。
+EX0 A: 测试内断言三文件存在；依赖框架自动清理临时目录。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、fixture_test.go。运行命令：go test ./...。文件系统测试需要隔离与清理。t.TempDir() 返回一个测试专属、测试结束由框架自动删除的目录，多个测试各得其所、互不干扰。t.Cleanup(fn) 注册结束回调，即使测试失败也会运行，适合关闭句柄、回滚状态等。示例在 TempDir 内读写文件并断言内容，另一个测试验证 TempDir 初始为空。用框架提供的夹具而非手工清理，能显著减少测试间污染与残留。test-package，go test 运行，desktop only。
+========================================================================
+T108 基准测试与 b.RunParallel | level=advanced | kind=test-package | run=go test -bench . -run '^$' ./... | vkind=bench-exists
+OBJ: 能编写 BenchmarkXxx 与 b.RunParallel，说明 b.N 的作用与基准结果的读法。
+PRE: T105 表驱动测试与子测试; T071 goroutine 基础与启动
+PIT0: 基准函数里包含无关开销：测量不反映目标代码。
+PIT1: 把某个 ns/op 阈值当通过条件：机器/负载不同会误判。
+EX0 Q: 为一个字符串拼接函数写并行基准并使用 b.SetParallelism。
+EX0 A: b.RunParallel(func(pb *testing.PB){ for pb.Next() { ... } })。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、bench_test.go。运行命令：go test -bench . -run '^$' ./...。基准函数 BenchmarkXxx(*testing.B) 由框架自动调整 b.N 以获得稳定测量，输出 ns/op、allocs/op 等指标。b.RunParallel 用多个 goroutine 并行施压，适合测量并发路径。关键约定：基准数值随机器与负载变化，因此本课程不作为通过条件；验证只要求“基准能运行并报出指标”（bench-exists）。示例提供串行与并行两个基准，并有功能测试保证逻辑正确。test-package，移动端不支持 bench，desktop only。
+========================================================================
+T109 覆盖率与测试组织 | level=intermediate | kind=test-package | run=go test ./... | vkind=test-pass
+OBJ: 能组织同包多文件并生成覆盖率报告，理解 coverprofile 的用途。
+PRE: T059 包、导出规则与初始化顺序; T105 表驱动测试与子测试
+PIT0: 只测 happy path：覆盖率低，边界分支缺陷漏检。
+PIT1: 把覆盖率当唯一目标：100% 覆盖率不等于正确，仍需语义断言。
+EX0 Q: 用 go test -coverprofile 生成报告，并补一个未覆盖分支的用例。
+EX0 A: go test -coverprofile=cover.out .; go tool cover -func=cover.out。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、calc.go、calc_test.go。运行命令：go test ./...。Go 的测试与被测代码通常同包，允许放在同一目录的多个文件里：calc.go 放逻辑，calc_test.go 放测试。go test -coverprofile 生成覆盖率文件，go tool cover 可查看函数/行级覆盖。示例的 Classify 有三个分支，表驱动测试逐一覆盖。要强调：覆盖率是“是否执行到”的指标，不能替代语义断言——高覆盖率仍可能漏掉错误逻辑。test-package 工程例子（go.mod + calc.go + calc_test.go），go test 运行，desktop only。
+========================================================================
+T110 Fuzz 测试发现边界缺陷 | level=advanced | kind=test-package | run=go test ./... | vkind=test-pass
+OBJ: 能编写 fuzz target 并声明不变量，理解常规测试只跑种子、-fuzz 才随机穷举。
+PRE: T105 表驱动测试与子测试; T097 strconv 与数据解析
+PIT0: fuzz target 里依赖外部状态：应只依赖输入，保证可复现。
+PIT1: 把随机 fuzz 放进常规 CI 而不限时：运行时长不可控；-fuzztime 应显式限定。
+EX0 Q: 为 ParsePort 增加一个不变量：解析成功的值必须能用 strconv.Itoa 后再次解析回同一值。
+EX0 A: n,err:=ParsePort(s); if err==nil { m,_:=ParsePort(strconv.Itoa(n)); if m!=n { t.Fatal } }。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、fuzz_test.go。运行命令：go test ./...。Fuzz 测试（Go 1.18+）用 f.Fuzz 提供随机输入寻找边界缺陷，并最小化复现用例。示例的 ParsePort 只接受 1..65535，fuzz target 声明不变量：“要么解析失败，要么结果在范围内”，从而暴露越界。为让常规 go test 确定可复现，只运行种子语料（f.Add 提供的用例）；真正随机穷举需显式 go test -fuzz 并限制时长。test-package，移动端不支持 fuzz，desktop only。
+========================================================================
+T111 接口打桩与依赖替换测试 | level=intermediate | kind=test-package | run=go test ./... | vkind=test-pass
+OBJ: 能用接口 + 桩实现隔离被测逻辑，并覆盖成功、缺失、后端故障三类路径。
+PRE: T066 依赖注入：显式传递优于全局; T041 接口基础与鸭子类型
+PIT0: 被测代码直接 new 具体依赖：无法替换，测试会真的访问外部系统。
+PIT1: 桩只覆盖成功路径：错误分支长期未测，上线踩坑。
+EX0 Q: 为 Service 增加一个 Delete 方法，用桩测试成功与后端错误两条路径。
+EX0 A: Delete 调用 store.Delete；桩按配置返回 nil 或 sentinel 错误。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、stub_test.go。运行命令：go test ./...。当被测逻辑依赖外部系统（数据库、网络）时，把它抽象成接口，生产注入真实实现，测试注入桩。桩用 map 提供确定数据、可配置返回错误，于是测试无需外部系统即可覆盖成功、键缺失、后端故障三类路径。示例的 Service 依赖 Store 接口，桩 stubStore 演示三种场景，并用 errors.Is 校验哨兵错误透传。这种方式让测试快速、确定、可离线运行。test-package，go test 运行，desktop only。
+========================================================================
+T112 内存分配与逃逸分析 | level=advanced | kind=module-project | run=go run . | vkind=stdout-exact
+OBJ: 能用 gcflags=-m 判断变量是否逃逸，并据此减少堆分配。
+PRE: T030 指针二：指针与切片/映射的关系; T041 接口基础与鸭子类型
+PIT0: 以为返回结构体一定拷贝很贵：小结构体按值返回通常栈分配、可被内联优化。
+PIT1: 盲目用指针避免“拷贝”：可能导致逃逸到堆，反而增加 GC 压力。
+EX0 Q: 对 makeValue/makePointer/makeInterface 分别运行 gcflags=-m，记录哪些变量逃逸并解释原因。
+EX0 A: makePointer 的 p 逃逸（&p 返回）；makeInterface 的 p 逃逸（装箱进 any）；makeValue 的 p 可能不逃逸。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。Go 编译器做逃逸分析，决定变量分配在栈还是堆。若变量地址逃出函数（被返回、存入接口、被长期闭包捕获），就分配到堆。用 go build -gcflags=-m 可查看报告。示例给出三种典型写法：按值返回小结构体（常栈分配）、返回局部变量指针（逃逸到堆）、存入 any 接口（通常逃逸）。理解这些差异有助于在性能敏感处减少堆分配、降低 GC 压力。module-project 工程例子（go.mod + main.go），用 go run 运行并可用 -gcflags=-m 观察；desktop only。
+========================================================================
+T113 剖析：pprof CPU 与内存 | level=advanced | kind=module-project | run=go run . | vkind=stdout-exact
+OBJ: 能采集 CPU profile 并用 pprof 定位热点函数。
+PRE: T108 基准测试与 b.RunParallel; T112 内存分配与逃逸分析
+PIT0: 对过短的负载采集 profile：样本不足，热点不准。
+PIT1: 只看 CPU 忽略内存：分配热点同样影响吞吐，应结合 -memprofile。
+EX0 Q: 编写一个基准并采集 cpu.out，用 pprof top 找出占比最高的函数。
+EX0 A: go test -bench . -cpuprofile=cpu.out .; go tool pprof -top cpu.out。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go。运行命令：go run .。pprof 是 Go 的剖析工具。最简单的方式是在测试里采集：go test -bench . -cpuprofile=cpu.out 生成 CPU 剖面，go tool pprof cpu.out 进入交互式分析（top 看热点、list 看源码行）。示例提供一个 CPU 热点函数 hot 并打印确定结果，同时在注释中给出采集命令。剖析是性能优化的起点：先测量热点，再针对性优化，避免凭直觉改代码。module-project，go test 采集 + go run 演示；desktop only（移动端无 pprof 工具链）。
+========================================================================
+T114 性能优化范式：预分配、批处理、零拷贝 | level=advanced | kind=test-package | run=go test -bench . -run '^$' ./... | vkind=bench-exists
+OBJ: 能用 make([]T,0,n) 预分配、用 strings.Builder 拼接来减少分配次数。
+PRE: T036 字符串构造：strings.Builder 与字节缓冲; T108 基准测试与 b.RunParallel
+PIT0: 预分配过大的容量：浪费内存；应按已知规模估计。
+PIT1: 把“分配次数必须为 0”当通用断言：某些场景无法避免分配，应看基准而非硬阈值。
+EX0 Q: 为 appendPrealloc 与 appendNoPrealloc 增加基准，对比 allocs/op。
+EX0 A: BenchmarkAppendNoPrealloc 与 BenchmarkAppendPrealloc 各 b.ReportAllocs() 后循环。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、patterns_test.go。运行命令：go test -bench . -run '^$' ./...。常见优化范式：一是预分配，make([]int, 0, n) 避免 append 反复扩容；二是用 strings.Builder 拼接字符串，避免每次 + 都产生新字符串；三是复用缓冲（见 T080 Pool）。示例对比预分配与不预分配、Builder 与 + 拼接，功能上结果等价（用确定性等价断言验证），性能差异用基准展示——但基准数值不作通过条件。这类优化在热路径上能显著减少分配与 GC。test-package，bench 需官方 SDK，desktop only。
+========================================================================
+T115 静态检查与工程规范：vet 与 gofmt 基线 | level=beginner | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 gofmt -l/-d 与 go vet 保持代码风格与正确性。
+PRE: T001 Go 语言与工具链概览
+PIT0: 依赖手工对齐而非 gofmt：团队风格不一致。
+PIT1: 以为 vet 能发现所有 bug：vet 只查可疑构造，不替代测试。
+EX0 Q: 对 samples 目录运行 gofmt -l 与 go vet ./...，修正所有输出。
+EX0 A: gofmt -l 应无输出；go vet 应无告警。
+EXPLAIN: gofmt 是 Go 的官方格式化器：-l 列出不合规文件，-d 显示差异，-w 直接改写。go vet 检查可疑构造，如 Printf 动词与参数不匹配、锁值拷贝、无用标签等。二者随工具链提供，是无需第三方依赖的静态检查基线。示例本身格式规范、Printf 参数匹配，可作为“干净”的检查对象，并打印运行命令。single-file 示例可被 CodeSnippet 导入；静态检查需官方 SDK，移动端不提供，desktop only。
+========================================================================
+T116 日志与可观测性基线：log/slog | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 slog 记录结构化字段、设置级别，并理解 Text/JSON handler 的差异。
+PRE: T008 格式化输出与 fmt 谓词
+PIT0: log/slog 需要 Go 1.21+：低版本不可用。
+PIT1: 默认 Text handler 带时间戳：会破坏确定性；示例用 ReplaceAttr 去掉 time 字段。
+PIT2: 平台限制：本主题在移动端 Yaegi 解释器下 log/slog 输出为空，仅桌面官方 Go 可运行（保持 desktop-only）。
+EX0 Q: 把级别提到 Warn，验证 Info 日志被过滤。
+EX0 A: 级别设为 Warn 后 Info 不输出，只有 Warn/Error 出现。
+EXPLAIN: log/slog（Go 1.21+）提供结构化日志：字段以 key=value 形式输出，可被机器检索。Text handler 输出人类可读行，JSON handler 输出单行 JSON。可设级别（Info/Warn/Error）过滤低级别日志。为使示例输出确定，用 ReplaceAttr 去掉默认的 time 属性——日志时间依赖运行时刻，不能作为固定输出。示例演示 Info/Warn 结构化字段、Debug 被过滤、以及 JSON handler 的 Error 输出。移动端 slog 支持未实测，标 Yaegi*（待实测），默认 desktop。
+========================================================================
+T117 配置、标志与环境变量 | level=intermediate | kind=single-file | run=go run main.go | vkind=stdout-exact
+OBJ: 能用 flag 解析命令行参数、按优先级合并环境变量与默认值。
+PRE: T067 包级 API 设计与向后兼容
+PIT0: 直接 os.Getenv 而不设默认值：缺失时得到空字符串，产生隐蔽 bug。
+PIT1: 在 flag.Parse 之后才注册 flag：不会被解析，需在 Parse 前注册。
+EX0 Q: 增加一个 --verbose 布尔标志，并让环境变量 APP_VERBOSE=1 也能开启。
+EX0 A: level := fs.Bool("verbose", getenv("APP_VERBOSE")=="1", ...)。
+EXPLAIN: 配置常来自三处：默认值、环境变量、命令行标志。惯例优先级是命令行 > 环境变量 > 默认值。示例把 getenv 作为参数注入（而非直接读环境），从而在测试与演示中得到确定结果：带标志时标志覆盖环境变量，不带标志时环境变量生效，都没有时用默认值。用 flag.NewFlagSet 便于隔离与测试。这种分层注入让配置既灵活又可测，是 CLI/服务配置的常见基线。
+========================================================================
+T118 综合项目一：命令行待办清单（CLI + JSON 持久化） | level=advanced | kind=module-project | run=go run . | vkind=stdout-exact
+OBJ: 能整合参数解析、JSON 编解码与文件持久化，实现增/改/查并保证重载一致。
+PRE: T089 JSON 一：Marshal/Unmarshal 基础; T086 文件读写：os.Open/Create 与缓冲; T056 错误处理模式：立即返回与上下文补充
+PIT0: 直接覆盖写文件：中途失败会留下半写文件；示例用“临时文件 + Rename”原子落盘。
+PIT1: map 遍历顺序不确定：示例用切片或排序保证输出确定。
+EX0 Q: 为待办清单增加 delete 命令并补充端到端测试。
+EX0 A: Delete(id) 过滤 items；测试删除后重载断言行数减一。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go、store_test.go。运行命令：go run .。这是第一个综合项目，整合多项技能：用 Item/Store 建模、用 encoding/json 持久化、用“写临时文件再 Rename”实现原子保存、用错误返回处理文件不存在与解码失败。main 演示一轮增/改/存/重载并打印，store_test.go 做端到端断言（保存后重载状态一致、对不存在 id 报错）。module-project 工程例子：go.mod + main.go + store_test.go，用 go run 与 go test 验证；涉及文件系统，desktop only。
+========================================================================
+T119 综合项目二：并发词频统计器（worker pool + IO） | level=advanced | kind=module-project | run=go run . | vkind=stdout-exact
+OBJ: 能整合并发、IO 与结果聚合，保证并发结果与串行完全一致。
+PRE: T084 并发模式：worker pool 与 errgroup 式编排; T022 映射：增删查与存在性判断
+PIT0: 多 worker 直接写同一 map：数据竞争；示例让每个 worker 返回局部计数再合并。
+PIT1: 直接 range map 输出：顺序随机；示例对键排序后输出。
+EX0 Q: 扩展为从多个文件读入文本（用 bufio.Scanner），并断言并发结果与串行一致。
+EX0 A: 读取每个文件内容进切片；CountParallel 后与串行 sameCounts 比较。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go、freq_test.go。运行命令：go run .。这是并发综合项目：CountParallel 用固定 worker 从任务 channel 取文本、各自统计局部词频，主流程合并。关键设计是“局部计数 + 合并”，避免多 worker 写同一 map 的竞争；输出前对键排序，保证与 worker 完成顺序无关。main 打印“并发是否等于串行”并列出排序词频；freq_test.go 对 1..4 个 worker 逐一断言与串行一致，并验证排序确定性。module-project，go run + go test；并发+文件，desktop only。
+========================================================================
+T120 综合项目三：极简 HTTP 服务（JSON API + 中间件 + 测试） | level=advanced | kind=module-project | run=go run . | vkind=stdout-exact
+OBJ: 能整合 HTTP 路由、JSON 响应、中间件与超时，并用 httptest 端到端验证。
+PRE: T102 JSON API 与错误响应约定; T103 中间件：日志、恢复与链式组合; T104 超时、重试与优雅关闭
+PIT0: 把时间直接写进响应导致不确定：示例注入固定 now 函数，使响应确定可断言。
+PIT1: Handler 不校验方法：示例对 /api/time 拒绝非 GET，返回 405。
+EX0 Q: 新增 /api/echo 路由：POST JSON 并原样返回，补充 httptest 测试。
+EX0 A: json.NewDecoder(r.Body).Decode(&in); json.NewEncoder(w).Encode(in)。
+EXPLAIN: 本例为工程例子，不能由 CodeSnippet 一键导入；请按下列文件清单手动创建，并运行官方 Go SDK 命令。文件清单：go.mod、main.go、api_test.go。运行命令：go run .。这是 HTTP 综合项目：NewHandler 组装路由与日志中间件；/health 返回 ok，/api/time 用注入的 now 返回固定时间（因此响应确定），非 GET 返回 405；main 说明监听配置但不真正占端口，api_test.go 用 httptest 覆盖正常、错误、方法不符三条路径并断言中间件日志。整合了 net/http、JSON、中间件、超时与测试。module-project，go run + go test；涉及 net/监听，desktop only。

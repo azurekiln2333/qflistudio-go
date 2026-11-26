@@ -1,0 +1,402 @@
+{
+  "schemaVersion": 1,
+  "task": "11-26-go-github-preservation",
+  "archiveRoot": ".trellis/tasks/11-26-go-github-preservation/research/ignored-source",
+  "observedAtUtc": "2026-11-26T21:07:13.1552668Z",
+  "defaultDisposition": "HOLD for anything outside provenance.json unless explicitly classified here. No disposition authorizes deletion, cleanup, package execution or SDK comparison.",
+  "preservedIndex": "provenance.json",
+  "fileDispositions": [
+    {
+      "source": ".artifacts/release-integrity/android-app-gradle.original",
+      "disposition": "duplicate-in-reachable-local-history",
+      "bytes": 1397,
+      "sha256": "de2853f1c919985dab046d3a59dea2cb76b1e5fa396bf095b1f2e096ec06931d",
+      "gitBlob": "7934dc74b3d62b95cb33ef4a489dfc0473e6ba43",
+      "knownHistoryPath": "android/app/build.gradle.kts",
+      "observedAtUtc": "2026-11-26T21:07:13.1552668Z",
+      "destination": null,
+      "reason": "Exact raw Git blob is reachable from inspected local refs. No redundant archive copy created. Current worktree may differ. Originals retained."
+    },
+    {
+      "source": ".artifacts/native-startup/baseline/lib/main.dart",
+      "disposition": "duplicate-in-reachable-local-history",
+      "bytes": 2146,
+      "sha256": "ea70f48f6cd1372cb2dfcf2f5aaad02ef4ab6bdb7f493eeb598d7cc15aaa0201",
+      "gitBlob": "67a27ef978faf7edf71119c31fd2e558e5c5c350",
+      "knownHistoryPath": "lib/main.dart",
+      "observedAtUtc": "2026-11-26T21:07:13.1552668Z",
+      "destination": null,
+      "reason": "Exact raw Git blob is reachable from inspected local refs. No redundant archive copy created. Current worktree may differ. Originals retained."
+    },
+    {
+      "source": ".artifacts/native-startup/baseline/ohos/entry/src/main/ets/pages/Index.ets",
+      "disposition": "duplicate-in-reachable-local-history",
+      "bytes": 620,
+      "sha256": "e4e475ec3558778cae0a9fdbca892e42228ca831385f537094606dc3f9d15bbc",
+      "gitBlob": "e48df6bca2d77374ad91c56ed2c478017c6ffbbd",
+      "knownHistoryPath": "ohos/entry/src/main/ets/pages/Index.ets",
+      "observedAtUtc": "2026-11-26T21:07:13.1552668Z",
+      "destination": null,
+      "reason": "Exact raw Git blob is reachable from inspected local refs. No redundant archive copy created. Current worktree may differ. Originals retained."
+    },
+    {
+      "source": ".artifacts/release-integrity/go-content-backup/original-examples.json",
+      "disposition": "raw-curriculum-HOLD",
+      "bytes": 1784445,
+      "sha256": "aadb0aaee7b9d028f2880904e85c5819ca778e34d07002c82414f46030eb40bb",
+      "observedAtUtc": "2026-11-26T21:09:43.1471752Z",
+      "destination": null,
+      "reason": "Nonreserved demonstration contact values. Redacted derivatives are indexed in provenance.json; raw originals are not copied or approved for publication."
+    },
+    {
+      "source": ".artifacts/release-integrity/go-content-backup/original-tutorials.json",
+      "disposition": "raw-curriculum-HOLD",
+      "bytes": 3743502,
+      "sha256": "4822ae2977a8b518ebb5b3492002adcecddd17085599d73654e502dbbfe0b57c",
+      "observedAtUtc": "2026-11-26T21:09:43.1836926Z",
+      "destination": null,
+      "reason": "Nonreserved demonstration contact values. Redacted derivatives are indexed in provenance.json; raw originals are not copied or approved for publication."
+    },
+    {
+      "source": ".artifacts/release-integrity/run-arm64-isolated.ps1",
+      "disposition": "raw-device-or-unreviewed-evidence-HOLD",
+      "bytes": 2844,
+      "sha256": "200ebc6932b193c7a18c976f27de247a134efb242b6d48e039d236315a20c255",
+      "observedAtUtc": "2026-11-26T21:09:43.1843113Z",
+      "destination": null,
+      "reason": "Contains or may contain raw device selector, endpoint, local identifier or unreviewed claims. Not copied. Focused safe preservation subset is already indexed."
+    },
+    {
+      "source": ".artifacts/14u-install/installed-package.json",
+      "disposition": "raw-device-or-unreviewed-evidence-HOLD",
+      "bytes": 263,
+      "sha256": "9e895bf1870d929b97441d077e898f70f3289c4aab3eb72e443c8361e7a3e19a",
+      "observedAtUtc": "2026-11-26T21:09:43.1846789Z",
+      "destination": null,
+      "reason": "Contains or may contain raw device selector, endpoint, local identifier or unreviewed claims. Not copied. Focused safe preservation subset is already indexed."
+    },
+    {
+      "source": ".artifacts/terminal-flow-pi/native-build/source-hashes-before.json",
+      "disposition": "raw-device-or-unreviewed-evidence-HOLD",
+      "bytes": 65311,
+      "sha256": "ab75dcebdea1c5b19cf15dc440b3a9aee6579b3578fac2c5e394179873e77c10",
+      "observedAtUtc": "2026-11-26T21:09:43.1851344Z",
+      "destination": null,
+      "reason": "Contains or may contain raw device selector, endpoint, local identifier or unreviewed claims. Not copied. Focused safe preservation subset is already indexed."
+    },
+    {
+      "source": ".artifacts/native-startup/verification.md",
+      "disposition": "raw-device-or-unreviewed-evidence-HOLD",
+      "bytes": 1439,
+      "sha256": "2fd9201e6d9e8c0dedb520841730424d124c098f80522060643cd2223fb1279f",
+      "observedAtUtc": "2026-11-26T21:09:43.1854694Z",
+      "destination": null,
+      "reason": "Contains or may contain raw device selector, endpoint, local identifier or unreviewed claims. Not copied. Focused safe preservation subset is already indexed."
+    },
+    {
+      "source": ".artifacts/release-integrity/android-arm64-before.txt",
+      "disposition": "raw-device-or-unreviewed-evidence-HOLD",
+      "bytes": 140,
+      "sha256": "824bfd1537d4d86c2de19af892d2b413c087980ab7011f87a8c5927ebda12f31",
+      "observedAtUtc": "2026-11-26T21:09:43.1857924Z",
+      "destination": null,
+      "reason": "Contains or may contain raw device selector, endpoint, local identifier or unreviewed claims. Not copied. Focused safe preservation subset is already indexed."
+    },
+    {
+      "source": ".artifacts/release-integrity/android-arm64-release-dart.txt",
+      "disposition": "raw-device-or-unreviewed-evidence-HOLD",
+      "bytes": 774,
+      "sha256": "40f54f160da78c34c503f58d9b1b04666a49c927ada7b24e1fa3264f73ed2cc2",
+      "observedAtUtc": "2026-11-26T21:09:43.1861126Z",
+      "destination": null,
+      "reason": "Contains or may contain raw device selector, endpoint, local identifier or unreviewed claims. Not copied. Focused safe preservation subset is already indexed."
+    },
+    {
+      "source": ".artifacts/release-integrity/android-arm64-claim.txt",
+      "disposition": "raw-device-or-unreviewed-evidence-HOLD",
+      "bytes": 729,
+      "sha256": "6696911591b1108abed7ef74c5acff51b78fd5b3a682193436d2f39657666acb",
+      "observedAtUtc": "2026-11-26T21:09:43.186427Z",
+      "destination": null,
+      "reason": "Contains or may contain raw device selector, endpoint, local identifier or unreviewed claims. Not copied. Focused safe preservation subset is already indexed."
+    },
+    {
+      "source": ".artifacts/release-integrity/core-sync.txt",
+      "disposition": "raw-device-or-unreviewed-evidence-HOLD",
+      "bytes": 1382,
+      "sha256": "91c995c4696ffad61a1430e2d7a46234d7badde63d510bea9665a7357d8c0669",
+      "observedAtUtc": "2026-11-26T21:09:43.1867286Z",
+      "destination": null,
+      "reason": "Contains or may contain raw device selector, endpoint, local identifier or unreviewed claims. Not copied. Focused safe preservation subset is already indexed."
+    },
+    {
+      "source": ".artifacts/release-integrity/emulator-handoff.txt",
+      "disposition": "raw-device-or-unreviewed-evidence-HOLD",
+      "bytes": 1073,
+      "sha256": "7a88f0c1ecd94fb62e123a446c0a54a53852977b60db66b20d66f824000b930e",
+      "observedAtUtc": "2026-11-26T21:09:43.1870321Z",
+      "destination": null,
+      "reason": "Contains or may contain raw device selector, endpoint, local identifier or unreviewed claims. Not copied. Focused safe preservation subset is already indexed."
+    },
+    {
+      "source": ".artifacts/native-startup/baseline/ohos/entry/src/main/ets/entryability/EntryAbility.ets",
+      "disposition": "unreviewed-OHOS-source-HOLD",
+      "bytes": 5823,
+      "sha256": "36fc50986700b60780aa2d20aa61f83d7ab78fefb8bc90b85ce9f09fc18faf74",
+      "observedAtUtc": "2026-11-26T21:09:43.1876063Z",
+      "destination": null,
+      "reason": "No exact blob found in inspected reachable history. Source not fully privacy/behavior reviewed. Retain raw original on HOLD; no copy."
+    },
+    {
+      "source": ".artifacts/ci-run/artifacts-2.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 2301,
+      "sha256": "5eef65b1fd2ac5ae1039b41a785f111c8bc11819bda3f4feb7e1d86ec5337a2b",
+      "observedAtUtc": "2026-11-26T21:09:43.2019156Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/artifacts-3.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 3821,
+      "sha256": "8a9ffbc3ac723f59f2d72ec96a6182c83a83082e37bd580081952d9333b766d0",
+      "observedAtUtc": "2026-11-26T21:09:43.213127Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/branches-after-cleanup.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 420,
+      "sha256": "4b87baf4ee023e9d619783158ba5766e45c293d82868c6e0e95a70b441631a6f",
+      "observedAtUtc": "2026-11-26T21:09:43.222921Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/branches-before-cleanup.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 1328,
+      "sha256": "e613582801143396d255c898c1dea9e5f4a1529f528ecdccbe3b407be7892fdb",
+      "observedAtUtc": "2026-11-26T21:09:43.2333588Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/ios-simulator-job-3.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 861,
+      "sha256": "8918140b62ceda3b82c844b6a1c10f3a08d2be4d309786e618d740776104e431",
+      "observedAtUtc": "2026-11-26T21:09:43.2431758Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/jobs-1.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 5155,
+      "sha256": "9e39e2045e564148d231721641f39fa6ed05e7791cf40a03fa7ac1519c3f2fa9",
+      "observedAtUtc": "2026-11-26T21:09:43.2558158Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/jobs-2.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 13695,
+      "sha256": "d5b054d2c7f2d19cbb7bb043eb191139b5dc13a7ca3418dba774da1756036c46",
+      "observedAtUtc": "2026-11-26T21:09:43.2685274Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/jobs-3.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 17639,
+      "sha256": "a34b52cd85fdd85e99cd0fdde9e9b2054eab2a1c0eb8e0b748466cfefe52ed5f",
+      "observedAtUtc": "2026-11-26T21:09:43.2804715Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/main-runs.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 12943,
+      "sha256": "a9164692912c9bc268e535e26b898324a31d09ea15d2cf6fedc90d8e4b4ee208",
+      "observedAtUtc": "2026-11-26T21:09:43.2990086Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/run-2.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 12989,
+      "sha256": "b20ef80853b1a049efccf00824f9c64b6e5220c549158f6d60814a664490729c",
+      "observedAtUtc": "2026-11-26T21:09:43.3199191Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/run-3.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 12977,
+      "sha256": "7eab7549f1ea5125b0e809c273bc4e554e1fd5064a1ffc941e3a05615ec45e22",
+      "observedAtUtc": "2026-11-26T21:09:43.3398849Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/runs.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 38970,
+      "sha256": "e5b7e815983ac03f5628eff17c760b663f231bf55420f242ea332729f16ef6f6",
+      "observedAtUtc": "2026-11-26T21:09:43.3605679Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/verified-artifacts-2.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 5626,
+      "sha256": "455aa506813e4114cf8691a592dc987625c4c2422157bb9fb91de505b0e573f1",
+      "observedAtUtc": "2026-11-26T21:09:43.3694906Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/verified-artifacts-3.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 4294,
+      "sha256": "aff4b3ebd7f6cef7a3a1d56fb53490e65e687d60f5774bf20a3cda68750f8f80",
+      "observedAtUtc": "2026-11-26T21:09:43.3825473Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    },
+    {
+      "source": ".artifacts/ci-run/verified-artifacts.json",
+      "disposition": "raw-CI-evidence-HOLD",
+      "bytes": 5536,
+      "sha256": "cae286771377bd40f46d2156088ce5e83926dbac9b68d17f18ca9781dc41bebd",
+      "observedAtUtc": "2026-11-26T21:09:43.3947745Z",
+      "destination": null,
+      "reason": "Raw API/job/artifact records may carry actor/runner/path metadata. Duplication with established task evidence is not exhaustively resolved. Not copied or treated as approved by a narrow marker scan."
+    }
+  ],
+  "scopeHolds": [
+    {
+      "paths": [
+        "native/build/go-sdk-1.27.1/",
+        "native/build/go-linux-1.27.1/"
+      ],
+      "disposition": "HOLD-upstream-SDK",
+      "reason": "Extracted official SDK local modifications remain unknown. No complete upstream-tree comparison or broad copying."
+    },
+    {
+      "paths": [
+        "native/build/ohos-go-f2cb44316b789bc12d0b5fd562d853f6fec3ab28/"
+      ],
+      "disposition": "HOLD-upstream-platform-checkout",
+      "reason": "Earlier read-only nested-Git observation: clean tracked/nonignored status and staged/unstaged diff at pinned f2cb44316b789bc12d0b5fd562d853f6fec3ab28 (sysit/ohos-go platform fork). No QFLI-local patch found. Ignored bin/pkg and six bootstrap/generated Go files are not local source changes. Not re-executed or copied."
+    },
+    {
+      "paths": [
+        ".artifacts/**/*.log",
+        ".artifacts/**/*.png",
+        ".artifacts/**/*.jpg",
+        ".artifacts/**/*.jpeg",
+        ".artifacts/**/*.xml",
+        "native/build/qfli_go_normal_app.jpeg"
+      ],
+      "disposition": "HOLD-raw-device-user-evidence",
+      "reason": "Raw logs/screenshots/UI XML may contain user, device, actor, network or signing information. No blanket privacy clearance; originals retained."
+    },
+    {
+      "paths": [
+        ".artifacts/native-startup/",
+        ".artifacts/native-startup-review/",
+        ".artifacts/content-import/"
+      ],
+      "disposition": "HOLD-unlisted-originals",
+      "reason": "Only explicitly indexed snapshots/duplicates have a narrower disposition. All unlisted source, reports and raw evidence retained for owner review."
+    },
+    {
+      "paths": [
+        "build/",
+        "native/build/",
+        ".artifacts/"
+      ],
+      "disposition": "HOLD-default-unlisted",
+      "reason": "This archive is a bounded reviewed subset, not a full inventory/security review or cleanup authorization. Everything outside explicit manifest/dispositions stays untouched."
+    }
+  ],
+  "exclusions": [
+    {
+      "paths": [
+        "native/build/go-cache-windows/",
+        "native/build/go-cache-linux/",
+        "native/build/ohos-go-cache/",
+        "native/build/go-gopath-linux/"
+      ],
+      "disposition": "EXCLUDED-from-archive-retain-original",
+      "reason": "Generated Go build/module caches; no copying or deletion."
+    },
+    {
+      "paths": [
+        "native/build/go1.27.1.linux-amd64.tar.gz",
+        ".artifacts/release-integrity/packages/",
+        ".artifacts/ci-run/*.zip"
+      ],
+      "disposition": "EXCLUDED-binary-archive-package-retain-original",
+      "reason": "SDK/package/artifact binaries excluded; unknown uniqueness and privacy remain HOLD for cleanup."
+    },
+    {
+      "paths": [
+        ".artifacts/release-integrity/pygrpc/",
+        ".artifacts/ci-run/actionlint/",
+        "native/go_runtime/vendor/"
+      ],
+      "disposition": "EXCLUDED-upstream-or-dependency-tree-retain-original",
+      "reason": "No SDK/vendor/dependency-install copying. Existing source ownership/tracking unchanged."
+    },
+    {
+      "paths": [
+        "native/build/linux-sdk-fixture-r1bec099/build/",
+        "native/build/desktop/",
+        "native/build/verify-ohos/",
+        "**/__pycache__/",
+        ".git/",
+        ".trellis/.runtime/"
+      ],
+      "disposition": "EXCLUDED-generated-or-machine-runtime-retain-original",
+      "reason": "Binary build output, bytecode and runtime state are not source snapshots. No cleanup/deletion performed."
+    },
+    {
+      "paths": [
+        "reparse-points-and-their-targets"
+      ],
+      "disposition": "EXCLUDED-unfollowed-HOLD",
+      "reason": "No link-target traversal or copying authorized."
+    }
+  ],
+  "unresolved": [
+    "Coordinator/p2 must review exact frozen file list before staging without force.",
+    "Current remote refs were not refreshed by p5. Local reachable-history comparison is not complete remote-history coverage.",
+    "No full independent privacy/security/license audit.",
+    "No official extracted-SDK upstream comparison.",
+    "Original raw device/actor/log/unknown content remains local on HOLD."
+  ],
+  "state": "frozen-for-coordinator-review",
+  "frozenAtUtc": "2026-11-26T21:14:53.1432269Z",
+  "summary": {
+    "preservedSnapshots": 49,
+    "exact": 47,
+    "redactedRawHeld": 2,
+    "historyDuplicates": 3,
+    "individualHolds": 27,
+    "scopeHoldGroups": 5,
+    "exclusionGroups": 5,
+    "allOriginalsRetained": true,
+    "cleanupAuthorized": false
+  }
+}

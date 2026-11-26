@@ -1,0 +1,23 @@
+"""Capture selected public CI facts and downloaded artifact verification."""
+import json
+from pathlib import Path
+
+root = Path('.artifacts/ci-run')
+run = json.loads((root / 'run-2.json').read_text())
+jobs = json.loads((root / 'jobs-2.json').read_text())['jobs']
+report = {
+    'runId': run['id'], 'url': run['html_url'], 'commit': run['head_sha'],
+    'branch': run['head_branch'], 'status': run['status'],
+    'conclusion': run['conclusion'], 'event': run['event'],
+    'jobs': [{'id': job['id'], 'name': job['name'], 'status': job['status'],
+              'conclusion': job['conclusion'], 'url': job['html_url'],
+              'steps': [{'name': step['name'], 'conclusion': step['conclusion']}
+                        for step in job.get('steps', [])]} for job in jobs],
+    'artifacts': json.loads((root / 'verified-artifacts.json').read_text()),
+    'limits': ['Existing native debugger tests fail; source check remains red.',
+               'No device execution, application packaging or Apple signing validation.',
+               'First macOS build warns that Go objects require macOS 13 while C linking targets older versions.'],
+}
+target = Path('.trellis/tasks/11-17-github-native-build/research/remote-validation.json')
+target.write_text(json.dumps(report, indent=2) + '\n')
+print(f'Recorded {len(report["artifacts"])} verified artifacts for run {run["id"]}')

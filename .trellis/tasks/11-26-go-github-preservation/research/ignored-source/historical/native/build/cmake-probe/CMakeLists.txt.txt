@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.14)
+project(go_runtime_bundle_check NONE)
+set(BINARY_NAME runtime_probe)
+add_custom_target(runtime_probe ALL)
+include("D:/MyNewProjects/qfli_go/native/go_runtime/desktop.cmake")
+install(FILES "${QFLI_GO_RUNTIME_LIBRARY}" DESTINATION lib)

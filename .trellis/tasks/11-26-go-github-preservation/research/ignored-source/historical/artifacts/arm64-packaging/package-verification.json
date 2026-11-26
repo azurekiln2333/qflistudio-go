@@ -1,0 +1,16 @@
+{
+  "artifact": "build\\ohos\\hap\\entry-default-unsigned.hap",
+  "bytes": 58545166,
+  "size_mib": 55.8,
+  "architectures": [
+    "arm64-v8a"
+  ],
+  "native_libraries": [
+    "libs/arm64-v8a/libapp.so",
+    "libs/arm64-v8a/libflutter.so",
+    "libs/arm64-v8a/libqfli_go_runtime.so"
+  ],
+  "elf_machine": "AArch64",
+  "signed": false,
+  "sha256": "a917c2abc7ba59586be5197e68ce7c4caafb36765a7dc92468c105091993aca9"
+}

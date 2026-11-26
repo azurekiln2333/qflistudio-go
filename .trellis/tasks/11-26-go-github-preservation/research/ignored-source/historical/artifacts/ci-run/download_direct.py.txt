@@ -1,0 +1,68 @@
+"""Download an artifact through a verified TLS socket without logging its signed URL."""
+import hashlib
+import http.client
+import json
+import os
+from pathlib import Path
+import socket
+import ssl
+import subprocess
+import sys
+import urllib.error
+import urllib.parse
+import urllib.request
+
+artifact_id = int(sys.argv[1])
+artifacts = json.loads(Path('.artifacts/ci-run/artifacts-3.json').read_text())['artifacts']
+artifact = next(item for item in artifacts if item['id'] == artifact_id)
+class NoRedirect(urllib.request.HTTPRedirectHandler):
+    def redirect_request(self, req, fp, code, msg, hdrs, newurl):
+        return None
+credentials = subprocess.run(['git', 'credential', 'fill'],
+    input='protocol=https\nhost=github.com\npath=azurekiln2333/qflistudio-go.git\n\n',
+    text=True, capture_output=True, check=True, timeout=20,
+    env={**os.environ, 'GIT_TERMINAL_PROMPT': '0', 'GCM_INTERACTIVE': 'never'})
+fields = dict(line.split('=', 1) for line in credentials.stdout.splitlines() if '=' in line)
+request = urllib.request.Request(artifact['archive_download_url'],
+    headers={'Authorization': 'Bearer ' + fields['password'], 'Accept': 'application/vnd.github+json'})
+try:
+    urllib.request.build_opener(NoRedirect()).open(request, timeout=20)
+except urllib.error.HTTPError as response:
+    if response.code != 302:
+        print('API status', response.code)
+        raise SystemExit(1)
+    location = urllib.parse.urlsplit(response.headers['Location'])
+assert location.scheme == 'https'
+host = location.hostname
+path = Path('.artifacts/ci-run') / f"{artifact['name']}.zip"
+partial = path.with_name(path.name + '.direct-partial')
+context = ssl.create_default_context()
+addresses = sorted(set(item[4][0] for item in socket.getaddrinfo(host, 443, type=socket.SOCK_STREAM)))
+print('Download hostname:', host, flush=True)
+for address in addresses:
+    try:
+        raw = socket.create_connection((address, 443), timeout=10)
+        secure = context.wrap_socket(raw, server_hostname=host)
+        secure.settimeout(45)
+        connection = http.client.HTTPSConnection(host, context=context)
+        connection.sock = secure
+        connection.request('GET', location.path + '?' + location.query)
+        response = connection.getresponse()
+        if response.status != 200:
+            print('Storage status:', response.status, flush=True)
+            connection.close()
+            continue
+        digest = hashlib.sha256()
+        with partial.open('wb') as output:
+            while chunk := response.read(1024 * 1024):
+                output.write(chunk)
+                digest.update(chunk)
+        connection.close()
+        if f'sha256:{digest.hexdigest()}' != artifact['digest']:
+            raise ValueError('Archive digest mismatch')
+        partial.replace(path)
+        print(f'Saved and verified {path.name} ({path.stat().st_size} bytes)', flush=True)
+        raise SystemExit(0)
+    except (OSError, ValueError, http.client.HTTPException) as error:
+        print(address, type(error).__name__, flush=True)
+raise SystemExit(1)
