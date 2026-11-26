@@ -1,37 +1,9 @@
 {
   "app": {
-    "signingConfigs": [
-      {
-        "name": "default",
-        "type": "HarmonyOS",
-        "material": {
-          "certpath": "C:\\Users\\lichengyu\\.ohos\\config\\default_ohos_PCM4VcSpkIS56RbJJjYsZEXVxR-3ZmMIgBvXj94Bo-Y=.cer",
-          "keyAlias": "debugKey",
-          "keyPassword": "0000001BD5827C0158F8091DD9DB77FC7FAEFF270DDA5E31A4886CCBF245CA65BFF6047E99D325719D92C0",
-          "profile": "C:\\Users\\lichengyu\\.ohos\\config\\default_ohos_PCM4VcSpkIS56RbJJjYsZEXVxR-3ZmMIgBvXj94Bo-Y=.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "C:\\Users\\lichengyu\\.ohos\\config\\default_ohos_PCM4VcSpkIS56RbJJjYsZEXVxR-3ZmMIgBvXj94Bo-Y=.p12",
-          "storePassword": "0000001BE6B8B126B131396AEDF52EC7AC29347BD299E40BBF73619529CDBD18DAB8C37494F17E2F8DB3A2"
-        }
-      },
-      {
-        "name": "releaseKey",
-        "type": "HarmonyOS",
-        "material": {
-          "certpath": "D:/Keystore/suanxiwanjie_release.cer",
-          "keyAlias": "suanxiwanjie",
-          "keyPassword": "00000020ECFE4E5322220A6DC6B088EFD8F5E83D2697032E264FBCBFE6AC10F1A5DFC7D77C73C16CA28DEA198DEA86F7",
-          "profile": "D:/Keystore/Profile/goshiftRelease.p7b",
-          "signAlg": "SHA256withECDSA",
-          "storeFile": "D:/Keystore/suanxiwanjie.p12",
-          "storePassword": "00000020EBE1E35B9FF393520E94F6762F56C0B26079C0036D9D889798C07B7DE57CF427F8259FB2EFBEAE2FEA11A6CD"
-        }
-      }
-    ],
+    "signingConfigs": [],
     "products": [
       {
         "name": "default",
-        "signingConfig": "releaseKey",
         "compatibleSdkVersion": "5.1.0(18)",
         "runtimeOS": "HarmonyOS",
         "targetSdkVersion": "6.1.1(24)"
