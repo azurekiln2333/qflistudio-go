@@ -564,7 +564,7 @@ The platform prelude auto-handles the context load requirement:
 Spawn the check sub-agent:
 
 - **Agent type**: `trellis-check`
-- **Task description**: Review all code changes against specs and task artifacts; fix owned findings directly; require exact-SHA hosted lint/type-check/test evidence and report unresolved gates without local execution
+- **Task description**: Review all code changes against specs and task artifacts. Fix owned findings directly. Require exact-SHA hosted lint, type-check, and test evidence. Report unresolved gates. Route project checks to GitHub-hosted Actions.
 - **Dispatch prompt guard**: The prompt MUST start with `Active task: <task path>`, then tell the spawned agent it is already the `trellis-check` sub-agent and must review/fix directly, not spawn another `trellis-check` / `trellis-implement`.
 
 The check agent's job:

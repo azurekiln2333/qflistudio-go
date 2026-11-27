@@ -62,7 +62,7 @@ QFLIGoShift 是基于 Flutter 的 Go 学习与编辑应用。
 ## 开发前提
 
 - Flutter SDK 必须满足 Dart `>=3.11.5 <4.0.0`。
-- 桌面运行需要本机安装 Go SDK。
+- 桌面端运行程序时会调用官方 Go SDK。
 - 本项目需要同级的共享内核仓库。
 - OpenHarmony 构建需要 OHOS 版 Flutter SDK。
 

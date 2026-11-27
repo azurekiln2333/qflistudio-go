@@ -1,9 +1,8 @@
 # GitHub Actions 原生运行库构建
 
-## 目标
+## Historical objective
 
 让 GitHub Actions 远程构建移动端和 Apple 原生运行库。
-
 远程构建可以减少本地缓存增长。
 用户可以从 Actions 下载构建产物。
 
@@ -110,7 +109,7 @@ GPL v3 声明已对齐主项目。
 五个构建任务全部成功。
 工作流整体结论为失败，唯一失败任务为 `Native source tests`。
 失败步骤为 `Test vendored runtime`，job 编号 138764481895。
-同一任务内 `Vet vendored runtime` 与产物校验步骤均成功。
+同一任务内 `Vet vendored runtime` 与产物检查步骤均成功。
 
 | 任务 | 结论 | job 编号 |
 | --- | --- | --- |
