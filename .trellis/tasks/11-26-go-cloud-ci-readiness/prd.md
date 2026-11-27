@@ -31,7 +31,7 @@ Repair cloud test failures and source-built native artifact flow, cover six-plat
 
 ## Dependencies
 
-Requires preservation inventory and the confirmed core dependency contract. The user approved the parent/child plan on 2026-11-27; see the parent prd.md. Reviewer w5V:p2 issued final review PASS after metadata corrections. Only the preservation child has been activated; this child still requires its dependencies and explicit activation by w5V:p1. Pi owns implementation, Git execution and GitHub dispatch. The coordinator assigns, reviews and starts tasks without implementing. The preservation child must not remove tracked native inputs before this child replaces consumers. Target cutover waits for this child’s final evidence or explicitly accepted external blockers.
+This child was activated by coordinator w5V:p1 on 2026-11-27 after the planning review passed. The preservation inventory and provisional core dependency contract are satisfied for execution; the final coordinated core SHA remains pending. Acceptance criteria remain open. Pi implementation and Git execution follow the existing ownership assignments. The preservation child must not remove tracked native inputs before this child replaces consumers. Target cutover waits for this child’s final evidence or explicitly accepted external blockers.
 
 ## Scope boundary
 
