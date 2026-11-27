@@ -13,7 +13,7 @@ Missing new installer platforms and signing remain follow-up items, not blockers
 
 ## Core dependency
 
-Keep the released core pin at `1ae4674a4b153701b0c3b3ff04b1a1b77a318611`. The previous migration baseline `476a30acee21dc486ee2849dd8064a7be665e4d5` was covered by core-check run `45656065902`; that historical result does not validate the released pin.
+Keep the released core pin at `8e031313ffc8d531c5a6b4d131f721f35da04c86`. The previous migration baseline `476a30acee21dc486ee2849dd8064a7be665e4d5` was covered by core-check run `45656065902`; that historical result does not validate the released pin.
 
 ## CI-decoupled triage
 

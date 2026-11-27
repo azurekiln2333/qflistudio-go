@@ -26,7 +26,7 @@ sys.path.insert(0, str(ROOT / "tool"))
 from inspect_go_catalog_hap import SYMBOLS
 
 APP_NAME = "qfligoshift"
-CORE_COMMIT = "1ae4674a4b153701b0c3b3ff04b1a1b77a318611"
+CORE_COMMIT = "8e031313ffc8d531c5a6b4d131f721f35da04c86"
 CORE_DIRECTORY = "qflistudio-core"
 FLUTTER_REPOSITORY = "https://gitcode.com/CPF-Flutter/flutter_flutter.git"
 FLUTTER_TAG = "3.41.9+ohos-1.0.2"

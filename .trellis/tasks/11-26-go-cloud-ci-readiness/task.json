@@ -48,7 +48,7 @@
       "authority": "w5V:p1",
       "date": "2026-11-27",
       "evidence": "Coordinator explicitly activated and assigned this child on 2026-11-27",
-      "basis": "Planning review passed; the preservation inventory and prior migration baseline 476a30acee21dc486ee2849dd8064a7be665e4d5 are recorded. That baseline was covered by core-check run 45656065902 and remains historical evidence. The current released core pin is 1ae4674a4b153701b0c3b3ff04b1a1b77a318611; no result from the earlier run validates this release."
+      "basis": "Planning review passed; the preservation inventory and prior migration baseline 476a30acee21dc486ee2849dd8064a7be665e4d5 are recorded. That baseline was covered by core-check run 45656065902 and remains historical evidence. The current released core pin is 8e031313ffc8d531c5a6b4d131f721f35da04c86; no result from the earlier run validates this release."
     }
   }
 }

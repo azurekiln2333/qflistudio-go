@@ -39,7 +39,7 @@ env:
   GIT_CONFIG_KEY_0: core.autocrlf
   GIT_CONFIG_VALUE_0: 'false'
   GO_VERSION: '1.27.1'
-  CORE_REVISION: 1ae4674a4b153701b0c3b3ff04b1a1b77a318611
+  CORE_REVISION: 8e031313ffc8d531c5a6b4d131f721f35da04c86
 
 jobs:
   native:
@@ -162,6 +162,14 @@ jobs:
 
       - name: Set up the pinned Flutter-OH SDK
         run: python tool/ci/app_build.py setup-flutter
+
+      - name: Prepare the pinned core for Flutter-OH
+        run: |
+          set -euo pipefail
+          python -B ../qflistudio-core/tool/ci/prepare_flutter_core.py \
+            --flavor ohos --sdk-root "$QFLI_FLUTTER_ROOT" \
+            --sdk-revision 62357a93d653bf844f730bb1f4b7cc9e2139d14e 2>&1 \
+            | tee "build/app-artifacts/app-$QFLI_PLATFORM-$QFLI_ARCH/reports/core-preparation.log"
 
       - name: Provision the Go runtime toolchain
         if: matrix.platform == 'macos' || matrix.platform == 'ios'

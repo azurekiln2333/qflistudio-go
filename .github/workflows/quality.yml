@@ -20,7 +20,7 @@ defaults:
 env:
   GO_VERSION: '1.27.1'
   # Released core pin from the CORE_REF wave.
-  CORE_REF: 1ae4674a4b153701b0c3b3ff04b1a1b77a318611
+  CORE_REF: 8e031313ffc8d531c5a6b4d131f721f35da04c86
   PYTHONUTF8: '1'
   GOTOOLCHAIN: local
   GOWORK: 'off'
@@ -225,6 +225,16 @@ jobs:
           python tool/ci/app_build.py init --output-dir "$EVIDENCE/flutter-setup" 2>&1 | tee "$EVIDENCE/flutter-init.log"
           python tool/ci/app_build.py setup-flutter --output-dir "$EVIDENCE/flutter-setup" 2>&1 | tee "$EVIDENCE/flutter-setup.log"
 
+      - name: Prepare the pinned core for Flutter-OH
+        id: coreprep
+        if: ${{ !cancelled() && steps.flutter.outcome == 'success' && steps.core.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python -B ../qflistudio-core/tool/ci/prepare_flutter_core.py \
+            --flavor ohos --sdk-root "$QFLI_FLUTTER_ROOT" \
+            --sdk-revision 62357a93d653bf844f730bb1f4b7cc9e2139d14e 2>&1 \
+            | tee "$EVIDENCE/core-preparation.log"
+
       - name: Build a fresh offline vendored Linux runtime and bind installed Go
         id: native
         if: ${{ !cancelled() && steps.go.outcome == 'success' && steps.linux.outcome == 'success' && steps.python.outcome == 'success' }}
@@ -276,7 +286,7 @@ jobs:
 
       - name: Resolve application dependencies from canonical core vendors
         id: pub
-        if: ${{ !cancelled() && steps.flutter.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.flutter.outcome == 'success' && steps.coreprep.outcome == 'success' }}
         run: |
           set -euo pipefail
           core_sha="$(git -C ../qflistudio-core rev-parse HEAD)"
