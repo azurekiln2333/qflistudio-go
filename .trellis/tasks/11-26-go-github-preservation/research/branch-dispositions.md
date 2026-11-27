@@ -113,3 +113,9 @@ project checks, dependency setup, artifact downloads or Git writes were run.
 - Coordinator assignment: reviewed P source and unchanged five-remote refresh
   dated 2026-11-27 04:43.
 - Read-only local ref and commit-range inspection during this file's preparation.
+
+## Addendum: later local ancestry snapshot
+
+The later local source snapshot is `main` at `e2062c1290e3f32785d0a15217e055ecb0a86b33`. Relative to the locally recorded `github/main` tracking ref at `c5cab3d`, local `main` contains 11 commits. The recorded sequence above that base, newest first, is `e2062c1`, `d361118`, `2f15296`, `18996a2`, `db831ae`, `3783588`, `cc1dd4e`, `b65d383`, `810946e`, `f279134`, and `ca8b5a4`.
+
+Local `ci/app-packages` at `3783588` is integrated into this `main` ancestry. It has no separate push disposition; do not publish it separately. This addendum supplements the historical observations above and does not refresh live remote inventories. The historical mirror branch dispositions remain unchanged; any publication gate still requires its separately specified live checks.
