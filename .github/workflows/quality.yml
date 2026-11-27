@@ -1,0 +1,398 @@
+name: Quality
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    shell: bash
+    working-directory: qfli_go
+
+env:
+  GO_VERSION: '1.27.1'
+  # Core-last ruling: finish on this pin; a later CORE_REF bump is follow-up.
+  CORE_REF: 476a30acee21dc486ee2849dd8064a7be665e4d5
+  PYTHONUTF8: '1'
+  GOTOOLCHAIN: local
+  GOWORK: 'off'
+  GOENV: 'off'
+  GOPROXY: 'off'
+  GOSUMDB: 'off'
+  GO_TELEMETRY_CHILD: '2'
+
+jobs:
+  policy:
+    name: Hosted helper and policy checks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    env:
+      EVIDENCE: ${{ github.workspace }}/qfli_go/build/quality-policy
+    steps:
+      - name: Check out the application
+        id: app
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: qfli_go
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Start hosted evidence
+        id: evidence
+        run: |
+          set -euo pipefail
+          mkdir -p "$EVIDENCE"
+          git rev-parse HEAD > "$EVIDENCE/source-sha.txt"
+
+      - name: Set up Python
+        id: python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+
+      - name: Test CI helpers
+        id: helpers
+        if: ${{ !cancelled() && steps.python.outcome == 'success' && steps.evidence.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python -m unittest discover -s tool/ci -p 'test_*.py' -v 2>&1 | tee "$EVIDENCE/helper-tests.log"
+
+      - name: Check active cloud policy and Trellis references
+        id: policy
+        if: ${{ !cancelled() && steps.python.outcome == 'success' && steps.evidence.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python tool/ci/cloud_policy.py check 2>&1 | tee "$EVIDENCE/cloud-policy.log"
+
+      - name: Lint only changed Chinese documentation
+        id: chinese
+        if: ${{ !cancelled() && steps.python.outcome == 'success' && steps.evidence.outcome == 'success' }}
+        env:
+          DIFF_BASE: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: |
+          set -euo pipefail
+          python - <<'PY' 2>&1 | tee "$EVIDENCE/chinese-lint.log"
+          import json
+          import os
+          from pathlib import Path
+          import re
+          import subprocess
+          import sys
+
+          evidence = Path(os.environ['EVIDENCE']) / 'changed-chinese-docs.json'
+          record = {'status': 'failure', 'files': [], 'reason': 'selection did not complete'}
+          try:
+              base = os.environ.get('DIFF_BASE', '')
+              if not base or not base.strip('0'):
+                  parent = subprocess.run(['git', 'rev-parse', '--verify', 'HEAD^'],
+                                          capture_output=True, text=True)
+                  base = (parent.stdout.strip() if parent.returncode == 0 else
+                          subprocess.check_output(['git', 'hash-object', '-t', 'tree', '--stdin'],
+                                                  input=b'').decode().strip())
+              changed = subprocess.check_output([
+                  'git', 'diff', '--name-only', '--diff-filter=ACMR', '-z', base, 'HEAD'
+              ]).decode('utf-8').split('\0')
+              documents = []
+              for name in changed:
+                  path = Path(name)
+                  if (path.suffix.lower() in {'.md', '.mdx', '.rst', '.txt', '.adoc'}
+                          and path.is_file()
+                          and re.search(r'[\u3400-\u4dbf\u4e00-\u9fff]', path.read_text(encoding='utf-8'))):
+                      documents.append(name)
+              record = {'baseSha': base, 'files': sorted(documents), 'status': 'skipped',
+                        'reason': 'no changed Chinese documentation'}
+              if documents:
+                  result = subprocess.run([sys.executable, 'scripts/ste-lint-zh.py', *sorted(documents)],
+                                          check=False)
+                  record.update(status='success' if result.returncode == 0 else 'failure',
+                                reason='changed Chinese documentation only', exitCode=result.returncode)
+                  if result.returncode:
+                      raise SystemExit(result.returncode)
+              print(json.dumps(record, ensure_ascii=False, indent=2))
+          finally:
+              evidence.write_text(json.dumps(record, ensure_ascii=False, indent=2) + '\n', encoding='utf-8')
+          PY
+
+      - name: Record policy outcomes including failures and skips
+        if: ${{ always() && steps.evidence.outcome == 'success' }}
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          steps = json.loads(os.environ['STEP_RESULTS'])
+          source_sha = (Path(os.environ['EVIDENCE']) / 'source-sha.txt').read_text(encoding='utf-8').strip()
+          record = {
+              'sourceSha': source_sha, 'workflow': os.environ['GITHUB_WORKFLOW'],
+              'runId': os.environ['GITHUB_RUN_ID'], 'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'job': os.environ['GITHUB_JOB'], 'runner': 'ubuntu-24.04',
+              'runURL': f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+              'checks': {name: {'outcome': value['outcome'], 'conclusion': value['conclusion']}
+                         for name, value in steps.items()},
+              'scope': 'active instructions/task references; Chinese lint only on changed Chinese docs',
+          }
+          Path(os.environ['EVIDENCE'], 'outcomes.json').write_text(json.dumps(record, indent=2) + '\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
+              stream.write('## Policy evidence\n\nSource: `' + record['sourceSha'] + '`\n\n')
+              for name, value in record['checks'].items():
+                  stream.write(f"- {name}: {value['outcome']}\n")
+              stream.write('\nHelper test log retains unittest skips; changed-chinese-docs.json records empty-scope skips.\n')
+          PY
+
+      - name: Retain hosted policy evidence
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: quality-policy-${{ github.sha }}-${{ github.run_attempt }}
+          path: qfli_go/build/quality-policy/
+          if-no-files-found: warn
+          retention-days: 14
+
+  flutter:
+    name: Flutter analysis and real Linux native bindings
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      EVIDENCE: ${{ github.workspace }}/qfli_go/build/quality-flutter
+      QFLI_PLATFORM: linux
+      QFLI_ARCH: x86_64
+      FLUTTER_STORAGE_BASE_URL: https://storage.googleapis.com
+      FLUTTER_OHOS_STORAGE_BASE_URL: https://flutter-ohos.obs.cn-south-1.myhuaweicloud.com
+      PUB_HOSTED_URL: https://pub.dev
+      FLUTTER_SUPPRESS_ANALYTICS: 'true'
+    steps:
+      - name: Check out the application
+        id: app
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: qfli_go
+          persist-credentials: false
+
+      - name: Start hosted evidence
+        id: evidence
+        run: |
+          set -euo pipefail
+          mkdir -p "$EVIDENCE"
+          git rev-parse HEAD > "$EVIDENCE/source-sha.txt"
+          git rev-parse HEAD:native/go_runtime > "$EVIDENCE/native-source-tree.txt"
+
+      - name: Check out the pinned canonical core sibling
+        id: core
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          repository: azurekiln2333/qflistudio-core
+          ref: ${{ env.CORE_REF }}
+          path: qflistudio-core
+          persist-credentials: false
+
+      - name: Set up Python
+        id: python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+
+      - name: Set up the pinned Go SDK
+        id: go
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+
+      - name: Install hosted Linux prerequisites
+        id: linux
+        if: ${{ !cancelled() && steps.evidence.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          sudo apt-get update 2>&1 | tee "$EVIDENCE/apt-update.log"
+          sudo apt-get install -y gcc clang cmake ninja-build pkg-config libgtk-3-dev libstdc++-12-dev 2>&1 | tee "$EVIDENCE/apt-install.log"
+
+      - name: Set up pinned Flutter through the existing helper
+        id: flutter
+        if: ${{ !cancelled() && steps.python.outcome == 'success' && steps.linux.outcome == 'success' && steps.core.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          python tool/ci/app_build.py init --output-dir "$EVIDENCE/flutter-setup" 2>&1 | tee "$EVIDENCE/flutter-init.log"
+          python tool/ci/app_build.py setup-flutter --output-dir "$EVIDENCE/flutter-setup" 2>&1 | tee "$EVIDENCE/flutter-setup.log"
+
+      - name: Build a fresh offline vendored Linux runtime and bind installed Go
+        id: native
+        if: ${{ !cancelled() && steps.go.outcome == 'success' && steps.linux.outcome == 'success' && steps.python.outcome == 'success' }}
+        env:
+          CGO_ENABLED: '1'
+          CC: gcc
+          GOOS: linux
+          GOARCH: amd64
+        run: |
+          set -euo pipefail
+          go_executable="$(realpath "$(command -v go)")"
+          test -x "$go_executable"
+          test "$("$go_executable" env GOVERSION)" = "go$GO_VERSION"
+          "$go_executable" version 2>&1 | tee "$EVIDENCE/go-version.log"
+          output="$RUNNER_TEMP/quality-native-${GITHUB_RUN_ID}-${GITHUB_RUN_ATTEMPT}"
+          mkdir "$output"
+          library="$output/libqfli_go_runtime.so"
+          "$go_executable" -C native/go_runtime build -mod=vendor -buildmode=c-shared -o "$library" . 2>&1 | tee "$EVIDENCE/native-build.log"
+          test -s "$library"
+          export QFLI_GO_RUNTIME_LIBRARY="$(realpath "$library")"
+          export QFLI_GO_TEST_EXECUTABLE="$go_executable"
+          python - <<'PY' 2>&1 | tee "$EVIDENCE/native-bindings.log"
+          import ctypes
+          import hashlib
+          import json
+          import os
+          from pathlib import Path
+          import subprocess
+          library = Path(os.environ['QFLI_GO_RUNTIME_LIBRARY'])
+          go = Path(os.environ['QFLI_GO_TEST_EXECUTABLE'])
+          assert library.is_absolute() and library.is_file()
+          assert go.is_absolute() and os.access(go, os.X_OK)
+          loaded = ctypes.CDLL(str(library))
+          for symbol in ('QfliGoRun', 'QfliGoCancel', 'QfliGoFree', 'QfliGoAnalyze', 'QfliGoFormat',
+                         'QfliGoDebugStart', 'QfliGoDebugPoll', 'QfliGoDebugCommand', 'QfliGoDebugClose'):
+              getattr(loaded, symbol)
+          version = subprocess.check_output([str(go), 'version'], text=True).strip()
+          with library.open('rb') as stream:
+              library_sha256 = hashlib.file_digest(stream, 'sha256').hexdigest()
+          source_sha = Path(os.environ['EVIDENCE'], 'source-sha.txt').read_text(encoding='utf-8').strip()
+          record = {'sourceSha': source_sha, 'status': 'preflight_passed',
+                    'library': str(library), 'librarySha256': library_sha256,
+                    'goExecutable': str(go), 'goVersion': version,
+                    'coverage': 'load/export/SDK preflight only; execution is reported by Flutter test events'}
+          Path(os.environ['EVIDENCE'], 'native-bindings.json').write_text(json.dumps(record, indent=2) + '\n')
+          print(json.dumps(record, indent=2))
+          PY
+          printf 'QFLI_GO_RUNTIME_LIBRARY=%s\nQFLI_GO_TEST_EXECUTABLE=%s\n' "$QFLI_GO_RUNTIME_LIBRARY" "$QFLI_GO_TEST_EXECUTABLE" >> "$GITHUB_ENV"
+
+      - name: Resolve application dependencies from canonical core vendors
+        id: pub
+        if: ${{ !cancelled() && steps.flutter.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          core_sha="$(git -C ../qflistudio-core rev-parse HEAD)"
+          test "$core_sha" = "$CORE_REF"
+          printf '%s\n' "$core_sha" > "$EVIDENCE/core-sha.txt"
+          flutter pub get 2>&1 | tee "$EVIDENCE/flutter-pub-get.log"
+          python - <<'PY' 2>&1 | tee "$EVIDENCE/package-bindings.log"
+          import json
+          import os
+          from pathlib import Path
+          from urllib.parse import unquote, urljoin, urlparse
+          config = Path('.dart_tool/package_config.json').resolve()
+          packages = json.loads(config.read_text(encoding='utf-8'))['packages']
+          roots = {item['name']: item['rootUri'] for item in packages}
+          core = Path('../qflistudio-core').resolve()
+          bindings = {}
+          for name, expected in (('qfli_studio_core', core), ('re_editor', core / 'vendor/re_editor'),
+                                 ('xterm', core / 'vendor/xterm')):
+              if name not in roots:
+                  raise SystemExit(f'Missing required package binding: {name}; pubspec is owned by p4')
+              uri = urlparse(urljoin(config.as_uri(), roots[name]))
+              actual = Path(unquote(uri.path)).resolve()
+              if uri.scheme != 'file' or actual != expected or not expected.is_dir():
+                  raise SystemExit(f'{name} must resolve to {expected}, found {actual}; pubspec is owned by p4')
+              bindings[name] = str(actual)
+          Path(os.environ['EVIDENCE'], 'package-bindings.json').write_text(json.dumps(bindings, indent=2) + '\n')
+          print(json.dumps(bindings, indent=2))
+          PY
+          cp pubspec.lock "$EVIDENCE/resolved-pubspec.lock"
+
+      - name: Analyze Flutter sources
+        id: analyze
+        if: ${{ !cancelled() && steps.pub.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          flutter analyze --no-pub 2>&1 | tee "$EVIDENCE/flutter-analyze.log"
+
+      - name: Test Flutter with required fresh native and SDK bindings
+        id: tests
+        if: ${{ !cancelled() && steps.pub.outcome == 'success' && steps.native.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          test -s "$QFLI_GO_RUNTIME_LIBRARY"
+          test -x "$QFLI_GO_TEST_EXECUTABLE"
+          "$QFLI_GO_TEST_EXECUTABLE" version
+          flutter test --no-pub --concurrency 1 --machine test 2> >(tee "$EVIDENCE/flutter-test.stderr.log" >&2) | tee "$EVIDENCE/flutter-test.jsonl"
+
+      - name: Record exact hosted outcomes and unverified scope
+        if: ${{ always() && steps.evidence.outcome == 'success' }}
+        env:
+          STEP_RESULTS: ${{ toJSON(steps) }}
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          evidence = Path(os.environ['EVIDENCE'])
+          steps = json.loads(os.environ['STEP_RESULTS'])
+          suites, tests, done, skipped, errors = {}, {}, [], [], []
+          events = evidence / 'flutter-test.jsonl'
+          if events.exists():
+              for line in events.read_text(encoding='utf-8', errors='replace').splitlines():
+                  try:
+                      event = json.loads(line)
+                  except json.JSONDecodeError:
+                      continue
+                  if not isinstance(event, dict):
+                      continue
+                  if event.get('type') == 'suite':
+                      suites[event['suite']['id']] = event['suite']
+                  elif event.get('type') == 'testStart':
+                      tests[event['test']['id']] = event['test']
+                  elif event.get('type') == 'testDone':
+                      item = dict(event)
+                      item['test'] = tests.get(event['testID'], {})
+                      item['suite'] = suites.get(item['test'].get('suiteID'), {})
+                      done.append(item)
+                      if event.get('skipped'):
+                          skipped.append(item)
+                  elif event.get('type') in ('error', 'done'):
+                      errors.append(event)
+          source_sha = (evidence / 'source-sha.txt').read_text(encoding='utf-8').strip()
+          core_sha_path = evidence / 'core-sha.txt'
+          core_sha = core_sha_path.read_text(encoding='utf-8').strip() if core_sha_path.exists() else None
+          record = {
+              'sourceSha': source_sha, 'coreRef': os.environ['CORE_REF'], 'coreSha': core_sha,
+              'workflow': os.environ['GITHUB_WORKFLOW'], 'runId': os.environ['GITHUB_RUN_ID'],
+              'runAttempt': os.environ['GITHUB_RUN_ATTEMPT'], 'job': os.environ['GITHUB_JOB'],
+              'runner': 'ubuntu-24.04',
+              'runURL': f"{os.environ['GITHUB_SERVER_URL']}/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+              'checks': {name: {'outcome': value['outcome'], 'conclusion': value['conclusion']}
+                         for name, value in steps.items()},
+              'testCompletions': done, 'skippedTests': skipped, 'terminalEvents': errors,
+              'unverifiedScope': ['Android/OHOS/iOS device integration', 'Windows/macOS execution',
+                                  'installation and signing', 'all skipped tests listed in this evidence'],
+              'notes': ['Prerequisite failures gate required tests; skipped is not passed.',
+                        'Flutter setup helper manifest is setup evidence, not an application-package result.',
+                        'CORE_REF bump after the final core push is pending follow-up, not a migration blocker.'],
+          }
+          if steps.get('tests', {}).get('outcome') != 'success':
+              record['unverifiedScope'].append('required Flutter native/SDK test execution did not pass')
+          (evidence / 'outcomes.json').write_text(json.dumps(record, indent=2) + '\n')
+          with open(os.environ['GITHUB_STEP_SUMMARY'], 'a') as stream:
+              stream.write('## Flutter/Linux quality evidence\n\nSource: `' + record['sourceSha'] + '`\n\nCore: `' + record['coreRef'] + '`\n\n')
+              for name, value in record['checks'].items():
+                  stream.write(f"- {name}: {value['outcome']}\n")
+              stream.write(f'\nRecorded test completions: {len(done)}; skipped: {len(skipped)}.\n')
+              stream.write('\nUnverified: ' + '; '.join(record['unverifiedScope']) + '.\n')
+          PY
+
+      - name: Retain hosted Flutter evidence without SDKs or native binaries
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: quality-flutter-${{ github.sha }}-${{ github.run_attempt }}
+          path: qfli_go/build/quality-flutter/
+          if-no-files-found: warn
+          retention-days: 14
