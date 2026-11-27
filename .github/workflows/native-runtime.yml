@@ -1,6 +1,16 @@
 name: Native runtime
 
 on:
+  workflow_call:
+    inputs:
+      ohos_sdk_url:
+        description: 'Optional OHOS Windows SDK archive HTTPS URL override'
+        type: string
+        required: false
+      ohos_sdk_sha256:
+        description: 'SHA-256 required when overriding the OHOS SDK URL'
+        type: string
+        required: false
   workflow_dispatch:
     inputs:
       ohos_sdk_url:
@@ -27,10 +37,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: native-runtime-${{ github.ref }}
+  group: native-runtime-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
+  # Hash identical checkout bytes on Windows producers and Unix consumers.
+  GIT_CONFIG_COUNT: '1'
+  GIT_CONFIG_KEY_0: core.autocrlf
+  GIT_CONFIG_VALUE_0: 'false'
   GO_VERSION: '1.27.1'
   GOTOOLCHAIN: local
   GOWORK: 'off'
@@ -45,6 +59,9 @@ jobs:
     name: Native source tests
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    defaults:
+      run:
+        shell: bash
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
@@ -54,25 +71,57 @@ jobs:
           go-version: ${{ env.GO_VERSION }}
           cache: false
       - name: Test vendored runtime
+        if: ${{ !cancelled() }}
         working-directory: native/go_runtime
         env:
           CGO_ENABLED: '1'
-        run: go test -mod=vendor -timeout=20m ./...
+        run: |
+          set -o pipefail
+          go test -json -mod=vendor -timeout=20m ./... | tee "$RUNNER_TEMP/go-test.jsonl"
       - name: Vet vendored runtime
         if: ${{ !cancelled() }}
         working-directory: native/go_runtime
         env:
           CGO_ENABLED: '1'
-        run: go vet -mod=vendor ./...
+        run: |
+          set -o pipefail
+          go vet -mod=vendor ./... 2>&1 | tee "$RUNNER_TEMP/go-vet.log"
+      - name: Repeat debugger regressions 20 times
+        if: ${{ !cancelled() }}
+        working-directory: native/go_runtime
+        env:
+          CGO_ENABLED: '1'
+        run: |
+          set -o pipefail
+          go test -json -mod=vendor -timeout=20m \
+            -run '^(TestDebugBreakpointFramesStepAndContinue|TestDebugOpaqueCallbackCreatedByMainCalledByWorker|TestDebugRetainedNativeArgumentAfterRegistrarExit|TestDebugStoppedScalarSnapshotExcludesNewCallbackEntry)$' \
+            -count=20 ./... | tee "$RUNNER_TEMP/go-debug-regressions.jsonl"
+      - name: Run Linux cgo debugger race coverage
+        if: ${{ !cancelled() }}
+        working-directory: native/go_runtime
+        env:
+          CGO_ENABLED: '1'
+        run: |
+          set -o pipefail
+          go test -json -race -mod=vendor -timeout=20m -run '^TestDebug' ./... | tee "$RUNNER_TEMP/go-debug-race.jsonl"
       - name: Check artifact validation regressions
         if: ${{ !cancelled() }}
         run: python3 -m unittest discover -s tool/ci -p 'test_*.py'
+      - name: Upload source-check logs
+        if: always()
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: native-source-checks-${{ github.sha }}
+          path: ${{ runner.temp }}/go-*
+          if-no-files-found: warn
+          retention-days: 14
+          compression-level: 0
 
   android:
     name: Android (3 ABIs)
     runs-on: windows-2022
     needs: source-checks
-    if: ${{ !cancelled() }}
+    if: ${{ needs.source-checks.result == 'success' }}
     timeout-minutes: 45
     defaults:
       run:
@@ -116,7 +165,7 @@ jobs:
     name: OpenHarmony (2 ABIs)
     runs-on: windows-2022
     needs: source-checks
-    if: ${{ !cancelled() }}
+    if: ${{ needs.source-checks.result == 'success' }}
     timeout-minutes: 90
     defaults:
       run:
@@ -183,7 +232,7 @@ jobs:
     name: ${{ matrix.target }}
     runs-on: macos-15
     needs: source-checks
-    if: ${{ !cancelled() }}
+    if: ${{ needs.source-checks.result == 'success' }}
     env:
       SOURCE_CHECKS_CONCLUSION: ${{ needs.source-checks.result }}
     timeout-minutes: 45
@@ -241,6 +290,104 @@ jobs:
         with:
           name: native-${{ matrix.target }}-${{ github.sha }}
           path: native/build/ci/artifacts/${{ matrix.target }}/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+  windows:
+    name: Windows desktop runtime
+    runs-on: windows-2022
+    needs: source-checks
+    if: ${{ needs.source-checks.result == 'success' }}
+    timeout-minutes: 45
+    defaults:
+      run:
+        shell: pwsh
+    env:
+      SOURCE_CHECKS_CONCLUSION: ${{ needs.source-checks.result }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.13'
+      - uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e # v2.33.0
+        id: msys2
+        with:
+          msystem: UCRT64
+          update: true
+          install: mingw-w64-ucrt-x86_64-gcc
+      - name: Capture source and pinned toolchain
+        run: |
+          python tool/ci/collect_native.py snapshot "$env:RUNNER_TEMP/native-windows-source.json"
+          if ($LASTEXITCODE -ne 0) { throw 'Source capture failed.' }
+          "SOURCE_CHECKS_CONCLUSION=$env:SOURCE_CHECKS_CONCLUSION" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "MSYS2_LOCATION=${{ steps.msys2.outputs.msys2-location }}" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Build Windows Go runtime
+        env:
+          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+          CGO_LDFLAGS: -static
+        run: |
+          $output = Join-Path $env:RUNNER_TEMP 'native-windows-build'
+          $compiler = Join-Path $env:MSYS2_LOCATION 'ucrt64/bin/gcc.exe'
+          $env:PATH = "$(Split-Path -Parent $compiler);$env:PATH"
+          ./tool/build_desktop_go_runtime.ps1 -GoExecutable (Get-Command go).Source -CCompiler $compiler -OutputDirectory $output
+          if ($LASTEXITCODE -ne 0) { throw 'Windows Go runtime build failed.' }
+          python tool/ci/collect_native.py stage --platform windows --snapshot "$env:RUNNER_TEMP/native-windows-source.json" --build $output --output native/build/ci/artifacts/windows
+          if ($LASTEXITCODE -ne 0) { throw 'Windows native artifact validation failed.' }
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: native-windows-${{ github.sha }}
+          path: native/build/ci/artifacts/windows/
+          if-no-files-found: error
+          retention-days: 14
+          compression-level: 0
+
+  linux:
+    name: Linux desktop runtime
+    runs-on: ubuntu-24.04
+    needs: source-checks
+    if: ${{ needs.source-checks.result == 'success' }}
+    timeout-minutes: 45
+    env:
+      SOURCE_CHECKS_CONCLUSION: ${{ needs.source-checks.result }}
+      GOTOOLCHAIN: local
+      GOWORK: 'off'
+      GOENV: 'off'
+      GOPROXY: 'off'
+      GOSUMDB: 'off'
+      GO_TELEMETRY_CHILD: '2'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: ${{ env.GO_VERSION }}
+          cache: false
+      - name: Capture source and pinned toolchain
+        run: python3 tool/ci/collect_native.py snapshot "$RUNNER_TEMP/native-linux-source.json"
+      - name: Build Linux Go runtime
+        env:
+          CGO_ENABLED: '1'
+          CC: gcc
+        run: |
+          output="$RUNNER_TEMP/native-linux-build"
+          mkdir -p "$output"
+          go -C native/go_runtime build -mod=vendor -buildmode=c-shared -o "$output/libqfli_go_runtime.so" .
+          python3 tool/ci/collect_native.py stage --platform linux --snapshot "$RUNNER_TEMP/native-linux-source.json" --build "$output" --output native/build/ci/artifacts/linux --readelf readelf
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: native-linux-${{ github.sha }}
+          path: native/build/ci/artifacts/linux/
           if-no-files-found: error
           retention-days: 14
           compression-level: 0

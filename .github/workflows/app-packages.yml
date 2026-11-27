@@ -1,10 +1,14 @@
 name: App packages
 
 on:
+  workflow_call:
   workflow_dispatch:
   push:
     paths:
       - '.github/workflows/app-packages.yml'
+      - '.github/workflows/native-runtime.yml'
+      - 'tool/ci/collect_native.py'
+      - 'tool/ci/test_collect_native.py'
       - 'tool/ci/app_build.py'
       - 'tool/ci/test_app_build.py'
       - 'tool/inspect_go_catalog_hap.py'
@@ -26,16 +30,27 @@ permissions:
   contents: read
 
 concurrency:
-  group: app-packages-${{ github.ref }}
+  group: app-packages-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 env:
+  # Hash identical checkout bytes on Windows producers and Unix consumers.
+  GIT_CONFIG_COUNT: '1'
+  GIT_CONFIG_KEY_0: core.autocrlf
+  GIT_CONFIG_VALUE_0: 'false'
   GO_VERSION: '1.27.1'
-  CORE_REVISION: 573d1b6eecf1c2b392ad753264a5a09f62f8335e
+  CORE_REVISION: 476a30acee21dc486ee2849dd8064a7be665e4d5
 
 jobs:
+  native:
+    name: Source-matched native dependencies
+    uses: ./.github/workflows/native-runtime.yml
+    permissions:
+      contents: read
+
   package:
     name: App / ${{ matrix.platform }} / ${{ matrix.arch }}
+    needs: native
     runs-on: ${{ matrix.runner }}
     timeout-minutes: 90
     strategy:
@@ -74,7 +89,7 @@ jobs:
         with:
           repository: azurekiln2333/qflistudio-core
           ref: ${{ env.CORE_REVISION }}
-          path: qfli_studio_core
+          path: qflistudio-core
           persist-credentials: false
 
       - name: Set up Python
@@ -82,13 +97,21 @@ jobs:
         with:
           python-version: '3.13'
 
+      - name: Download source-matched native runtime
+        if: matrix.platform == 'android' || matrix.platform == 'ohos' || matrix.platform == 'windows' || matrix.platform == 'linux'
+        uses: actions/download-artifact@634f93cb2916e3fdff6788551b99b062d0335ce0 # v5.0.0
+        with:
+          name: native-${{ matrix.platform }}-${{ github.sha }}
+          path: qfli_go/build/native-artifacts/${{ matrix.platform }}
+
       - name: Start the evidence directory
         run: python tool/ci/app_build.py init
 
       - name: Test the package helper
-        run: >
-          python -m unittest discover -s tool/ci -p test_app_build.py -v 2>&1
-          | tee "build/app-artifacts/app-$QFLI_PLATFORM-$QFLI_ARCH/reports/ci-helper-tests.log"
+        run: |
+          set -o pipefail
+          python -m unittest discover -s tool/ci -p test_app_build.py -v 2>&1 \
+            | tee "build/app-artifacts/app-$QFLI_PLATFORM-$QFLI_ARCH/reports/ci-helper-tests.log"
 
       - name: Install the Linux desktop toolchain
         if: matrix.platform == 'linux'
@@ -107,13 +130,25 @@ jobs:
         if: matrix.platform == 'ohos'
         run: python -m pip install --disable-pip-version-check json5==0.12.1
 
-      # Android and OHOS package the tracked Go runtime and need no Go toolchain.
+      # Only Apple app jobs rebuild the Go runtime from source.
       - name: Set up Go
-        if: matrix.platform != 'android' && matrix.platform != 'ohos'
+        if: matrix.platform == 'macos' || matrix.platform == 'ios'
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version: ${{ env.GO_VERSION }}
           cache: false
+
+      - name: Validate source-matched native runtime
+        if: matrix.platform == 'windows' || matrix.platform == 'linux'
+        env:
+          QFLI_NATIVE_ARTIFACT_DIR: build/native-artifacts/${{ matrix.platform }}
+        run: python tool/ci/app_build.py validate-native
+
+      - name: Consume source-matched mobile native runtime
+        if: matrix.platform == 'android' || matrix.platform == 'ohos'
+        env:
+          QFLI_NATIVE_ARTIFACT_DIR: build/native-artifacts/${{ matrix.platform }}
+        run: python tool/ci/app_build.py consume-native
 
       - name: Install the OHOS command-line SDK
         if: matrix.platform == 'ohos'
@@ -122,19 +157,8 @@ jobs:
       - name: Set up the pinned Flutter-OH SDK
         run: python tool/ci/app_build.py setup-flutter
 
-      - name: Install the Windows cgo compiler
-        id: msys2
-        if: matrix.platform == 'windows'
-        uses: msys2/setup-msys2@ec48f7c5447b3140e2b088413ae3a55687bccb6e # v2.33.0
-        with:
-          msystem: UCRT64
-          update: true
-          install: mingw-w64-ucrt-x86_64-gcc
-
       - name: Provision the Go runtime toolchain
-        if: matrix.platform != 'android' && matrix.platform != 'ohos'
-        env:
-          MSYS2_LOCATION: ${{ steps.msys2.outputs.msys2-location }}
+        if: matrix.platform == 'macos' || matrix.platform == 'ios'
         run: python tool/ci/app_build.py setup-native
 
       - name: Build and inspect the application package
@@ -150,7 +174,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
-          name: app-${{ matrix.platform }}-${{ matrix.arch }}
+          name: app-${{ matrix.platform }}-${{ matrix.arch }}-${{ github.sha }}
           path: qfli_go/build/app-artifacts/app-${{ matrix.platform }}-${{ matrix.arch }}/
           if-no-files-found: warn
           retention-days: 14

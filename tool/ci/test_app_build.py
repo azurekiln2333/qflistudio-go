@@ -17,6 +17,7 @@ from unittest.mock import patch
 import zipfile
 
 import app_build as ci
+import collect_native as collector
 
 EXPORTS = sorted(ci.SYMBOLS)
 
@@ -41,8 +42,12 @@ def make_elf(machine, *, wide=True, alignment=16384, symbols=(), imported=(), ki
     struct.pack_into("<HH", data, 16, kind, machine)
     struct.pack_into("<QQ" if wide else "<II", data, 32 if wide else 28, header_size, sections_offset)
     struct.pack_into("<HHHH", data, 54 if wide else 42, program_size, 1, section_size, 3)
-    struct.pack_into("<I", data, header_size, 1)
-    struct.pack_into("<Q" if wide else "<I", data, header_size + (48 if wide else 28), alignment)
+    if wide:
+        struct.pack_into("<IIQQQQQQ", data, header_size, 1, 5, 0, 0, 0,
+                         sections_offset, sections_offset, alignment)
+    else:
+        struct.pack_into("<IIIIIIII", data, header_size, 1, 0, 0, 0,
+                         sections_offset, sections_offset, 5, alignment)
     data[names_offset:table_offset] = names
     data[table_offset:sections_offset] = table
     for index, (kind_, start, size, link, entry) in enumerate((
@@ -158,6 +163,33 @@ def apple_tools(arch: str, *, symbols=EXPORTS, signed=True):
     return tool
 
 
+def native_manifest(root: Path, platform_name: str) -> dict:
+    """Create an already-validated consumption receipt for package-only tests."""
+    record = {"sourceSha": "0" * 40, "platform": platform_name,
+              "runId": os.environ.get("GITHUB_RUN_ID"),
+              "runAttempt": os.environ.get("GITHUB_RUN_ATTEMPT")}
+    if platform_name in ("windows", "linux"):
+        name = "qfli_go_runtime.dll" if platform_name == "windows" else ci.RUNTIME_LIBRARY
+        packaged = root / ci.BUNDLES[platform_name] / (name if platform_name == "windows" else "lib/" + name)
+        data = (packaged.read_bytes() if packaged.is_file() else
+                make_pe(exports=EXPORTS) if platform_name == "windows" else make_elf(62, symbols=EXPORTS))
+        artifact = root / "build/native-artifacts" / platform_name / name
+        artifact.parent.mkdir(parents=True, exist_ok=True)
+        artifact.write_bytes(data)
+        record.update(artifactPath=artifact.relative_to(root).as_posix(), librarySha256=ci.digest(artifact))
+    else:
+        abis = ci.ANDROID_ABIS if platform_name == "android" else ("arm64-v8a", "x86_64")
+        record["files"] = []
+        for abi in abis:
+            data = make_elf(ci.MACHINES[abi], wide=abi != "armeabi-v7a", symbols=EXPORTS)
+            path = root / ci.MOBILE_RUNTIME_DIRS[platform_name] / abi / ci.RUNTIME_LIBRARY
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_bytes(data)
+            record["files"].append({"path": f"{abi}/{ci.RUNTIME_LIBRARY}", "bytes": len(data),
+                                    "sha256": ci.digest(path), "loadSha256": ci.elf_load_digest(data)})
+    return {"sourceCommit": "0" * 40, "nativeRuntime": record}
+
+
 class ApplicationPackageTests(unittest.TestCase):
     def setUp(self):
         # Keep the suite hermetic when a workflow job runs it with job variables set.
@@ -166,8 +198,10 @@ class ApplicationPackageTests(unittest.TestCase):
         self.addCleanup(environment.stop)
         for name in ("GITHUB_ACTIONS", "GITHUB_ENV", "GITHUB_PATH", "GITHUB_STEP_SUMMARY",
                      "QFLI_GO_EXECUTABLE", "QFLI_GO_CC", "CGO_LDFLAGS", "MSYS2_LOCATION",
-                     "QFLI_PLATFORM", "QFLI_ARCH", "QFLI_FLUTTER_ROOT"):
+                     "QFLI_PLATFORM", "QFLI_ARCH", "QFLI_FLUTTER_ROOT",
+                     "QFLI_GO_RUNTIME_ARTIFACT", "QFLI_NATIVE_ARTIFACT_DIR"):
             os.environ.pop(name, None)
+        os.environ.update(GITHUB_RUN_ID="123", GITHUB_RUN_ATTEMPT="2")
 
     def arguments(self, root: Path, platform_name: str, arch: str, **extra) -> argparse.Namespace:
         output = root / "artifact"
@@ -200,7 +234,7 @@ class ApplicationPackageTests(unittest.TestCase):
                   + "Authorization: Bearer private-bearer\n"
                   + '"storePassword": "private-signing-password"\n'
                   + "https://user:private-userinfo@example.invalid/path?sig=private-signature\n"
-                  + "-----BEGIN PRIVATE KEY-----\nprivate-key-body\n-----END PRIVATE KEY-----\n"
+                  + "-----" + "BEGIN PRIVATE KEY-----\nprivate-key-body\n-----END PRIVATE KEY-----\n"
                   + "final failure 100%\r\n")
         with patch.dict(os.environ, {"GITHUB_ACTIONS": "true"}), patch("builtins.print") as printed:
             ci.annotate_command_failure(Path("compiler.log"), 1, output)
@@ -246,10 +280,10 @@ class ApplicationPackageTests(unittest.TestCase):
             self.assertEqual(after, before)
 
     def test_init_manifest_states_signing_and_runtime_origin(self):
-        expected = {"android": "tracked_prebuilt_library_not_rebuilt_in_this_job",
-                    "ohos": "tracked_prebuilt_library_not_rebuilt_in_this_job",
-                    "windows": "compiled_from_source_in_this_job",
-                    "linux": "compiled_from_source_in_this_job",
+        expected = {"android": "source_matched_native_artifact",
+                    "ohos": "source_matched_native_artifact",
+                    "windows": "source_matched_native_artifact",
+                    "linux": "source_matched_native_artifact",
                     "macos": "compiled_from_source_in_this_job",
                     "ios": "compiled_from_source_in_this_job"}
         self.assertEqual(set(expected), set(ci.SIGNING))
@@ -341,7 +375,7 @@ class ApplicationPackageTests(unittest.TestCase):
 
     def test_native_setup_requires_the_pinned_go_release(self):
         with tempfile.TemporaryDirectory() as directory:
-            args = self.arguments(Path(directory), "linux", "x86_64")
+            args = self.arguments(Path(directory), "macos", "x86_64")
             with patch.object(ci.shutil, "which", side_effect=lambda name: "/usr/bin/" + name):
                 with patch.object(ci, "publish_environment") as publish:
                     with patch.object(ci, "run", return_value="go version go1.26.0 linux/amd64\n"):
@@ -351,31 +385,192 @@ class ApplicationPackageTests(unittest.TestCase):
                     manifest = {}
                     with patch.object(ci, "run", return_value="go version go1.27.1 linux/amd64\n"):
                         ci.setup_native(args, manifest)
-            publish.assert_called_once_with({"QFLI_GO_EXECUTABLE": "/usr/bin/go",
-                                             "QFLI_GO_CC": "/usr/bin/gcc"})
+            publish.assert_called_once_with({"QFLI_GO_EXECUTABLE": "/usr/bin/go"})
             self.assertEqual(manifest["goToolchain"]["version"], "go version go1.27.1 linux/amd64")
             with self.assertRaisesRegex(ValueError, "needs no Go toolchain"):
                 ci.setup_native(self.arguments(Path(directory), "android", "universal"), {})
 
-    def test_windows_native_setup_links_the_mingw_runtime_statically(self):
+    def test_artifact_platforms_do_not_provision_a_go_compiler(self):
+        for platform_name in ("windows", "linux", "android", "ohos"):
+            with self.subTest(platform=platform_name), tempfile.TemporaryDirectory() as directory:
+                args = self.arguments(Path(directory), platform_name, "x86_64")
+                with patch.object(ci, "run") as run, patch.object(ci, "publish_environment") as publish:
+                    with self.assertRaisesRegex(ValueError, "needs no Go toolchain"):
+                        ci.setup_native(args, {})
+                run.assert_not_called()
+                publish.assert_not_called()
+        workflow = (ci.ROOT / ".github/workflows/native-runtime.yml").read_text(encoding="utf-8")
+        self.assertIn("CGO_LDFLAGS: -static", workflow)
+
+    def test_validate_native_exports_the_exact_validated_desktop_library(self):
+        for platform_name in ("windows", "linux"):
+            with self.subTest(platform=platform_name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                args = self.arguments(root, platform_name, "x86_64")
+                seed = native_manifest(root, platform_name)
+                library = root / seed["nativeRuntime"]["artifactPath"]
+                artifact = library.parent
+                (artifact / "manifest.json").write_text("native manifest", encoding="utf-8")
+                native = {"sourceSha": "0" * 40, "nativeSourceSha256": "b" * 64,
+                          "platform": platform_name, "abiSet": ["x86_64"], "requiredExports": EXPORTS,
+                          "sourceChecksRunURL": "https://github.com/example/project/actions/runs/123",
+                          "runId": "123", "runAttempt": "2"}
+                manifest = {"sourceCommit": "0" * 40}
+                env_file = root / "github-env"
+                with patch.object(ci, "ROOT", root), patch.object(ci, "git_head", return_value="0" * 40):
+                    with patch.dict(os.environ, {"QFLI_NATIVE_ARTIFACT_DIR": str(artifact),
+                                                "GITHUB_ENV": str(env_file)}):
+                        with patch.object(collector, "validate_artifact", return_value=native) as validate:
+                            ci.validate_native(args, manifest)
+                        self.assertEqual(os.environ["QFLI_GO_RUNTIME_ARTIFACT"], str(library.resolve()))
+                validate.assert_called_once_with(artifact.resolve(), platform_name, "0" * 40, ["x86_64"])
+                self.assertIn("QFLI_GO_RUNTIME_ARTIFACT=" + str(library.resolve()), env_file.read_text())
+                self.assertEqual(manifest["nativeRuntime"]["artifactPath"], library.relative_to(root).as_posix())
+                self.assertEqual(manifest["nativeRuntime"]["librarySha256"], ci.digest(library))
+                self.assertTrue((args.output / "reports/native-runtime-consumption.json").is_file())
+
+    def test_validation_failure_never_enables_desktop_artifact_mode(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
-            args = self.arguments(root, "windows", "x86_64")
-            go_version = "go version go1.27.1 windows/amd64\n"
-            with patch.object(ci.shutil, "which", return_value="C:/go/bin/go.exe"):
-                with patch.object(ci, "run", return_value=go_version), \
-                        patch.object(ci, "publish_environment") as publish:
-                    with self.assertRaisesRegex(RuntimeError, "MSYS2_LOCATION is required"):
-                        ci.setup_native(args, {})
-                    compiler = root / "msys64/ucrt64/bin/gcc.exe"
-                    compiler.parent.mkdir(parents=True)
-                    compiler.write_bytes(b"fixture compiler")
-                    with patch.dict(os.environ, {"MSYS2_LOCATION": str(root / "msys64")}):
-                        ci.setup_native(args, {})
-            values = publish.call_args.args[0]
-            self.assertEqual(values["QFLI_GO_CC"], compiler.as_posix())
-            self.assertNotIn("\\", values["QFLI_GO_EXECUTABLE"])
-            self.assertEqual(values["CGO_LDFLAGS"], "-static")
+            artifact = root / "build/native-artifacts/linux"
+            artifact.mkdir(parents=True)
+            args = self.arguments(root, "linux", "x86_64")
+            with patch.object(ci, "ROOT", root), patch.object(ci, "git_head", return_value="0" * 40):
+                with patch.dict(os.environ, {"QFLI_NATIVE_ARTIFACT_DIR": str(artifact)}):
+                    with patch.object(collector, "validate_artifact", side_effect=ValueError("wrong run")):
+                        with self.assertRaisesRegex(ValueError, "wrong run"):
+                            ci.validate_native(args, {})
+            self.assertNotIn("QFLI_GO_RUNTIME_ARTIFACT", os.environ)
+            self.assertFalse((args.output / "reports/native-runtime-consumption.json").exists())
+
+    def test_consume_native_overwrites_mobile_staging_only_with_validated_artifacts(self):
+        for platform_name in ("android", "ohos"):
+            with self.subTest(platform=platform_name), tempfile.TemporaryDirectory() as directory:
+                root = Path(directory)
+                args = self.arguments(root, platform_name, "universal" if platform_name == "android" else "arm64-v8a")
+                artifact = root / "build/native-artifacts" / platform_name
+                artifact.mkdir(parents=True)
+                (artifact / "manifest.json").write_text("manifest", encoding="utf-8")
+                abis = list(ci.ANDROID_ABIS) if platform_name == "android" else ["arm64-v8a", "x86_64"]
+                for abi in abis:
+                    (artifact / abi).mkdir()
+                    (artifact / abi / ci.RUNTIME_LIBRARY).write_bytes(
+                        make_elf(ci.MACHINES[abi], wide=abi != "armeabi-v7a", symbols=EXPORTS))
+                    (artifact / abi / "libqfli_go_runtime.h").write_text("header", encoding="utf-8")
+                native = {"sourceSha": "0" * 40, "nativeSourceSha256": "b" * 64,
+                          "platform": platform_name, "abiSet": sorted(abis), "requiredExports": EXPORTS,
+                          "sourceChecksRunURL": "https://github.com/example/project/actions/runs/123",
+                          "runId": "123", "runAttempt": "2"}
+                manifest = {"sourceCommit": "0" * 40}
+                with patch.object(ci, "ROOT", root), patch.object(ci, "git_head", return_value="0" * 40):
+                    with patch.dict(os.environ, {"QFLI_NATIVE_ARTIFACT_DIR": str(artifact)}):
+                        with patch.object(collector, "validate_artifact", side_effect=ValueError("tampered")):
+                            with self.assertRaisesRegex(ValueError, "tampered"):
+                                ci.consume_native(args, manifest)
+                        self.assertFalse((root / ci.MOBILE_RUNTIME_DIRS[platform_name]).exists())
+                        with patch.object(collector, "validate_artifact", return_value=native) as validate:
+                            ci.consume_native(args, manifest)
+                validate.assert_called_once_with(artifact, platform_name, "0" * 40, abis)
+                for item in manifest["nativeRuntime"]["files"]:
+                    staged = root / ci.MOBILE_RUNTIME_DIRS[platform_name] / item["path"]
+                    self.assertEqual(ci.digest(staged), item["sha256"])
+                self.assertEqual(len(manifest["nativeRuntime"]["files"]), len(abis) * 2)
+
+    def test_desktop_bundle_must_match_the_validated_artifact_not_a_rebuild(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            bundle = write_linux_bundle(root)
+            manifest = native_manifest(root, "linux")
+            args = self.arguments(root, "linux", "x86_64")
+            library = bundle / "lib" / ci.RUNTIME_LIBRARY
+            original = library.read_bytes()
+            with patch.object(ci, "ROOT", root):
+                ci.assert_bundle_runtime_matches_artifact(bundle, args, manifest)
+                self.assertTrue(manifest["nativeRuntime"]["bundledArtifactMatch"])
+                library.write_bytes(original + b"separate rebuild")
+                with self.assertRaisesRegex(RuntimeError, "differs from the validated"):
+                    ci.assert_bundle_runtime_matches_artifact(bundle, args, manifest)
+                manifest["nativeRuntime"]["sourceSha"] = "1" * 40
+                with self.assertRaisesRegex(RuntimeError, "validated same-SHA"):
+                    ci.assert_bundle_runtime_matches_artifact(bundle, args, manifest)
+
+    def test_cmake_artifact_mode_stages_the_normal_target_and_preserves_source_mode(self):
+        # Execute only on hosted Actions, where this suite is invoked.
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / "source"
+            source.mkdir()
+            cmake = ci.ROOT / "native/go_runtime/desktop.cmake"
+            if os.name == "nt":
+                name = "qfli_go_runtime.dll"
+            else:
+                name = ci.RUNTIME_LIBRARY
+            artifact = root / name
+            artifact.write_bytes(b"validated fixture runtime")
+            (source / "CMakeLists.txt").write_text(
+                'cmake_minimum_required(VERSION 3.14)\nproject(RuntimeContract NONE)\n'
+                'set(BINARY_NAME fixture)\nadd_custom_target(fixture ALL)\n'
+                f'include("{cmake.as_posix()}")\n'
+                'install(FILES "${QFLI_GO_RUNTIME_LIBRARY}" DESTINATION lib)\n', encoding="utf-8")
+            env = os.environ.copy()
+            env.update(QFLI_GO_RUNTIME_ARTIFACT=str(artifact),
+                       QFLI_GO_EXECUTABLE="missing-go-must-not-run", QFLI_GO_CC="missing-cc-must-not-run")
+
+            def configure(label, value):
+                build = root / label
+                env["QFLI_GO_RUNTIME_ARTIFACT"] = value
+                result = subprocess.run(["cmake", "-S", str(source), "-B", str(build)], env=env,
+                                        text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, check=False)
+                return build, result
+
+            build, result = configure("artifact", str(artifact))
+            self.assertEqual(result.returncode, 0, result.stdout)
+            subprocess.run(["cmake", "--build", str(build), "--config", "Release"], env=env, check=True)
+            self.assertEqual((build / name).read_bytes(), artifact.read_bytes())
+            destination = root / "installed"
+            subprocess.run(["cmake", "--install", str(build), "--config", "Release", "--prefix", str(destination)],
+                           env=env, check=True)
+            self.assertEqual((destination / "lib" / name).read_bytes(), artifact.read_bytes())
+            wrong = root / "wrong-library.so"
+            wrong.write_bytes(b"wrong")
+            empty = root / "empty" / name
+            empty.parent.mkdir()
+            empty.write_bytes(b"")
+            for label, value in (("relative", name), ("missing", str(root / "absent" / name)),
+                                 ("directory", str(root)), ("wrong", str(wrong)), ("empty", str(empty)),
+                                 ("false-like", "OFF")):
+                with self.subTest(label=label):
+                    _, result = configure(label, value)
+                    self.assertNotEqual(result.returncode, 0, result.stdout)
+                    self.assertIn("QFLI_GO_RUNTIME_ARTIFACT", result.stdout)
+            # Without artifact mode, retain the Go build rule instead of a copy rule.
+            source_build, result = configure("source", "")
+            self.assertEqual(result.returncode, 0, result.stdout)
+            generated = "\n".join(path.read_text(encoding="utf-8", errors="replace")
+                                  for path in source_build.rglob("*")
+                                  if path.is_file() and (path.suffix in (".make", ".vcxproj")
+                                                        or path.name == "build.ninja"))
+            self.assertIn("-buildmode=c-shared", generated)
+            self.assertIn("missing-go-must-not-run", generated)
+
+    def test_workflows_wire_same_run_artifacts_and_immutable_app_outputs(self):
+        native = (ci.ROOT / ".github/workflows/native-runtime.yml").read_text(encoding="utf-8")
+        app = (ci.ROOT / ".github/workflows/app-packages.yml").read_text(encoding="utf-8")
+        for workflow in (native, app):
+            self.assertIn("workflow_call:", workflow)
+            self.assertIn("${{ github.workflow }}-${{ github.ref }}", workflow)
+        self.assertIn("uses: ./.github/workflows/native-runtime.yml", app)
+        self.assertIn("needs: native", app)
+        self.assertIn("name: native-${{ matrix.platform }}-${{ github.sha }}", app)
+        self.assertIn("app_build.py consume-native", app)
+        self.assertIn("app_build.py validate-native", app)
+        self.assertNotIn("tracked Go runtime", app)
+        self.assertIn("name: app-${{ matrix.platform }}-${{ matrix.arch }}-${{ github.sha }}", app)
+        self.assertIn("TestDebugStoppedScalarSnapshotExcludesNewCallbackEntry", native)
+        self.assertIn("go test -json -race -mod=vendor -timeout=20m -run '^TestDebug'", native)
+        self.assertIn("path: ${{ runner.temp }}/go-*", native)
+        self.assertGreaterEqual(native.count("set -o pipefail"), 4)
+        self.assertIn('collect_native.py stage --platform "$TARGET"', native)
 
     def test_elf_exports_are_read_for_both_classes(self):
         for abi, wide in (("arm64-v8a", True), ("x86_64", True), ("armeabi-v7a", False)):
@@ -403,15 +598,12 @@ class ApplicationPackageTests(unittest.TestCase):
         with self.assertRaisesRegex(RuntimeError, "Expected little-endian ELF"):
             ci.elf_info(make_pe())
 
-    def test_tracked_runtime_libraries_satisfy_the_package_checks(self):
-        libraries = [(ci.ROOT / ci.TRACKED_RUNTIMES["android"] / abi / ci.RUNTIME_LIBRARY, abi, True)
-                     for abi in ci.ANDROID_ABIS]
-        libraries.append((ci.ROOT / ci.TRACKED_RUNTIMES["ohos"] / "arm64-v8a" / ci.RUNTIME_LIBRARY,
-                          "arm64-v8a", False))
-        for path, abi, android in libraries:
-            with self.subTest(path=path.relative_to(ci.ROOT).as_posix()):
-                info = ci.inspect_elf(path.read_bytes(), abi, android=android)
-                ci.require_exports(info["symbols"], path.name)
+    def test_runtime_artifact_fixtures_cover_every_mobile_abi(self):
+        for abi in ci.ANDROID_ABIS:
+            with self.subTest(abi=abi):
+                data = make_elf(ci.MACHINES[abi], wide=abi != "armeabi-v7a", symbols=EXPORTS)
+                info = ci.inspect_elf(data, abi, android=True)
+                ci.require_exports(info["symbols"], ci.RUNTIME_LIBRARY)
 
     def test_runtime_export_check_names_the_missing_symbols(self):
         with self.assertRaisesRegex(RuntimeError, "Missing Go runtime exports in fixture: QfliGoDebugClose"):
@@ -480,27 +672,33 @@ class ApplicationPackageTests(unittest.TestCase):
                 receipt = ci.inspect_assets([name], lambda _: b"current")
             self.assertEqual(receipt, [{"path": name, "sha256": ci.digest(source), "sourceMatches": True}])
 
-    def test_core_binding_requires_the_pinned_sibling_checkout(self):
+    def test_core_binding_requires_all_three_pinned_sibling_packages(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory) / "qfli_go"
-            core = Path(directory) / "qfli_studio_core"
+            core = Path(directory) / ci.CORE_DIRECTORY
             (root / ".dart_tool").mkdir(parents=True)
-            (core / "vendor/re_editor").mkdir(parents=True)
+            for name in ("re_editor", "xterm"):
+                (core / "vendor" / name).mkdir(parents=True)
             config = root / ".dart_tool/package_config.json"
+            expected = {"qfli_studio_core": core, "re_editor": core / "vendor/re_editor",
+                        "xterm": core / "vendor/xterm"}
 
-            def configure(core_uri, editor_uri):
-                ci.write_json(config, {"packages": [{"name": "qfli_studio_core", "rootUri": core_uri},
-                                                    {"name": "re_editor", "rootUri": editor_uri}]})
+            def configure(uris):
+                ci.write_json(config, {"packages": [{"name": name, "rootUri": uri}
+                                                    for name, uri in uris.items()]})
 
             with patch.object(ci, "ROOT", root):
-                configure("../../qfli_studio_core", "../../qfli_studio_core/vendor/re_editor")
+                relative = {name: "../../" + path.relative_to(root.parent).as_posix()
+                            for name, path in expected.items()}
+                configure(relative)
                 self.assertTrue(all(entry["resolvesToPinnedCheckout"]
                                     for entry in ci.core_source_binding(core).values()))
-                configure(core.resolve().as_uri(), (core / "vendor/re_editor").resolve().as_uri())
-                self.assertEqual(set(ci.core_source_binding(core)), {"qfli_studio_core", "re_editor"})
-                configure("../../qfli_studio_core", "file:///pub-cache/hosted/pub.dev/re_editor-0.8.0")
-                with self.assertRaisesRegex(RuntimeError, "re_editor does not resolve to the pinned core"):
-                    ci.core_source_binding(core)
+                configure({name: path.resolve().as_uri() for name, path in expected.items()})
+                self.assertEqual(set(ci.core_source_binding(core)), set(expected))
+                for name in ("re_editor", "xterm"):
+                    configure(dict(relative, **{name: f"file:///pub-cache/hosted/pub.dev/{name}-4.0.0"}))
+                    with self.assertRaisesRegex(RuntimeError, name + " does not resolve to the pinned core"):
+                        ci.core_source_binding(core)
                 ci.write_json(config, {"packages": []})
                 with self.assertRaisesRegex(RuntimeError, "does not contain qfli_studio_core"):
                     ci.core_source_binding(core)
@@ -531,22 +729,33 @@ class ApplicationPackageTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, "Missing Go runtime exports"):
                     ci.inspect_mobile(package, argparse.Namespace(platform="ohos"), ["arm64-v8a"])
 
-    def test_mobile_report_compares_packaged_and_tracked_runtime(self):
+    def test_mobile_report_requires_artifact_provenance_and_matching_load_bytes(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             package = root / "app-arm64-v8a-release.apk"
             runtime = write_mobile_package(package, "lib/", "arm64-v8a")
-            tracked = root / ci.TRACKED_RUNTIMES["android"] / "arm64-v8a" / ci.RUNTIME_LIBRARY
-            tracked.parent.mkdir(parents=True)
-            for content, identical in ((runtime, True), (runtime + b"debug sections", False)):
-                tracked.write_bytes(content)
-                with patch.object(ci, "ROOT", root), patch.object(ci, "inspect_assets", return_value=[]):
-                    report = ci.inspect_mobile(package, argparse.Namespace(platform="android"), ["arm64-v8a"])
-                receipt = next(item for item in report["libraries"]
-                               if item["path"].endswith(ci.RUNTIME_LIBRARY))
-                self.assertEqual(receipt["byteIdenticalToTracked"], identical)
-                self.assertEqual(receipt["trackedSha256"], ci.digest(tracked))
-                self.assertEqual(receipt["verification"], "elf_and_go_runtime_exports_checked")
+            manifest = native_manifest(root, "android")
+            args = argparse.Namespace(platform="android")
+            with patch.object(ci, "ROOT", root), patch.object(ci, "inspect_assets", return_value=[]):
+                with self.assertRaisesRegex(RuntimeError, "validated same-SHA"):
+                    ci.inspect_mobile(package, args, ["arm64-v8a"])
+                for content, identical in ((runtime, True), (runtime + b"debug sections", False)):
+                    write_mobile_package(package, "lib/", "arm64-v8a", runtime=content)
+                    report = ci.inspect_mobile(package, args, ["arm64-v8a"], manifest)
+                    receipt = next(item for item in report["libraries"]
+                                   if item["path"].endswith(ci.RUNTIME_LIBRARY))
+                    self.assertEqual(receipt["byteIdenticalToArtifact"], identical)
+                    self.assertTrue(receipt["loadSegmentsMatchArtifact"])
+                tampered = bytearray(runtime)
+                tampered[8] ^= 1  # Mapped bytes, without changing the ELF architecture or exports.
+                write_mobile_package(package, "lib/", "arm64-v8a", runtime=bytes(tampered))
+                with self.assertRaisesRegex(RuntimeError, "Packaged runtime differs"):
+                    ci.inspect_mobile(package, args, ["arm64-v8a"], manifest)
+                write_mobile_package(package, "lib/", "arm64-v8a", runtime=runtime)
+                staged = root / ci.MOBILE_RUNTIME_DIRS["android"] / "arm64-v8a" / ci.RUNTIME_LIBRARY
+                staged.write_bytes(runtime + b"changed staging")
+                with self.assertRaisesRegex(RuntimeError, "Staged runtime differs"):
+                    ci.inspect_mobile(package, args, ["arm64-v8a"], manifest)
 
     def test_android_job_stages_one_verified_package_per_abi(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -554,7 +763,7 @@ class ApplicationPackageTests(unittest.TestCase):
             for abi in ci.ANDROID_ABIS:
                 write_mobile_package(root / f"build/app/outputs/flutter-apk/app-{abi}-release.apk", "lib/", abi)
             args = self.arguments(root, "android", "universal")
-            manifest = {}
+            manifest = native_manifest(root, "android")
             with patch.object(ci, "ROOT", root), patch.object(ci, "inspect_assets", return_value=[]):
                 with patch.object(ci, "android_build_tool", side_effect=lambda name: Path(name)):
                     with patch.object(ci, "run", return_value="") as run:
@@ -587,7 +796,7 @@ class ApplicationPackageTests(unittest.TestCase):
                 with self.assertRaisesRegex(RuntimeError, "did not produce an unsigned HAP"):
                     ci.collect(args, {})
                 write_mobile_package(root / "build/ohos/hap/entry-default-unsigned.hap", "libs/", "arm64-v8a")
-                manifest = {}
+                manifest = native_manifest(root, "ohos")
                 ci.collect(args, manifest)
             self.assertEqual([package["path"] for package in manifest["packages"]],
                              ["packages/qfligoshift-ohos-arm64-v8a-unsigned.hap"])
@@ -610,7 +819,7 @@ class ApplicationPackageTests(unittest.TestCase):
             write_windows_bundle(root, imports=("KERNEL32.dll", "libwinpthread-1.dll"),
                                  shipped=("LIBWINPTHREAD-1.DLL",))
             args = self.arguments(root, "windows", "x86_64")
-            manifest = {}
+            manifest = native_manifest(root, "windows")
             with patch.object(ci, "ROOT", root), patch.object(ci, "inspect_assets", return_value=[]):
                 ci.collect(args, manifest)
             package = args.output / "packages/qfligoshift-windows-x86_64.zip"
@@ -628,7 +837,7 @@ class ApplicationPackageTests(unittest.TestCase):
             root = Path(directory)
             write_linux_bundle(root)
             args = self.arguments(root, "linux", "x86_64")
-            manifest = {}
+            manifest = native_manifest(root, "linux")
             with patch.object(ci, "ROOT", root), patch.object(ci, "inspect_assets", return_value=[]):
                 ci.collect(args, manifest)
                 with self.assertRaisesRegex(RuntimeError, "existing packages directory"):
@@ -719,13 +928,17 @@ class ApplicationPackageTests(unittest.TestCase):
                                 ci.unsigned_ohos_profile()
                 self.assertEqual(path.read_bytes(), before)
 
-    def run_build(self, root: Path, platform_name: str, arch: str):
+    def run_build(self, root: Path, platform_name: str, arch: str, *, provision=True):
         args = self.arguments(root, platform_name, arch)
-        manifest = {}
+        manifest, values = {}, {}
+        if provision and platform_name in ("windows", "linux", "android", "ohos"):
+            manifest = native_manifest(root, platform_name)
+            if platform_name in ("windows", "linux"):
+                values["QFLI_GO_RUNTIME_ARTIFACT"] = str(root / manifest["nativeRuntime"]["artifactPath"])
         with patch.object(ci, "ROOT", root), patch.object(ci, "collect") as collect:
             with patch.object(ci, "git_head", side_effect=[ci.CORE_COMMIT, ci.FLUTTER_COMMIT]):
                 with patch.object(ci, "core_source_binding", return_value={}):
-                    with patch.object(ci, "run", return_value="") as run:
+                    with patch.object(ci, "run", return_value="") as run, patch.dict(os.environ, values):
                         try:
                             ci.build(args, manifest)
                         finally:
@@ -735,16 +948,40 @@ class ApplicationPackageTests(unittest.TestCase):
         build_call = next(call for call in run.call_args_list if "build" in call.args[0])
         return build_call.args[0], build_call.kwargs["env"]
 
+    def test_hosted_pub_get_retains_its_lock_without_local_graph_synthesis(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            args = self.arguments(root, "android", "universal")
+            manifest = native_manifest(root, "android")
+            lock = root / "pubspec.lock"
+            lock.write_bytes(b"existing path-only migration\n")
+
+            def hosted(command, log, **kwargs):
+                if command[1:] == ["pub", "get"]:
+                    lock.write_bytes(b"lock generated by hosted pub get\n")
+                elif command[1:3] == ["build", "apk"]:
+                    lock.write_bytes(b"lock retained after release registrant resolution\n")
+                return ""
+
+            with patch.object(ci, "ROOT", root), patch.object(ci, "collect"):
+                with patch.object(ci, "git_head", side_effect=[ci.CORE_COMMIT, ci.FLUTTER_COMMIT]):
+                    with patch.object(ci, "core_source_binding", return_value={}), \
+                            patch.object(ci, "run", side_effect=hosted):
+                        ci.build(args, manifest)
+            self.assertEqual((args.output / "reports/app-pubspec.lock").read_bytes(), lock.read_bytes())
+            self.assertEqual(lock.read_bytes(), b"lock retained after release registrant resolution\n")
+
     def test_native_builds_refuse_to_start_without_the_go_toolchain(self):
         for platform_name in ci.NATIVE_BUILD_PLATFORMS:
             with self.subTest(platform=platform_name), tempfile.TemporaryDirectory() as directory:
                 with self.assertRaisesRegex(RuntimeError, "run setup-native before build"):
                     self.run_build(Path(directory), platform_name, "x86_64")
                 self.assertEqual(self.build_commands, [])
-        with tempfile.TemporaryDirectory() as directory:
-            with patch.dict(os.environ, {"QFLI_GO_EXECUTABLE": "C:/go/bin/go.exe"}):
-                with self.assertRaisesRegex(RuntimeError, "Windows cgo compiler is not provisioned"):
-                    self.run_build(Path(directory), "windows", "x86_64")
+        for platform_name in ("windows", "linux", "android", "ohos"):
+            with self.subTest(platform=platform_name), tempfile.TemporaryDirectory() as directory:
+                with self.assertRaisesRegex(RuntimeError, "validated same-SHA"):
+                    self.run_build(Path(directory), platform_name, "x86_64", provision=False)
+                self.assertEqual(self.build_commands, [])
 
     def test_macos_build_requires_ad_hoc_signing_and_the_provisioned_go(self):
         with tempfile.TemporaryDirectory() as directory:
@@ -759,12 +996,12 @@ class ApplicationPackageTests(unittest.TestCase):
             self.assertEqual(env["FLUTTER_XCODE_QFLI_GO_EXECUTABLE"], "/opt/go/bin/go")
 
     def test_platform_build_commands_match_the_package_contract(self):
-        compiler = "C:/msys64/ucrt64/bin/gcc.exe"
-        with patch.dict(os.environ, {"QFLI_GO_EXECUTABLE": "/opt/go/bin/go", "QFLI_GO_CC": compiler}):
+        with patch.dict(os.environ, {"QFLI_GO_EXECUTABLE": "/opt/go/bin/go"}):
             with tempfile.TemporaryDirectory() as directory:
                 command, env = self.run_build(Path(directory), "windows", "x86_64")
                 self.assertEqual(command[2], "windows")
-                self.assertTrue(env["PATH"].startswith(str(Path(compiler).parent) + os.pathsep))
+                self.assertTrue(env["QFLI_GO_RUNTIME_ARTIFACT"].endswith("qfli_go_runtime.dll"))
+                self.assertNotIn("QFLI_GO_CC", env)
                 self.assertNotIn("FLUTTER_XCODE_QFLI_GO_EXECUTABLE", env)
             with tempfile.TemporaryDirectory() as directory:
                 command, env = self.run_build(Path(directory), "ios", "arm64")

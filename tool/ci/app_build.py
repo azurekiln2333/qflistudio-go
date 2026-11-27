@@ -26,7 +26,8 @@ sys.path.insert(0, str(ROOT / "tool"))
 from inspect_go_catalog_hap import SYMBOLS
 
 APP_NAME = "qfligoshift"
-CORE_COMMIT = "573d1b6eecf1c2b392ad753264a5a09f62f8335e"
+CORE_COMMIT = "476a30acee21dc486ee2849dd8064a7be665e4d5"
+CORE_DIRECTORY = "qflistudio-core"
 FLUTTER_REPOSITORY = "https://gitcode.com/CPF-Flutter/flutter_flutter.git"
 FLUTTER_TAG = "3.41.9+ohos-1.0.2"
 FLUTTER_COMMIT = "62357a93d653bf844f730bb1f4b7cc9e2139d14e"
@@ -46,8 +47,8 @@ MACHINES = {"x86_64": 62, "arm64": 183, "arm64-v8a": 183, "armeabi-v7a": 40}
 ANDROID_ABIS = ("arm64-v8a", "armeabi-v7a", "x86_64")
 RUNTIME_LIBRARY = "libqfli_go_runtime.so"
 # These jobs compile the Go runtime while Flutter builds the application.
-NATIVE_BUILD_PLATFORMS = ("windows", "linux", "macos", "ios")
-TRACKED_RUNTIMES = {"android": "android/app/src/main/jniLibs", "ohos": "ohos/entry/libs"}
+NATIVE_BUILD_PLATFORMS = ("macos", "ios")
+MOBILE_RUNTIME_DIRS = {"android": "android/app/src/main/jniLibs", "ohos": "ohos/entry/libs"}
 BUNDLES = {
     "windows": "build/windows/x64/runner/Release",
     "linux": "build/linux/x64/release/bundle",
@@ -185,8 +186,8 @@ def initialize(args) -> dict:
         "status": "pending", "stage": "initialized", "applicationPackage": False,
         "verification": "not_completed", "runtimeTests": "not_run", "deviceTests": "not_run",
         "signing": SIGNING[args.platform],
-        "goRuntime": ("compiled_from_source_in_this_job" if args.platform in NATIVE_BUILD_PLATFORMS
-                      else "tracked_prebuilt_library_not_rebuilt_in_this_job"),
+        "goRuntime": ("source_matched_native_artifact" if args.platform in ("android", "ohos", "windows", "linux")
+                      else "compiled_from_source_in_this_job"),
         "flutter": {"repository": FLUTTER_REPOSITORY, "tag": FLUTTER_TAG,
                     "commit": FLUTTER_COMMIT, "engine": ENGINE_COMMIT,
                     "ohosEngine": OHOS_ENGINE_COMMIT,
@@ -195,10 +196,99 @@ def initialize(args) -> dict:
     }
 
 
+def validate_native(args, manifest: dict) -> None:
+    """Validate the same-SHA desktop artifact before Flutter configures CMake."""
+    if args.platform not in ("windows", "linux"):
+        raise ValueError("Only Windows and Linux consume standalone native artifacts")
+    artifact_value = os.environ.get("QFLI_NATIVE_ARTIFACT_DIR")
+    if not artifact_value:
+        raise RuntimeError("QFLI_NATIVE_ARTIFACT_DIR is required for desktop runtime consumption")
+    artifact_dir = Path(artifact_value)
+    if not artifact_dir.is_absolute():
+        artifact_dir = ROOT / artifact_dir
+    artifact_dir = artifact_dir.resolve(strict=True)
+    if not artifact_dir.is_relative_to(ROOT.resolve()):
+        raise RuntimeError("Native artifact must be inside the application checkout")
+    sys.path.insert(0, str(ROOT / "tool/ci"))
+    import collect_native
+
+    source_commit = git_head(ROOT)
+    native_manifest = collect_native.validate_artifact(artifact_dir, args.platform, source_commit, [args.arch])
+    library_name = "qfli_go_runtime.dll" if args.platform == "windows" else "libqfli_go_runtime.so"
+    library = artifact_dir / library_name
+    build_env = {"QFLI_GO_RUNTIME_ARTIFACT": str(library.resolve())}
+    for key, value in build_env.items():
+        os.environ[key] = value
+    if os.environ.get("GITHUB_ENV"):
+        with open(os.environ["GITHUB_ENV"], "a", encoding="utf-8") as stream:
+            for key, value in build_env.items():
+                stream.write(f"{key}={value}\n")
+    record = {
+        "sourceSha": native_manifest["sourceSha"],
+        "nativeSourceSha256": native_manifest["nativeSourceSha256"],
+        "platform": native_manifest["platform"],
+        "abiSet": native_manifest["abiSet"],
+        "requiredExports": native_manifest["requiredExports"],
+        "sourceChecksRunURL": native_manifest["sourceChecksRunURL"],
+        "runId": native_manifest["runId"], "runAttempt": native_manifest["runAttempt"],
+        "artifactManifestSha256": digest(artifact_dir / "manifest.json"),
+        "artifactPath": library.relative_to(ROOT.resolve()).as_posix(),
+        "librarySha256": digest(library),
+    }
+    manifest["nativeRuntime"] = record
+    manifest["goRuntime"] = "source_matched_native_artifact"
+    write_json(args.output / "reports/native-runtime-consumption.json", record)
+
+
+def consume_native(args, manifest: dict) -> None:
+    """Validate and stage mobile native libraries from the same-run artifact."""
+    if args.platform not in ("android", "ohos"):
+        raise ValueError("Mobile native artifact consumption supports Android and OHOS only")
+    artifact_value = os.environ.get("QFLI_NATIVE_ARTIFACT_DIR")
+    if not artifact_value:
+        raise RuntimeError("QFLI_NATIVE_ARTIFACT_DIR is required for mobile runtime consumption")
+    artifact_dir = Path(artifact_value)
+    if not artifact_dir.is_absolute():
+        artifact_dir = ROOT / artifact_dir
+    sys.path.insert(0, str(ROOT / "tool/ci"))
+    import collect_native
+
+    expected_abis = list(ANDROID_ABIS) if args.platform == "android" else ["arm64-v8a", "x86_64"]
+    native_manifest = collect_native.validate_artifact(artifact_dir, args.platform, git_head(ROOT), expected_abis)
+    target_root = ROOT / MOBILE_RUNTIME_DIRS[args.platform]
+    library_records = []
+    for abi in expected_abis:
+        for filename in (RUNTIME_LIBRARY, "libqfli_go_runtime.h"):
+            relative = f"{abi}/{filename}"
+            source = artifact_dir / relative
+            destination = target_root / relative
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copyfile(source, destination)
+            entry = {"path": relative, "bytes": destination.stat().st_size,
+                     "sha256": digest(destination)}
+            if filename == RUNTIME_LIBRARY:
+                entry["loadSha256"] = elf_load_digest(destination.read_bytes())
+            library_records.append(entry)
+    record = {
+        "sourceSha": native_manifest["sourceSha"],
+        "nativeSourceSha256": native_manifest["nativeSourceSha256"],
+        "platform": native_manifest["platform"],
+        "abiSet": native_manifest["abiSet"],
+        "requiredExports": native_manifest["requiredExports"],
+        "sourceChecksRunURL": native_manifest["sourceChecksRunURL"],
+        "runId": native_manifest["runId"], "runAttempt": native_manifest["runAttempt"],
+        "artifactManifestSha256": digest(artifact_dir / "manifest.json"),
+        "files": library_records,
+    }
+    manifest["nativeRuntime"] = record
+    manifest["goRuntime"] = "source_matched_native_artifact"
+    write_json(args.output / "reports/native-runtime-consumption.json", record)
+
+
 def setup_native(args, manifest: dict) -> None:
     """Expose the Go toolchain to the CMake and Xcode steps of the application build."""
     if args.platform not in NATIVE_BUILD_PLATFORMS:
-        raise ValueError("This job packages the tracked Go runtime and needs no Go toolchain")
+        raise ValueError("This job consumes a native artifact and needs no Go toolchain")
     reports = args.output / "reports"
     go = shutil.which("go")
     if not go:
@@ -206,24 +296,7 @@ def setup_native(args, manifest: dict) -> None:
     version = run([go, "version"], reports / "go-version.log").strip()
     if f"go{GO_VERSION}" not in version.split():
         raise RuntimeError(f"Expected Go {GO_VERSION}, found: {version}")
-    # CMake reads these values as strings. Forward slashes need no escaping.
     values = {"QFLI_GO_EXECUTABLE": Path(go).as_posix()}
-    if args.platform == "windows":
-        location = os.environ.get("MSYS2_LOCATION")
-        if not location:
-            raise RuntimeError("MSYS2_LOCATION is required to locate the Windows cgo compiler")
-        compiler = Path(location) / "ucrt64/bin/gcc.exe"
-        required_file(compiler)
-        values["QFLI_GO_CC"] = compiler.as_posix()
-        # Link the MinGW runtime into the DLL. The bundle ships no toolchain DLL.
-        values["CGO_LDFLAGS"] = "-static"
-    elif args.platform == "linux":
-        compiler = shutil.which("gcc")
-        if not compiler:
-            raise RuntimeError("A cgo compiler (gcc) is unavailable")
-        values["QFLI_GO_CC"] = compiler
-    if "QFLI_GO_CC" in values:
-        run([values["QFLI_GO_CC"], "--version"], reports / "cgo-compiler-version.log")
     publish_environment(values)
     manifest["goToolchain"] = {"version": version, **values}
 
@@ -382,7 +455,8 @@ def core_source_binding(core: Path) -> dict:
     config = json.loads((ROOT / ".dart_tool/package_config.json").read_text(encoding="utf-8"))
     roots = {package["name"]: package["rootUri"] for package in config["packages"]}
     binding = {}
-    for name, expected in (("qfli_studio_core", core), ("re_editor", core / "vendor/re_editor")):
+    for name, expected in (("qfli_studio_core", core), ("re_editor", core / "vendor/re_editor"),
+                           ("xterm", core / "vendor/xterm")):
         uri = roots.get(name)
         if uri is None:
             raise RuntimeError(f"Package configuration does not contain {name}")
@@ -563,7 +637,45 @@ def pe_info(data: bytes, name: str) -> dict:
     return {"exports": sorted(exports), "imports": imports}
 
 
-def inspect_mobile(path: Path, args, expected_abis) -> dict:
+def elf_load_digest(data: bytes) -> str:
+    """Bind packaged ELF load bytes while permitting removal of debug sections."""
+    elf_info(data)
+    wide = data[4] == 2
+    normalized = bytearray(data)
+    # strip changes the section table, not the mapped program contents.
+    start, size = (40, 8) if wide else (32, 4)
+    normalized[start:start + size] = b"\0" * size
+    start = 58 if wide else 46
+    normalized[start:start + 6] = b"\0" * 6
+    phoff = struct.unpack_from("<Q" if wide else "<I", data, 32 if wide else 28)[0]
+    phsize, phnum = struct.unpack_from("<HH", data, 54 if wide else 42)
+    result = hashlib.sha256()
+    for index in range(phnum):
+        offset = phoff + index * phsize
+        if struct.unpack_from("<I", data, offset)[0] != 1:
+            continue
+        if wide:
+            _, flags, start, address, _, size, memory, align = struct.unpack_from("<IIQQQQQQ", data, offset)
+        else:
+            _, start, address, _, size, memory, flags, align = struct.unpack_from("<IIIIIIII", data, offset)
+        if start + size > len(data):
+            raise RuntimeError("Truncated ELF LOAD segment")
+        result.update(struct.pack("<QQQQQQ", start, address, size, memory, flags, align))
+        result.update(normalized[start:start + size])
+    return result.hexdigest()
+
+
+def native_consumption_record(args, manifest: dict) -> dict:
+    record = manifest.get("nativeRuntime")
+    if (not isinstance(record, dict) or record.get("sourceSha") != manifest.get("sourceCommit")
+            or record.get("platform") != args.platform
+            or record.get("runId") != os.environ.get("GITHUB_RUN_ID")
+            or record.get("runAttempt") != os.environ.get("GITHUB_RUN_ATTEMPT")):
+        raise RuntimeError("Package is missing its validated same-SHA native artifact record")
+    return record
+
+
+def inspect_mobile(path: Path, args, expected_abis, manifest: dict | None = None) -> dict:
     android = args.platform == "android"
     prefix = "lib/" if android else "libs/"
     with zipfile.ZipFile(path) as archive:
@@ -586,11 +698,20 @@ def inspect_mobile(path: Path, args, expected_abis) -> dict:
             if name.endswith("/" + RUNTIME_LIBRARY):
                 require_exports(info["symbols"], name)
                 receipt["verification"] = "elf_and_go_runtime_exports_checked"
-                tracked = ROOT / TRACKED_RUNTIMES[args.platform] / abi / RUNTIME_LIBRARY
-                if tracked.is_file():
-                    # Packaging tools may strip the library, so identity is evidence, not a gate.
-                    receipt["trackedSha256"] = digest(tracked)
-                    receipt["byteIdenticalToTracked"] = receipt["trackedSha256"] == receipt["sha256"]
+                record = native_consumption_record(args, manifest or {})
+                relative = f"{abi}/{RUNTIME_LIBRARY}"
+                matches = [item for item in record.get("files", []) if item.get("path") == relative]
+                if len(matches) != 1:
+                    raise RuntimeError(f"Missing validated native artifact library: {relative}")
+                expected = matches[0]
+                staged = ROOT / MOBILE_RUNTIME_DIRS[args.platform] / relative
+                if not staged.is_file() or digest(staged) != expected.get("sha256"):
+                    raise RuntimeError(f"Staged runtime differs from the validated native artifact: {relative}")
+                if elf_load_digest(data) != expected.get("loadSha256"):
+                    raise RuntimeError(f"Packaged runtime differs from the validated native artifact: {relative}")
+                receipt.update(artifactSha256=expected["sha256"],
+                               byteIdenticalToArtifact=receipt["sha256"] == expected["sha256"],
+                               loadSegmentsMatchArtifact=True)
             receipts.append(receipt)
         assets = inspect_assets(names, archive.read)
         if ("AndroidManifest.xml" if android else "module.json") not in names:
@@ -722,6 +843,22 @@ def archive_ipa(bundle: Path, destination: Path, reports: Path) -> None:
         run(["zip", "-qry", destination, "Payload"], reports / "ipa-archive.log", cwd=work)
 
 
+def assert_bundle_runtime_matches_artifact(bundle: Path, args, manifest: dict) -> None:
+    if args.platform not in ("windows", "linux"):
+        return
+    record = native_consumption_record(args, manifest)
+    artifact = ROOT / record["artifactPath"]
+    library_name = "qfli_go_runtime.dll" if args.platform == "windows" else "libqfli_go_runtime.so"
+    packaged = bundle / (library_name if args.platform == "windows" else "lib/" + library_name)
+    required_file(artifact)
+    required_file(packaged)
+    artifact_hash = digest(artifact)
+    if artifact_hash != record.get("librarySha256") or digest(packaged) != artifact_hash:
+        raise RuntimeError("Desktop bundle runtime differs from the validated native artifact")
+    record["bundledLibrarySha256"] = digest(packaged)
+    record["bundledArtifactMatch"] = True
+
+
 def collect(args, manifest: dict) -> None:
     reports = args.output / "reports"
     packages = args.output / "packages"
@@ -733,7 +870,7 @@ def collect(args, manifest: dict) -> None:
         for abi in ANDROID_ABIS:
             path = ROOT / f"build/app/outputs/flutter-apk/app-{abi}-release.apk"
             required_file(path)
-            inventories.append(inspect_mobile(path, args, [abi]))
+            inventories.append(inspect_mobile(path, args, [abi], manifest))
             run([android_build_tool("zipalign"), "-c", "-P", "16", "-v", "4", path],
                 reports / f"{abi}-zipalign.log")
             run([android_build_tool("apksigner"), "verify", "--verbose", "--print-certs", path],
@@ -745,11 +882,12 @@ def collect(args, manifest: dict) -> None:
         path = next((choice for choice in choices if choice.is_file()), None)
         if path is None:
             raise RuntimeError("Flutter did not produce an unsigned HAP")
-        inventories.append(inspect_mobile(path, args, [args.arch]))
+        inventories.append(inspect_mobile(path, args, [args.arch], manifest))
         pending.append((path, f"{APP_NAME}-ohos-{args.arch}-unsigned.hap"))
     else:
         bundle = ROOT / BUNDLES[args.platform]
         inventories.append(inspect_bundle(bundle, args))
+        assert_bundle_runtime_matches_artifact(bundle, args, manifest)
         suffix = {"windows": ".zip", "ios": "-unsigned.ipa"}.get(args.platform, ".tar.gz")
         pending.append((bundle, f"{APP_NAME}-{args.platform}-{args.arch}{suffix}"))
     # Validate every output before publishing any package from this attempt.
@@ -778,27 +916,28 @@ def collect(args, manifest: dict) -> None:
 
 
 def build(args, manifest: dict) -> None:
-    core = ROOT.parent / "qfli_studio_core"
+    core = ROOT.parent / CORE_DIRECTORY
     if git_head(core) != CORE_COMMIT:
         raise RuntimeError("Core checkout differs from the pinned revision")
     if git_head(args.flutter_root) != FLUTTER_COMMIT:
         raise RuntimeError("Flutter checkout differs from the pinned revision")
     reports = args.output / "reports"
     build_env = environment()
-    if args.platform in NATIVE_BUILD_PLATFORMS:
+    if args.platform in ("windows", "linux"):
+        record = native_consumption_record(args, manifest)
+        artifact = build_env.get("QFLI_GO_RUNTIME_ARTIFACT")
+        if (not artifact or Path(artifact).resolve() != (ROOT / record["artifactPath"]).resolve()
+                or digest(artifact) != record.get("librarySha256")):
+            raise RuntimeError("Validated desktop runtime artifact is unavailable; run validate-native before build")
+        build_env["QFLI_GO_RUNTIME_ARTIFACT"] = str(Path(artifact).resolve())
+    elif args.platform in ("android", "ohos"):
+        native_consumption_record(args, manifest)
+    elif args.platform in NATIVE_BUILD_PLATFORMS:
         go = build_env.get("QFLI_GO_EXECUTABLE")
         if not go:
             raise RuntimeError("Go toolchain is not provisioned; run setup-native before build")
-        if args.platform == "windows":
-            compiler = build_env.get("QFLI_GO_CC")
-            if not compiler:
-                raise RuntimeError("Windows cgo compiler is not provisioned; run setup-native before build")
-            # The compiler loads its own runtime DLLs through PATH.
-            build_env["PATH"] = str(Path(compiler).parent) + os.pathsep + build_env["PATH"]
-        elif args.platform in ("macos", "ios"):
-            # The Xcode build phases prepend Homebrew to PATH. A build setting
-            # reaches them unchanged and selects the provisioned toolchain.
-            build_env["FLUTTER_XCODE_QFLI_GO_EXECUTABLE"] = go
+        # Xcode phases prepend Homebrew to PATH; this setting retains our toolchain.
+        build_env["FLUTTER_XCODE_QFLI_GO_EXECUTABLE"] = go
     if args.platform == "macos":
         build_env.update({"FLUTTER_XCODE_ARCHS": args.arch, "FLUTTER_XCODE_ONLY_ACTIVE_ARCH": "YES",
                           "FLUTTER_XCODE_CODE_SIGN_IDENTITY": "-", "FLUTTER_XCODE_CODE_SIGN_STYLE": "Manual",
@@ -807,9 +946,9 @@ def build(args, manifest: dict) -> None:
     if args.platform == "ohos":
         unsigned_ohos_profile()
     run([flutter(args), "pub", "get"], reports / "pub-get.log", env=build_env)
-    write_json(reports / "core-source-binding.json", core_source_binding(core))
     if (ROOT / "pubspec.lock").exists():
         shutil.copy2(ROOT / "pubspec.lock", reports / "app-pubspec.lock")
+    write_json(reports / "core-source-binding.json", core_source_binding(core))
     common = ["--release", "--target", "lib/main.dart", "--no-pub"]
     # `flutter pub get` registers dev-only plugins (integration_test). With --no-pub
     # the build keeps that registrant, but release Gradle omits those plugins, so
@@ -818,7 +957,13 @@ def build(args, manifest: dict) -> None:
                "ios": ["ios", *common, "--no-codesign"],
                "ohos": ["hap", *common, "--no-codesign", "--target-platform", "ohos-arm64"],
                }.get(args.platform, [args.platform, *common])
-    run([flutter(args), "build", *command], reports / f"build-{command[0]}.log", env=build_env)
+    try:
+        run([flutter(args), "build", *command], reports / f"build-{command[0]}.log", env=build_env)
+    finally:
+        # Android may resolve again while regenerating its release registrant.
+        if (ROOT / "pubspec.lock").exists():
+            shutil.copy2(ROOT / "pubspec.lock", reports / "app-pubspec.lock")
+    write_json(reports / "core-source-binding.json", core_source_binding(core))
     collect(args, manifest)
     manifest["status"] = "passed"
 
@@ -866,7 +1011,7 @@ def finalize(args, manifest: dict) -> None:
     for source, name in ((ROOT / "LICENSE", "LICENSE.txt"),
                          (ROOT / "native/go_runtime/LICENSE.go-standard-library", "Go-LICENSE.txt"),
                          (ROOT / "assets/licenses/yaegi.txt", "Yaegi-LICENSE.txt"),
-                         (ROOT.parent / "qfli_studio_core/LICENSE", "Core-LICENSE.txt")):
+                         (ROOT.parent / CORE_DIRECTORY / "LICENSE", "Core-LICENSE.txt")):
         if source.is_file():
             shutil.copy2(source, licenses / name)
     write_step_summary(args, manifest)
@@ -878,7 +1023,8 @@ def write_checksums(output: Path) -> None:
     (output / "SHA256SUMS").write_text(content, encoding="utf-8")
 
 
-COMMANDS = {"setup-native": setup_native, "setup-ohos": setup_ohos,
+COMMANDS = {"setup-native": setup_native, "validate-native": validate_native,
+            "consume-native": consume_native, "setup-ohos": setup_ohos,
             "setup-flutter": setup_flutter, "build": build, "finalize": finalize}
 
 
