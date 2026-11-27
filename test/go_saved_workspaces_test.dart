@@ -1151,11 +1151,18 @@ class _Fixture {
     FocusManager.instance.primaryFocus?.unfocus();
     await tester.pump(const Duration(milliseconds: 200));
     await tester.pumpWidget(const SizedBox.shrink());
+    // Home uses a singleton whose queue survives individual fake clocks. Move
+    // its next tail to the real zone before this test's fake clock is closed.
+    late Future<void> singletonLoad;
+    await tester.runAsync(() async {
+      singletonLoad = WorkspaceStore.instance.load();
+    });
     // Queued writes originate in the fake zone. Pump that zone while allowing
     // real IO; awaiting their whole queue inside runAsync would deadlock.
     var complete = false;
     Object? writeError;
     Future.wait<void>([
+      singletonLoad,
       WorkspaceStore.instance.settle(),
       workspaces.settle(),
       for (final store in _extraStores) store.settle(),

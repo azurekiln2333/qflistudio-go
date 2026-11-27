@@ -321,6 +321,9 @@ Future<void> _showTool(
       ),
     ),
   );
+  // Its final ensureVisible jump schedules layout without pumping a frame.
+  // Lay out the lazy slivers before the next lookup or scroll uses their offset.
+  await tester.pump();
 }
 
 Future<void> _finishIo(WidgetTester tester) async {

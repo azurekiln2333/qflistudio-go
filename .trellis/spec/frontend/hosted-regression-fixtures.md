@@ -27,8 +27,16 @@ The four local project scopes are history, workspace, all and favorite. Assert
 their four exact `home-scope-tab-*` keys and cloud absence. The independent
 `home-scope-tab-agents` tab does not add a project scope. Tools use a lazy vertical
 viewport beneath `PageStorageKey<String>('tools-scroll')`; scroll each required
-card into view and retain its assertion. Wait for a previous dialog's exit
-transition before opening and asserting the next one.
+card into view and retain its assertion. Pump after `scrollUntilVisible` finishes
+its final `ensureVisible` before reusing the lazy viewport. Wait for a previous
+dialog's exit transition before opening and asserting the next one.
+
+`WorkspaceStore.instance` retains its queue tail across widget test clocks.
+Before closing each clock, enqueue a final `WorkspaceStore.instance.load()`
+inside `tester.runAsync` and capture its future. Do not await its fake-zone
+predecessor there. Include the captured future in the original error-observing
+drain while pumping prior fake-zone work. This leaves the singleton tail in the
+real zone. Retain all store/history drains, error assertions and timeout bounds.
 
 Curriculum assertions compare authored bytes, not normalized text. Preserve the
 existing mixed newline bytes of `tool/go_curriculum/samples/T002` through `T040`
@@ -50,6 +58,8 @@ status does not establish that the index contains the required bytes.
 | Screenshot encoder returns null | Fail with a diagnostic; never report an empty successful image |
 | Agents appears beside four local scopes | Assert Agents separately and retain all four scope checks |
 | Required tool card starts below the viewport | Scroll the real vertical viewport, then assert and interact |
+| Reusing a lazy viewport after `scrollUntilVisible` | Pump its final `ensureVisible` before the next lookup |
+| Singleton queue survives a widget test clock | Enqueue its final load in the real zone; pump and observe every drain before closing the fake clock |
 | Catalog or fixture bytes differ from the frozen contract | Keep the strict failure; repair source byte preservation |
 | Test evidence belongs to another SHA | Record it as historical, not a current pass |
 
@@ -66,6 +76,8 @@ Hosted `flutter analyze --no-pub` and the Quality workflow's Flutter suite must
 cover native startup, saved workspaces, offline profile, tools, curriculum
 content and catalog audit. Keep real native preflight and integration assertions.
 Record source SHA, workflow/run/attempt/job IDs, failures and skips separately.
+Both fixture repairs require hosted proof at the changed source SHA. A reviewed
+viewport sequence alone does not establish the cause of a hosted tools failure.
 
 ## 7. Wrong vs Correct
 
