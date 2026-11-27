@@ -6,7 +6,7 @@ source pane IDs do not govern target work. Model recovery follows AGENTS.md.
 
 ## Phase gate
 
-The user approved the final parent/child plan on 2026-11-27, as recorded in the parent prd.md. Reviewer w5V:p2 issued final review PASS after metadata corrections. Coordinator w5V:p1 activated this child on 2026-11-27. The preservation inventory and provisional core dependency contract are satisfied; the final coordinated core SHA and all acceptance evidence remain pending. Go and workflow implementation stay with their assigned workers. This evidence/documentation batch does not redispatch work, execute project checks, or perform Git operations. The coordinator assigns and reviews tasks without implementing. Report only to w5V:p1 through Herdr; never contact w5V:p6.
+The user approved the final parent/child plan on 2026-11-27, as recorded in the parent prd.md. Reviewer w5V:p2 issued final review PASS after metadata corrections. Coordinator w5V:p1 activated this child on 2026-11-27. The preservation inventory and approved core migration pin 476a30acee21dc486ee2849dd8064a7be665e4d5 (core-check run 45656065902) are in place; a later CORE_REF bump after the final core push is a pending follow-up, not a blocker. Acceptance evidence remains pending. Go and workflow implementation stay with their assigned workers. This evidence/documentation batch does not redispatch work, execute project checks, or perform Git operations. The coordinator assigns and reviews tasks without implementing. Report only to w5V:p1 through Herdr; never contact w5V:p6.
 
 ## Ordered steps
 

@@ -17,7 +17,7 @@ Repair cloud test failures and source-built native artifact flow, cover six-plat
 - Add explicit signing-input gates; absent credentials must block signed release rather than silently publish unsigned output.
 - Commit common cloud-only agent rules and reconcile conflicting README/Trellis instructions.
 - Keep intermediates, SDKs, caches and package output in bounded cloud storage and preserve artifact provenance.
-- Use canonical ../qflistudio-core and ../qflistudio-core/vendor/re_editor without aliases. Keep package/import name qfli_studio_core. Tested baseline is 476a30acee21dc486ee2849dd8064a7be665e4d5 (core-check run 45656065902); the final coordinated migration SHA remains pending.
+- Use canonical ../qflistudio-core and ../qflistudio-core/vendor/re_editor without aliases. Keep package/import name qfli_studio_core. Approved migration pin is 476a30acee21dc486ee2849dd8064a7be665e4d5 (core-check run 45656065902). A later CORE_REF bump after the final core push is a pending follow-up, not a blocker.
 
 ## Acceptance Criteria
 
@@ -31,7 +31,7 @@ Repair cloud test failures and source-built native artifact flow, cover six-plat
 
 ## Dependencies
 
-This child was activated by coordinator w5V:p1 on 2026-11-27 after the planning review passed. The preservation inventory and provisional core dependency contract are satisfied for execution; the final coordinated core SHA remains pending. Acceptance criteria remain open. Pi implementation and Git execution follow the existing ownership assignments. The preservation child must not remove tracked native inputs before this child replaces consumers. Target cutover waits for this child’s final evidence or explicitly accepted external blockers.
+This child was activated by coordinator w5V:p1 on 2026-11-27 after the planning review passed. The preservation inventory and approved core migration pin 476a30acee21dc486ee2849dd8064a7be665e4d5 (core-check run 45656065902) are satisfied for execution. A later CORE_REF bump after the final core push is a pending follow-up, not a blocker. Acceptance criteria remain open. Pi implementation and Git execution follow the existing ownership assignments. The preservation child must not remove tracked native inputs before this child replaces consumers. Target cutover waits for this child’s final evidence or explicitly accepted external blockers.
 
 ## Scope boundary
 
