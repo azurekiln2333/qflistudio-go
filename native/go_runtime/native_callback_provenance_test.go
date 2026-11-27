@@ -94,12 +94,19 @@ func newNativeProvenanceDebugger(t *testing.T, source string, exports interp.Exp
 		dbg.Wait()
 	})
 	requests := make([]interp.BreakpointRequest, len(markers))
+	lines := make([]int, len(markers))
 	for index, marker := range markers {
-		requests[index] = interp.LineBreakpoint(debugSourceLine(t, source, marker))
+		lines[index] = debugSourceLine(t, source, marker)
+		requests[index] = interp.LineBreakpoint(lines[index])
 	}
-	for index, result := range dbg.SetBreakpoints(interp.AllBreakpointTarget(), requests...) {
-		if !result.Valid {
-			t.Fatalf("breakpoint %q is invalid", markers[index])
+	file := virtualProject + "/main.go"
+	results := dbg.SetBreakpoints(interp.PathBreakpointTarget(file), requests...)
+	if len(results) != len(requests) {
+		t.Fatalf("breakpoint result count = %d, want %d", len(results), len(requests))
+	}
+	for index, result := range results {
+		if !result.Valid || result.Position.Filename != file || result.Position.Line != lines[index] {
+			t.Fatalf("breakpoint %q = %+v, want %s:%d", markers[index], result, file, lines[index])
 		}
 	}
 	return fixture
@@ -486,9 +493,14 @@ func main() {
 		t.Fatal(err)
 	}
 	t.Cleanup(func() { startRead(); finishRead(); dbg.Terminate(); dbg.Wait() })
-	results := dbg.SetBreakpoints(interp.AllBreakpointTarget(), interp.LineBreakpoint(debugSourceLine(t, source, "main snapshot pause")))
-	if len(results) != 1 || !results[0].Valid {
-		t.Fatal("main snapshot breakpoint is invalid")
+	file := virtualProject + "/main.go"
+	line := debugSourceLine(t, source, "main snapshot pause")
+	results := dbg.SetBreakpoints(interp.PathBreakpointTarget(file), interp.LineBreakpoint(line))
+	if len(results) != 1 {
+		t.Fatalf("main snapshot breakpoint result count = %d, want 1", len(results))
+	}
+	if result := results[0]; !result.Valid || result.Position.Filename != file || result.Position.Line != line {
+		t.Fatalf("main snapshot breakpoint = %+v, want %s:%d", result, file, line)
 	}
 	if err := dbg.Continue(1); err != nil {
 		t.Fatal(err)

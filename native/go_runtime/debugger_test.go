@@ -546,7 +546,9 @@ func TestDebugOpaqueCallbackCreatedByMainCalledByWorker(t *testing.T) {
 import ("fmt"; "sync")
 var pool sync.Pool
 func worker(done chan interface{}) {
- done <- pool.Get() // worker pause
+ var value interface{} // worker pause
+ value = pool.Get()
+ done <- value
 }
 func main() {
  pool.New = func() interface{} {
@@ -558,15 +560,30 @@ func main() {
  fmt.Println(<-done)
 }
 `
-	debugFixture(t, id, map[string]string{"main.go": source}, "main.go", map[string][]int{"main.go": {
-		debugSourceLine(t, source, "worker pause"), debugSourceLine(t, source, "callback pause"),
-	}})
+	// A send-line breakpoint stops after its RHS; pause before pool.Get instead.
+	workerLine := debugSourceLine(t, source, "worker pause")
+	callbackLine := debugSourceLine(t, source, "callback pause")
+	debugFixture(t, id, map[string]string{"main.go": source}, "main.go", map[string][]int{"main.go": {workerLine, callbackLine}})
 	entry := waitDebugPause(t, id, 0, "entry")
+	if len(entry.Breakpoints) != 2 {
+		t.Fatalf("expected two worker/callback breakpoints, got %+v", entry.Breakpoints)
+	}
+	for index, line := range []int{workerLine, callbackLine} {
+		breakpoint := entry.Breakpoints[index]
+		if !breakpoint.Valid || breakpoint.File != "main.go" || breakpoint.Line != line || breakpoint.ActualLine != line {
+			t.Fatalf("breakpoint = %+v, want main.go:%d", breakpoint, line)
+		}
+	}
 	debugControl(t, id, "continue")
 	worker := waitDebugPause(t, id, entry.Sequence, "breakpoint")
-	workerID := lastDebugEvent(worker).GoRoutine
-	if workerID == 1 {
-		t.Fatalf("worker reused main's execution ID: %+v", worker)
+	workerEvent := lastDebugEvent(worker)
+	workerID := workerEvent.GoRoutine
+	if workerEvent.Reason != "breakpoint" || workerID <= 1 || workerEvent.Kind != "goroutine" || workerEvent.OpaqueNativeBoundary || len(workerEvent.Frames) != 1 {
+		t.Fatalf("first stop is not the interpreted worker: %+v", worker)
+	}
+	workerFrame := workerEvent.Frames[0]
+	if workerFrame.Name != "worker" || workerFrame.File != "main.go" || workerFrame.Line != workerLine || workerFrame.OpaqueNativeBoundary {
+		t.Fatalf("worker did not stop before pool.Get: %+v", workerEvent)
 	}
 	debugRoutineControl(t, id, workerID, "continue")
 	callback := waitDebugPause(t, id, worker.Sequence, "breakpoint")
