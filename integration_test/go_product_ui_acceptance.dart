@@ -78,9 +78,9 @@ Future<void> Function() registerGoProductUiAcceptance({
         if (audit.released && !body.isCompleted) body.complete();
       }
     },
-    skip: !embedded && !requireEmbeddedRuntime
-        ? 'Go product UI acceptance requires bundled Android/OHOS/iOS FFI'
-        : false,
+    // Go product UI acceptance requires bundled Android/OHOS/iOS FFI unless
+    // the hosted caller explicitly requires its supplied native runtime.
+    skip: !embedded && !requireEmbeddedRuntime,
     timeout: const Timeout(Duration(minutes: 6)),
   );
   return () async {
@@ -270,7 +270,9 @@ class _ProductUiAudit {
     }
     await tester.pumpWidget(const SizedBox.shrink());
     await _tick(tester);
-    for (final host in fixture.hosts) host.dispose();
+    for (final host in fixture.hosts) {
+      host.dispose();
+    }
     await _pumpFuture(tester, fixture.workspaces.settle(),
         reason: 'Actual named-workspace writes did not settle');
     for (final store in fixture.extraWorkspaces) {
@@ -370,7 +372,10 @@ class _ProductUiAudit {
         final image = await boundary.toImage(pixelRatio: 1);
         try {
           final data = await image.toByteData(format: ui.ImageByteFormat.png);
-          return data?.buffer.asUint8List();
+          if (data == null) {
+            throw StateError('No screenshot bytes for $name');
+          }
+          return data.buffer.asUint8List();
         } finally {
           image.dispose();
         }
@@ -384,7 +389,7 @@ class _ProductUiAudit {
     evidence['screenshot:$name'] = {
       'path': path, 'method': method, 'bytes': imageBytes.length,
       'sha256': _bytesHash(imageBytes),
-      if (bindingFailure != null) 'bindingFailure': bindingFailure,
+      'bindingFailure': ?bindingFailure,
     };
   }
 
@@ -833,7 +838,9 @@ Future<void> _until(WidgetTester tester, bool Function() ready, {
   required String reason, Duration timeout = const Duration(seconds: 15),
 }) async {
   final clock = Stopwatch()..start();
-  while (!ready() && clock.elapsed < timeout) await _tick(tester);
+  while (!ready() && clock.elapsed < timeout) {
+    await _tick(tester);
+  }
   expect(ready(), isTrue, reason: reason);
 }
 

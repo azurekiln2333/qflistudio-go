@@ -113,10 +113,34 @@ void main() {
       find.descendant(of: bar, matching: find.text('工作区')),
       findsOneWidget,
     );
-    // All, history, favorite and saved workspaces; no cloud tab slot.
+    // Four project scopes remain separate from the Agents surface.
+    final projectTabs = find.descendant(
+      of: bar,
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is Tab &&
+            widget.key != const ValueKey('home-scope-tab-agents'),
+      ),
+    );
     expect(
-      find.descendant(of: bar, matching: find.byType(Tab)),
+      projectTabs,
       findsNWidgets(4),
+    );
+    expect(
+      tester.widgetList<Tab>(projectTabs).map((tab) => tab.key),
+      unorderedEquals(const [
+        ValueKey('home-scope-tab-history'),
+        ValueKey('home-scope-tab-workspace'),
+        ValueKey('home-scope-tab-all'),
+        ValueKey('home-scope-tab-favorite'),
+      ]),
+    );
+    expect(
+      find.descendant(
+        of: bar,
+        matching: find.byKey(const ValueKey('home-scope-tab-agents')),
+      ),
+      findsOneWidget,
     );
   });
 
@@ -140,7 +164,13 @@ void main() {
     await tester.scrollUntilVisible(
       find.text('JSON 格式化'),
       300,
-      scrollable: find.byType(Scrollable),
+      scrollable: find.descendant(
+        of: find.byKey(const PageStorageKey<String>('tools-scroll')),
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is Scrollable && widget.axisDirection == AxisDirection.down,
+        ),
+      ),
     );
     expect(find.text('JSON 格式化'), findsOneWidget);
     // Web-only network tools belong to another product and must not appear.

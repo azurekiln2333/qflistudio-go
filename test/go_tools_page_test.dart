@@ -61,13 +61,21 @@ void main() {
         ),
       );
       expect(find.byType(ToolsGrid), findsOneWidget);
-      expect(find.text('Go 格式化'), findsOneWidget);
-      expect(find.text('导入与符号'), findsOneWidget);
-      expect(find.text('Go 模块检查'), findsOneWidget);
-      expect(find.text('JSON 转 Go 结构体'), findsOneWidget);
+      // The real tools browser builds cards lazily below its header.
+      for (final title in [
+        'Go 格式化',
+        '导入与符号',
+        'Go 模块检查',
+        'JSON 转 Go 结构体',
+      ]) {
+        await _showTool(tester, title);
+        expect(find.text(title), findsOneWidget);
+      }
       expect(find.text('专用'), findsNothing);
+      await _showTool(tester, '终端', delta: -300);
       await tester.tap(find.text('终端'));
       expect(openedTerminal, isTrue);
+      await _showTool(tester, 'Go 格式化');
       await tester.tap(find.text('Go 格式化'));
       await tester.pumpAndSettle();
       expect(find.byType(GoSourceToolPage), findsOneWidget);
@@ -108,11 +116,7 @@ void main() {
         ),
       ),
     );
-    await tester.scrollUntilVisible(
-      find.text('Go 调试'),
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
+    await _showTool(tester, 'Go 调试');
     await tester.tap(find.text('Go 调试'));
     expect(debugOpened, isTrue);
     expect(tester.takeException(), isNull);
@@ -298,6 +302,24 @@ void main() {
       expect(find.textContaining('Unexpected'), findsOneWidget);
       expect(tester.takeException(), isNull);
     },
+  );
+}
+
+Future<void> _showTool(
+  WidgetTester tester,
+  String title, {
+  double delta = 300,
+}) async {
+  await tester.scrollUntilVisible(
+    find.text(title),
+    delta,
+    scrollable: find.descendant(
+      of: find.byKey(const PageStorageKey<String>('tools-scroll')),
+      matching: find.byWidgetPredicate(
+        (widget) =>
+            widget is Scrollable && widget.axisDirection == AxisDirection.down,
+      ),
+    ),
   );
 }
 

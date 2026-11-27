@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:qfli_go/main.dart' as app;
 import 'package:qfli_studio_core/app.dart';
+import 'package:qfli_studio_core/layout/app_form_factor.dart';
 import 'package:qfli_studio_core/pages/home_page.dart';
 import 'package:qfli_studio_core/services/app_paths.dart';
 import 'package:qfli_studio_core/services/studio_profile.dart';
@@ -65,7 +66,7 @@ void main() {
   testWidgets(
     'OHOS waits for initialization and home layout before its first frame',
     (tester) async {
-      await app.main();
+      await app.startGoApp(formFactor: AppFormFactor.phone);
       expect(binding.sendFramesToEngine, isFalse);
       await tester.pump();
       expect(find.byType(SplashScreen), findsOneWidget);
@@ -96,7 +97,7 @@ void main() {
   testWidgets(
     'other platforms submit the Flutter fallback without native delay',
     (tester) async {
-      await app.main();
+      await app.startGoApp(formFactor: AppFormFactor.phone);
       expect(binding.sendFramesToEngine, isTrue);
       await tester.pump();
       expect(find.byType(SplashScreen), findsOneWidget);
@@ -116,7 +117,7 @@ void main() {
     (tester) async {
       rejectProgress = true;
 
-      await app.main();
+      await app.startGoApp(formFactor: AppFormFactor.phone);
       await tester.pump();
       await tester.pump(const Duration(milliseconds: 160));
       await _waitForReady(tester);

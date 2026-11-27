@@ -100,11 +100,35 @@ void main() {
         find.descendant(of: bar, matching: find.text(l10n.cloudProjects)),
         findsNothing,
       );
+      final projectTabs = find.descendant(
+        of: bar,
+        matching: find.byWidgetPredicate(
+          (widget) =>
+              widget is Tab &&
+              widget.key != const ValueKey('home-scope-tab-agents'),
+        ),
+      );
       expect(
-        find.descendant(of: bar, matching: find.byType(Tab)),
+        projectTabs,
         findsNWidgets(4),
         reason:
             'The fourth scope is local saved workspaces, independent of cloud.',
+      );
+      expect(
+        tester.widgetList<Tab>(projectTabs).map((tab) => tab.key),
+        unorderedEquals(const [
+          ValueKey('home-scope-tab-history'),
+          ValueKey('home-scope-tab-workspace'),
+          ValueKey('home-scope-tab-all'),
+          ValueKey('home-scope-tab-favorite'),
+        ]),
+      );
+      expect(
+        find.descendant(
+          of: bar,
+          matching: find.byKey(const ValueKey('home-scope-tab-agents')),
+        ),
+        findsOneWidget,
       );
       final workspaceTab = find.descendant(
         of: bar,
@@ -840,6 +864,11 @@ class _Fixture {
     WidgetTester tester, {
     required String title,
   }) async {
+    await _pumpUntil(
+      tester,
+      () => find.byType(AlertDialog).evaluate().isEmpty,
+      reason: 'The previous workspace dialog must finish its exit transition.',
+    );
     await tester.tap(find.byTooltip('工作区项目'));
     await _pumpUntil(
       tester,

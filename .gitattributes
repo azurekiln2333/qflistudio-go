@@ -12,3 +12,48 @@
 tool/build_ios_go_runtime.sh text eol=lf
 tool/build_macos_go_runtime.sh text eol=lf
 tool/ci/*.sh text eol=lf
+
+# These exact curriculum bytes are part of the import and audit contracts.
+# Preserve the existing catalog CRLF and mixed-line-ending module fixtures.
+assets/curriculum/examples.json -text
+assets/curriculum/tutorials.json -text
+tool/go_curriculum/samples/T002/go.mod -text
+tool/go_curriculum/samples/T003/go.mod -text
+tool/go_curriculum/samples/T004/go.mod -text
+tool/go_curriculum/samples/T005/go.mod -text
+tool/go_curriculum/samples/T006/go.mod -text
+tool/go_curriculum/samples/T007/go.mod -text
+tool/go_curriculum/samples/T008/go.mod -text
+tool/go_curriculum/samples/T009/go.mod -text
+tool/go_curriculum/samples/T010/go.mod -text
+tool/go_curriculum/samples/T011/go.mod -text
+tool/go_curriculum/samples/T012/go.mod -text
+tool/go_curriculum/samples/T013/go.mod -text
+tool/go_curriculum/samples/T014/go.mod -text
+tool/go_curriculum/samples/T015/go.mod -text
+tool/go_curriculum/samples/T016/go.mod -text
+tool/go_curriculum/samples/T017/go.mod -text
+tool/go_curriculum/samples/T018/go.mod -text
+tool/go_curriculum/samples/T019/go.mod -text
+tool/go_curriculum/samples/T020/go.mod -text
+tool/go_curriculum/samples/T021/go.mod -text
+tool/go_curriculum/samples/T022/go.mod -text
+tool/go_curriculum/samples/T023/go.mod -text
+tool/go_curriculum/samples/T024/go.mod -text
+tool/go_curriculum/samples/T025/go.mod -text
+tool/go_curriculum/samples/T026/go.mod -text
+tool/go_curriculum/samples/T027/go.mod -text
+tool/go_curriculum/samples/T028/go.mod -text
+tool/go_curriculum/samples/T029/go.mod -text
+tool/go_curriculum/samples/T030/go.mod -text
+tool/go_curriculum/samples/T031/go.mod -text
+tool/go_curriculum/samples/T032/go.mod -text
+tool/go_curriculum/samples/T033/go.mod -text
+tool/go_curriculum/samples/T034/go.mod -text
+tool/go_curriculum/samples/T035/go.mod -text
+tool/go_curriculum/samples/T036/go.mod -text
+tool/go_curriculum/samples/T037/go.mod -text
+tool/go_curriculum/samples/T038/go.mod -text
+tool/go_curriculum/samples/T039/go.mod -text
+tool/go_curriculum/samples/T040/go.mod -text
+tool/go_curriculum/samples/T083/go.mod -text

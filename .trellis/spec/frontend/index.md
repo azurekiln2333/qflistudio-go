@@ -28,6 +28,7 @@ This directory contains guidelines for frontend development. Fill in each file w
 | [Content Code Import](./content-code-import.md) | Shared learning pages, imports, project entry and editor contracts | Documented |
 | [Editor Terminal and Run](./editor-terminal-run.md) | Continuous transcript, quiet success and tap/long-press entry contracts | Documented |
 | [Native Startup](./native-startup.md) | HarmonyOS progress bridge, first-frame deferral and loading layer lifecycle | Documented |
+| [Hosted Regression Fixtures](./hosted-regression-fixtures.md) | Host selection, lazy widgets and exact curriculum bytes in cloud tests | Documented |
 
 ---
 

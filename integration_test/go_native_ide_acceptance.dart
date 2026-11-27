@@ -11,8 +11,6 @@ import 'package:qfli_go/go_ide_tools.dart';
 import 'package:qfli_go/go_platform.dart';
 import 'package:qfli_go/go_studio_debugger.dart';
 import 'package:qfli_go/main.dart' show goProfile;
-import 'package:qfli_studio_core/services/code_analysis.dart';
-import 'package:qfli_studio_core/services/debug_session.dart';
 import 'package:qfli_studio_core/services/studio_profile.dart';
 import 'package:qfli_studio_core/tools/offline_tools.dart';
 
@@ -91,9 +89,9 @@ Future<void> Function() registerGoNativeIdeAcceptance({
         }
       }
     },
-    skip: !embedded && !requireEmbeddedRuntime
-        ? 'Bundled Go IDE acceptance requires an Android/OHOS/iOS target'
-        : false,
+    // Bundled Go IDE acceptance requires an Android/OHOS/iOS target unless
+    // the hosted caller explicitly requires its supplied native runtime.
+    skip: !embedded && !requireEmbeddedRuntime,
     timeout: const Timeout(Duration(minutes: 4)),
   );
   return () async {

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:qfli_studio_core/app.dart';
+import 'package:qfli_studio_core/layout/app_form_factor.dart';
 import 'package:qfli_studio_core/pages/tools_grid.dart';
 import 'package:qfli_studio_core/services/project_templates.dart';
 import 'package:qfli_studio_core/services/studio_profile.dart';
@@ -68,7 +69,11 @@ final StudioProfile goProfile = StudioProfile(
   terminalCommandDelegate: goTerminalCommandDelegate,
 );
 
-Future<void> main() async {
+Future<void> main() => startGoApp();
+
+/// Starts the real app with an optional device-family override for its host.
+/// Tests use the same startup flow while selecting their intended phone shell.
+Future<void> startGoApp({AppFormFactor? formFactor}) async {
   final binding = WidgetsFlutterBinding.ensureInitialized();
   final nativeStartup = !kIsWeb && defaultTargetPlatform == TargetPlatform.ohos;
   if (nativeStartup) binding.deferFirstFrame();
@@ -79,7 +84,15 @@ Future<void> main() async {
   final auth = AuthStore();
   final settings = SettingsStore();
   final ready = ValueNotifier<bool>(false);
-  runApp(QfliApp(store: store, auth: auth, settings: settings, ready: ready));
+  runApp(
+    QfliApp(
+      store: store,
+      auth: auth,
+      settings: settings,
+      ready: ready,
+      formFactor: formFactor,
+    ),
+  );
 
   const platformChannel = MethodChannel('qflistudio/platform');
   Future<void> reportProgress(double progress) async {
