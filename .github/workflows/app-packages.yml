@@ -39,7 +39,7 @@ env:
   GIT_CONFIG_KEY_0: core.autocrlf
   GIT_CONFIG_VALUE_0: 'false'
   GO_VERSION: '1.27.1'
-  CORE_REVISION: 476a30acee21dc486ee2849dd8064a7be665e4d5
+  CORE_REVISION: 1ae4674a4b153701b0c3b3ff04b1a1b77a318611
 
 jobs:
   native:

@@ -19,8 +19,8 @@ defaults:
 
 env:
   GO_VERSION: '1.27.1'
-  # Core-last ruling: finish on this pin; a later CORE_REF bump is follow-up.
-  CORE_REF: 476a30acee21dc486ee2849dd8064a7be665e4d5
+  # Released core pin from the CORE_REF wave.
+  CORE_REF: 1ae4674a4b153701b0c3b3ff04b1a1b77a318611
   PYTHONUTF8: '1'
   GOTOOLCHAIN: local
   GOWORK: 'off'
@@ -375,7 +375,7 @@ jobs:
                                   'installation and signing', 'all skipped tests listed in this evidence'],
               'notes': ['Prerequisite failures gate required tests; skipped is not passed.',
                         'Flutter setup helper manifest is setup evidence, not an application-package result.',
-                        'CORE_REF bump after the final core push is pending follow-up, not a migration blocker.'],
+                        'Released core pin is the CORE_REF wave revision; the earlier 476a30a core-check result remains historical.'],
           }
           if steps.get('tests', {}).get('outcome') != 'success':
               record['unverifiedScope'].append('required Flutter native/SDK test execution did not pass')
