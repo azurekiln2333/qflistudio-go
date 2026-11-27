@@ -61,3 +61,18 @@ and evidence contract.
 改写中文技术文本时套用受控中文规则：一句一动作、主动语态、一词一义（同一概念全篇同一个词）、不用分号连接动作、句长（指令 ≤ 25 字、说明 ≤ 40 字）、去掉虚动词（进行 / 加以 + 名词）、套话（需要注意的是、在一定程度上）、营销形容词（无缝、强大、赋能、闭环）与含糊词（若干、一些、相关）； 不得改动情态（可能 / 也许）：置信度是内容。机械首查只在 GitHub Actions 运行。
 命令：`python scripts/ste-lint-zh.py <文件>`。
 禁止在本机运行此检查。
+
+## Workspace cloud rules (verbatim)
+
+- Do not run local builds, tests, benchmarks, emulators, or native compilation.
+- Do not run dependency installation, SDK installation, or dependency restore.
+- Do not download build artifacts, installers, SDKs, or build caches to this workspace.
+- Do not run Flutter, Dart, Gradle, CMake, Ninja, Xcode, Hvigor, or package-manager commands that generate output.
+- Read and edit source locally. Inspect Git metadata and text without creating build or test outputs.
+- Run validation through the repository's GitHub Actions workflows. Read results through GitHub API or log output.
+- Keep artifacts on GitHub. Record immutable source revisions, run IDs, job conclusions, checksums, and signing limitations in Trellis.
+- Keep durable Trellis tasks, specs, research, journals, and project instructions in version control. Keep local runtime/session state and secrets ignored.
+- Use GitHub as the sole remote for migrated clones. Check both fetch and push URLs.
+- Preserve another agent's work. Coordinate repository ownership and handoff through Herdr.
+- Do not delete shared WSL distributions or old source workspaces without the owning coordinators' preservation decision.
+- Folder names follow GitHub repository names. Shared core is `qflistudio-core`; its Dart package name remains `qfli_studio_core`.
